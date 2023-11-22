@@ -1,5 +1,17 @@
 homeassistant:
-  packages: !include_dir_merge_named includes/packages
+  name: Home
+  country: UA
+  currency: UAH
+  latitude: !secret latitude_coord
+  longitude: !secret longitude_coord
+  elevation: 50
+  unit_system: metric
+  time_zone: Europe/Kiev
+  packages: !include_dir_merge_named includes
+  auth_providers:
+   - type: homeassistant
+  whitelist_external_dirs :
+   - /config
 
 default_config:
 
