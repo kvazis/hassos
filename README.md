@@ -38,7 +38,9 @@
 #### Интерфейс, в режиме yaml    
 :arrow_right: [ui-lovelace.yaml](https://github.com/kvazis/hassos/blob/master/ui-lovelace.yaml) - корневой файл, в нем содержится общий заголовок и ссылки на файлы, каждый файл - отдельная страница    
 :arrow_right: [01_system.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/001_control_panel.yaml) - первая страница интерфейса с мониторингом системы и телеметрией    
-:arrow_right: [01_system.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/002_logic.yaml) - страница логики, тут выводятся все автоматизации системы, с разделением по направлениям    
+:arrow_right: [002_logic.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/002_logic.yaml) - страница логики, тут выводятся все автоматизации системы, с разделением по направлениям    
+
+
 ____
 ### Как поддержать развитие проекта?
 * [Стать спонсором моего Youtube](http://kvazis.link/sponsorship)
