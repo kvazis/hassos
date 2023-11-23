@@ -18,6 +18,8 @@ default_config:
 # Load frontend themes from the themes folder
 frontend:
   themes: !include_dir_merge_named themes
+  extra_module_url:
+    - /hacsfiles/custom-brand-icons/custom-brand-icons.js
 
 automation: !include automations.yaml
 script: !include scripts.yaml
@@ -34,3 +36,28 @@ panel_custom:
     config:
       ingress: core_configurator
 
+telegram_bot:
+  - platform: polling
+    api_key: !secret api_key_bot
+    allowed_chat_ids:
+      - !secret chat_id_alex
+      - !secret chat_id_olha
+      - !secret chat_id_dima
+      - !secret chat_id_user
+      - !secret chat_id_group
+      - !secret chat_id_group_tech
+      - !secret chat_id_log
+      
+lovelace:
+  mode: yaml
+  resources:
+   - url: /hacsfiles/lovelace-multiple-entity-row/multiple-entity-row.js
+     type: module
+   - url: /hacsfiles/stack-in-card/stack-in-card.js
+     type: module
+   - url: /hacsfiles/lovelace-card-mod/card-mod.js
+     type: module
+   - url: /hacsfiles/lovelace-mushroom/mushroom.js
+     type: module
+   - url: /hacsfiles/lovelace-auto-entities/auto-entities.js
+     type: module

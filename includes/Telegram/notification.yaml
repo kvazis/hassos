@@ -1,0 +1,36 @@
+notification:
+
+    homeassistant:
+      customize:
+        
+        automation.telegram_start_notification:
+          friendly_name: Уведомление о запуске сервера
+          icon: phu:telegram
+
+
+    automation:
+
+      - alias: telegram_start_notification
+        id: telegram_start_notification
+        description: Уведомление о запуске сервера
+        initial_state: true
+        trigger:
+          - platform: homeassistant
+            event: start
+        action:  
+          - service: telegram_bot.send_message
+            data_template:
+              target:
+                  - !secret chat_id_group_tech
+              message: | 
+                   {{"\U0001F4AC"}} Intel N100 HA OS Server
+                   {{"\U0001F567"}} Запущен в {{ states('sensor.time_date') }} 
+                   {{"\U0001F4C3"}} Отчет о состоянии будет через 1 минуту 
+          - delay: 00:01:05
+          - service: telegram_bot.send_message
+            data_template:
+              target:
+                  - !secret chat_id_group_tech
+              message: | 
+                   {{"\U0001F4AC"}} Intel N100 HA OS Server
+                   {{"\U0001F567"}} Отчет за {{ states('sensor.time_date') }}

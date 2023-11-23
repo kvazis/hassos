@@ -1,0 +1,88 @@
+telemetry:
+
+    homeassistant:
+
+      customize:
+        sensor.count_automation:
+          friendly_name: Автоматизаций в системе -
+        sensor.count_automation_on:
+          friendly_name: Активных автоматизаций -
+        sensor.count_automation_off:
+          friendly_name: Отключенных автоматизаций -
+        sensor.count_automation_unavailable:
+          friendly_name: Недоступных автоматизаций -
+        sensor.count_script:
+          friendly_name: Скриптов в системе -
+        sensor.count_script_on:
+          friendly_name: Активных скриптов -
+        sensor.count_script_off:
+          friendly_name: Отключенных скриптов -
+        sensor.count_script_unavailable:
+          friendly_name: Недоступных скриптов -
+          
+          
+    template:
+    
+      - sensor:
+
+################# Автоматизации #################
+
+          - name: count_automation
+            unique_id: count_automation
+            state: >
+                  {%- set domains = ['automation'] -%}
+                  {%- for domain in domains -%}
+                    {%- for item in states[domain] -%}
+                      {% if loop.first %}
+                        {{loop.length}}
+                      {% endif %}
+                    {%- endfor -%}
+                  {%- endfor -%}
+            icon: mdi:head
+            
+          - name: count_automation_on
+            unique_id: count_automation_on
+            state: "{{states.automation | selectattr ('state', 'equalto', 'on') | list | length}}"
+            icon: mdi:head-check
+
+          - name: count_automation_off
+            unique_id: count_automation_off
+            state: "{{states.automation | selectattr ('state', 'equalto', 'off') | list | length}}"
+            icon: mdi:head-remove            
+
+          - name: count_automation_unavailable
+            unique_id: count_automation_unavailable
+            state: "{{states.automation | selectattr ('state', 'equalto', 'unavailable') | list | length}}"
+            icon: mdi:head-question
+            
+################# Скрипты #################
+
+          - name: count_script
+            unique_id: count_script
+            state: >
+                  {%- set domains = ['script'] -%}
+                  {%- for domain in domains -%}
+                    {%- for item in states[domain] -%}
+                      {% if loop.first %}
+                        {{loop.length}}
+                      {% endif %}
+                    {%- endfor -%}
+                  {%- endfor -%}
+            icon: mdi:file
+            
+          - name: count_script_on
+            unique_id: count_script_on
+            state: "{{states.script | selectattr ('state', 'equalto', 'on') | list | length}}"
+            icon: mdi:file-check
+
+          - name: count_script_off
+            unique_id: count_script_off
+            state: "{{states.script | selectattr ('state', 'equalto', 'off') | list | length}}"
+            icon: mdi:file-remove            
+
+          - name: count_script_unavailable
+            unique_id: count_script_unavailable
+            state: "{{states.script | selectattr ('state', 'equalto', 'unavailable') | list | length}}"
+            icon: mdi:file-question
+
+################# Обновления #################

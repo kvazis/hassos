@@ -1,6 +1,13 @@
 git:
 
-
+    homeassistant:
+      customize:
+        
+        automation.control_git_update:
+          friendly_name: Обновление конфигурации на github
+          icon: mdi:git
+          
+          
     shell_command:
       git_config: 'bash ./ha_git.sh'
 
@@ -14,8 +21,8 @@ git:
 
     automation:
 
-      - alias: git_update
-        id: git_update
+      - alias: control_git_update
+        id: control_git_update
         description: Обновление конфигурации на github
         initial_state: true
         trigger:

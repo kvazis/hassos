@@ -1,0 +1,4 @@
+title: Home Assistant
+views:
+  - !include lovelace/001_control_panel.yaml
+  - !include lovelace/002_logic.yaml

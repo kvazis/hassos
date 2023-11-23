@@ -1,0 +1,20 @@
+lr_light:
+
+    homeassistant:
+      customize:
+
+        light.yeelight_ceiling4_0x49c726b:
+          friendly_name: Гостиная люстра 1
+          icon: phu:ceiling-adore-alt-flush
+          
+        light.yeelight_ceiling4_0x49c726b_ambilight:
+          friendly_name: Гостиная амбилайт люстра 1 
+          icon: phu:recessed-ceiling
+          
+        light.yeelight_ceiling4_0x4a1dacd:
+          friendly_name: Гостиная люстра 2
+          icon: phu:ceiling-adore-alt-flush
+          
+        light.yeelight_ceiling4_0x4a1dacd_ambilight:
+          friendly_name: Гостиная амбилайт люстра 2 
+          icon: phu:recessed-ceiling

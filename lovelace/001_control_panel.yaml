@@ -1,0 +1,381 @@
+############################ Панель управления ############################
+title: Панель управления
+icon: mdi:keyboard
+cards:
+
+
+############################ Колонка 1 ############################
+    - type: vertical-stack
+      cards:
+
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:
+      
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #00BFFF;
+                     font-weight: bold;
+                     font-size: 16px;
+                   }          
+              content: >
+                 **Данные о системе**
+
+            - type: horizontal-stack
+              cards:
+
+              - type: custom:mushroom-template-card
+                primary: CPU temp
+                secondary: |-
+                      {{states ('sensor.n100_cpu_temperature')}} С°
+                layout: vertical
+                entity: sensor.n100_cpu_temperature
+                icon_color: |-
+                  {% if states("sensor.n100_cpu_temperature")|float <= 10 %}
+                  lime
+                  {% elif states("sensor.n100_cpu_temperature")|float <= 20 %}
+                  light-green
+                  {% elif states("sensor.n100_cpu_temperature")|float <= 30 %}
+                  green
+                  {% elif states("sensor.n100_cpu_temperature")|float <= 40 %}
+                  teal
+                  {% elif states("sensor.n100_cpu_temperature")|float <= 50 %}
+                  yellow
+                  {% elif states("sensor.n100_cpu_temperature")|float <= 60 %}
+                  amber
+                  {% elif states("sensor.n100_cpu_temperature")|float <= 70 %}
+                  orange
+                  {% elif states("sensor.n100_cpu_temperature")|float <= 80 %}
+                  deep-orange
+                  {% elif states("sensor.n100_cpu_temperature")|float <= 90 %}
+                  red
+                  {% elif states("sensor.n100_cpu_temperature")|float > 90 %}
+                  pink
+                  {% endif %}
+                icon: mdi:cpu-64-bit
+                tap_action:
+                  action: more-info
+
+              - type: custom:mushroom-template-card
+                primary: Chipset temp
+                secondary: |-
+                      {{states ('sensor.n100_chipset_temperature')}} С°
+                layout: vertical
+                entity: sensor.n100_chipset_temperature
+                icon_color: |-
+                  {% if states("sensor.n100_chipset_temperature")|float <= 10 %}
+                  lime
+                  {% elif states("sensor.n100_chipset_temperature")|float <= 20 %}
+                  light-green
+                  {% elif states("sensor.n100_chipset_temperature")|float <= 30 %}
+                  green
+                  {% elif states("sensor.n100_chipset_temperature")|float <= 40 %}
+                  teal
+                  {% elif states("sensor.n100_chipset_temperature")|float <= 50 %}
+                  yellow
+                  {% elif states("sensor.n100_chipset_temperature")|float <= 60 %}
+                  amber
+                  {% elif states("sensor.n100_chipset_temperature")|float <= 70 %}
+                  orange
+                  {% elif states("sensor.n100_chipset_temperature")|float <= 80 %}
+                  deep-orange
+                  {% elif states("sensor.n100_chipset_temperature")|float <= 90 %}
+                  red
+                  {% elif states("sensor.n100_chipset_temperature")|float > 90 %}
+                  pink
+                  {% endif %}
+                icon: mdi:chip
+                tap_action:
+                  action: more-info
+
+              - type: custom:mushroom-template-card
+                primary: SSD temp
+                secondary: |-
+                      {{states ('sensor.n100_nvme_temperature')}} С°
+                layout: vertical
+                entity: sensor.n100_nvme_temperature
+                icon_color: |-
+                  {% if states("sensor.n100_nvme_temperature")|float <= 10 %}
+                  lime
+                  {% elif states("sensor.n100_nvme_temperature")|float <= 20 %}
+                  light-green
+                  {% elif states("sensor.n100_nvme_temperature")|float <= 30 %}
+                  green
+                  {% elif states("sensor.n100_nvme_temperature")|float <= 40 %}
+                  teal
+                  {% elif states("sensor.n100_nvme_temperature")|float <= 50 %}
+                  yellow
+                  {% elif states("sensor.n100_nvme_temperature")|float <= 60 %}
+                  amber
+                  {% elif states("sensor.n100_nvme_temperature")|float <= 70 %}
+                  orange
+                  {% elif states("sensor.n100_nvme_temperature")|float <= 80 %}
+                  deep-orange
+                  {% elif states("sensor.n100_nvme_temperature")|float <= 90 %}
+                  red
+                  {% elif states("sensor.n100_nvme_temperature")|float > 90 %}
+                  pink
+                  {% endif %}
+                icon: phu:seagate-ssd-m2
+                tap_action:
+                  action: more-info
+
+            - type: horizontal-stack
+              cards:
+
+              - type: custom:mushroom-template-card
+                primary: CPU use
+                secondary: |-
+                      {{states ('sensor.processor_use')}} %
+                layout: vertical
+                entity: sensor.processor_use
+                icon_color: |-
+                  {% if states("sensor.processor_use")|float <= 10 %}
+                  lime
+                  {% elif states("sensor.processor_use")|float <= 20 %}
+                  light-green
+                  {% elif states("sensor.processor_use")|float <= 30 %}
+                  green
+                  {% elif states("sensor.processor_use")|float <= 40 %}
+                  teal
+                  {% elif states("sensor.processor_use")|float <= 50 %}
+                  yellow
+                  {% elif states("sensor.processor_use")|float <= 60 %}
+                  amber
+                  {% elif states("sensor.processor_use")|float <= 70 %}
+                  orange
+                  {% elif states("sensor.processor_use")|float <= 80 %}
+                  deep-orange
+                  {% elif states("sensor.processor_use")|float <= 90 %}
+                  red
+                  {% elif states("sensor.processor_use")|float > 90 %}
+                  pink
+                  {% endif %}
+                icon: mdi:cpu-64-bit
+                tap_action:
+                  action: more-info
+                  
+              - type: custom:mushroom-template-card
+                primary: RAM use
+                secondary: |-
+                      {{states ('sensor.memory_use_percent')}} %
+                layout: vertical
+                entity: sensor.memory_use_percent
+                icon_color: |-
+                  {% if states("sensor.memory_use_percent")|float <= 10 %}
+                  lime
+                  {% elif states("sensor.memory_use_percent")|float <= 20 %}
+                  light-green
+                  {% elif states("sensor.memory_use_percent")|float <= 30 %}
+                  green
+                  {% elif states("sensor.memory_use_percent")|float <= 40 %}
+                  teal
+                  {% elif states("sensor.memory_use_percent")|float <= 50 %}
+                  yellow
+                  {% elif states("sensor.memory_use_percent")|float <= 60 %}
+                  amber
+                  {% elif states("sensor.memory_use_percent")|float <= 70 %}
+                  orange
+                  {% elif states("sensor.memory_use_percent")|float <= 80 %}
+                  deep-orange
+                  {% elif states("sensor.memory_use_percent")|float <= 90 %}
+                  red
+                  {% elif states("sensor.memory_use_percent")|float > 90 %}
+                  pink
+                  {% endif %}
+                icon: mdi:chip
+                tap_action:
+                  action: more-info
+
+              - type: custom:mushroom-template-card
+                primary: Disk use
+                secondary: |-
+                      {{states ('sensor.disk_use_percent')}} %
+                layout: vertical
+                entity: sensor.disk_use_percent
+                icon_color: |-
+                  {% if states("sensor.disk_use_percent")|float <= 10 %}
+                  lime
+                  {% elif states("sensor.disk_use_percent")|float <= 20 %}
+                  light-green
+                  {% elif states("sensor.disk_use_percent")|float <= 30 %}
+                  green
+                  {% elif states("sensor.disk_use_percent")|float <= 40 %}
+                  teal
+                  {% elif states("sensor.disk_use_percent")|float <= 50 %}
+                  yellow
+                  {% elif states("sensor.disk_use_percent")|float <= 60 %}
+                  amber
+                  {% elif states("sensor.disk_use_percent")|float <= 70 %}
+                  orange
+                  {% elif states("sensor.disk_use_percent")|float <= 80 %}
+                  deep-orange
+                  {% elif states("sensor.disk_use_percent")|float <= 90 %}
+                  red
+                  {% elif states("sensor.disk_use_percent")|float > 90 %}
+                  pink
+                  {% endif %}
+                icon: phu:seagate-ssd-m2
+                tap_action:
+                  action: more-info
+                 
+            - type: entities
+              style: |
+                   ha-card {
+                     color: #00BFFF;
+                     --paper-item-icon-color: #00BFFF;
+                     --paper-item-icon-active-color: #009933;
+                     --switch-unchecked-button-color: red;
+                     --switch-checked-color: green;
+                     --switch-checked-button-color: green;
+                     --switch-checked-track-color: green;
+                     font-weight: bold;
+                     font-size: 14px;
+                   }
+              show_header_toggle: false
+              entities:
+              - entity: sensor.last_boot_custom
+                type: custom:multiple-entity-row
+                name: В онлайне -
+                state_header: Сервер
+                entities:
+                  - entity: sensor.uptime_custom
+                    name: Home Assistant
+              - entity: sensor.disk_free
+                type: custom:multiple-entity-row
+                name: Хранилище
+                state_header: Свободно
+                entities:
+                  - entity: sensor.mariadb
+                    name: База данных 
+              - type: divider
+              - entity: input_button.git_update
+              - type: divider
+              - entity: sensor.zigstar_lan_state
+              - entity: sensor.zigstar_poe_state                    
+
+              - type: divider
+    
+              - entity: sensor.last_google_backup
+              - entity: sensor.backups_in_google_drive
+                type: custom:multiple-entity-row
+                name: Резервные копии
+                state_header: Google Drive
+                entities:
+                  - entity: sensor.backups_in_home_assistant
+                    name: Сервер
+              - entity: sensor.size_in_google_drive
+                type: custom:multiple-entity-row
+                name: Занято на
+                state_header: Google Drive
+                entities:
+                  - entity: sensor.size_in_home_assistant
+                    name: Сервере
+
+
+############################ Колонка 2 ############################
+    - type: vertical-stack
+      cards:
+
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:
+      
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #FA8072;
+                     font-weight: bold;
+                     font-size: 16px;
+                   }          
+              content: >
+                 **Автоматизации и скрипты**
+
+################# Автоматизации #################
+
+            - type: entities
+              style: |
+                   ha-card {
+                     color: #FA8072;
+                     --paper-item-icon-color: #FA8072;
+                     --iron-icon-stroke-color: #FFFFE0;
+                     font-weight: bold;
+                     font-size: 14px;
+                   }                 
+              show_header_toggle: false
+              entities:
+              - entity: sensor.count_automation
+                type: custom:multiple-entity-row
+                name: Автоматизации
+                state_header: Всего
+                entities:
+                  - entity: sensor.count_automation_on
+                    name: Активно
+                  - entity: sensor.count_automation_off
+                    name: Отключено
+                  - entity: sensor.count_automation_unavailable
+                    name: Недоступно
+
+            - type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                show_header_toggle: false
+                style: |
+                  ha-card {
+                    color: #FA8072;
+                    --paper-item-icon-color: #E6E6FA;
+                    font-weight: bold;
+                    font-size: 14px;
+                  }
+              filter:
+                include:
+                 - domain: automation
+                   state: 'unavailable'
+                   options:
+                      secondary_info: last-changed
+                      
+################# Скрипты #################
+
+            - type: entities
+              style: |
+                   ha-card {
+                     color: #FA8072;
+                     --paper-item-icon-color: #FA8072;
+                     --iron-icon-stroke-color: #FFFFE0;
+                     font-weight: bold;
+                     font-size: 14px;
+                   }                 
+              show_header_toggle: false
+              entities:
+              - entity: sensor.count_script
+                type: custom:multiple-entity-row
+                name: Скрипты
+                state_header: Всего
+                entities:
+                  - entity: sensor.count_script_on
+                    name: Активно
+                  - entity: sensor.count_script_off
+                    name: Отключено
+                  - entity: sensor.count_script_unavailable
+                    name: Недоступно
+
+            - type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                show_header_toggle: false
+                style: |
+                  ha-card {
+                    color: #FA8072;
+                    --paper-item-icon-color: #E6E6FA;
+                    font-weight: bold;
+                    font-size: 14px;
+                  }
+              filter:
+                include:
+                 - domain: script
+                   state: 'unavailable'
+                   options:
+                      secondary_info: last-changed 
