@@ -1,0 +1,495 @@
+electricity:
+
+    homeassistant:
+      customize:
+      
+        sensor.phase_1_energy:
+          friendly_name: Вход фаза 1, энергия
+          device_class: energy
+          unit_of_measurement: kWh
+          state_class: total_increasing          
+        sensor.phase_1_power:
+          friendly_name: Вход фаза 1, мощность
+          device_class: power
+          unit_of_measurement: W
+        sensor.phase_1_voltage:
+          friendly_name: Вход фаза 1, напряжение
+          device_class: voltage
+          unit_of_measurement: V
+        sensor.phase_1_current:
+          friendly_name: Вход фаза 1, ток
+          device_class: current
+          unit_of_measurement: A
+        sensor.phase_1_energy_meter_day:
+          friendly_name: Фаза 1 день
+          unit_of_measurement: kWh
+          state_class: total
+          device_class: energy
+        sensor.phase_1_energy_meter_night:
+          friendly_name: Фаза 1 ночь
+          unit_of_measurement: kWh
+          state_class: total
+          device_class: energy
+          
+        sensor.phase_2_energy:
+          friendly_name: Вход фаза 2, энергия
+          device_class: energy
+          unit_of_measurement: kWh
+          state_class: total_increasing          
+        sensor.phase_2_power:
+          friendly_name: Вход фаза 2, мощность
+          device_class: power
+          unit_of_measurement: W
+        sensor.phase_2_voltage:
+          friendly_name: Вход фаза 2, напряжение
+          device_class: voltage
+          unit_of_measurement: V
+        sensor.phase_2_current:
+          friendly_name: Вход фаза 2, ток
+          device_class: current
+          unit_of_measurement: A
+        sensor.phase_2_energy_meter_day:
+          friendly_name: Фаза 2 день
+          unit_of_measurement: kWh
+          state_class: total
+          device_class: energy
+        sensor.phase_2_energy_meter_night:
+          friendly_name: Фаза 2 ночь
+          unit_of_measurement: kWh
+          state_class: total
+          device_class: energy
+          
+        sensor.phase_3_energy:
+          friendly_name: Вход фаза 3, энергия
+          device_class: energy
+          unit_of_measurement: kWh
+          state_class: total_increasing          
+        sensor.phase_3_power:
+          friendly_name: Вход фаза 3, мощность
+          device_class: power
+          unit_of_measurement: W
+        sensor.phase_3_voltage:
+          friendly_name: Вход фаза 3, напряжение
+          device_class: voltage
+          unit_of_measurement: V
+        sensor.phase_3_current:
+          friendly_name: Вход фаза 3, ток
+          device_class: current
+          unit_of_measurement: A
+        sensor.phase_3_energy_meter_day:
+          friendly_name: Фаза 3 день
+          unit_of_measurement: kWh
+          state_class: total
+          device_class: energy
+        sensor.phase_3_energy_meter_night:
+          friendly_name: Фаза 3 ночь
+          unit_of_measurement: kWh
+          state_class: total
+          device_class: energy
+
+        sensor.total_enter_power:
+          friendly_name: Полная мощность
+          unit_of_measurement: Вт
+          device_class: power
+
+        sensor.total_enter_energy:
+          friendly_name: Вход общий энергия
+          unit_of_measurement: kWh
+          state_class: total_increasing
+          device_class: energy
+
+        sensor.total_monthly_energy_day:
+          friendly_name: Потребление за месяц день
+          unit_of_measurement: kWh
+          state_class: total
+          device_class: energy
+          
+        sensor.total_monthly_energy_night:
+          friendly_name: Потребление за месяц ночь
+          unit_of_measurement: kWh
+          state_class: total
+          device_class: energy
+
+        sensor.total_counter_energy_day:
+          friendly_name: Счетчик день
+          unit_of_measurement: kWh
+          state_class: total_increasing
+          device_class: energy
+          
+        sensor.total_counter_energy_night:
+          friendly_name: Счетчик ночь
+          unit_of_measurement: kWh
+          state_class: total_increasing
+          device_class: energy
+
+
+
+
+    recorder:
+      include:
+        entities:
+           - sensor.phase_1_energy
+           - sensor.phase_1_power
+           - sensor.phase_1_voltage
+           - sensor.phase_1_current
+           - sensor.phase_1_energy_meter_day
+           - sensor.phase_1_energy_meter_night
+
+           - sensor.phase_2_energy
+           - sensor.phase_2_power
+           - sensor.phase_2_voltage
+           - sensor.phase_2_current
+           - sensor.phase_2_energy_meter_day
+           - sensor.phase_2_energy_meter_night
+           
+           - sensor.phase_3_energy
+           - sensor.phase_3_power
+           - sensor.phase_3_voltage
+           - sensor.phase_3_current
+           - sensor.phase_3_energy_meter_day
+           - sensor.phase_3_energy_meter_night
+           
+           - sensor.total_enter_power
+           - sensor.total_enter_energy
+           - sensor.total_monthly_energy_day
+           - sensor.total_monthly_energy_night
+           - sensor.total_counter_energy_day
+           - sensor.total_counter_energy_night
+
+    input_text:
+    
+      energy_correction:
+        name: Коррекция энергии 
+        
+    input_button:
+
+      energy_correction_day:
+        name: Коррекция энергии день
+        
+      energy_correction_night:
+        name: Коррекция энергии ночь
+
+      select_tariff:
+        name: Установка тарифа
+
+    binary_sensor:
+    
+      - platform: tod
+        name: energy_tariff
+        unique_id: energy_tariff
+        after: '23:00'
+        before: '07:00'
+
+    template:
+
+        sensor:
+
+          - name: phase_1_energy
+            unique_id: phase_1_energy
+            state: >
+                {{ states('sensor.0x70ac08fffe99c363_energy')|float(0) }}
+
+          - name: phase_1_power
+            unique_id: phase_1_power
+            state: >
+                {{ states('sensor.0x70ac08fffe99c363_power')|float(0) }}
+
+          - name: phase_1_voltage
+            unique_id: phase_1_voltage
+            state: >
+                {{ states('sensor.0x70ac08fffe99c363_voltage')|float(0) }}
+                
+          - name: phase_1_current
+            unique_id: phase_1_current
+            state: >
+                {{ states('sensor.0x70ac08fffe99c363_current')|float(0) }}
+
+
+
+          - name: phase_2_energy
+            unique_id: phase_2_energy
+            state: >
+                {{ states('sensor.0x187a3efffe355cf1_energy')|float(0) }}
+
+          - name: phase_2_power
+            unique_id: phase_2_power
+            state: >
+                {{ states('sensor.0x187a3efffe355cf1_power')|float(0) }}
+
+          - name: phase_2_voltage
+            unique_id: phase_2_voltage
+            state: >
+                {{ states('sensor.0x187a3efffe355cf1_voltage')|float(0) }}
+
+          - name: phase_2_current
+            unique_id: phase_2_current
+            state: >
+                {{ states('sensor.0x187a3efffe355cf1_current')|float(0) }}
+
+
+          - name: phase_3_energy
+            unique_id: phase_3_energy
+            state: >
+                {{ states('sensor.0x187a3efffe303832_energy')|float(0) }}
+                
+          - name: phase_3_power
+            unique_id: phase_3_power
+            state: >
+                {{ states('sensor.0x187a3efffe303832_power')|float(0) }}
+
+          - name: phase_3_voltage
+            unique_id: phase_3_voltage
+            state: >
+                {{ states('sensor.0x187a3efffe303832_voltage')|float(0) }}
+
+          - name: phase_3_current
+            unique_id: phase_3_current
+            state: >
+                {{ states('sensor.0x187a3efffe303832_current')|float(0) }}
+
+
+          - name: total_enter_power
+            unique_id: total_enter_power
+            state: >
+                {{
+                states('sensor.0x70ac08fffe99c363_power')|float(0) + 
+                states('sensor.0x187a3efffe355cf1_power')|float(0) + 
+                states('sensor.0x187a3efffe303832_power')|float(0)
+                }}
+
+          - name: total_temp_energy
+            unique_id: total_temp_energy
+            state: >
+                 {% set summ = (states('sensor.phase_1_energy')|float(0) + states('sensor.phase_2_energy')|float(0) + states('sensor.phase_3_energy')|float(0)) | round (2) %}
+                 {% if summ > states('sensor.total_enter_energy')|float %} 
+                 {{ summ }}
+                 {% else %}
+                 {{ states('sensor.total_enter_energy')|float }}
+                 {% endif %}
+                
+    mqtt:
+
+      binary_sensor:
+        - name: energy_correction_day
+          state_topic: "states/energy_correction_day"
+
+        - name: energy_correction_night
+          state_topic: "states/energy_correction_night"
+    
+      sensor:
+        - name: energy_correction
+          state_topic: "states/energy_correction"
+
+        - name: total_enter_energy
+          unique_id: total_enter_energy
+          state_topic: "states/total_enter_energy"
+
+
+    utility_meter:
+    
+      phase_1_energy_meter:
+        source: sensor.phase_1_energy
+        unique_id: phase_1_energy_meter
+        cycle: monthly
+        tariffs:
+          - night
+          - day
+          
+      phase_2_energy_meter:
+        source: sensor.phase_2_energy
+        unique_id: phase_2_energy_meter
+        cycle: monthly
+        tariffs:
+          - night
+          - day
+          
+      phase_3_energy_meter:
+        source: sensor.phase_3_energy
+        unique_id: phase_3_energy_meter
+        cycle: monthly
+        tariffs:
+          - night
+          - day
+
+      total_counter_energy:
+        source: sensor.total_enter_energy
+        unique_id: total_counter_energy
+        tariffs:
+          - night
+          - day
+          
+      total_monthly_energy:
+        source: sensor.total_enter_energy
+        unique_id: total_monthly_energy
+        cycle: monthly
+        tariffs:
+          - night
+          - day
+          
+    automation:
+
+###Установка коррекции для счетчика
+      - alias: electricity_set_energy_correction
+        id: electricity_set_energy_correction
+        description: Установка коррекции для счетчика
+        initial_state: true
+        trigger:
+    ## Виртуальная кнопка день
+        - platform: state
+          entity_id: input_button.energy_correction_day
+          id: correction_day
+    ## Виртуальная кнопка день
+        - platform: state
+          entity_id: input_button.energy_correction_night
+          id: correction_night
+        action:
+            - choose:
+              - conditions:
+                  - condition: trigger
+                    id: correction_day
+                sequence:
+                  - service: mqtt.publish
+                    data_template:
+                      topic: "states/energy_correction"
+                      payload_template: "{{ ((states('input_text.energy_correction')|float)) |round(2) }}"
+                      retain: true
+                  - delay: 00:00:01
+                  - service: mqtt.publish
+                    data_template:
+                      topic: "states/energy_correction_day"
+                      payload_template: 'ON'
+                      retain: true
+                  - delay: 00:00:02
+                  - service: mqtt.publish
+                    data_template:
+                      topic: "states/energy_correction_day"
+                      payload_template: 'OFF'
+                      retain: true
+              - conditions:
+                  - condition: trigger
+                    id: correction_night
+                sequence:
+                  - service: mqtt.publish
+                    data_template:
+                      topic: "states/energy_correction"
+                      payload_template: "{{ ((states('input_text.energy_correction')|float)) |round(2) }}"
+                      retain: true
+                  - delay: 00:00:01
+                  - service: mqtt.publish
+                    data_template:
+                      topic: "states/energy_correction_night"
+                      payload_template: 'ON'
+                      retain: true
+                  - delay: 00:00:02
+                  - service: mqtt.publish
+                    data_template:
+                      topic: "states/energy_correction_night"
+                      payload_template: 'OFF'
+                      retain: true
+            
+###Применение коррекции для счетчика
+      - alias: electricity_apply_energy_correction
+        id: electricity_apply_energy_correction
+        description: Применение коррекции для счетчика
+        initial_state: true
+        trigger:
+    ## Сенсор день
+        - platform: state
+          entity_id: binary_sensor.energy_correction_day
+          to: 'on'
+          id: correction_day
+    ## Сенсор ночь
+        - platform: state
+          entity_id: binary_sensor.energy_correction_night
+          to: 'on'
+          id: correction_night
+        action:
+            - choose:
+              - conditions:
+                  - condition: trigger
+                    id: correction_day
+                sequence:
+                  - service: utility_meter.calibrate
+                    data_template:
+                      value: >
+                         {{states('sensor.energy_correction')|float}}
+                    target:
+                      entity_id:
+                        - sensor.total_counter_energy_day
+              - conditions:
+                  - condition: trigger
+                    id: correction_night
+                sequence:
+                  - service: utility_meter.calibrate
+                    data_template:
+                      value: >
+                         {{states('sensor.energy_correction')|float}}
+                    target:
+                      entity_id:
+                        - sensor.total_counter_energy_night
+    
+      - alias: electricity_total_tariff_switching
+        id: electricity_total_tariff_switching
+        description: Переключение тарифов вход
+        initial_state: true
+        trigger:
+    ## Сенсор ночного тарифа
+        - platform: state
+          entity_id: binary_sensor.energy_tariff
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.select_tariff
+    ## Старт сервера
+        - platform: homeassistant
+          event: start
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.energy_tariff
+                    state: 'off'
+                sequence:
+                  - service: select.select_option
+                    target:
+                      entity_id: 
+                          - select.phase_1_energy_meter
+                          - select.phase_2_energy_meter
+                          - select.phase_3_energy_meter
+                          - select.total_monthly_energy
+                          - select.total_counter_energy
+                    data:
+                      option: day
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.energy_tariff
+                    state: 'on'
+                sequence:
+                  - service: select.select_option
+                    target:
+                      entity_id: 
+                          - select.phase_1_energy_meter
+                          - select.phase_2_energy_meter
+                          - select.phase_3_energy_meter
+                          - select.total_monthly_energy
+                          - select.total_counter_energy
+                    data:
+                      option: night
+    
+      - alias: electricity_total_enter_energy
+        id: electricity_total_enter_energy
+        description: Сохранение суммарной энергии
+        initial_state: true
+        trigger:
+        - platform: time_pattern
+          seconds: '/30'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: mqtt.publish
+          data_template:
+            topic: "states/total_enter_energy"
+            payload_template: "{{states('sensor.total_temp_energy')|float }}"
+            retain: true 

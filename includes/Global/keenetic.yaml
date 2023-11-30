@@ -1,0 +1,7 @@
+keenetic:
+
+    recorder:
+      include:
+        entities:
+           - sensor.keenetic_gateway_download_speed
+           - sensor.keenetic_gateway_upload_speed

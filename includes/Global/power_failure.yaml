@@ -1,0 +1,50 @@
+power_failure:
+
+    recorder:
+      include:
+        entities:
+           - binary_sensor.lr_electricity
+           - binary_sensor.kn_electricity
+           - binary_sensor.electricity
+
+    homeassistant:
+      customize:
+
+        binary_sensor.lr_electricity:
+          friendly_name: Сенсор электричества гостиная
+          icon: mdi:home-lightning-bolt-outline
+
+        binary_sensor.kn_electricity:
+          friendly_name: Сенсор электричества кухня
+          icon: mdi:home-lightning-bolt-outline
+
+        binary_sensor.electricity:
+          friendly_name: Электропитание
+          icon: mdi:transmission-tower
+
+    template:
+    
+      - binary_sensor:
+
+    # Сенсор определения отключения гостиная
+          - name: lr_electricity
+            unique_id: lr_electricity
+            state: >
+             {{ is_state('binary_sensor.0xa4c138bae3526a07_contact', 'on') }}
+            device_class: problem
+
+    # Сенсор определения отключения кухня
+          - name: kn_electricity
+            unique_id: kn_electricity
+            state: >
+             {{ is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on') }}
+            device_class: problem
+
+    # Сенсор определения отключения электрики
+          - name: electricity
+            unique_id: electricity
+            state: >
+             {{ is_state('binary_sensor.lr_electricity', 'on') 
+                and is_state('binary_sensor.kn_electricity', 'on')
+             }}
+            device_class: problem

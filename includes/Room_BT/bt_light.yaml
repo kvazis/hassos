@@ -1,0 +1,8 @@
+bt_light:
+
+    homeassistant:
+      customize:
+
+        light.yeelight_ceiling3_0x45727f2:
+          friendly_name: Ванная, люстра
+          icon: phu:yeelight-ceiling

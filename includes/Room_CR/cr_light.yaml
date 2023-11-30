@@ -1,0 +1,12 @@
+cr_light:
+
+    homeassistant:
+      customize:
+        
+        light.yeelight_ceiling4_0x456e813:
+          friendly_name: Коридор - люстра
+          icon: phu:ceiling-adore-alt-flush
+
+        light.yeelight_ceiling4_0x456e813_ambilight:
+          friendly_name: Коридор - амбилайт
+          icon: phu:recessed-ceiling

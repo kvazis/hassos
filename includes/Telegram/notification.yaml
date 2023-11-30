@@ -34,3 +34,8 @@ notification:
               message: | 
                    {{"\U0001F4AC"}} Intel N100 HA OS Server
                    {{"\U0001F567"}} Отчет за {{ states('sensor.time_date') }}
+                   {{"\U0001F4A1"}} Светильников недоступно - {{ states('sensor.count_light_unavailable') }} 
+                   {{"\U0001F50C"}} Реле недоступно - {{ states('sensor.count_switch_unavailable') }} 
+                   {{"\U00002668"}} Термоголовок недоступно - {{ states('sensor.count_climate_unavailable') }} 
+                   {{"\U0001F321"}} Сенсоров недоступно - {{ states('sensor.count_sensor_unavailable') }} 
+                   {{"\U0001F51F"}} Бинарных сенсоров недоступно - {{ states('sensor.count_binary_sensor_unavailable') }}

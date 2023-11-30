@@ -1,0 +1,8 @@
+tt_light:
+
+    homeassistant:
+      customize:
+      
+        light.yeelight_ceiling1_0x348294a:
+          friendly_name: Туалет люстра
+          icon: phu:ceiling-devere

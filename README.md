@@ -1,5 +1,31 @@
 ## Новый рабочий сервер
 
+### Обновление 2023 11 30
+
+#### Конфигурация    
+:arrow_right: [configuration.yaml](https://github.com/kvazis/hassos/blob/master/configuration.yaml) - добавлены новые ресурсы для lovelace
+
+#### Пакаджи     
+:arrow_right: [climate_check.yaml](https://github.com/kvazis/hassos/blob/master/includes/Control/climate_check.yaml) - устранение блуждающей ошибки, конгда при перезагрузке системы становятся недоступными термоголовки, перезагрузка аддона москито      
+:arrow_right: [control_mode.yaml](https://github.com/kvazis/hassos/blob/master/includes/Control/control_mode.yaml) - режим управления автоматизациями, для работы в паре с резервным сервером      
+:arrow_right: [telemetry.yaml](https://github.com/kvazis/hassos/blob/master/includes/Control/telemetry.yaml) - добавлен сенсор расчета уровня сбоя устройств, в зависимости от типов    
+:arrow_right: [electricity.yaml](https://github.com/kvazis/hassos/blob/master/includes/Global/electricity.yaml) - расход электроэнергии на трех токовый мониторах на вводе в квартиру, расчет по каждой фазе и общий, автоматизации переключения тарифов и ввода корректировок из интерфейса    
+:arrow_right: [keenetic.yaml](https://github.com/kvazis/hassos/blob/master/includes/Global/keenetic.yaml) - пакадж для роутера, пока добавлен только рекордер     
+:arrow_right: [power_failure.yaml](https://github.com/kvazis/hassos/blob/master/includes/Global/power_failure.yaml) - датчики мониторинга наличия электроэнергии     
+:arrow_right: [bt_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_BT/bt_light.yaml) - тут будет управление освещением в ванной     
+:arrow_right: [cr_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_CR/cr_light.yaml) - тут будет управление освещением в коридоре     
+:arrow_right: [da_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_DA/da_light.yaml) - тут будет управление освещением в детской А     
+:arrow_right: [lr_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_light.yaml) - тут будет управление освещением в гостиной     
+:arrow_right: [tt_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_TT/tt_light.yaml) - тут будет управление освещением в туалете     
+:arrow_right: [notification.yaml](https://github.com/kvazis/hassos/blob/master/includes/Telegram/notification.yaml) - в стартовое уведомление добавлены данные телеметрии    
+
+
+#### Интерфейс, в режиме yaml    
+:arrow_right: [ui-lovelace.yaml](https://github.com/kvazis/hassos/blob/master/ui-lovelace.yaml) - добавлена новая страница для контроля энергопотребления    
+:arrow_right: [01_system.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/001_control_panel.yaml) - первая страница интерфейса добавлены карты телеметрии системы    
+:arrow_right: [002_logic.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/003_electricity.yaml) - страница энергопотребления, выведени датчики электрики, показания по расходу энергии за месяц, общий, поля для ввода корректировок    
+____
+
 ### Обновление 2023 11 23
 
 #### Платформа    
