@@ -122,9 +122,6 @@ electricity:
           state_class: total_increasing
           device_class: energy
 
-
-
-
     recorder:
       include:
         entities:
@@ -252,9 +249,9 @@ electricity:
             unique_id: total_enter_power
             state: >
                 {{
-                states('sensor.0x70ac08fffe99c363_power')|float(0) + 
-                states('sensor.0x187a3efffe355cf1_power')|float(0) + 
-                states('sensor.0x187a3efffe303832_power')|float(0)
+                states('sensor.phase_1_power')|float(0) + 
+                states('sensor.phase_2_power')|float(0) + 
+                states('sensor.phase_3_power')|float(0)
                 }}
 
           - name: total_temp_energy
