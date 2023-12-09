@@ -1,0 +1,308 @@
+kn_light:
+
+
+    homeassistant:
+      customize:
+
+        light.kn_ceiling_light:
+          friendly_name: Кухня люстра
+          icon: phu:ceiling-being
+
+        light.gateway_light_7811dc64f4c8:
+          friendly_name: Кухня шлюз
+          icon: phu:aqara-hub-n15-g2          
+
+        automation.kn_ceiling_manual_light_control:
+          friendly_name: Кухня - ручное управление освещением
+          icon: phu:ceiling-being
+
+        automation.kn_ceiling_auto_light_on:
+          friendly_name: Кухня - автоматическое включение освещения
+          icon: phu:aqara-motion
+
+        automation.kn_ceiling_auto_light_off:
+          friendly_name: Кухня - автоматическое выключение освещения
+          icon: phu:aqara-motion
+
+        automation.kn_ceiling_full_light:
+          friendly_name: Кухня - включение полного освещения
+          icon: phu:ceiling-being
+
+
+    input_button:
+
+
+    # Кнопка для использования в интерфейсе для имитации нажатия на кнопку выключателя
+      kn_ceiling_light:
+        name: Кухня, управление люстрой
+        
+    template:
+
+      - binary_sensor:
+
+    # Сенсор определения включения яркого света
+          - name: kn_full_light
+            unique_id: kn_full_light
+            state: >
+                {{ is_state('light.kn_ceiling_light', 'on') and
+                   state_attr('light.kn_ceiling_light', 'brightness') == 255 }}
+            device_class: light
+            
+     # Сенсор для дневного режима включения автоматической подсветки
+          - name: kn_mode_auto_light_day_on
+            unique_id: kn_mode_auto_light_day_on
+            state: >
+              {{ is_state('binary_sensor.night_time', 'off') and
+                 is_state('light.kn_ceiling_light', 'off') and
+                 states('sensor.0x04cf8cdf3c772379_illuminance_lux')|int < 100 }}
+
+    # Выключение днем (авто режим), через 3 минуты после отключения последнего сенсора движения
+          - name: kn_mode_auto_light_day_off
+            unique_id: kn_mode_auto_light_day_off
+            state: >
+              {{ is_state('light.kn_ceiling_light', 'on') and
+                 is_state('binary_sensor.kn_presence', 'off') and 
+                 is_state('binary_sensor.night_time', 'off') and
+                 is_state('binary_sensor.kn_full_light', 'off')
+              }}
+            delay_on: 
+                minutes: 3
+            device_class: light
+
+    # Выключение ночью (авто режим), сразу после отключения последнего сенсора движения
+          - name: kn_mode_auto_light_night_off
+            unique_id: kn_mode_auto_light_night_off
+            state: >
+              {{ is_state('light.kn_ceiling_light', 'on') and
+                 is_state('binary_sensor.kn_presence', 'off') and 
+                 is_state('binary_sensor.night_time', 'on') and
+                 is_state('binary_sensor.kn_full_light', 'off')
+              }}
+            device_class: light
+
+    # Выключение днем (ручной режим), через 10 минут после отключения последнего сенсора движения
+          - name: kn_mode_manual_light_day_off
+            unique_id: kn_mode_manual_light_day_off
+            state: >
+              {{ is_state('binary_sensor.kn_full_light', 'on') and
+                 is_state('binary_sensor.kn_presence', 'off') and 
+                 is_state('binary_sensor.night_time', 'off')
+              }}
+            delay_on: 
+                minutes: 10
+            device_class: light
+
+    # Выключение днем (ручной режим), через 3 минуты после отключения последнего сенсора движения
+          - name: kn_mode_manual_light_night_off
+            unique_id: kn_mode_manual_light_night_off
+            state: >
+              {{ is_state('binary_sensor.kn_full_light', 'on') and
+                 is_state('binary_sensor.kn_presence', 'off') and 
+                 is_state('binary_sensor.night_time', 'off')
+              }}
+            delay_on: 
+                minutes: 3
+            device_class: light
+
+    # Включение днем полного света через 10 минут активности
+    
+          - name: kn_ceiling_auto_long
+            unique_id: kn_ceiling_auto_long
+            state: >
+              {{ is_state('binary_sensor.kn_presence', 'on') and 
+                 is_state('light.kn_ceiling_light', 'on') and
+                 is_state('binary_sensor.kn_full_light', 'off') and
+                 is_state('binary_sensor.night_time', 'off')
+              }}
+            delay_on: 
+                minutes: 10
+            device_class: light
+
+
+    automation:
+
+      - alias: kn_ceiling_manual_light_control
+        id: kn_ceiling_manual_light_control
+        description: Кухня - ручное управление освещением
+        initial_state: true
+        trigger:
+    # Виртуальная кнопка для интерфейса
+        - platform: state
+          entity_id: input_button.kn_ceiling_light
+    # Выключатель на входе в кухню - правая кнопка
+        - platform: state
+          entity_id: sensor.0x54ef4410000f4741_action
+          to: 'single_right'
+    # 6 клавишник на входе
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c794209_action
+          to: 'button_1_single'
+    # 4 клавишник на комоде
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c7942ca_action
+          to: 'button_4_single'
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_5_single'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: light.kn_ceiling_light
+                    state: 'off'
+                sequence:
+                  - service: light.turn_on
+                    entity_id:
+                      - light.kn_ceiling_light
+                    data_template:
+                      brightness_pct: 100
+                      kelvin: 4000
+              - conditions:
+                  - condition: state
+                    entity_id: light.kn_ceiling_light
+                    state: 'on'
+                sequence:
+                 - service: light.turn_on
+                   entity_id:
+                     - light.kn_ceiling_light
+                   data_template:
+                     brightness_pct: 1
+                     kelvin: 3500
+                 - service: light.turn_off
+                   entity_id:
+                     - light.kn_ceiling_light
+            
+            
+      - alias: kn_ceiling_auto_light_on
+        id: kn_ceiling_auto_light_on
+        description: Кухня - автоматическое включение освещения
+        initial_state: true
+        trigger:
+    # Сработка любого из сенсоров движения, они обновляются быстрее сенсора присутствия
+        - platform: state
+          entity_id: binary_sensor.0x00158d0001ab3350_occupancy
+          from: 'off'
+          to: 'on'
+        - platform: state
+          entity_id: binary_sensor.0x54ef441000118375_occupancy
+          from: 'off'
+          to: 'on'
+        - platform: state
+          entity_id: binary_sensor.0x54ef44100042e226_occupancy
+          from: 'off'
+          to: 'on'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+            - choose:
+    # Включение люстры в дневное время
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.kn_mode_auto_light_day_on
+                    state: 'on'
+                sequence:
+                  - service: light.turn_on
+                    entity_id:
+                      - light.kn_ceiling_light
+                    data_template:
+                      brightness_pct: 70
+                      kelvin: 3500
+    # Включение люстры в ночное время
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.night_time
+                    state: 'on'
+                  - condition: state
+                    entity_id: light.kn_ceiling_light
+                    state: 'off'
+                sequence:
+                  - service: light.turn_on
+                    entity_id:
+                      - light.kn_ceiling_light
+                    data_template:
+                      brightness_pct: 10
+                      kelvin: 3500
+            
+      - alias: kn_ceiling_auto_light_off
+        id: kn_ceiling_auto_light_off
+        description: Кухня - автоматическое выключение освещения
+        initial_state: true
+        trigger:
+    # Сработка любого из сенсоров автоматического отключения
+        - platform: state
+          entity_id: binary_sensor.kn_mode_auto_light_day_off
+          from: 'off'
+          to: 'on'
+        - platform: state
+          entity_id: binary_sensor.kn_mode_auto_light_night_off
+          from: 'off'
+          to: 'on'
+        - platform: state
+          entity_id: binary_sensor.kn_mode_manual_light_day_off
+          from: 'off'
+          to: 'on'
+        - platform: state
+          entity_id: binary_sensor.kn_mode_manual_light_night_off
+          from: 'off'
+          to: 'on'
+    # 6 клавишник на входе - безусловное отключение
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c794209_action
+          to: 'button_2_single'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: light.turn_on
+          entity_id:
+            - light.kn_ceiling_light
+          data_template:
+            brightness_pct: 1
+            kelvin: 3500
+        - service: light.turn_off
+          entity_id:
+            - light.kn_ceiling_light
+
+              
+      - alias: kn_ceiling_full_light
+        id: kn_ceiling_full_light
+        description: Кухня - включение полного освещения
+        initial_state: true
+        trigger:
+    # Кто-то есть в кухнее более 10 минут
+        - platform: state
+          entity_id: binary_sensor.kn_ceiling_auto_long
+          to: 'on'
+    # 6 клавишник на входе дабл клик
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c794209_action
+          to: 'button_1_double'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: light.turn_on
+          entity_id:
+            - light.kn_ceiling_light
+          data_template:
+            brightness_pct: 100
+            kelvin: 4000              
+              
+              
+              
+              
+              
+              

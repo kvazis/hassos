@@ -1,0 +1,56 @@
+kn_sensors:
+
+    recorder:
+      include:
+        entities:
+           - binary_sensor.0x00158d0001ab3350_occupancy
+           - binary_sensor.0x54ef441000118375_occupancy
+           - binary_sensor.0x54ef44100042e226_occupancy
+           - binary_sensor.kn_presence
+           - sensor.0x04cf8cdf3c772379_illuminance_lux
+
+    homeassistant:
+      customize:
+
+        binary_sensor.0x00158d0001ab3350_occupancy:
+          friendly_name: Кухня движение 1
+        sensor.0x00158d0001ab3350_battery:
+          friendly_name: Кухня движение 1
+
+        binary_sensor.0x54ef441000118375_occupancy:
+          friendly_name: Кухня движение 2
+        sensor.0x54ef441000118375_battery:
+          friendly_name: Кухня движение 2
+          
+        binary_sensor.0x54ef44100042e226_presence:
+          friendly_name: Кухня FP1 presence
+        binary_sensor.0x54ef44100042e226_occupancy:
+          friendly_name: Кухня FP1 движение       
+        sensor.0x54ef44100042e226_presence_event:
+          friendly_name: Кухня FP1, событие
+
+        sensor.0x04cf8cdf3c772379_illuminance_lux:
+          friendly_name: Кухня освещенность
+        sensor.0x04cf8cdf3c772379_battery:
+          friendly_name: Кухня освещенность
+
+    template:
+
+      - binary_sensor:
+
+    # Сенсор определения движения на Aqara FP1
+          - name: '0x54ef44100042e226_occupancy'
+            unique_id: '0x54ef44100042e226_occupancy'
+            state: >
+              {{not is_state("sensor.0x54ef44100042e226_presence_event", "leave")}}
+            device_class: occupancy
+            
+    # Сборный сенсор присутствия
+          - name: kn_presence
+            unique_id: kn_presence
+            state: >
+              {{ is_state('binary_sensor.0x00158d0001ab3350_occupancy', 'on')  
+                 or is_state('binary_sensor.0x54ef441000118375_occupancy', 'on')
+                 or is_state('binary_sensor.0x54ef44100042e226_presence', 'on')
+              }}
+            device_class: presence

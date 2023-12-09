@@ -334,7 +334,79 @@ cards:
                       - attribute: latest_version
                         name: Последняя
                         
- 
+
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:
+
+            - type: entities
+              style: |
+                   ha-card {
+                     color: #00BFFF;
+                     --paper-item-icon-color: #00BFFF;
+                     --iron-icon-stroke-color: #FFFFE0;
+                     font-weight: bold;
+                     font-size: 14px;
+                   }               
+              show_header_toggle: false
+              entities:
+                - entity: sensor.current_time
+                - entity: binary_sensor.notification_time
+                  type: custom:multiple-entity-row
+                  name: Режимы
+                  state_header: Уведомления
+                  entities:
+                   - entity: binary_sensor.night_time
+                     name: Ночь
+                    
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #00BFFF;
+                     font-weight: bold;
+                     font-size: 16px;
+                   }          
+              content: >
+                 **Уведомления**
+
+            - type: entities
+              style: |
+                   ha-card {
+                     color: #00BFFF;
+                     --paper-item-icon-color: #00BFFF;
+                     --iron-icon-stroke-color: #FFFFE0;
+                     font-weight: bold;
+                     font-size: 14px;
+                   }               
+              show_header_toggle: false
+              entities:
+                - entity: input_datetime.notification_start
+                - entity: input_datetime.notification_stop
+
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #00BFFF;
+                     font-weight: bold;
+                     font-size: 16px;
+                   }          
+              content: >
+                 **Ночной режим**
+
+            - type: entities
+              style: |
+                   ha-card {
+                     color: #00BFFF;
+                     --paper-item-icon-color: #00BFFF;
+                     --iron-icon-stroke-color: #FFFFE0;
+                     font-weight: bold;
+                     font-size: 14px;
+                   }               
+              show_header_toggle: false
+              entities:
+                - entity: input_datetime.night_start
+                - entity: input_datetime.night_stop
+
 ############################ Колонка 2 ############################
     - type: vertical-stack
       cards:

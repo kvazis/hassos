@@ -1,5 +1,26 @@
 ## Новый рабочий сервер
 
+### Обновление 2023 12 09
+
+#### Home Assistant:    
+:arrow_right: Интеграции - `Reolink`,  `Broadlink`, `IPP Internet Printing Protocol`, `UPnP/IGD`    
+
+#### Пакаджи     
+   
+:arrow_right: [global_sensor.yaml](https://github.com/kvazis/hassos/blob/master/includes/Global/global_sensor.yaml) - глобальные сенсоры для использования в автоматизациях - время для уведомлений и ночной режим [Видеоурок](https://youtu.be/oLxN0GHk_rk)     
+:arrow_right: [kn_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_KN/kn_light.yaml) - управление освещением в кухне, ручной и авто режим, сенсоры для отключения по времени, в зависимости от времени суток и режима     
+:arrow_right: [kn_sensors.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_KN/kn_sensors.yaml) - пакадж сенсоров для кухни, добавлены сенсоры движения, сделан сборный датчик присутствия и датчик движения для Aqara FP1 [Видеоурок](https://youtu.be/N1wwuuwd1D8)     
+:arrow_right: [kn_switch.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_KN/kn_switch.yaml) - пакадж switch для кухни, добавлен пока только 1 выключатель      
+:arrow_right: [kn_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_KN/kn_reboot.yaml) - пакадж контроля и перезагрузки зависших устройств - люстра, по питанию и выключатель (если не хватает мощности) - включением люстры      
+
+#### Интерфейс, в режиме yaml    
+:arrow_right: [ui-lovelace.yaml](https://github.com/kvazis/hassos/blob/master/ui-lovelace.yaml) - добавлена новая страница - кухня    
+:arrow_right: [01_system.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/001_control_panel.yaml) - первая страница интерфейса, добавлены поля для установки глобальных сенсоров времени    
+:arrow_right: [002_logic.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/002_logic.yaml) - страница логики, добавлены карточки для автоматизаций кухни    
+:arrow_right: [141_kn_control.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/141_kn_control.yaml) - страница кухни, добавлены светильники, камера, датчики движения и присутствия    
+____
+
+
 ### Обновление 2023 11 30
 
 #### Конфигурация    
@@ -23,7 +44,7 @@
 #### Интерфейс, в режиме yaml    
 :arrow_right: [ui-lovelace.yaml](https://github.com/kvazis/hassos/blob/master/ui-lovelace.yaml) - добавлена новая страница для контроля энергопотребления    
 :arrow_right: [01_system.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/001_control_panel.yaml) - первая страница интерфейса добавлены карты телеметрии системы    
-:arrow_right: [002_logic.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/003_electricity.yaml) - страница энергопотребления, выведени датчики электрики, показания по расходу энергии за месяц, общий, поля для ввода корректировок    
+:arrow_right: [003_electricity.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/003_electricity.yaml) - страница энергопотребления, выведени датчики электрики, показания по расходу энергии за месяц, общий, поля для ввода корректировок    
 ____
 
 ### Обновление 2023 11 23

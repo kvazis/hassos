@@ -1,0 +1,58 @@
+global_sensor:
+
+    homeassistant:
+      customize:
+
+        binary_sensor.notification_time:
+          friendly_name: Уведомления
+        binary_sensor.night_time:
+          friendly_name: Ночной режим
+
+    input_datetime:
+      notification_start:
+        name: Начало уведомлений
+        has_date: false
+        has_time: true
+
+      notification_stop:
+        name: Завершение уведомлений
+        has_date: false
+        has_time: true
+        
+      night_start:
+        name: Старт ночного режима
+        has_date: false
+        has_time: true
+
+      night_stop:
+        name: Завершение ночного режима
+        has_date: false
+        has_time: true
+
+    template:
+    
+      - binary_sensor:
+      
+################# Время уведомлений #################     
+          - name: notification_time
+            unique_id: notification_time
+            state: >
+                {% if states('input_datetime.notification_start') < states('input_datetime.notification_stop') %}
+                {{ states('input_datetime.notification_start') <= now().strftime('%H:%M:%S') <= states('input_datetime.notification_stop') }}
+                {% elif states('input_datetime.notification_start') > states('input_datetime.notification_stop') %}
+                {{states('input_datetime.notification_start') <= now().strftime('%H:%M:%S') <= '23:59:59'
+                or '00:00:00' <= now().strftime('%H:%M:%S') <= states('input_datetime.notification_stop')}}
+                {% endif %}                
+            device_class: running
+            
+          - name: night_time
+            unique_id: night_time
+            state: >
+                {% if states('input_datetime.night_start') < states('input_datetime.night_stop') %}
+                {{ states('input_datetime.night_start') <= now().strftime('%H:%M:%S') <= states('input_datetime.night_stop') }}
+                {% elif states('input_datetime.night_start') > states('input_datetime.night_stop') %}
+                {{states('input_datetime.night_start') <= now().strftime('%H:%M:%S') <= '23:59:59'
+                or '00:00:00' <= now().strftime('%H:%M:%S') <= states('input_datetime.night_stop')}}
+                {% endif %}            
+            device_class: running
+

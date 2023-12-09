@@ -1,0 +1,354 @@
+##################   Kitchen
+title: Кухня
+icon: phu:rooms-dining
+cards:
+
+############################ Колонка 1 ############################
+
+    - type: vertical-stack
+      cards:
+      
+        - type: markdown
+          style: |
+              ha-card {
+                color: #f8ffd8;
+                --paper-item-icon-color: #f8ffd8;
+                --paper-item-icon-active-color: #f8ffd8;
+                font-weight: bold;
+                font-size: 26px;
+              }          
+          content: >
+             **Управление**
+             
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Освещение**
+
+
+            - type: horizontal-stack
+              cards:
+
+                - type: button
+                  name: Люстра
+                  entity: light.kn_ceiling_light
+                  tap_action:
+                      action: call-service
+                      service: input_button.press
+                      target:
+                        entity_id: input_button.kn_ceiling_light
+                    
+                - type: button
+                  name: Ночник
+                  entity: light.gateway_light_7811dc64f4c8
+                  tap_action:
+                    action: toggle 
+
+            - type: conditional
+              conditions:
+                - entity: light.kn_ceiling_light
+                  state: "on"
+              card:
+                  type: custom:mushroom-light-card
+                  entity: light.kn_ceiling_light
+                  name: Люстра
+                  icon_type: none
+                  primary_info: name
+                  secondary_info: none
+                  use_light_color: true
+                  show_brightness_control: true
+                  show_color_temp_control: true
+                  show_color_control: false
+                  collapsible_controls: true
+
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Люстра**
+
+            - type: horizontal-stack
+              cards:
+
+              - type: custom:mushroom-template-card
+                primary: Питание
+                secondary: |-
+                  {% if is_state("switch.0x54ef4410000f4741_right", "on") %}
+                  Вкл
+                  {% else %}
+                  Выкл
+                  {% endif %}
+                layout: horizontal
+                tap_action:
+                  action: toggle
+                entity: switch.0x54ef4410000f4741_right
+                icon: phu:aqara-h1-switch
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("switch.0x54ef4410000f4741_right", "on") %}
+                  green
+                  {% else %}
+                  red
+                  {% endif %}
+
+              - type: custom:mushroom-template-card
+                primary: Доступность
+                secondary: |-
+                  {% if is_state("binary_sensor.kn_ceiling_unavailable", "off") %}
+                  OK
+                  {% else %}
+                  Не доступно
+                  {% endif %}
+                layout: horizontal
+                entity: binary_sensor.kn_ceiling_unavailable
+                icon: |-
+                  {% if is_state("binary_sensor.kn_ceiling_unavailable", "off") %}
+                  mdi:check-bold
+                  {% else %}
+                  mdi:alert
+                  {% endif %}
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("binary_sensor.kn_ceiling_unavailable", "off") %}
+                  green
+                  {% else %}
+                  red
+                  {% endif %}
+                tap_action:
+                  action: more-info
+
+
+
+############################ Колонка 2 ############################
+
+    - type: vertical-stack
+      cards:
+      
+        - type: markdown
+          style: |
+              ha-card {
+                color: #f8ffd8;
+                --paper-item-icon-color: #f8ffd8;
+                --paper-item-icon-active-color: #f8ffd8;
+                font-weight: bold;
+                font-size: 26px;
+              }     
+          content: >
+              **Мониторинг** 
+
+        - type: picture-entity
+          entity: camera.reolink_e1_zoom_fluent
+          camera_view: live 
+          show_state: false
+          show_name: false
+
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Датчики и сенсоры**
+
+            - type: horizontal-stack
+              cards:
+
+              - type: custom:mushroom-template-card
+                primary: Вход
+                secondary: |-
+                  {% if is_state("binary_sensor.0x00158d0001ab3350_occupancy", "off") %}
+                  Не обнаружено
+                  {% else %}
+                  Движение
+                  {% endif %}
+                layout: vertical
+                entity: binary_sensor.0x00158d0001ab3350_occupancy
+                icon: |-
+                  {% if is_state("binary_sensor.0x00158d0001ab3350_occupancy", "off") %}
+                  mdi:motion-sensor-off
+                  {% else %}
+                  mdi:motion-sensor
+                  {% endif %}
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("binary_sensor.0x00158d0001ab3350_occupancy", "off") %}
+                  grey
+                  {% else %}
+                  amber
+                  {% endif %} 
+                tap_action:
+                  action: more-info
+
+              - type: custom:mushroom-template-card
+                primary: Окно
+                secondary: |-
+                  {% if is_state("binary_sensor.0x54ef441000118375_occupancy", "off") %}
+                  Не обнаружено
+                  {% else %}
+                  Движение
+                  {% endif %}
+                layout: vertical
+                entity: binary_sensor.0x54ef441000118375_occupancy
+                icon: |-
+                  {% if is_state("binary_sensor.0x54ef441000118375_occupancy", "off") %}
+                  mdi:motion-sensor-off
+                  {% else %}
+                  mdi:motion-sensor
+                  {% endif %}
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("binary_sensor.0x54ef441000118375_occupancy", "off") %}
+                  grey
+                  {% else %}
+                  amber
+                  {% endif %} 
+                tap_action:
+                  action: more-info
+
+              - type: custom:mushroom-template-card
+                primary: FP1
+                secondary: |-
+                  {% if is_state("binary_sensor.0x54ef44100042e226_occupancy", "off") %}
+                  Не обнаружено
+                  {% else %}
+                  Движение
+                  {% endif %}
+                layout: vertical
+                entity: binary_sensor.0x54ef44100042e226_occupancy
+                icon: |-
+                  {% if is_state("binary_sensor.0x54ef44100042e226_occupancy", "off") %}
+                  mdi:motion-sensor-off
+                  {% else %}
+                  mdi:motion-sensor
+                  {% endif %}
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("binary_sensor.0x54ef44100042e226_occupancy", "off") %}
+                  grey
+                  {% else %}
+                  amber
+                  {% endif %} 
+                tap_action:
+                  action: more-info
+
+            - type: horizontal-stack
+              cards:
+
+              - type: custom:mushroom-template-card
+                primary: Камера
+                secondary: |-
+                  {% if is_state("binary_sensor.reolink_e1_zoom_motion", "off") %}
+                  Не обнаружено
+                  {% else %}
+                  Движение
+                  {% endif %}
+                layout: vertical
+                entity: binary_sensor.reolink_e1_zoom_motion
+                icon: |-
+                  {% if is_state("binary_sensor.reolink_e1_zoom_motion", "off") %}
+                  mdi:motion-sensor-off
+                  {% else %}
+                  mdi:motion-sensor
+                  {% endif %}
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("binary_sensor.reolink_e1_zoom_motion", "off") %}
+                  grey
+                  {% else %}
+                  amber
+                  {% endif %} 
+                tap_action:
+                  action: more-info
+
+              - type: custom:mushroom-template-card
+                primary: Template
+                secondary: |-
+                  {% if is_state("binary_sensor.kn_presence", "off") %}
+                  Не обнаружено
+                  {% else %}
+                  Присутствие
+                  {% endif %}
+                layout: vertical
+                entity: binary_sensor.kn_presence
+                icon: |-
+                  {% if is_state("binary_sensor.kn_presence", "off") %}
+                  mdi:home-off
+                  {% else %}
+                  mdi:home-account
+                  {% endif %}
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("binary_sensor.kn_presence", "off") %}
+                  grey
+                  {% else %}
+                  amber
+                  {% endif %} 
+                tap_action:
+                  action: more-info
+
+              - type: custom:mushroom-template-card
+                primary: FP1
+                secondary: |-
+                  {% if is_state("binary_sensor.0x54ef44100042e226_presence", "off") %}
+                  Не обнаружено
+                  {% else %}
+                  Присутствие
+                  {% endif %}
+                layout: vertical
+                entity: binary_sensor.0x54ef44100042e226_presence
+                icon: |-
+                  {% if is_state("binary_sensor.0x54ef44100042e226_presence", "off") %}
+                  mdi:home-off
+                  {% else %}
+                  mdi:home-account
+                  {% endif %}
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("binary_sensor.0x54ef44100042e226_presence", "off") %}
+                  grey
+                  {% else %}
+                  amber
+                  {% endif %} 
+                tap_action:
+                  action: more-info
+                    
+
+
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              

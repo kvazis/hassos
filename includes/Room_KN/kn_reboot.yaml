@@ -1,0 +1,122 @@
+kn_reboot:
+
+
+    homeassistant:
+      customize:
+
+        automation.kn_reboot_ceiling:
+          friendly_name: Кухня - перезагрузка зависшей люстры
+          icon: phu:ceiling-being
+
+
+        automation.kn_reboot_switch_e1:
+          friendly_name: Кухня -  восстановление работы выключателя Aqara E1 на входе
+          icon: phu:aqara-h1-switch
+
+    template:
+
+      - binary_sensor:
+      
+    # Сенсор определяющий недоступность люстры
+          - name: kn_ceiling_unavailable
+            unique_id: kn_ceiling_unavailable
+            state: >
+              {{ is_state('light.kn_ceiling_light', 'unavailable')  
+                 and states('sensor.count_light_unavailable')|int < 3 }}
+            delay_on: 
+                minutes: 3
+            device_class: problem    
+    
+    
+
+    automation:
+    
+#################### ПЕРЕЗАГРУЗКА ЛЮСТРЫ ####################
+               
+      - alias: kn_reboot_ceiling
+        id: kn_reboot_ceiling
+        description: Кухня - перезагрузка зависшей люстры
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор определяющий недоступность люстры
+        - condition: state
+          entity_id: binary_sensor.kn_ceiling_unavailable
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off'  
+        action:
+    # Перезагрузка по питанию если люстра недоступна
+        - service: switch.turn_off
+          entity_id: switch.0x54ef4410000f4741_right
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0x54ef4410000f4741_right
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_log
+            message: | 
+                 {{"\U0001F916"}} Антонио. Кухня -  перезагрузка люстры {{ states('sensor.time_date') }} 
+
+
+#################### ПЕРЕЗАГРУЗКА ВЫКЛЮЧАТЕЛЯ ЛЮСТРЫ ####################
+                 
+      - alias: kn_reboot_switch_e1
+        id: kn_reboot_switch_e1
+        description: Кухня -  восстановление работы выключателя Aqara E1 на входе
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Только днем
+        - condition: state
+          entity_id: binary_sensor.night_time
+          state: 'off'
+    # Выключатель недоступен
+        - condition: state
+          entity_id: switch.0x54ef4410000f4741_right
+          state: 'unavailable'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off'  
+        action:
+    # Включаем люстру чтобы повысить потребляемую мощность на выключателе
+        - service: light.turn_on
+          entity_id:
+            - light.kn_ceiling_light
+          data_template:
+            brightness_pct: 50
+            kelvin: 4000
+        - delay: 00:00:03
+        - service: light.turn_on
+          entity_id:
+            - light.kn_ceiling_light
+          data_template:
+            brightness_pct: 1
+            kelvin: 3500
+        - service: light.turn_off
+          entity_id:
+            - light.kn_ceiling_light
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_log
+            message: | 
+                 {{"\U0001F916"}} Кухня -  перезагрузка выключателя {{ states('sensor.time_date') }} 

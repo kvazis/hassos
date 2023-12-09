@@ -1,0 +1,11 @@
+kn_switch:
+
+    homeassistant:
+      customize:
+
+        switch.0x54ef4410000f4741_right:
+          friendly_name: Кухня люстра, питание
+        switch.0x54ef4410000f4741_left:
+          friendly_name: Кухня Aqara E1 на входе, реле слева
+        sensor.0x54ef4410000f4741_action:
+          friendly_name: Кухня Aqara E1 на входе
