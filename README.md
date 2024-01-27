@@ -22,9 +22,6 @@
 :arrow_right: [kn_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_KN/kn_reboot.yaml) - пакадж контроля и перезагрузки зависших устройств, добавлен идентификатор в уведомление о перезагрузке    
 :arrow_right: [kn_sensors.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_KN/kn_sensors.yaml) - добавлены сборный сенсор движения    
 
-
-
-
 #### Интерфейс, в режиме yaml    
 :arrow_right: [ui-lovelace.yaml](https://github.com/kvazis/hassos/blob/master/ui-lovelace.yaml) - добавлены новые страницы - улица, прихожая-коридор    
 :arrow_right: [01_system.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/001_control_panel.yaml) - исправлено отображение стилей    
