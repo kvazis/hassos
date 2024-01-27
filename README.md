@@ -1,7 +1,7 @@
 ## Новый рабочий сервер
 
 
-### Обновление 2023 12 09
+### Обновление 2024 01 27
 
 #### Home Assistant:    
 :arrow_right: Интеграции - `Ukraine Alarm`, `System Monitor` (переехала из yaml), `Xiaomi Miot Auto`    
