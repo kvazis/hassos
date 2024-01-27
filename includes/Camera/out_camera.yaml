@@ -1,0 +1,311 @@
+out_camera:
+
+    homeassistant:
+      customize:
+
+        automation.camera_hikvision1_photo:
+          friendly_name: Hikvision 1 - фото и отправка в телеграмм
+          icon: phu:reolink-811
+          
+        automation.camera_hikvision1_cast:
+          friendly_name: Hikvision 1 - Google Cast
+          icon: phu:home-max
+          
+        automation.camera_hikvision3_photo:
+          friendly_name: Hikvision 3 - фото и отправка в телеграмм
+          icon: phu:reolink-811
+          
+        automation.camera_hikvision3_cast:
+          friendly_name: Hikvision 3 - Google Cast
+          icon: phu:home-max
+
+        automation.camera_hikvision5_photo:
+          friendly_name: Hikvision 5 - фото и отправка в телеграмм
+          icon: phu:reolink-811
+          
+        automation.camera_hikvision5_cast:
+          friendly_name: Hikvision 5 - Google Cast
+          icon: phu:home-max
+
+        automation.camera_hikvision7_photo:
+          friendly_name: Hikvision 7 - фото и отправка в телеграмм
+          icon: phu:reolink-811
+          
+        automation.camera_hikvision7_cast:
+          friendly_name: Hikvision 7 - Google Cast
+          icon: phu:home-max
+
+    input_button:
+
+      hikvision1_photo:
+        name: Фото hikvision 1
+        icon: mdi:camera
+        
+      hikvision3_photo:
+        name: Фото hikvision 3
+        icon: mdi:camera
+        
+      hikvision5_photo:
+        name: Фото hikvision 5
+        icon: mdi:camera
+
+      hikvision7_photo:
+        name: Фото hikvision 7
+        icon: mdi:camera
+        
+      hikvision1_cast:
+        name: Каст hikvision1
+        icon: mdi:cast-connected
+        
+      hikvision3_cast:
+        name: Каст hikvision3
+        icon: mdi:cast-connected
+        
+      hikvision5_cast:
+        name: Каст hikvision5
+        icon: mdi:cast-connected
+
+      hikvision7_cast:
+        name: Каст hikvision7
+        icon: mdi:cast-connected
+
+    automation:
+
+      - alias: camera_hikvision1_photo
+        id: camera_hikvision1_photo
+        description: Hikvision 1 - фото и отправка в телеграмм
+        initial_state: true
+        trigger:
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.hikvision1_photo
+        condition:
+         - condition: state
+           entity_id: switch.control_mode
+           state: 'on'
+        action:
+         - service: camera.snapshot
+           data:
+              entity_id: camera.hikvision_1
+              filename: "/config/www/cam_captures/hikvision1_photo.jpg"
+         - delay: 00:00:10
+         - service: telegram_bot.send_photo
+           data_template:
+             target:
+              - !secret chat_id_group
+             file: "/config/www/cam_captures/hikvision1_photo.jpg" 
+             
+      - alias: camera_hikvision1_cast
+        id: camera_hikvision1_cast
+        description: Hikvision 1 - Google Cast
+        initial_state: true
+        trigger:
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.hikvision1_cast
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_4_double'
+        condition:
+         - condition: state
+           entity_id: switch.control_mode
+           state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: media_player.living_room
+                    state: 'off'
+                sequence:
+                  - service: camera.play_stream
+                    data:
+                      media_player: media_player.living_room
+                    target:
+                      entity_id: camera.hikvision_1
+              - conditions:
+                  - condition: state
+                    entity_id: media_player.living_room
+                    state: 'playing'
+                sequence:
+                  - service: media_player.turn_off
+                    target:
+                      entity_id: media_player.living_room
+                    
+      - alias: camera_hikvision3_photo
+        id: camera_hikvision3_photo
+        description: Hikvision 3 - фото и отправка в телеграмм
+        initial_state: true
+        trigger:
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.hikvision3_photo
+        condition:
+         - condition: state
+           entity_id: switch.control_mode
+           state: 'on'
+        action:
+         - service: camera.snapshot
+           data:
+              entity_id: camera.hikvision_3
+              filename: "/config/www/cam_captures/hikvision3_photo.jpg"
+         - delay: 00:00:10
+         - service: telegram_bot.send_photo
+           data_template:
+             target:
+              - !secret chat_id_group
+             file: "/config/www/cam_captures/hikvision3_photo.jpg" 
+             
+      - alias: camera_hikvision3_cast
+        id: camera_hikvision3_cast
+        description: Hikvision 3 - Google Cast
+        initial_state: true
+        trigger:
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.hikvision3_cast
+        condition:
+         - condition: state
+           entity_id: switch.control_mode
+           state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: media_player.living_room
+                    state: 'off'
+                sequence:
+                  - service: camera.play_stream
+                    data:
+                      media_player: media_player.living_room
+                    target:
+                      entity_id: camera.hikvision_3
+              - conditions:
+                  - condition: state
+                    entity_id: media_player.living_room
+                    state: 'playing'
+                sequence:
+                  - service: media_player.turn_off
+                    target:
+                      entity_id: media_player.living_room                    
+                    
+      - alias: camera_hikvision5_photo
+        id: camera_hikvision5_photo
+        description: Hikvision 5 - фото и отправка в телеграмм
+        initial_state: true
+        trigger:
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.hikvision5_photo
+        condition:
+         - condition: state
+           entity_id: switch.control_mode
+           state: 'on'
+        action:
+         - service: camera.snapshot
+           data:
+              entity_id: camera.hikvision_5
+              filename: "/config/www/cam_captures/hikvision5_photo.jpg"
+         - delay: 00:00:10
+         - service: telegram_bot.send_photo
+           data_template:
+             target:
+              - !secret chat_id_group
+             file: "/config/www/cam_captures/hikvision5_photo.jpg" 
+             
+      - alias: camera_hikvision5_cast
+        id: camera_hikvision5_cast
+        description: Hikvision 5 - Google Cast
+        initial_state: true
+        trigger:
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.hikvision5_cast
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_4_single'
+        condition:
+         - condition: state
+           entity_id: switch.control_mode
+           state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: media_player.living_room
+                    state: 'off'
+                sequence:
+                  - service: camera.play_stream
+                    data:
+                      media_player: media_player.living_room
+                    target:
+                      entity_id: camera.hikvision_5
+              - conditions:
+                  - condition: state
+                    entity_id: media_player.living_room
+                    state: 'playing'
+                sequence:
+                  - service: media_player.turn_off
+                    target:
+                      entity_id: media_player.living_room  
+                      
+      - alias: camera_hikvision7_photo
+        id: camera_hikvision7_photo
+        description: Hikvision 7 - фото и отправка в телеграмм
+        initial_state: true
+        trigger:
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.hikvision7_photo
+        condition:
+         - condition: state
+           entity_id: switch.control_mode
+           state: 'on'
+        action:
+         - service: camera.snapshot
+           data:
+              entity_id: camera.hikvision_7
+              filename: "/config/www/cam_captures/hikvision7_photo.jpg"
+         - delay: 00:00:10
+         - service: telegram_bot.send_photo
+           data_template:
+             target:
+              - !secret chat_id_group
+             file: "/config/www/cam_captures/hikvision7_photo.jpg" 
+             
+      - alias: camera_hikvision7_cast
+        id: camera_hikvision7_cast
+        description: Hikvision 7 - Google Cast
+        initial_state: true
+        trigger:
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.hikvision7_cast
+        condition:
+         - condition: state
+           entity_id: switch.control_mode
+           state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: media_player.living_room
+                    state: 'off'
+                sequence:
+                  - service: camera.play_stream
+                    data:
+                      media_player: media_player.living_room
+                    target:
+                      entity_id: camera.hikvision_7
+              - conditions:
+                  - condition: state
+                    entity_id: media_player.living_room
+                    state: 'playing'
+                sequence:
+                  - service: media_player.turn_off
+                    target:
+                      entity_id: media_player.living_room  
+                    
+                    
+                    

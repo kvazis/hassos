@@ -10,3 +10,24 @@ cr_light:
         light.yeelight_ceiling4_0x456e813_ambilight:
           friendly_name: Коридор - амбилайт
           icon: phu:recessed-ceiling
+          
+
+    template:
+     
+      - binary_sensor:
+          
+    # Сенсор определяющий недоступность люстры
+          - name: cr_ceiling_unavailable
+            unique_id: cr_ceiling_unavailable
+            state: >
+              {{ is_state('light.yeelight_ceiling4_0x456e813', 'unavailable')  
+              }}
+            delay_on: 
+                minutes: 3
+            device_class: problem
+            icon: >
+              {% if is_state("binary_sensor.cr_ceiling_unavailable", "on") %}
+              mdi:ceiling-light-outline
+              {% else %}
+              mdi:ceiling-light
+              {% endif %}

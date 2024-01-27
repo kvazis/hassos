@@ -1,0 +1,28 @@
+out_switch:
+
+
+
+    recorder:
+      include:
+        entities:
+           - sensor.0x00158d0003f46bb6_power
+           - sensor.0x00158d0003f46bb6_voltage
+           
+           
+    homeassistant:
+      customize:
+      
+        switch.0x00158d0003f46bb6_l1:
+          friendly_name: Этаж питание Reolink 410
+        switch.0x00158d0003f46bb6_l2:
+          friendly_name: Этаж питание Reolink 411
+        sensor.0x00158d0003f46bb6_power:
+          friendly_name: Этаж питание камер, мощность
+          unit_of_measurement: Вт
+          device_class: power
+        sensor.0x00158d0003f46bb6_energy:
+          friendly_name: Этаж питание камер, энергия
+          icon: mdi:chart-line
+        sensor.0x00158d0003f46bb6_device_temperature:
+          friendly_name: Этаж питание камер
+          icon: mdi:thermometer-check

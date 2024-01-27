@@ -193,10 +193,6 @@ kn_light:
           entity_id: binary_sensor.0x54ef441000118375_occupancy
           from: 'off'
           to: 'on'
-        - platform: state
-          entity_id: binary_sensor.0x54ef44100042e226_occupancy
-          from: 'off'
-          to: 'on'
         condition:
     # Переключатель режима работы сервера
         - condition: state

@@ -156,10 +156,14 @@ cards:
               **Мониторинг** 
 
         - type: picture-entity
-          entity: camera.reolink_e1_zoom_fluent
+          entity: camera.reolink_e1_zoom_rtsp
           camera_view: live 
           show_state: false
           show_name: false
+
+
+        # - type: custom:webrtc-camera
+        #   entity: camera.reolink_e1_zoom_rtsp
 
         - type: custom:stack-in-card
           mode: vertical
@@ -261,24 +265,24 @@ cards:
               cards:
 
               - type: custom:mushroom-template-card
-                primary: Камера
+                primary: Сборный движение
                 secondary: |-
-                  {% if is_state("binary_sensor.reolink_e1_zoom_motion", "off") %}
+                  {% if is_state("binary_sensor.kn_occupancy", "off") %}
                   Не обнаружено
                   {% else %}
                   Движение
                   {% endif %}
                 layout: vertical
-                entity: binary_sensor.reolink_e1_zoom_motion
+                entity: binary_sensor.kn_occupancy
                 icon: |-
-                  {% if is_state("binary_sensor.reolink_e1_zoom_motion", "off") %}
+                  {% if is_state("binary_sensor.kn_occupancy", "off") %}
                   mdi:motion-sensor-off
                   {% else %}
                   mdi:motion-sensor
                   {% endif %}
                 multiline_secondary: true
                 icon_color: |-
-                  {% if is_state("binary_sensor.reolink_e1_zoom_motion", "off") %}
+                  {% if is_state("binary_sensor.kn_occupancy", "off") %}
                   grey
                   {% else %}
                   amber

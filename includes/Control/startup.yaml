@@ -1,0 +1,16 @@
+startup:
+
+    automation:
+    
+      - alias: control_mosquitto_startup_reload
+        id: control_mosquitto_startup_reload
+        description: Перезагрузка аддона mosquitto при старте
+        initial_state: true
+        trigger:
+          - platform: homeassistant
+            event: start
+        action:
+        - delay: 00:01:30
+        - service: hassio.addon_restart
+          data:
+            addon: core_mosquitto

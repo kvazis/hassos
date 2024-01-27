@@ -45,12 +45,22 @@ kn_sensors:
               {{not is_state("sensor.0x54ef44100042e226_presence_event", "leave")}}
             device_class: occupancy
             
+    # Сборный сенсор движения
+          - name: kn_occupancy
+            unique_id: kn_occupancy
+            state: >
+              {{ is_state('binary_sensor.0x00158d0001ab3350_occupancy', 'on')  
+                 or is_state('binary_sensor.0x54ef441000118375_occupancy', 'on')
+              }}
+            delay_off: 
+                seconds: 30
+            device_class: occupancy
+            
     # Сборный сенсор присутствия
           - name: kn_presence
             unique_id: kn_presence
             state: >
-              {{ is_state('binary_sensor.0x00158d0001ab3350_occupancy', 'on')  
-                 or is_state('binary_sensor.0x54ef441000118375_occupancy', 'on')
+              {{ is_state('binary_sensor.kn_occupancy', 'on')  
                  or is_state('binary_sensor.0x54ef44100042e226_presence', 'on')
               }}
             device_class: presence

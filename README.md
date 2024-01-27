@@ -1,5 +1,41 @@
 ## Новый рабочий сервер
 
+
+### Обновление 2023 12 09
+
+#### Home Assistant:    
+:arrow_right: Интеграции - `Ukraine Alarm`, `System Monitor` (переехала из yaml), `Xiaomi Miot Auto`    
+
+#### Пакаджи     
+
+:arrow_right: [out_camera.yaml](https://github.com/kvazis/hassos/blob/master/includes/Camera/out_camera.yaml) - пакадж для уличных камер, автоматизации отправки уведомлений в телеграмм, каст на экран Google       
+:arrow_right: [floor_camera.yaml](https://github.com/kvazis/hassos/blob/master/includes/Camera/floor_camera.yaml) - пакадж для коридорных камер, автоматизации отправки уведомлений в телеграмм, каст на экран Google    
+:arrow_right: [int_camera.yaml](https://github.com/kvazis/hassos/blob/master/includes/Camera/int_camera.yaml) - пакадж для внутренних камер    
+:arrow_right: [startup.yaml](https://github.com/kvazis/hassos/blob/master/includes/Control/startup.yaml) - пакадж для автоматизаций при старте, добавлена контрольная перезагрузка аддона mosquitto      
+:arrow_right: [system_sensors.yaml](https://github.com/kvazis/hassos/blob/master/includes/Control/system_sensors.yaml) - закомментированы сенсоры платформы systemmonitor, перенос в GUI    
+:arrow_right: [out_sensors.yaml](https://github.com/kvazis/hassos/blob/master/includes/Outside/out_sensors.yaml) - пакадж - описание наружного датчика климата и датчика радиации    
+:arrow_right: [out_switch.yaml](https://github.com/kvazis/hassos/blob/master/includes/Outside/out_switch.yaml) - пакадж - описание наружного реле, управление питанием коридорных камер    
+:arrow_right: [cr_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_CR/cr_light.yaml) - добавлен сенсор определения недоступности люстры     
+:arrow_right: [en_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_EN/en_light.yaml) - управление освещением в прихожей, контроль выключателя, доступности лампочки, ручное управление из разных точек автоматическое включение при открытии двери, выключение     
+:arrow_right: [en_door.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_EN/en_door.yaml) - отправка уведомлений и фото с камер при открытии входной двери      
+:arrow_right: [kn_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_KN/kn_light.yaml) - управление освещением в кухне, легкие доработки    
+:arrow_right: [kn_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_KN/kn_reboot.yaml) - пакадж контроля и перезагрузки зависших устройств, добавлен идентификатор в уведомление о перезагрузке    
+:arrow_right: [kn_sensors.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_KN/kn_sensors.yaml) - добавлены сборный сенсор движения    
+
+
+
+
+#### Интерфейс, в режиме yaml    
+:arrow_right: [ui-lovelace.yaml](https://github.com/kvazis/hassos/blob/master/ui-lovelace.yaml) - добавлены новые страницы - улица, прихожая-коридор    
+:arrow_right: [01_system.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/001_control_panel.yaml) - исправлено отображение стилей    
+:arrow_right: [002_logic.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/002_logic.yaml) - страница логики, добавлены карточки автоматизаций для камер и прихожей    
+:arrow_right: [100_outdoor.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/100_outdoor.yaml) - уличные и коридрные камеры, наружный датчик климата, сенсоры интеграции Ukraine Alarm, реле - управление питанием коридорных камер    
+:arrow_right: [110_en_control.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/110_en_control.yaml) - новая страница - прихожая-коридор    
+:arrow_right: [141_kn_control.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/141_kn_control.yaml) - страница кухни, добавление объектов    
+____
+
+
+
 ### Обновление 2023 12 09
 
 #### Home Assistant:    

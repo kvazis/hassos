@@ -3,4 +3,6 @@ views:
   - !include lovelace/001_control_panel.yaml
   - !include lovelace/002_logic.yaml
   - !include lovelace/003_electricity.yaml
+  - !include lovelace/100_outdoor.yaml
+  - !include lovelace/110_en_control.yaml
   - !include lovelace/141_kn_control.yaml

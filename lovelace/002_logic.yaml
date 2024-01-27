@@ -67,6 +67,71 @@ cards:
                       secondary_info: last-changed
                       state_color: true 
                       
+                      
+################# Камеры #################
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:
+      
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #009933;
+                     font-weight: bold;
+                     font-size: 20px;
+                   }          
+              content: >
+                 **Камеры**
+                 
+            - type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                show_header_toggle: false
+              filter:
+                include:
+                 - entity_id: automation.camera*
+                #   state: 'unavailable'
+                   options:
+                      secondary_info: last-changed
+                      state_color: true 
+
+############################ Колонка 1 ############################
+    - type: vertical-stack
+      cards:
+
+################# Прихожая #################
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:
+      
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #009933;
+                     font-weight: bold;
+                     font-size: 20px;
+                   }          
+              content: >
+                 **Прихожая**
+                 
+            - type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                show_header_toggle: false
+              filter:
+                include:
+                 - entity_id: automation.en*
+                #   state: 'unavailable'
+                   options:
+                      secondary_info: last-changed
+                      state_color: true 
+                      
 ################# Кухня #################
         - type: custom:stack-in-card
           mode: vertical

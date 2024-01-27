@@ -1,0 +1,307 @@
+floor_camera:
+
+    camera:
+
+      - platform: ffmpeg
+        name: reolink_411_rtsp
+        input: !secret reolink_411_sub_rtsp
+           
+      - platform: ffmpeg
+        name: reolink_410_rtsp
+        input: !secret reolink_410_sub_rtsp
+            
+
+    homeassistant:
+      customize:
+
+        automation.camera_reolink411_photo:
+          friendly_name: Reolink 411 ws - фото и отправка в телеграмм
+          icon: phu:reolink-811
+          
+        automation.camera_reolink411_cast:
+          friendly_name: Reolink 411 ws - Google Cast, кнопка
+          icon: phu:home-max
+          
+        automation.camera_reolink410_photo:
+          friendly_name: Reolink 410 - фото и отправка в телеграмм
+          icon: phu:reolink-811
+          
+        automation.camera_reolink410_cast:
+          friendly_name: Reolink 410 - Google Cast, кнопка
+          icon: phu:home-max
+          
+        automation.camera_reolink411_cast_motion:
+          friendly_name: Reolink 411 ws - Google Cast, датчик движения
+          icon: phu:home-max
+          
+        automation.camera_reolink411_cast_motion_block:
+          friendly_name: Reolink 411 ws - Google Cast, блокировка
+          icon: mdi:cancel
+
+    template:
+    
+      - binary_sensor:
+      
+          - name: cam_reolink411_auto_cast
+            unique_id: cam_reolink411_auto_cast
+            state: >
+              {{ is_state('binary_sensor.reolink_411_ws_motion', 'on')  
+                 and is_state('binary_sensor.night_time', 'off')
+                 and is_state('input_boolean.living_room', 'off')
+              }}
+            delay_off: 
+                minutes: 1
+                
+          - name: living_room_buffering
+            unique_id: living_room_buffering
+            state: >
+              {{ is_state('media_player.living_room', 'buffering') }}
+            delay_on: 
+                minutes: 1
+
+    input_boolean:
+    
+      living_room:
+        name: Предохранитель, Google nest
+        icon: phu:nest-hub
+
+    input_button:
+
+      reolink_411_ws_photo:
+        name: Фото Reolink 411 ws
+        icon: mdi:camera
+        
+      reolink_410_photo:
+        name: Фото Reolink 410
+        icon: mdi:camera
+
+      reolink_411_ws_cast:
+        name: Каст Reolink 411 ws
+        icon: mdi:cast-connected
+
+      reolink_410_cast:
+        name: Каст Reolink 410
+        icon: mdi:cast-connected
+        
+    automation:
+    
+      - alias: camera_reolink411_photo
+        id: camera_reolink411_photo
+        description: Reolink 411 ws - фото и отправка в телеграмм
+        initial_state: true
+        trigger:
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.reolink_411_ws_photo
+        condition:
+         - condition: state
+           entity_id: switch.control_mode
+           state: 'on'
+        action:
+         - service: camera.snapshot
+           data:
+              entity_id: camera.reolink_411_ws_fluent
+              filename: "/config/www/cam_captures/reolink411.jpg"
+         - delay: 00:00:10
+         - service: telegram_bot.send_photo
+           data_template:
+             target:
+              - !secret chat_id_group
+             file: "/config/www/cam_captures/reolink411.jpg" 
+
+      - alias: camera_reolink411_cast
+        id: camera_reolink411_cast
+        description: Reolink 411 ws - Google Cast, кнопка
+        initial_state: true
+        trigger:
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_4_triple'
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.reolink_411_ws_cast
+        condition:
+         - condition: state
+           entity_id: switch.control_mode
+           state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: media_player.living_room
+                    state: 'off'
+                sequence:
+                  - service: camera.play_stream
+                    data:
+                      media_player: media_player.living_room
+                    target:
+                    #   entity_id: camera.reolink_411_rtsp
+                      entity_id: camera.reolink_411_ws_fluent
+              - conditions:
+                  - condition: state
+                    entity_id: media_player.living_room
+                    state: 'playing'
+                sequence:
+                  - service: media_player.turn_off
+                    target:
+                      entity_id: media_player.living_room
+
+      - alias: camera_reolink410_photo
+        id: camera_reolink410_photo
+        description: Reolink 410 - фото и отправка в телеграмм
+        initial_state: true
+        trigger:
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.reolink_410_photo
+        condition:
+         - condition: state
+           entity_id: switch.control_mode
+           state: 'on'
+        action:
+         - service: camera.snapshot
+           data:
+              entity_id: camera.reolink_410_rtsp
+              filename: "/config/www/cam_captures/reolink410.jpg"
+         - delay: 00:00:10
+         - service: telegram_bot.send_photo
+           data_template:
+             target:
+              - !secret chat_id_group
+             file: "/config/www/cam_captures/reolink410.jpg" 
+
+      - alias: camera_reolink410_cast
+        id: camera_reolink410_cast
+        description: Reolink 410 - Google Cast, кнопка
+        initial_state: true
+        trigger:
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.reolink_410_cast
+        condition:
+         - condition: state
+           entity_id: switch.control_mode
+           state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: media_player.living_room
+                    state: 'off'
+                sequence:
+                  - service: camera.play_stream
+                    data:
+                      media_player: media_player.living_room
+                    target:
+                      entity_id: camera.reolink_410_rtsp
+              - conditions:
+                  - condition: state
+                    entity_id: media_player.living_room
+                    state: 'playing'
+                sequence:
+                  - service: media_player.turn_off
+                    target:
+                      entity_id: media_player.living_room
+
+      - alias: camera_reolink411_cast_motion
+        id: camera_reolink411_cast_motion
+        description: Reolink 411 ws - Google Cast, датчик движения
+        initial_state: true
+        trigger:
+        - platform: state
+          entity_id: binary_sensor.cam_reolink411_auto_cast
+          from: 'off'
+          to: 'on'
+        - platform: state
+          entity_id: binary_sensor.cam_reolink411_auto_cast
+          from: 'on'
+          to: 'off'
+        condition:
+         - condition: state
+           entity_id: switch.control_mode
+           state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.cam_reolink411_auto_cast
+                    state: 'on'
+                  - condition: state
+                    entity_id: media_player.living_room
+                    state: 'off'
+                sequence:
+                  - service: media_player.volume_set
+                    data:
+                      volume_level: 0.0
+                    target:
+                      entity_id: media_player.living_room
+                  - service: camera.play_stream
+                    data:
+                      media_player: media_player.living_room
+                    target:
+                    #   entity_id: camera.reolink_411_rtsp
+                      entity_id: camera.reolink_411_ws_fluent
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.cam_reolink411_auto_cast
+                    state: 'off'
+                sequence:
+                  - service: media_player.volume_set
+                    data:
+                      volume_level: 0.4
+                    target:
+                      entity_id: media_player.living_room
+                  - service: media_player.turn_off
+                    target:
+                      entity_id: media_player.living_room
+                      
+                      
+      - alias: camera_reolink411_cast_motion_block
+        id: camera_reolink411_cast_motion_block
+        description: Reolink 411 ws - Google Cast, блокировка
+        initial_state: true
+        trigger:
+        - platform: state
+          entity_id: media_player.living_room
+          to: 'playing'
+          id: living_room_block
+        - platform: state
+          entity_id: media_player.living_room
+          to: 'off'
+          id: living_room_unblock
+        - platform: state
+          entity_id: binary_sensor.living_room_buffering
+          to: 'on'
+          id: living_room_off
+        action:
+            - choose:
+
+              - conditions:
+                  - condition: trigger
+                    id: living_room_block
+                  - condition: state
+                    entity_id: binary_sensor.cam_reolink411_auto_cast
+                    state: 'off'
+                sequence:
+                  - service: input_boolean.turn_on
+                    entity_id: input_boolean.living_room
+
+              - conditions:
+                  - condition: trigger
+                    id: living_room_unblock
+                sequence:
+                  - service: input_boolean.turn_off
+                    entity_id: input_boolean.living_room 
+                
+              - conditions:
+                  - condition: trigger
+                    id: living_room_off
+                  - condition: state
+                    entity_id: switch.control_mode
+                    state: 'on'
+                sequence:
+                  - service: media_player.turn_off
+                    target:
+                      entity_id: media_player.living_room
+                      

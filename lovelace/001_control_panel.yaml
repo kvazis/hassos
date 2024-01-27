@@ -13,7 +13,8 @@ cards:
           cards:
       
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #00BFFF;
                      font-weight: bold;
@@ -221,7 +222,8 @@ cards:
                   action: more-info
                  
             - type: entities
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #00BFFF;
                      --paper-item-icon-color: #00BFFF;
@@ -287,7 +289,8 @@ cards:
           cards:
 
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #00BFFF;
                      font-weight: bold;
@@ -297,7 +300,8 @@ cards:
                  **Обновления**
           
             - type: entities
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #00BFFF;
                      --paper-item-icon-color: #00BFFF;
@@ -340,7 +344,8 @@ cards:
           cards:
 
             - type: entities
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #00BFFF;
                      --paper-item-icon-color: #00BFFF;
@@ -360,7 +365,8 @@ cards:
                      name: Ночь
                     
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #00BFFF;
                      font-weight: bold;
@@ -370,7 +376,8 @@ cards:
                  **Уведомления**
 
             - type: entities
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #00BFFF;
                      --paper-item-icon-color: #00BFFF;
@@ -384,7 +391,8 @@ cards:
                 - entity: input_datetime.notification_stop
 
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #00BFFF;
                      font-weight: bold;
@@ -394,7 +402,8 @@ cards:
                  **Ночной режим**
 
             - type: entities
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #00BFFF;
                      --paper-item-icon-color: #00BFFF;
@@ -416,7 +425,8 @@ cards:
           cards:
       
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #FA8072;
                      font-weight: bold;
@@ -428,7 +438,8 @@ cards:
 ################# Автоматизации #################
 
             - type: entities
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #FA8072;
                      --paper-item-icon-color: #FA8072;
@@ -455,7 +466,8 @@ cards:
               card:
                 type: entities
                 show_header_toggle: false
-                style: |
+                card_mod:
+                 style: |
                   ha-card {
                     color: #FA8072;
                     --paper-item-icon-color: #E6E6FA;
@@ -472,7 +484,8 @@ cards:
 ################# Скрипты #################
 
             - type: entities
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #FA8072;
                      --paper-item-icon-color: #FA8072;
@@ -499,7 +512,8 @@ cards:
               card:
                 type: entities
                 show_header_toggle: false
-                style: |
+                card_mod:
+                 style: |
                   ha-card {
                     color: #FA8072;
                     --paper-item-icon-color: #E6E6FA;
@@ -520,7 +534,8 @@ cards:
           cards:
       
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #FA8072;
                     font-weight: bold;
@@ -530,7 +545,8 @@ cards:
                   **Cветильники**
                   
             - type: entities
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #FA8072;
                      --paper-item-icon-color: #FA8072;
@@ -557,7 +573,8 @@ cards:
               card:
                 type: entities
                 show_header_toggle: false
-                style: |
+                card_mod:
+                 style: |
                     ha-card {
                       color: #FA8072;
                       --paper-item-icon-color: #E6E6FA;
@@ -580,7 +597,8 @@ cards:
           cards: 
       
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #FA8072;
                     font-weight: bold;
@@ -590,7 +608,8 @@ cards:
                   **Реле**
                   
             - type: entities
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #FA8072;
                      --paper-item-icon-color: #FA8072;
@@ -617,7 +636,8 @@ cards:
               card:
                 type: entities
                 show_header_toggle: false
-                style: |
+                card_mod:
+                 style: |
                     ha-card {
                       color: #FA8072;
                       --paper-item-icon-color: #E6E6FA;
@@ -639,7 +659,8 @@ cards:
           cards: 
           
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #FA8072;
                     font-weight: bold;
@@ -649,7 +670,8 @@ cards:
                   **Термоголовки**
                   
             - type: entities
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #FA8072;
                      --paper-item-icon-color: #FA8072;
@@ -676,7 +698,8 @@ cards:
               card:
                 type: entities
                 show_header_toggle: false
-                style: |
+                card_mod:
+                 style: |
                     ha-card {
                       color: #FA8072;
                       --paper-item-icon-color: #E6E6FA;
@@ -697,7 +720,8 @@ cards:
           mode: vertical
           cards: 
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #FA8072;
                     font-weight: bold;
@@ -707,7 +731,8 @@ cards:
                   **Сенсоры**
                   
             - type: entities
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #FA8072;
                      --paper-item-icon-color: #FA8072;
@@ -730,7 +755,8 @@ cards:
               card:
                 type: entities
                 show_header_toggle: false
-                style: |
+                card_mod:
+                 style: |
                     ha-card {
                       color: #FA8072;
                       --paper-item-icon-color: #E6E6FA;
@@ -751,7 +777,8 @@ cards:
           cards: 
           
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #FA8072;
                     font-weight: bold;
@@ -761,7 +788,8 @@ cards:
                   **Бинарные сенсоры**
                   
             - type: entities
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #FA8072;
                      --paper-item-icon-color: #FA8072;
@@ -784,7 +812,8 @@ cards:
               card:
                 type: entities
                 show_header_toggle: false
-                style: |
+                card_mod:
+                 style: |
                     ha-card {
                       color: #FA8072;
                       --paper-item-icon-color: #E6E6FA;
@@ -805,7 +834,8 @@ cards:
           cards: 
           
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #FA8072;
                     font-weight: bold;
@@ -815,7 +845,8 @@ cards:
                   **IP Камеры**
                   
             - type: entities
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #FA8072;
                      --paper-item-icon-color: #FA8072;
@@ -838,7 +869,8 @@ cards:
               card:
                 type: entities
                 show_header_toggle: false
-                style: |
+                card_mod:
+                 style: |
                     ha-card {
                       color: #FA8072;
                       --paper-item-icon-color: #E6E6FA;
@@ -859,7 +891,8 @@ cards:
           cards:
            
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #FA8072;
                     font-weight: bold;
@@ -872,7 +905,8 @@ cards:
               card:
                 type: custom:battery-state-card
                 show_header_toggle: false
-                style: |
+                card_mod:
+                 style: |
                     ha-card {
                       color: #FA8072;
                       font-weight: bold;
@@ -889,7 +923,8 @@ cards:
                  - state: 'unavailable'
 
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #FA8072;
                     font-weight: bold;
@@ -921,7 +956,8 @@ cards:
           cards:
       
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #FFA500;
                     font-weight: bold;
@@ -930,7 +966,8 @@ cards:
               content: >
                  **Электрика вход**
             - type: entities
-              style: |
+              card_mod:
+                style: |
                    ha-card {
                      color: #FFA500;
                      --paper-item-icon-color: #FFA500;
@@ -982,7 +1019,8 @@ cards:
           cards:
 
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #FFA500;
                     font-weight: bold;
@@ -1051,7 +1089,8 @@ cards:
           cards:
 
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #FFA500;
                     font-weight: bold;
@@ -1107,7 +1146,8 @@ cards:
           cards:
 
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #FFA500;
                     font-weight: bold;
@@ -1136,7 +1176,8 @@ cards:
           cards:
 
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #FFA500;
                     font-weight: bold;
@@ -1163,7 +1204,8 @@ cards:
           cards:
 
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #FFA500;
                     font-weight: bold;
@@ -1218,7 +1260,8 @@ cards:
           cards:
                                    
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #00FA9A;
                     font-weight: bold;
@@ -1255,7 +1298,8 @@ cards:
           cards:
                                    
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #00FA9A;
                     font-weight: bold;
@@ -1284,7 +1328,8 @@ cards:
           cards:
 
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #00FA9A;
                     font-weight: bold;
@@ -1321,7 +1366,8 @@ cards:
           cards:
                                    
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #00FA9A;
                     font-weight: bold;
@@ -1347,7 +1393,8 @@ cards:
                 - entity_id: binary_sensor.*aeration*
                                    
             - type: markdown
-              style: |
+              card_mod:
+                style: |
                   ha-card {
                     color: #00FA9A;
                     font-weight: bold;

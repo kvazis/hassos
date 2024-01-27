@@ -96,6 +96,10 @@ kn_reboot:
         - condition: state
           entity_id: binary_sensor.electricity
           state: 'off'  
+    # Лампа выключена
+        - condition: state
+          entity_id: light.kn_ceiling_light
+          state: 'off'    
         action:
     # Включаем люстру чтобы повысить потребляемую мощность на выключателе
         - service: light.turn_on
@@ -119,4 +123,4 @@ kn_reboot:
             target:
                 - !secret chat_id_log
             message: | 
-                 {{"\U0001F916"}} Кухня -  перезагрузка выключателя {{ states('sensor.time_date') }} 
+                 {{"\U0001F916"}} Антонио. Кухня -  перезагрузка выключателя {{ states('sensor.time_date') }} 

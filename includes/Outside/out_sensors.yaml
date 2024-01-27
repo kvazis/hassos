@@ -1,0 +1,28 @@
+out_sensors:
+
+    recorder:
+      include:
+        entities:
+           - sensor.0x00158d0001a4b9da_temperature
+           - sensor.0x00158d0001a4b9da_humidity
+           - sensor.0x00158d0001a4b9da_pressure
+           - sensor.0x00124b001d3bdce0_radiation_dose_per_hour
+
+
+    homeassistant:
+      customize:
+
+
+        sensor.0x00158d0001a4b9da_temperature:
+          friendly_name: Улица, температура
+        sensor.0x00158d0001a4b9da_humidity:
+          friendly_name: Улица, влажность
+        sensor.0x00158d0001a4b9da_pressure:
+          friendly_name: Улица, давление
+          
+        sensor.0x00124b001d3bdce0_radiation_dose_per_hour:
+          friendly_name: Счетчик Гейгера
+
+
+
+

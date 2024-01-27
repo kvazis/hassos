@@ -1,0 +1,16 @@
+int_camera:
+
+    camera:
+# Платформа перенесена в UI    
+        #   - platform: generic
+        #     name: Xiaofang
+        #     still_image_url: http://192.168.0.125/image.jpg
+        #     stream_source: rtsp://192.168.0.125:554/unicast
+            
+          - platform: ffmpeg
+            name: reolink_e1_pro_rtsp
+            input: !secret reolink_e1_pro_rtsp
+            
+          - platform: ffmpeg
+            name: reolink_e1_zoom_rtsp
+            input: !secret reolink_e1_zoom_sub_rtsp
