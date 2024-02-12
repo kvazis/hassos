@@ -17,7 +17,7 @@ da_reboot:
                 minutes: 5
             device_class: problem    
             
-    # Сенсор определяющий недоступность WLED ленты
+    # Сенсор определяющий недоступность Yeelight ленты
           - name: da_yeelight_unavailable
             unique_id: da_yeelight_unavailable
             state: >
