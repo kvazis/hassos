@@ -98,9 +98,107 @@ cards:
                       secondary_info: last-changed
                       state_color: true 
 
-############################ Колонка 1 ############################
+############################ Колонка 2 ############################
     - type: vertical-stack
       cards:
+
+################# Туалет #################
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:
+      
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #009933;
+                     font-weight: bold;
+                     font-size: 20px;
+                   }          
+              content: >
+                 **Туалет**
+
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Освещение, вентиляция**
+
+
+            - type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                show_header_toggle: false
+              filter:
+                include:
+                 - entity_id: automation.tt_light_*
+                 - entity_id: automation.tt_fan_*
+                   options:
+                      secondary_info: last-changed
+                      state_color: true
+
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Контроль и перезагрузка**
+
+
+            - type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                show_header_toggle: false
+              filter:
+                include:
+                 - entity_id: automation.tt_reboot_*
+                   options:
+                      secondary_info: last-changed
+                      state_color: true
+
+################# Прачечная #################
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:
+      
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #009933;
+                     font-weight: bold;
+                     font-size: 20px;
+                   }          
+              content: >
+                 **Прачечная**
+                 
+            - type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                show_header_toggle: false
+              filter:
+                include:
+                 - entity_id: automation.ln*
+                #   state: 'unavailable'
+                   options:
+                      secondary_info: last-changed
+                      state_color: true 
 
 ################# Прихожая #################
         - type: custom:stack-in-card
@@ -127,6 +225,75 @@ cards:
               filter:
                 include:
                  - entity_id: automation.en*
+                #   state: 'unavailable'
+                   options:
+                      secondary_info: last-changed
+                      state_color: true 
+
+################# Коридор #################
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:
+      
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #009933;
+                     font-weight: bold;
+                     font-size: 20px;
+                   }          
+              content: >
+                 **Коридор**
+
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Освещение люстра**
+
+
+            - type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                show_header_toggle: false
+              filter:
+                include:
+                 - entity_id: automation.cr_ceiling_*
+                 - entity_id: automation.cr_en_light_control
+                   options:
+                      secondary_info: last-changed
+                      state_color: true
+
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Контроль и перезагрузка**
+                 
+            - type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                show_header_toggle: false
+              filter:
+                include:
+                 - entity_id: automation.cr_reboot_*
+                 - entity_id: automation.cr_turn_on_*
                 #   state: 'unavailable'
                    options:
                       secondary_info: last-changed
@@ -170,6 +337,7 @@ cards:
               filter:
                 include:
                  - entity_id: automation.kn_ceiling_*
+                 - entity_id: automation.kn_light_*
                    options:
                       secondary_info: last-changed
                       state_color: true
@@ -195,6 +363,99 @@ cards:
               filter:
                 include:
                  - entity_id: automation.kn_reboot_*
+                   options:
+                      secondary_info: last-changed
+                      state_color: true
+                      
+############################ Колонка 3 ############################
+    - type: vertical-stack
+      cards:
+      
+                      
+################# Гостиная #################
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:
+      
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #009933;
+                     font-weight: bold;
+                     font-size: 20px;
+                   }          
+              content: >
+                 **Гостиная**
+
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Освещение люстра**
+
+
+            - type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                show_header_toggle: false
+              filter:
+                include:
+                 - entity_id: automation.lr_light_*
+                   options:
+                      secondary_info: last-changed
+                      state_color: true
+                      
+############################ Колонка 4 ############################
+    - type: vertical-stack
+      cards:
+
+################# Туалет #################
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:
+      
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #009933;
+                     font-weight: bold;
+                     font-size: 20px;
+                   }          
+              content: >
+                 **Детская А**
+                 
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Контроль и перезагрузка**
+
+
+            - type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                show_header_toggle: false
+              filter:
+                include:
+                 - entity_id: automation.da_reboot_*
                    options:
                       secondary_info: last-changed
                       state_color: true

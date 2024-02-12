@@ -1,0 +1,17 @@
+telegram_alarm:
+
+    homeassistant:
+      customize:
+
+        binary_sensor.0x842e14fffef6d9e5_smoke:
+          friendly_name: Кухня дым
+        sensor.0x842e14fffef6d9e5_battery:
+          friendly_name: Кухня дым
+          
+          
+          
+          
+        binary_sensor.0xec1bbdfffe8f1e42_water_leak:
+          friendly_name: Кухня протечка
+        sensor.0xec1bbdfffe8f1e42_battery:
+          friendly_name: Кухня протечка

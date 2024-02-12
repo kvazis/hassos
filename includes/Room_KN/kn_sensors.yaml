@@ -12,6 +12,8 @@ kn_sensors:
     homeassistant:
       customize:
 
+############# кухня
+
         binary_sensor.0x00158d0001ab3350_occupancy:
           friendly_name: Кухня движение 1
         sensor.0x00158d0001ab3350_battery:
@@ -34,9 +36,60 @@ kn_sensors:
         sensor.0x04cf8cdf3c772379_battery:
           friendly_name: Кухня освещенность
 
+        binary_sensor.0x00158d0001a99562_contact:
+          friendly_name: Кухня, окно
+          device_class: window
+        sensor.0x00158d0001a99562_battery:
+          friendly_name: Кухня, окно
+          
+############# Балкон
+
+        binary_sensor.0x00158d0001a20885_contact:
+          friendly_name: Кухня, балкон дверь
+          device_class: door
+        sensor.0x00158d0001a20885_battery:
+          friendly_name: Кухня, балкон дверь
+
+        binary_sensor.0x00158d0001a4a394_contact:
+          friendly_name: Кухня, балкон окно
+          device_class: window
+        sensor.0x00158d0001a4a394_battery:
+          friendly_name: Кухня, балкон окно
+
+        binary_sensor.0xec1bbdfffe302df1_occupancy:
+          friendly_name: Кухня, балкон движение
+
+        sensor.0x00158d000171ffde_humidity:
+          friendly_name: Кухня, балкон влажность
+          icon: mdi:water-percent
+        sensor.0x00158d000171ffde_temperature:
+          friendly_name: Кухня, балкон температура
+          icon: mdi:temperature-celsius
+        sensor.0x00158d000171ffde_mmhg_pressure:
+          friendly_name: Кухня, балкон давление мм рт. ст.
+        sensor.0x00158d000171ffde_battery:
+          friendly_name: Кухня, балкон климат          
+          
     template:
 
       - binary_sensor:
+
+    # Сенсор проветривания      
+          - name: kn_aeration
+            unique_id: kn_aeration
+            state: >
+              {{ is_state('binary_sensor.0x00158d0001a99562_contact', 'on')  
+                 or is_state('binary_sensor.0x00158d0001a20885_contact', 'on')
+              }}
+            delay_on: 
+                seconds: 30
+            device_class: opening
+            icon: >
+              {% if is_state("binary_sensor.kn_aeration", "on") %}
+              mdi:window-open-variant
+              {% else %}
+              mdi:window-closed-variant
+              {% endif %}
 
     # Сенсор определения движения на Aqara FP1
           - name: '0x54ef44100042e226_occupancy'

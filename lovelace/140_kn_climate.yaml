@@ -1,0 +1,142 @@
+##################   Климат
+title: Кухня Климат
+icon: phu:outdoor-motion-sensor-temperature
+cards:
+
+############################ Колонка 1 ############################
+
+    - type: vertical-stack
+      cards:
+
+        - type: markdown
+          style: |
+              ha-card {
+                color: #f8ffd8;
+                --paper-item-icon-color: #f8ffd8;
+                --paper-item-icon-active-color: #f8ffd8;
+                font-weight: bold;
+                font-size: 26px;
+              }          
+          content: >
+             **Климат**
+
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Датчики и сенсоры**
+            - type: horizontal-stack
+              cards:
+              
+              - type: custom:mushroom-template-card
+                primary: Проветривание
+                secondary: |-
+                  {% if is_state("binary_sensor.kn_aeration", "off") %}
+                  Все закрыто
+                  {% else %}
+                  Проветривается
+                  {% endif %}
+                layout: vertical
+                entity: binary_sensor.kn_aeration
+                icon: |-
+                  {% if is_state("binary_sensor.kn_aeration", "off") %}
+                  phu:tilt-window-closed
+                  {% else %}
+                  phu:tilt-window-opened
+                  {% endif %}
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("binary_sensor.kn_aeration", "off") %}
+                  grey
+                  {% else %}
+                  light-blue
+                  {% endif %} 
+                tap_action:
+                  action: more-info
+                  
+              - type: custom:mushroom-template-card
+                primary: Окно
+                secondary: |-
+                  {% if is_state("binary_sensor.0x00158d0001a99562_contact", "off") %}
+                  Закрыто
+                  {% else %}
+                  Открыто
+                  {% endif %}
+                layout: vertical
+                entity: binary_sensor.0x00158d0001a99562_contact
+                icon: |-
+                  {% if is_state("binary_sensor.0x00158d0001a99562_contact", "off") %}
+                  phu:lift-in-window-closed
+                  {% else %}
+                  phu:lift-in-window-open1
+                  {% endif %}
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("binary_sensor.0x00158d0001a99562_contact", "off") %}
+                  grey
+                  {% else %}
+                  light-blue
+                  {% endif %} 
+                tap_action:
+                  action: more-info
+
+              - type: custom:mushroom-template-card
+                primary: Дверь на балкон
+                secondary: |-
+                  {% if is_state("binary_sensor.0x00158d0001a20885_contact", "off") %}
+                  Закрыта
+                  {% else %}
+                  Открыта
+                  {% endif %}
+                layout: vertical
+                entity: binary_sensor.0x00158d0001a20885_contact
+                icon: |-
+                  {% if is_state("binary_sensor.0x00158d0001a20885_contact", "off") %}
+                  phu:panel-glass-door2-close
+                  {% else %}
+                  phu:panel-glass-door2-open
+                  {% endif %}
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("binary_sensor.0x00158d0001a20885_contact", "off") %}
+                  grey
+                  {% else %}
+                  amber
+                  {% endif %} 
+                tap_action:
+                  action: more-info
+
+              - type: custom:mushroom-template-card
+                primary: Окно балкон
+                secondary: |-
+                  {% if is_state("binary_sensor.0x00158d0001a4a394_contact", "off") %}
+                  Закрыто
+                  {% else %}
+                  Открыто
+                  {% endif %}
+                layout: vertical
+                entity: binary_sensor.0x00158d0001a4a394_contact
+                icon: |-
+                  {% if is_state("binary_sensor.0x00158d0001a4a394_contact", "off") %}
+                  phu:double-window-closed
+                  {% else %}
+                  phu:double-window-open
+                  {% endif %}
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("binary_sensor.0x00158d0001a4a394_contact", "off") %}
+                  grey
+                  {% else %}
+                  light-blue
+                  {% endif %} 
+                tap_action:
+                  action: more-info

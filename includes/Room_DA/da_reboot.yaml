@@ -1,0 +1,113 @@
+da_reboot:
+
+
+
+
+    template:
+
+      - binary_sensor:
+      
+    # Сенсор определяющий недоступность WLED ленты
+          - name: da_wled_unavailable
+            unique_id: da_wled_unavailable
+            state: >
+              {{ is_state('light.da_wled', 'unavailable')  
+                 and states('sensor.count_light_unavailable')|int < 3 }}
+            delay_on: 
+                minutes: 5
+            device_class: problem    
+            
+    # Сенсор определяющий недоступность WLED ленты
+          - name: da_yeelight_unavailable
+            unique_id: da_yeelight_unavailable
+            state: >
+              {{ is_state('light.yeelight_stripe_0x3618ad8', 'unavailable')  
+                 and states('sensor.count_light_unavailable')|int < 3 }}
+            delay_on: 
+                minutes: 5
+            device_class: problem 
+            
+            
+            
+            
+    automation:
+    
+#################### ПЕРЕЗАГРУЗКА WLED ЛЕНТЫ ####################
+               
+      - alias: da_reboot_wled
+        id: da_reboot_wled
+        description: Детская А - перезагрузка зависшей WLED ленты
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор определяющий недоступность люстры
+        - condition: state
+          entity_id: binary_sensor.da_wled_unavailable
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off'  
+        action:
+    # Перезагрузка по питанию если люстра недоступна
+        - service: switch.turn_off
+          entity_id: switch.0xa4c138131a85d3ff
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0xa4c138131a85d3ff
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_log
+            message: | 
+                 {{"\U0001F916"}} Антонио. Детская А - перезагрузка зависшей WLED ленты {{ states('sensor.time_date') }} 
+                 
+#################### ПЕРЕЗАГРУЗКА YEELIGHT ЛЕНТЫ ####################
+               
+      - alias: da_reboot_yeelight
+        id: da_reboot_yeelight
+        description: Детская А - перезагрузка зависшей Yeelight ленты
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор определяющий недоступность люстры
+        - condition: state
+          entity_id: binary_sensor.da_yeelight_unavailable
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off'  
+        action:
+    # Перезагрузка по питанию если люстра недоступна
+        - service: switch.turn_off
+          entity_id: switch.0x00158d00012896cb
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0x00158d00012896cb
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_log
+            message: | 
+                 {{"\U0001F916"}} Антонио. Детская А - перезагрузка зависшей Yeelight ленты {{ states('sensor.time_date') }} 
+                 
+                 
+                 
+                 
+                 
+                 

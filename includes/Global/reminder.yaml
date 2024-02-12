@@ -1,0 +1,48 @@
+reminder:
+
+    homeassistant:
+      customize:
+      
+        automation.lr_light_wled_calendar_reminder:
+          friendly_name: Гостиная WLED - напоминание календаря
+          icon: mdi:calendar-check
+
+
+    automation:
+          
+      - alias: lr_light_wled_calendar_reminder
+        id: lr_light_wled_calendar_reminder
+        description: Гостиная WLED - напоминание календаря
+        initial_state: true          
+        trigger:
+        - platform: time
+          at: '21:00:00'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: light.turn_on
+          entity_id: light.gld_wled
+          data:
+            effect: Saw
+            brightness_pct: 50
+        - service: select.select_option
+          data:
+            option: Hult
+          target:
+            entity_id: select.gld_wled_color_palette
+        - service: number.set_value
+          target:
+            entity_id: number.gld_wled_speed
+          data:
+            value: 114
+        - service: number.set_value
+          target:
+            entity_id: number.gld_wled_intensity
+          data:
+            value: 76
+        - delay: 00:00:15
+        - service: light.turn_off
+          entity_id: light.gld_wled

@@ -2,7 +2,11 @@ da_light:
 
     homeassistant:
       customize:
+
+        light.0x00158d000635ded8_right:
+          friendly_name: Детская А люстра
+          icon: phu:ceiling-being
         
         light.yeelight_stripe_0x3618ad8:
-          friendly_name: Детская А, LED лента
+          friendly_name: Детская А LED лента
           icon: mdi:led-strip-variant

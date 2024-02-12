@@ -1,0 +1,83 @@
+cr_reboot:
+
+
+    homeassistant:
+      customize:
+
+        automation.cr_reboot_ceiling:
+          friendly_name: Коридор - перезагрузка зависшей люстры
+          icon: phu:ceiling-adore-alt-flush
+      
+        automation.cr_turn_on_switch:
+          friendly_name: Коридор - включение выключателя
+          icon: phu:aqara-h1-switch
+          
+    template:
+     
+      - binary_sensor:
+          
+    # Сенсор определяющий недоступность люстры
+          - name: cr_ceiling_unavailable
+            unique_id: cr_ceiling_unavailable
+            state: >
+              {{ is_state('light.yeelight_ceiling4_0x456e813', 'unavailable')  
+                 and states('sensor.count_light_unavailable')|int < 3 }}
+            delay_on: 
+                minutes: 3
+            device_class: problem  
+              
+    automation:
+    
+#################### ПЕРЕЗАГРУЗКА ЛЮСТРЫ ####################
+
+      - alias: cr_reboot_ceiling
+        id: cr_reboot_ceiling
+        description: Коридор - перезагрузка зависшей люстры
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут, перезагрузка если люстра недоступна
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор определяющий недоступность люстры
+        - condition: state
+          entity_id: binary_sensor.cr_ceiling_unavailable
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off' 
+        action:
+    # Перезагрузка по питанию
+        - service: switch.turn_off
+          entity_id: switch.0x00158d00057305ac_left
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0x00158d00057305ac_left
+          
+#################### КОНТРОЛЬ ВЫКЛЮЧАТЕЛЯ ЛЮСТРЫ ####################          
+
+      - alias: cr_turn_on_switch
+        id: cr_turn_on_switch
+        description: Коридор - включение выключателя
+        initial_state: true
+        trigger:
+    # Выключение выключателя
+        - platform: state
+          entity_id: switch.0x00158d00057305ac_left
+          to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+    # Включение
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0x00158d00057305ac_left
+          

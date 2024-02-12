@@ -1,0 +1,75 @@
+tt_fan:
+
+    homeassistant:
+      customize:
+
+        automation.tt_fan_control:
+          friendly_name: Туалет управление вентилятором
+          icon: mdi:fan
+      
+    template:
+     
+      - binary_sensor:
+      
+    # Свет более 5 минут, условие для включения вентиляции
+          - name: tt_fan_on
+            unique_id: tt_fan_on
+            state: >
+              {{ is_state('binary_sensor.tt_light_on', 'on') 
+                 and is_state('binary_sensor.0xa4c1384e55f274ef_contact', 'off')
+                 and is_state('fan.0x00158d00014dceb3_right', 'off')
+              }}
+            delay_on: 00:05:00
+            icon: >
+              {% if is_state("binary_sensor.tt_fan_on", "on") %}
+              mdi:timer
+              {% else %}
+              mdi:timer-off
+              {% endif %}            
+            
+    # Вентиляция более 10 минут с выключенным светом, условие для выключения вентиляции
+          - name: tt_fan_off
+            unique_id: tt_fan_off
+            state: >
+              {{ is_state('binary_sensor.tt_light_on', 'off') 
+                 and is_state('fan.0x00158d00014dceb3_right', 'on')
+              }}
+            delay_on: 00:10:00
+            icon: >
+              {% if is_state("binary_sensor.tt_fan_off", "on") %}
+              mdi:timer
+              {% else %}
+              mdi:timer-off
+              {% endif %}  
+              
+    automation:
+    
+    # Управление вентиляцией   
+      - alias: tt_fan_control
+        id: tt_fan_control
+        description: Туалет управление вентилятором
+        initial_state: true
+        trigger:
+    # Виртуальные сущности 
+    # Включение через 5 минут
+        - platform: state
+          entity_id: binary_sensor.tt_fan_on
+          to: 'on'
+    # Выключение через 10 минут
+        - platform: state
+          entity_id: binary_sensor.tt_fan_off
+          to: 'on'    
+    # Физические сущности 
+    # Выключатель в туалете
+        - platform: state
+          entity_id: sensor.0x54ef441000279090_action
+          to: 'single_right' 
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: fan.toggle
+          entity_id: fan.0x00158d00014dceb3_right
+

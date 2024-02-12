@@ -1,0 +1,230 @@
+air_raid_alert:
+
+    homeassistant:
+      customize:
+
+        automation.lr_light_wled_threat_notification:
+          friendly_name: Гостиная WLED - тревога
+          icon: mdi:airplane-alert
+          
+        automation.lr_light_wled_threat_cancel:
+          friendly_name: Гостиная WLED - отмена тревоги
+          icon: mdi:airplane-off
+          
+        automation.kn_light_wled_threat_notification:
+          friendly_name: Кухня WLED - тревога
+          icon: mdi:airplane-alert
+          
+        automation.kn_light_wled_threat_cancel:
+          friendly_name: Кухня WLED - отмена тревоги
+          icon: mdi:airplane-off
+          
+
+    # Сохранение в базе состояний сенсоров тревоги
+    recorder:
+      include:
+        entities:
+           - binary_sensor.m_kiyiv_air
+           - binary_sensor.m_kiyiv_artillery
+           - binary_sensor.m_kiyiv_unknown
+           - binary_sensor.m_kiyiv_urban_fights
+           - binary_sensor.m_kiyiv_chemical
+           - binary_sensor.m_kiyiv_nuclear
+           
+    template:
+
+      - binary_sensor:
+
+    # Сборный сенсор тревоги - будет активен при любой из видов тревог
+          - name: threat
+            unique_id: threat
+            state: >
+              {{ is_state('binary_sensor.m_kiyiv_air', 'on')  
+                 or is_state('binary_sensor.m_kiyiv_artillery', 'on')
+                 or is_state('binary_sensor.m_kiyiv_unknown', 'on')
+                 or is_state('binary_sensor.m_kiyiv_urban_fights', 'on')
+                 or is_state('binary_sensor.m_kiyiv_chemical', 'on')
+                 or is_state('binary_sensor.m_kiyiv_nuclear', 'on')
+              }}
+            device_class: safety
+            icon: >
+              {% if is_state("binary_sensor.threat", "on") %}
+              mdi:skull
+              {% else %}
+              mdi:shield-check
+              {% endif %}
+
+
+    automation:
+              
+      - alias: lr_light_wled_threat_notification
+        id: lr_light_wled_threat_notification
+        description: Гостиная WLED - тревога
+        initial_state: true          
+        trigger:
+    # Сборный сенсор тревоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'off'
+          to: 'on'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: light.turn_on
+          entity_id: light.gld_wled
+          data:
+            effect: Scanner
+            brightness_pct: 30
+        - service: select.select_option
+          data:
+            option: Red Shift
+          target:
+            entity_id: select.gld_wled_color_palette
+        - service: number.set_value
+          target:
+            entity_id: number.gld_wled_speed
+          data:
+            value: 85
+        - service: number.set_value
+          target:
+            entity_id: number.gld_wled_intensity
+          data:
+            value: 0
+        - delay: 00:00:30
+        - service: light.turn_off
+          entity_id: light.gld_wled
+        - delay: 00:00:15
+        - service: light.turn_off
+          entity_id: light.gld_wled
+
+      - alias: lr_light_wled_threat_cancel
+        id: lr_light_wled_threat_cancel
+        description: Гостиная WLED - отмена тревоги
+        initial_state: true          
+        trigger:
+    # Сборный сенсор тревоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'on'
+          to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: light.turn_on
+          entity_id: light.gld_wled
+          data:
+            effect: Scanner Dual
+            brightness_pct: 30
+        - service: select.select_option
+          data:
+            option: Aurora
+          target:
+            entity_id: select.gld_wled_color_palette
+        - service: number.set_value
+          target:
+            entity_id: number.gld_wled_speed
+          data:
+            value: 0
+        - service: number.set_value
+          target:
+            entity_id: number.gld_wled_intensity
+          data:
+            value: 11
+        - delay: 00:00:30
+        - service: light.turn_off
+          entity_id: light.gld_wled
+        - delay: 00:00:15
+        - service: light.turn_off
+          entity_id: light.gld_wled
+
+
+      - alias: kn_light_wled_threat_notification
+        id: kn_light_wled_threat_notification
+        description: Кухня WLED - тревога
+        initial_state: true          
+        trigger:
+    # Сборный сенсор тревоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'off'
+          to: 'on'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: light.turn_on
+          entity_id: light.kn_wled
+          data:
+            effect: Scanner
+            brightness_pct: 10
+        - service: select.select_option
+          data:
+            option: Red Shift
+          target:
+            entity_id: select.kn_wled_color_palette
+        - service: number.set_value
+          target:
+            entity_id: number.kn_wled_speed
+          data:
+            value: 85
+        - service: number.set_value
+          target:
+            entity_id: number.kn_wled_intensity
+          data:
+            value: 0
+        - delay: 00:00:30
+        - service: light.turn_off
+          entity_id: light.kn_wled
+        - delay: 00:00:15
+        - service: light.turn_off
+          entity_id: light.kn_wled
+          
+      - alias: kn_light_wled_threat_cancel
+        id: kn_light_wled_threat_cancel
+        description: Кухня WLED - отмена тревоги
+        initial_state: true          
+        trigger:
+    # Сборный сенсор тревоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'on'
+          to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: light.turn_on
+          entity_id: light.kn_wled
+          data:
+            effect: Scanner Dual
+            brightness_pct: 10
+        - service: select.select_option
+          data:
+            option: Aurora
+          target:
+            entity_id: select.kn_wled_color_palette
+        - service: number.set_value
+          target:
+            entity_id: number.kn_wled_speed
+          data:
+            value: 0
+        - service: number.set_value
+          target:
+            entity_id: number.kn_wled_intensity
+          data:
+            value: 11
+        - delay: 00:00:30
+        - service: light.turn_off
+          entity_id: light.kn_wled
+        - delay: 00:00:15
+        - service: light.turn_off

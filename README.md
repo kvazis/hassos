@@ -1,6 +1,30 @@
 ## Новый рабочий сервер
 
 
+### Обновление 2024 02 12
+
+#### Пакаджи     
+#### Выделил в отдельные пакаджи логику отвечающую за перезагрузку и автоматическое включение устройств (в основном это светильники, реле и выключатели)
+:arrow_right: [en_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_EN/en_reboot.yaml) - перезагрузка лампочки и контроль работы выключателя в прихожей     
+:arrow_right: [cr_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_CR/cr_reboot.yaml) - перезагрузка люстры и контроль работы выключателя в коридоре     
+:arrow_right: [da_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_DA/da_reboot.yaml) - перезагрузка LED лент - WLED и Yeelight в детской А    
+:arrow_right: [tt_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_TT/tt_reboot.yaml) - перезагрузка люстры и контроль работы выключателя в туалете     
+
+
+#### Остальные изменения    
+:arrow_right: [cr_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_CR/cr_light.yaml) - управление освещением в коридоре     
+:arrow_right: [cr_sensor.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_CR/cr_sensor.yaml) - описание сенсоров в коридоре  
+:arrow_right: [da_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_DA/da_light.yaml) - описание светильников в детской А     
+:arrow_right: [da_switch.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_DA/da_switch.yaml) - описание реле (розеток, выключателей) в детской А     
+:arrow_right: [kn_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_KN/kn_light.yaml) - добавлено управление аварийным светильником в кухне    
+:arrow_right: [kn_sensors.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_KN/kn_sensors.yaml) - описание сенсоров в кухне    
+:arrow_right: [ln_washmashine.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LN/ln_washmashine.yaml) - уведомления после завершения стирки    
+:arrow_right: [lr_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_light.yaml) - добавлены описания некоторых светильников в гостиной     
+:arrow_right: [tt_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_TT/tt_light.yaml) - управление освещением в туалете + [Аварийное освещение](https://youtu.be/_DwgWu9SBso)     
+:arrow_right: [tt_fan.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_TT/tt_fan.yaml) - управление вентиляцией в туалете     
+:arrow_right: [tt_sensor.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_TT/tt_sensor.yaml) - описание сенсоров в туалете     
+
+
 ### Обновление 2024 01 27
 
 #### Home Assistant:    

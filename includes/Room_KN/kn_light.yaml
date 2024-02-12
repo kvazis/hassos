@@ -10,7 +10,15 @@ kn_light:
 
         light.gateway_light_7811dc64f4c8:
           friendly_name: Кухня шлюз
-          icon: phu:aqara-hub-n15-g2          
+          icon: phu:aqara-hub-n15-g2
+          
+        light.kn_wled:
+          friendly_name: Кухня WLED светильник
+          icon: phu:daylo-wall
+
+        automation.kn_light_wled_control:
+          friendly_name: Кухня - ручное управление WLED
+          icon: phu:daylo-wall
 
         automation.kn_ceiling_manual_light_control:
           friendly_name: Кухня - ручное управление освещением
@@ -35,6 +43,10 @@ kn_light:
     # Кнопка для использования в интерфейсе для имитации нажатия на кнопку выключателя
       kn_ceiling_light:
         name: Кухня, управление люстрой
+        
+    # Кнопка для использования в интерфейсе для имитации нажатия на кнопку выключателя
+      kn_wled_light:
+        name: Кухня, управление wled
         
     template:
 
@@ -120,6 +132,47 @@ kn_light:
 
 
     automation:
+
+
+      - alias: kn_light_wled_control
+        id: kn_light_wled_control
+        description: Кухня - ручное управление WLED
+        initial_state: true
+        trigger:
+    # Виртуальная кнопка для интерфейса
+        - platform: state
+          entity_id: input_button.kn_wled_light
+    # 6 клавишник на входе дабл клик
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c794209_action
+          to: 'button_2_double'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: light.kn_wled
+                    state: 'off'
+                sequence:
+                  - service: light.turn_on
+                    entity_id:
+                      - light.kn_wled
+                    data:
+                      effect: Solid
+                      brightness_pct: 100
+                      kelvin: 4000
+              - conditions:
+                  - condition: state
+                    entity_id: light.kn_wled
+                    state: 'on'
+                sequence:
+                 - service: light.turn_off
+                   entity_id:
+                     - light.kn_wled
 
       - alias: kn_ceiling_manual_light_control
         id: kn_ceiling_manual_light_control

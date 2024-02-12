@@ -257,6 +257,8 @@ cards:
               - type: divider
               - entity: input_button.git_update
               - type: divider
+              - entity: input_button.test_test
+              - type: divider
               - entity: sensor.server_telemetry
                 icon: mdi:alert
               - type: divider

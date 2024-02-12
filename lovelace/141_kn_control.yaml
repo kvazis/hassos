@@ -53,7 +53,17 @@ cards:
                   entity: light.gateway_light_7811dc64f4c8
                   tap_action:
                     action: toggle 
-
+                    
+                - type: button
+                  name: WLED
+                  entity: light.kn_wled
+                  tap_action:
+                      action: call-service
+                      service: input_button.press
+                      target:
+                        entity_id: input_button.kn_wled_light
+                        
+                        
             - type: conditional
               conditions:
                 - entity: light.kn_ceiling_light

@@ -1,0 +1,34 @@
+da_switch:
+
+    homeassistant:
+      customize:
+
+        switch.0x00158d000635ded8_left:
+          friendly_name: Детская А, Aqara вход, левое реле
+        sensor.0x00158d000635ded8_actionn:
+          friendly_name: Детская А, Aqara вход
+          
+        switch.0x00158d00012896cb:
+          friendly_name: Детская А, питание ленты Yeelight
+        sensor.0x00158d00012896cb_power:
+          friendly_name: Детская А, питание ленты Yeelight
+        sensor.0x00158d00012896cb_energy:
+          friendly_name: Детская А, питание ленты Yeelight
+          
+        switch.0xa4c138131a85d3ff:
+          friendly_name: Детская А, питание ленты WLED
+        sensor.0xa4c138131a85d3ff_power:
+          friendly_name: Детская А, питание ленты WLED
+        sensor.0xa4c138131a85d3ff_voltage:
+          friendly_name: Детская А, питание ленты WLED
+        sensor.0xa4c138131a85d3ff_energy:
+          friendly_name: Детская А, питание ленты WLED
+          
+        switch.0x04cf8cdf3c764e0a:
+          friendly_name: Детская А, питание рекуператора
+        sensor.0x04cf8cdf3c764e0a_power:
+          friendly_name: Детская А, питание рекуператора
+        sensor.0x04cf8cdf3c764e0a_voltage:
+          friendly_name: Детская А, питание рекуператора
+        sensor.0x04cf8cdf3c764e0a_energy:
+          friendly_name: Детская А, питание рекуператора

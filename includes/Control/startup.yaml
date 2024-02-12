@@ -5,7 +5,7 @@ startup:
       - alias: control_mosquitto_startup_reload
         id: control_mosquitto_startup_reload
         description: Перезагрузка аддона mosquitto при старте
-        initial_state: true
+        initial_state: false
         trigger:
           - platform: homeassistant
             event: start

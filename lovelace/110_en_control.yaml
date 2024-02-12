@@ -153,8 +153,12 @@ cards:
             - type: custom:mushroom-template-card
               primary: Свет в прихожей
               secondary: |-
-                {% if is_state("light.0x00158d0003e74c31", "on") %}
-                Включен
+                {% if is_state("light.0x00158d0003e74c31", "on")
+                and is_state("binary_sensor.0x00158d0003e74c31_on", "off") %}
+                Включен менее 5 сек
+                {% elif is_state("light.0x00158d0003e74c31", "on") 
+                and is_state("binary_sensor.0x00158d0003e74c31_on", "on") %}
+                Включен более 5 сек
                 {% elif is_state("binary_sensor.en_light_off_3min", "on") 
                 and is_state("light.0x00158d0003e74c31", "off") %}
                 Выключен менее 3х минут назад
@@ -162,9 +166,13 @@ cards:
                 Выключен более 3х минут назад
                 {% endif %}
               layout: Horizontal
-              entity: binary_sensor.en_light_off_3min
+              entity: binary_sensor.0x00158d0003e74c31_on
               icon: |-
-                {% if is_state("light.0x00158d0003e74c31", "on") %}
+                {% if is_state("light.0x00158d0003e74c31", "on")
+                and is_state("binary_sensor.0x00158d0003e74c31_on", "off") %}
+                mdi:lightbulb-alert
+                {% elif is_state("light.0x00158d0003e74c31", "on") 
+                and is_state("binary_sensor.0x00158d0003e74c31_on", "on") %}
                 mdi:lightbulb-on
                 {% elif is_state("binary_sensor.en_light_off_3min", "on") 
                 and is_state("light.0x00158d0003e74c31", "off") %}
@@ -174,7 +182,11 @@ cards:
                 {% endif %}
               multiline_secondary: true
               icon_color: |-
-                {% if is_state("light.0x00158d0003e74c31", "on") %}
+                {% if is_state("light.0x00158d0003e74c31", "on")
+                and is_state("binary_sensor.0x00158d0003e74c31_on", "off") %}
+                yellow
+                {% elif is_state("light.0x00158d0003e74c31", "on") 
+                and is_state("binary_sensor.0x00158d0003e74c31_on", "on") %}
                 yellow
                 {% elif is_state("binary_sensor.en_light_off_3min", "on") 
                 and is_state("light.0x00158d0003e74c31", "off") %}

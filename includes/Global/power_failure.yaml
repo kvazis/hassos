@@ -22,6 +22,18 @@ power_failure:
           friendly_name: Электропитание
           icon: mdi:transmission-tower
 
+        binary_sensor.0xa4c138bae3526a07_contact:
+          friendly_name: Сенсор определения отключения гостиная
+          device_class: problem
+        sensor.0xa4c138bae3526a07_battery:
+          friendly_name: Сенсор определения отключения гостиная
+          
+        binary_sensor.0xa4c138744bf2fbf0_contact:
+          friendly_name: Сенсор определения отключения кухня
+          device_class: problem
+        sensor.0xa4c138744bf2fbf0_battery:
+          friendly_name: Сенсор определения отключения кухня
+
     template:
     
       - binary_sensor:

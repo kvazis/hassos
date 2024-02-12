@@ -17,14 +17,6 @@ en_light:
         sensor.0x00158d00010b1963_battery:
           friendly_name: Прихожая кнопка на шкафу
 
-        automation.en_switch_turn_on:
-          friendly_name: Прихожая - включение выключателя
-          icon: phu:aqara-h1-switch
-
-        automation.en_bulb_reboot:
-          friendly_name: Прихожая - перезагрузка зависшей лампочки
-          icon: mdi:reload
-
         automation.en_light_control:
           friendly_name: Прихожая - управление лампочкой
           icon: phu:bulbs-classic
@@ -33,22 +25,6 @@ en_light:
      
       - binary_sensor:
 
-    # Сенсор определяющий недоступность лампочки
-          - name: en_light_unavailable
-            unique_id: en_light_unavailable
-            state: >
-              {{ is_state('light.0x00158d0003e74c31', 'unavailable')  
-              }}
-            delay_on: 
-                minutes: 3
-            device_class: problem
-            icon: >
-              {% if is_state("binary_sensor.en_light_unavailable", "on") %}
-              mdi:ceiling-light-outline
-              {% else %}
-              mdi:ceiling-light
-              {% endif %}
-              
     # Свет без движения в прихожей днем
           - name: en_light_day
             unique_id: en_light_day
@@ -119,51 +95,6 @@ en_light:
               
     automation:
 
-      - alias: en_switch_turn_on
-        id: en_switch_turn_on
-        description: Прихожая включение выключателя
-        initial_state: true
-        trigger:
-    # Выключение выключателя
-        - platform: state
-          entity_id: switch.0x00158d00057305ac_right
-          to: 'off'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-        action:
-    # Включение
-        - delay: 00:00:05
-        - service: switch.turn_on
-          entity_id: switch.0x00158d00057305ac_right
-          
-      - alias: en_bulb_reboot
-        id: en_bulb_reboot
-        description: Прихожая перезагрузка зависшей лампочки
-        initial_state: true
-        trigger:
-    # Проверка раз в 5 минут, перезагрузка если лампочка недоступна
-        - platform: time_pattern
-          minutes: '/5'
-        condition:
-    # Сенсор определяющий недоступность люстры
-        - condition: state
-          entity_id: binary_sensor.en_light_unavailable
-          state: 'on'
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-        action:
-    # Перезагрузка по питанию
-        - service: switch.turn_off
-          entity_id: switch.0x00158d00057305ac_right
-        - delay: 00:00:05
-        - service: switch.turn_on
-          entity_id: switch.0x00158d00057305ac_right
-              
       - alias: en_light_control
         id: en_light_control
         description: Прихожая управление лампочкой

@@ -18,3 +18,7 @@ lr_light:
         light.yeelight_ceiling4_0x4a1dacd_ambilight:
           friendly_name: Гостиная амбилайт люстра 2 
           icon: phu:recessed-ceiling
+          
+        light.gld_wled:
+          friendly_name: Гостиная WLED светильник
+          icon: phu:signe

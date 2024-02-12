@@ -1,0 +1,103 @@
+ln_washmashine:
+
+    recorder:
+      include:
+        entities:
+           - sensor.0x842e14fffe51c5ae_power
+           - sensor.0x842e14fffe51c5ae_meter
+
+    homeassistant:
+      customize:
+        
+        switch.0x842e14fffe51c5ae:
+          friendly_name: Cтиральная машина, питание
+          icon: mdi:power-socket-eu
+        sensor.0x842e14fffe51c5ae_power:
+          friendly_name: Cтиральная машина, мощность
+          unit_of_measurement: Вт
+          device_class: power
+        sensor.0x842e14fffe51c5ae_energy:
+          friendly_name: Cтиральная машина, энергия
+          icon: mdi:chart-line
+        sensor.0x842e14fffe51c5ae_voltage:
+          friendly_name: Cтиральная машина, напряжение
+
+        automation.ln_washing_end:
+          friendly_name: Уведомление о завершении стирки
+          icon: mdi:washing-machine-alert
+          
+    template:
+    
+      - binary_sensor:
+
+          - name: ln_washing
+            unique_id: ln_washing
+            state: >
+              {{ states('sensor.0x842e14fffe51c5ae_power')|int > 6
+              }}
+            delay_on: 
+                minutes: 2
+            delay_off: 
+                minutes: 2
+            device_class: running
+            
+    automation:
+
+      - alias: ln_washing_end
+        id: ln_washing_end
+        description: Уведомление о завершении стирки
+        initial_state: true          
+        trigger:
+        - platform: state
+          entity_id: binary_sensor.ln_washing
+          from: 'on'
+          to: 'off'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on' 
+        action:
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_group
+            message: | 
+                  {{"\U0001F9D9"}} Стирка завершена, не забудь развесить барахлишко {{ states('sensor.time_date') }}
+        - service: light.turn_on
+          entity_id: 
+             - light.kn_wled
+             - light.gld_wled
+          data:
+            effect: Washing Machine
+            brightness_pct: 10
+        - service: select.select_option
+          data:
+            option: Icefire
+          target:
+            entity_id: 
+             - select.kn_wled_color_palette
+             - select.gld_wled_color_palette
+        - service: number.set_value
+          target:
+            entity_id: 
+             - number.kn_wled_speed
+             - number.gld_wled_speed
+          data:
+            value: 157
+        - service: number.set_value
+          target:
+            entity_id: 
+             - number.kn_wled_intensity
+             - number.gld_wled_intensity
+          data:
+            value: 221
+        - delay: 00:00:30
+        - service: light.turn_off
+          entity_id: 
+             - light.kn_wled
+             - light.gld_wled
+        - delay: 00:00:15
+        - service: light.turn_off
+          entity_id: 
+             - light.kn_wled
+             - light.gld_wled
