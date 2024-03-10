@@ -1,0 +1,31 @@
+ln_sensors:
+
+    recorder:
+      include:
+        entities:
+           - sensor.0xec1bbdfffe8d6ac9_temperature
+           - sensor.0xec1bbdfffe8d6ac9_humidity
+           - binary_sensor.0xa4c138fbca74ad90_contact
+           - binary_sensor.0x00158d0001e16204_occupancy
+
+    homeassistant:
+      customize:
+      
+        sensor.0xec1bbdfffe8d6ac9_humidity:
+          friendly_name: Прачечная, влажность
+          icon: mdi:water-percent
+          unit_of_measurement: '%'
+        sensor.0xec1bbdfffe8d6ac9_temperature:
+          friendly_name: Прачечная, температура
+          icon: mdi:temperature-celsius
+          unit_of_measurement: '°C'
+        sensor.0xec1bbdfffe8d6ac9_battery:
+          friendly_name:  Прачечная, климат
+        binary_sensor.0xa4c138fbca74ad90_contact:
+          friendly_name:  Прачечная, дверь
+        sensor.0xa4c138fbca74ad90_battery:
+          friendly_name:  Прачечная, дверь
+        binary_sensor.0x00158d0001e16204_occupancy:
+          friendly_name:  Прачечная, движение
+        sensor.0x00158d0001e16204_battery:
+          friendly_name:  Прачечная, движение

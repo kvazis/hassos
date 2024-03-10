@@ -1,0 +1,99 @@
+ln_light:
+
+    homeassistant:
+      customize:
+
+        light.0x00158d00014a1a55:
+          friendly_name: Прачечная свет
+          icon: phu:daylo-wall
+
+        sensor.0x00158d00014a1a55_action:
+          friendly_name: Прачечная выключатель на стене
+          
+    template:
+    
+      - binary_sensor:
+
+    # Свет без движения, закрыта дверь
+          - name: ln_light_door_closed
+            unique_id: ln_door_closed
+            state: >
+              {{ is_state('light.0x00158d00014a1a55', 'on')  
+                 and is_state('binary_sensor.0xa4c138fbca74ad90_contact', 'off')
+                 and is_state('binary_sensor.0x00158d0001e16204_occupancy', 'off')
+              }}
+            device_class: light
+            
+    # Свет без движения, открыта дверь
+          - name: ln_light_door_open
+            unique_id: ln_door_open
+            state: >
+              {{ is_state('light.0x00158d00014a1a55', 'on')  
+                 and is_state('binary_sensor.0xa4c138fbca74ad90_contact', 'on')
+                 and is_state('binary_sensor.0x00158d0001e16204_occupancy', 'off')
+              }}
+            delay_on: 
+                minutes: 15
+            device_class: light
+            
+    automation:
+
+      - alias: ln_light_auto_on
+        id: ln_light_auto_on
+        description: Прачечная - автоматическое включение освещения
+        initial_state: true
+        trigger:
+    # Датчик движения
+        - platform: state
+          entity_id: binary_sensor.0x00158d0001e16204_occupancy
+          to: 'on'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        - condition: state
+          entity_id: light.0x00158d00014a1a55
+          state: 'off'
+        action:
+        - service: light.turn_on
+          entity_id: light.0x00158d00014a1a55
+
+      - alias: ln_light_auto_off
+        id: ln_light_autot_off
+        description: Прачечная - автоматическое выключение освещения
+        initial_state: true
+        trigger:
+    # Датчик движения
+        - platform: state
+          entity_id: binary_sensor.ln_light_door_closed
+          to: 'on'
+        - platform: state
+          entity_id: binary_sensor.ln_light_door_open
+          to: 'on'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        - condition: state
+          entity_id: light.0x00158d00014a1a55
+          state: 'on'
+        action:
+        - service: light.turn_off
+          entity_id: light.0x00158d00014a1a55
+
+      - alias: ln_ceiling_light_toggle
+        id: ln_ceiling_light_toggle
+        description: Прачечная - ручное управление освещением
+        initial_state: true
+        trigger:
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_5_double'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: light.toggle
+          entity_id: light.0x00158d00014a1a55

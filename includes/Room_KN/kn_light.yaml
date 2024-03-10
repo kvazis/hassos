@@ -142,6 +142,10 @@ kn_light:
     # Виртуальная кнопка для интерфейса
         - platform: state
           entity_id: input_button.kn_wled_light
+    # Выключатель на входе в кухню - левая кнопка
+        - platform: state
+          entity_id: sensor.0x54ef4410000f4741_action
+          to: 'single_left'
     # 6 клавишник на входе дабл клик
         - platform: state
           entity_id: sensor.0x04cf8cdf3c794209_action

@@ -5,6 +5,7 @@ ln_washmashine:
         entities:
            - sensor.0x842e14fffe51c5ae_power
            - sensor.0x842e14fffe51c5ae_meter
+           - binary_sensor.ln_washing
 
     homeassistant:
       customize:
@@ -33,8 +34,7 @@ ln_washmashine:
           - name: ln_washing
             unique_id: ln_washing
             state: >
-              {{ states('sensor.0x842e14fffe51c5ae_power')|int > 6
-              }}
+              {{ states('sensor.0x842e14fffe51c5ae_power')|int > 6 }}
             delay_on: 
                 minutes: 2
             delay_off: 

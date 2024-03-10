@@ -22,3 +22,66 @@ lr_light:
         light.gld_wled:
           friendly_name: Гостиная WLED светильник
           icon: phu:signe
+        
+        light.yeelight_lamp1_0x32a4ab4:
+          friendly_name: Гостиная настольная лампа
+          icon: phu:smart-desk-lamp
+          
+        light.lr_bedside_lamp:
+          friendly_name: Гостиная прикроватник
+          icon: phu:bollard
+
+
+    automation:
+          
+      - alias: lr_light_philips_on_off
+        id: lr_light_philips_on_off
+        description: Гостиная - управление прикроватником
+        initial_state: true
+        trigger:
+    ## 5 кнопка Aqara Opple
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c79360a_action
+          to: 'button_5_double'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: light.lr_bedside_lamp
+                    state: 'off'
+                sequence:
+                  - service: light.turn_off
+                    entity_id:
+                      - light.yeelight_lamp1_0x32a4ab4
+                      - light.yeelight_ceiling4_0x49c726b
+                      - light.yeelight_ceiling4_0x4a1dacd
+                      - light.0x00158d00062fbb54_left
+                      - light.lr_bedside_lamp
+                  - service: light.turn_on
+                    entity_id:
+                      - light.lr_bedside_lamp
+                    data_template:
+                      brightness_pct: 100
+                      kelvin: 4000
+              - conditions:
+                  - condition: state
+                    entity_id: light.lr_bedside_lamp
+                    state: 'on'
+                sequence:
+                  - service: light.turn_on
+                    entity_id:
+                      - light.lr_bedside_lamp
+                    data_template:
+                      brightness_pct: 50
+                      kelvin: 3000            
+                  - delay: 00:00:15
+                  - service: light.turn_off
+                    entity_id:
+                      - light.lr_bedside_lamp
+            
+            
+            

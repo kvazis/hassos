@@ -1,5 +1,19 @@
 ## Новый рабочий сервер
 
+### Обновление 2024 03 10     
+#### Пакаджи     
+
+:arrow_right: [air_raid_alert.yaml](https://github.com/kvazis/hassos/blob/master/includes/Global/air_raid_alert.yaml) - световое оповещение при воздушной тревоге    
+:arrow_right: [youtube_sensors.yaml](https://github.com/kvazis/hassos/blob/master/includes/Global/youtube_sensors.yaml) - получение статистики youtube, подробнее [Ulanzi TC001, установка Awtrix Light, интеграция в Home Assistant](https://youtu.be/FfI4hmtDWR8)     
+:arrow_right: [da_speaker.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_DA/da_speaker.yaml) - отключение Google колонки в вечернее время     
+:arrow_right: [ln_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LN/ln_light.yaml) - управление освещением в прачечной    
+:arrow_right: [ln_sensors.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LN/ln_sensors.yamll) - описание сенсоров в прачечной    
+:arrow_right: [lr_awtrix.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_awtrix.yaml.yaml) - уведомления для часов Ulanzi, подробнее [Ulanzi TC001, установка Awtrix Light, интеграция в Home Assistant](https://youtu.be/FfI4hmtDWR8)     
+:arrow_right: [lr_fan.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_fan.yaml) - добавлено управление охлаждающей подставкой ноутбка через [ZigUSB](https://youtu.be/pj1XJApBjb8)     
+:arrow_right: [lr_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_light.yaml) - добавлено управление прикроватным светильником в гостиной     
+:arrow_right: [lr_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_reboot.yaml) - перезагрузка люстр и контроль работы zigbee LED ленты в гостиной     
+:arrow_right: [lr_tvlight.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_tvlight.yaml) - фоновая подсветка для просмотра ТВ в гостиной     
+
 
 ### Обновление 2024 02 12
 

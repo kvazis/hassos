@@ -1,0 +1,140 @@
+lr_reboot:
+
+
+    template:
+
+      - binary_sensor:
+      
+    # Несанкционированное включение zigbee ленты
+          - name: lr_tvled_enabled
+            unique_id: lr_tvled_enabled
+            state: >
+              {{ is_state('light.0xa4c138b72a314e97', 'on')  
+                 and is_state('light.lr_light_cinema', 'off') }}
+            delay_on: '00:00:05'
+             
+
+    # Сенсор определяющий недоступность люстры 1
+          - name: lr_ceiling_1_unavailable
+            unique_id: lr_ceiling_1_unavailable
+            state: >
+              {{ is_state('light.yeelight_ceiling4_0x49c726b', 'unavailable')  
+                 and states('sensor.count_light_unavailable')|int < 3 }}
+            delay_on: 
+                minutes: 5
+            device_class: problem
+            
+    # Сенсор определяющий недоступность люстры 1
+          - name: lr_ceiling_2_unavailable
+            unique_id: lr_ceiling_2_unavailable
+            state: >
+              {{ is_state('light.yeelight_ceiling4_0x4a1dacd', 'unavailable')  
+                 and states('sensor.count_light_unavailable')|int < 3 }}
+            delay_on: 
+                minutes: 5
+            device_class: problem       
+
+    automation:
+
+#################### ПЕРЕЗАГРУЗКА ЛЮСТР ####################
+              
+      - alias: lr_reboot_ceiling_1
+        id: lr_reboot_ceiling_1
+        description: Гостиная - перезагрузка зависшей люстры 1
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут, перезагрузка если люстра недоступна
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Сенсор определяющий недоступность люстры
+        - condition: state
+          entity_id: binary_sensor.lr_ceiling_1_unavailable
+          state: 'on'
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+    # Перезагрузка по питанию
+        - service: switch.turn_off
+          entity_id: switch.0x00158d00062fbb54_right
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0x00158d00062fbb54_right
+          
+      - alias: lr_reboot_ceiling_2
+        id: lr_reboot_ceiling_2
+        description: Гостиная - перезагрузка зависшей люстры 2
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут, перезагрузка если люстра недоступна
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Сенсор определяющий недоступность люстры
+        - condition: state
+          entity_id: binary_sensor.lr_ceiling_2_unavailable
+          state: 'on'
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+    # Перезагрузка по питанию
+        - service: switch.turn_off
+          entity_id: switch.0x842e14fffee5451a
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0x842e14fffee5451a
+    
+#################### ЛЕНТА ЗА ТЕЛЕВИЗОРОМ ####################    
+    
+      - alias: lr_reboot_tvled_check
+        id: lr_reboot_tvled_check
+        description: Гостиная - проверка статуса zigbee LED ленты
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+    # Принудительное обновление статуса
+        - service: mqtt.publish
+          data_template:
+            topic: "zigstar/LR TV Led strip/get"
+            payload_template: '{ "state": "" }'
+
+      - alias: lr_reboot_tvled_off
+        id: lr_reboot_tvled_off
+        description: Гостиная - отключение zigbee LED ленты
+        initial_state: true
+        trigger:
+    # Проверка раз в 3 минуты
+        - platform: time_pattern
+          minutes: '/3'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор несанкционированное включение zigbee ленты
+        - condition: state
+          entity_id: binary_sensor.lr_tvled_enabled
+          state: 'on'
+        action:
+        - service: light.turn_off
+          entity_id:
+            - light.0xa4c138b72a314e97
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_log
+            message: | 
+                 {{"\U0001F916"}} Антонио. Отключение ТВ подсветки {{ states('sensor.time_date') }} 
+

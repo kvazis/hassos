@@ -434,7 +434,7 @@ cards:
                   {% else %}
                   Есть
                   {% endif %}
-                layout: horizontal
+                layout: vertical
                 entity: binary_sensor.0x00158d0001e16204_occupancy
                 icon: |-
                   {% if is_state("binary_sensor.0x00158d0001e16204_occupancy", "off") %}
@@ -460,7 +460,7 @@ cards:
                   {% else %}
                   Стирка
                   {% endif %}
-                layout: horizontal
+                layout: vertical
                 entity: binary_sensor.ln_washing
                 icon: |-
                   {% if is_state("binary_sensor.ln_washing", "off") %}
@@ -478,6 +478,33 @@ cards:
                 tap_action:
                   action: more-info
 
+              - type: custom:mushroom-template-card
+                primary: Дверь
+                secondary: |-
+                  {% if is_state("binary_sensor.0xa4c138fbca74ad90_contact", "off") %}
+                  Закрыто
+                  {% else %}
+                  Открыто
+                  {% endif %}
+                layout: vertical
+                entity: binary_sensor.0xa4c138fbca74ad90_contact
+                icon: |-
+                  {% if is_state("binary_sensor.0xa4c138fbca74ad90_contact", "off") %}
+                  mdi:door-closed
+                  {% else %}
+                  mdi:door
+                  {% endif %}
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("binary_sensor.0xa4c138fbca74ad90_contact", "off") %}
+                  white
+                  {% else %}
+                  grey
+                  {% endif %} 
+                tap_action:
+                  action: more-info
+
+
             - type: horizontal-stack
               cards:
                  
@@ -489,7 +516,7 @@ cards:
                   {% else %}
                   Обнаружена протечка
                   {% endif %}
-                layout: horizontal
+                layout: vertical
                 entity: binary_sensor.0x00158d0002705b7b_water_leak
                 icon: |-
                   {% if is_state("binary_sensor.0x00158d0002705b7b_water_leak", "off") %}
@@ -511,7 +538,7 @@ cards:
                 primary: Температура
                 secondary: |-
                       {{states ('sensor.0xec1bbdfffe8d6ac9_temperature')}} С°
-                layout: horizontal
+                layout: vertical
                 entity: sensor.0xec1bbdfffe8d6ac9_temperature
                 icon_color: |-
                   {% if states("sensor.0xec1bbdfffe8d6ac9_temperature")|float <= -10 %}
@@ -537,7 +564,7 @@ cards:
                 primary: Влажность
                 secondary: |-
                       {{states ('sensor.0xec1bbdfffe8d6ac9_humidity')}} %
-                layout: horizontal
+                layout: vertical
                 entity: sensor.0xec1bbdfffe8d6ac9_humidity
                 icon_color: |-
                   {% if states("sensor.0xec1bbdfffe8d6ac9_humidity")|float <= 30 %}
@@ -686,6 +713,17 @@ cards:
                   - attribute: linkquality
                     name: Сигнал                 
                 - type: divider
+                - entity: sensor.0xa4c1384e55f274ef_battery
+                  type: custom:multiple-entity-row
+                  icon: phu:aqara-contact
+                  state_color: true
+                  name: Датчик открытия, дверь
+                  secondary_info: last-changed
+                  state_header: Батарейка
+                  entities:
+                  - attribute: linkquality
+                    name: Сигнал
+                - type: divider
                 - entity: sensor.0xec1bbdfffe6f3394_battery
                   type: custom:multiple-entity-row
                   icon: phu:aqara-temperature
@@ -751,6 +789,17 @@ cards:
                   icon: phu:aqara-motion
                   state_color: true
                   name: Датчик движения
+                  secondary_info: last-changed
+                  state_header: Батарейка
+                  entities:
+                  - attribute: linkquality
+                    name: Сигнал
+                - type: divider
+                - entity: sensor.0xa4c138fbca74ad90_battery
+                  type: custom:multiple-entity-row
+                  icon: phu:aqara-contact
+                  state_color: true
+                  name: Датчик открытия, дверь
                   secondary_info: last-changed
                   state_header: Батарейка
                   entities:

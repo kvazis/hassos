@@ -1,0 +1,36 @@
+youtube_sensors:
+
+  sensor:
+  - platform: rest
+    name: youtube_api
+    resource_template: !secret youtube
+    method: GET
+    headers:
+      content-type: 'application/json'
+    value_template: "0"
+    json_attributes:
+      - "items"
+    scan_interval: 600 # 10 Minutes
+
+## in secret.yaml - youtube: "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=CHANNEL_ID&key=CHANNEL_API"
+
+
+  template:
+    
+      - sensor:
+
+          - name: youtube_subscriber_count
+            unique_id: youtube_subscriber_count
+            state: > 
+               {{state_attr('sensor.youtube_api','items')[0].statistics.subscriberCount }} 
+               
+          - name: youtube_view_count
+            unique_id: youtube_view_count
+            state: > 
+               {{state_attr('sensor.youtube_api','items')[0].statistics.viewCount }}
+
+          - name:  youtube_video_count
+            unique_id: youtube_video_count
+            state: > 
+               {{state_attr('sensor.youtube_api','items')[0].statistics.videoCount }}
+

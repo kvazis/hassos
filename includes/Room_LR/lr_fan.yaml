@@ -1,0 +1,22 @@
+lr_fan:
+
+    automation:
+    
+    # Управление охлаждающей подставкой ноута
+      - alias: lr_fan_notebook
+        id: lr_fan_notebook
+        description: Управление охлаждающей подставкой ноута
+        initial_state: true
+        trigger:
+    # Выключатель на столе, удерживание 1 кнопки
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_1_hold'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: switch.toggle
+          entity_id: switch.0x00124b002a553c9e_l1

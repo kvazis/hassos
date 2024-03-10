@@ -1,0 +1,37 @@
+da_speaker:
+
+
+
+
+    template:
+
+      - binary_sensor:
+      
+    # Сенсор определяющий недоступность WLED ленты
+          - name: da_speaker_night
+            unique_id: da_speaker_night
+            state: >
+              {{ is_state('media_player.mi_speaker', 'playing')
+                 and is_state('binary_sensor.notification_time', 'off') }}
+            delay_on: 
+                minutes: 1
+                
+    automation:                
+                
+      - alias: da_reboot_speaker_auto_off
+        id: da_reboot_speaker_auto_off
+        description: Mi Speaker Night Auto off
+        initial_state: true
+        trigger:
+        - platform: state
+          entity_id: binary_sensor.da_speaker_night
+          from: 'off'
+          to: 'on'
+        condition:
+         - condition: state
+           entity_id: switch.control_mode
+           state: 'on'
+        action:
+         - service: media_player.turn_off
+           target:
+             entity_id: media_player.mi_speaker

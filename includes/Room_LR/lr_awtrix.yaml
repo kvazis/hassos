@@ -1,0 +1,177 @@
+lr_awtrix:
+
+
+    homeassistant:
+      customize:
+
+        light.awtrix_6c9da0_matrix:
+          friendly_name: Часы Awtrix
+
+          
+    automation:
+    
+      - alias: lr_light_awtrix_brightness
+        id: lr_light_awtrix_brightness
+        description: Гостиная AWTRIX - яркость
+        initial_state: true          
+        trigger:
+    # Ночной режим
+        - platform: state
+          entity_id: binary_sensor.night_time
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.night_time
+                    state: 'on'
+                sequence:
+                  - service: light.turn_on
+                    entity_id:
+                      - light.awtrix_6c9da0_matrix
+                    data_template:
+                      brightness_pct: 5
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.night_time
+                    state: 'off'
+                sequence:
+                  - service: light.turn_on
+                    entity_id:
+                      - light.awtrix_6c9da0_matrix
+                    data_template:
+                      brightness_pct: 50
+          
+      - alias: lr_light_awtrix_dog_food
+        id: lr_light_awtrix_dog_food
+        description: Гостиная AWTRIX - напоминание, собачья еда
+        initial_state: true          
+        trigger:
+        - platform: time
+          at: "13:00:00"
+        - platform: time
+          at: "17:00:00"          
+        - platform: time
+          at: "19:00:00"          
+        - platform: time
+          at: "21:00:00"          
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'          
+        action:
+        - service: mqtt.publish
+          data_template:
+            topic: "awtrix_6c9da0/notify"
+            payload_template: '{ "icon": "5582", "pushIcon": "2", "text": "Dog food", "duration": 30, "color": "#FFB266" }'
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_group_tech
+            message: | 
+                 {{"\U0001F916"}} Антонио. Напоминание о еде для собаки {{ states('sensor.time_date') }} 
+           
+      - alias: lr_light_awtrix_youtube
+        id: lr_light_awtrix_youtube
+        description: Гостиная AWTRIX - подписчики Youtube
+        initial_state: true
+        trigger:
+    ## 1 кнопка Aqara Opple
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c79360a_action
+          to: 'button_1_double'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: mqtt.publish
+          data_template:
+            topic: "awtrix_6c9da0/notify"
+            payload_template: '{"icon": "10835", "text": "{{ states(''sensor.youtube_subscriber_count'')}}", "duration": 5 }'
+        - delay: 00:00:05
+        - service: mqtt.publish
+          data_template:
+            topic: "awtrix_6c9da0/notify"
+            payload_template: '{"icon": "10519", "text": "{{ states(''sensor.youtube_view_count'')}}", "color": "#00FF00", "duration": 5 }' 
+        - delay: 00:00:05
+        - service: mqtt.publish
+          data_template:
+            topic: "awtrix_6c9da0/notify"
+            payload_template:  '{"icon": "9452", "text": "{{ states(''sensor.youtube_video_count'')}}", "color": "#007FFF", "duration": 5 }'
+            
+      - alias: lr_light_awtrix_outside_weather
+        id: lr_light_awtrix_outside_weather
+        description: Гостиная AWTRIX - погода 
+        initial_state: true
+        trigger:
+    ## 1 кнопка Aqara Opple
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c79360a_action
+          to: 'button_2_double'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: mqtt.publish
+          data_template:
+            topic: "awtrix_6c9da0/notify"
+            payload_template: '{ "icon": "1165", "text": "{{ states(''sensor.0x00158d0001a4b9da_temperature'')}} C", "duration": 10, "color": "#FFF97D", "noScroll": true }'
+
+    
+      - alias: lr_light_awtrix_threat_notification
+        id: lr_light_awtrix_threat_notification
+        description: Гостиная AWTRIX - тревога
+        initial_state: true          
+        trigger:
+    # Сборный сенсор тревоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'off'
+          to: 'on'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Ночной режим
+        - condition: state
+          entity_id: binary_sensor.night_time
+          state: 'off'
+        action:
+        - service: mqtt.publish
+          data_template:
+            topic: "awtrix_6c9da0/notify"
+            payload_template: '{ "text": "air raid alert", "color": "#FFD4FF", "effect": "Radar", "effectSettings":{ "speed":2, "palette":"Lava", "blend":true }, "duration": 30 }'
+            
+            
+      - alias: lr_light_awtrix_threat_cancel
+        id: lr_light_awtrix_threat_cancel
+        description: остиная AWTRIX - отмена тревоги
+        initial_state: true          
+        trigger:
+    # Сборный сенсор тревоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'on'
+          to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Ночной режим
+        - condition: state
+          entity_id: binary_sensor.night_time
+          state: 'off'
+        action:
+        - service: mqtt.publish
+          data_template:
+            topic: "awtrix_6c9da0/notify"
+            payload_template: '{ "text": "air raid cancelation", "color": "#FFD4FF", "effect": "PlasmaCloud", "effectSettings":{ "speed":2, "palette":"Forest", "blend":true }, "duration": 30 }'

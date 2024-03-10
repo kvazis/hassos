@@ -1,15 +1,30 @@
 test:
 
-
-
-
-
-
-
-
     input_button:
 
-
-    # Кнопка для использования в интерфейсе для имитации нажатия на кнопку выключателя
       test_test:
-        name: Тестовая кнопка
+        name: Test button
+        
+        
+    automation:
+    
+      - alias: awtrix_test_message
+        id: awtrix_test_message
+        description: Awtrix test message
+        initial_state: true
+        trigger:
+    ## Virtual button
+        - platform: state
+          entity_id: input_button.test_test
+        action:
+        - service: mqtt.publish
+          data_template:
+            topic: "awtrix_6c9da0/notify"
+            payload_template: '{"draw":[ {"dt": [0, 0, "Привет", "#00FF00"]} ]}'
+
+
+    
+
+
+            
+
