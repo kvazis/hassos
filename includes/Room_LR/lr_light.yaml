@@ -18,7 +18,11 @@ lr_light:
         light.yeelight_ceiling4_0x4a1dacd_ambilight:
           friendly_name: Гостиная амбилайт люстра 2 
           icon: phu:recessed-ceiling
-          
+
+        light.0x00158d00062fbb54_left:
+          friendly_name: Гостиная свет стена
+          icon: phu:wall-fuzo
+
         light.gld_wled:
           friendly_name: Гостиная WLED светильник
           icon: phu:signe
@@ -31,8 +35,111 @@ lr_light:
           friendly_name: Гостиная прикроватник
           icon: phu:bollard
 
+        light.0xa4c138b72a314e97:
+          friendly_name: Гостиная ТВ подсветка
+          icon: phu:lightstrip-tv-alt
+
+    template:
+
+      - binary_sensor:
+
+     # Сенсор для включения автоматической подсветки
+          - name: lr_mode_auto_light_day_on
+            unique_id: lr_mode_auto_light_day_on
+            state: >
+              {{ is_state('binary_sensor.night_time', 'off') and
+                 is_state('light.yeelight_lamp1_0x32a4ab4', 'off') and
+                 is_state('light.yeelight_ceiling4_0x49c726b', 'off') and                 
+                 is_state('light.yeelight_ceiling4_0x49c726b_ambilight', 'off') and
+                 is_state('light.yeelight_ceiling4_0x4a1dacd', 'off') and
+                 is_state('light.yeelight_ceiling4_0x4a1dacd_ambilight', 'off') and
+                 is_state('light.0x00158d00062fbb54_left', 'off') and
+                 is_state('light.lr_bedside_lamp', 'off') and
+                 is_state('light.0xa4c138b72a314e97', 'off') and
+                 is_state('light.hdmi_tv_lighting_65', 'off') and
+                 states('sensor.0x04cf8cdf3c7cf19e_illuminance_lux')|int < 30 }}
+
+     # Все светильники без ambilight
+          - name: lr_lights_no_ambi
+            unique_id: lr_lights_no_ambi
+            state: >
+              {{ is_state('light.yeelight_lamp1_0x32a4ab4', 'off') and
+                 is_state('light.yeelight_ceiling4_0x49c726b', 'off') and                 
+                 is_state('light.yeelight_ceiling4_0x4a1dacd', 'off') and
+                 is_state('light.0x00158d00062fbb54_left', 'off') and
+                 is_state('light.0xa4c138b72a314e97', 'off') and
+                 is_state('light.lr_bedside_lamp', 'off') and
+                 is_state('binary_sensor.lr_light_tv_cinema', 'off') }}
+
 
     automation:
+
+#################### АВТОМАТИЧЕСКОЕ ОСВЕЩЕНИЕ ####################
+    
+      - alias: lr_ceiling_auto_light_on
+        id: lr_ceiling_auto_light_on
+        description: Гостиная - автоматическое включение освещения
+        initial_state: true
+        trigger:
+    # Сработка сенсора движения
+        - platform: state
+          entity_id: binary_sensor.0x00158d0005414857_occupancy
+          from: 'off'
+          to: 'on'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор дневного режима
+        - condition: state
+          entity_id: binary_sensor.lr_mode_auto_light_day_on
+          state: 'on' 
+        action:
+        - service: light.turn_on
+          entity_id:
+            - light.yeelight_ceiling4_0x49c726b_ambilight
+            - light.yeelight_ceiling4_0x4a1dacd_ambilight
+          data_template:
+            brightness_pct: 75
+            kelvin: 4000
+
+      - alias: lr_ceiling_auto_light_off
+        id: lr_ceiling_auto_light_off
+        description: Гостиная - автоматическое выключение освещения
+        initial_state: true
+        trigger:
+    # Отключение сенсора движения
+        - platform: state
+          entity_id: binary_sensor.0x00158d0005414857_occupancy
+          from: 'on'
+          to: 'off'
+    # Включение любого из светильников кроме амбилайт
+        - platform: state
+          entity_id: binary_sensor.lr_lights_no_ambi
+          from: 'on'
+          to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # ТВ подсветка
+        - condition: state
+          entity_id: light.0xa4c138b72a314e97
+          state: 'off'
+    # Телевизор
+        - condition: state
+          entity_id: binary_sensor.lr_tv_work
+          state: 'off'
+        action:
+        - service: light.turn_off
+          entity_id:
+            - light.yeelight_ceiling4_0x49c726b_ambilight
+            - light.yeelight_ceiling4_0x4a1dacd_ambilight
+
+
+#################### ВСПОМОГАТЕЛЬНОЕ ОСВЕЩЕНИЕ ####################
           
       - alias: lr_light_philips_on_off
         id: lr_light_philips_on_off

@@ -1,0 +1,348 @@
+info  2024-04-09 23:58:33: Logging to console and directory: '/config/zigbee2mqtt_3/log/2024-04-09.23-58-33' filename: log.txt
+info  2024-04-09 23:58:33: Starting Zigbee2MQTT version 1.36.1 (commit #unknown)
+info  2024-04-09 23:58:33: Starting zigbee-herdsman (0.40.3)
+info  2024-04-09 23:58:35: zigbee-herdsman started (resumed)
+info  2024-04-09 23:58:35: Coordinator firmware version: '{"meta":{"maintrel":1,"majorrel":2,"minorrel":7,"product":1,"revision":20230507,"transportrev":2},"type":"zStack3x0"}'
+info  2024-04-09 23:58:35: Set transmit power to '20'
+info  2024-04-09 23:58:35: Currently 1 devices are joined:
+info  2024-04-09 23:58:35: KN wd enter E1 (0x54ef4410000f4741): QBKG39LM - Aqara Smart wall switch E1 (no neutral, double rocker) (EndDevice)
+info  2024-04-09 23:58:35: Zigbee: disabling joining new devices.
+info  2024-04-09 23:58:35: Connecting to MQTT server at mqtt://core-mosquitto:1883
+info  2024-04-09 23:58:35: Connected to MQTT server
+info  2024-04-09 23:58:35: MQTT publish: topic 'zigbee2mqtt_3/bridge/state', payload 'online'
+info  2024-04-09 23:58:35: MQTT publish: topic 'zigbee2mqtt_3/KN wd enter E1/availability', payload 'online'
+info  2024-04-09 23:58:35: Started frontend on port 8099
+info  2024-04-09 23:58:35: MQTT publish: topic 'zigbee2mqtt_3/bridge/config', payload '{"commit":"unknown","coordinator":{"meta":{"maintrel":1,"majorrel":2,"minorrel":7,"product":1,"revision":20230507,"transportrev":2},"type":"zStack3x0"},"log_level":"info","network":{"channel":20,"extendedPanID":"0x00124b0028d59e43","panID":17891},"permit_join":false,"version":"1.36.1"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/binary_sensor/12210510398101101501091131161169551_0x00124b0028d59e43/connection_state/config', payload '{"device":{"hw_version":"zStack3x0 20230507","identifiers":["zigbee2mqtt_bridge_0x00124b0028d59e43"],"manufacturer":"Zigbee2MQTT","model":"Bridge","name":"Zigbee2MQTT Bridge","sw_version":"1.36.1"},"device_class":"connectivity","entity_category":"diagnostic","name":"Connection state","object_id":"zigbee2mqtt_bridge_connection_state","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"payload_off":"offline","payload_on":"online","state_topic":"zigbee2mqtt_3/bridge/state","unique_id":"bridge_0x00124b0028d59e43_connection_state_zigbee2mqtt_3","value_template":"{{ value }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/binary_sensor/12210510398101101501091131161169551_0x00124b0028d59e43/restart_required/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"}],"availability_mode":"all","device":{"hw_version":"zStack3x0 20230507","identifiers":["zigbee2mqtt_bridge_0x00124b0028d59e43"],"manufacturer":"Zigbee2MQTT","model":"Bridge","name":"Zigbee2MQTT Bridge","sw_version":"1.36.1"},"device_class":"problem","enabled_by_default":false,"entity_category":"diagnostic","name":"Restart required","object_id":"zigbee2mqtt_bridge_restart_required","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"payload_off":false,"payload_on":true,"state_topic":"zigbee2mqtt_3/bridge/info","unique_id":"bridge_0x00124b0028d59e43_restart_required_zigbee2mqtt_3","value_template":"{{ value_json.restart_required }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/button/12210510398101101501091131161169551_0x00124b0028d59e43/restart/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"}],"availability_mode":"all","command_topic":"zigbee2mqtt_3/bridge/request/restart","device":{"hw_version":"zStack3x0 20230507","identifiers":["zigbee2mqtt_bridge_0x00124b0028d59e43"],"manufacturer":"Zigbee2MQTT","model":"Bridge","name":"Zigbee2MQTT Bridge","sw_version":"1.36.1"},"device_class":"restart","name":"Restart","object_id":"zigbee2mqtt_bridge_restart","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"payload_press":"","unique_id":"bridge_0x00124b0028d59e43_restart_zigbee2mqtt_3"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/select/12210510398101101501091131161169551_0x00124b0028d59e43/log_level/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"}],"availability_mode":"all","command_template":"{\"options\": {\"advanced\": {\"log_level\": \"{{ value }}\" } } }","command_topic":"zigbee2mqtt_3/bridge/request/options","device":{"hw_version":"zStack3x0 20230507","identifiers":["zigbee2mqtt_bridge_0x00124b0028d59e43"],"manufacturer":"Zigbee2MQTT","model":"Bridge","name":"Zigbee2MQTT Bridge","sw_version":"1.36.1"},"entity_category":"config","name":"Log level","object_id":"zigbee2mqtt_bridge_log_level","options":["info","warn","error","debug"],"origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"state_topic":"zigbee2mqtt_3/bridge/info","unique_id":"bridge_0x00124b0028d59e43_log_level_zigbee2mqtt_3","value_template":"{{ value_json.log_level | lower }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/sensor/12210510398101101501091131161169551_0x00124b0028d59e43/version/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"}],"availability_mode":"all","device":{"hw_version":"zStack3x0 20230507","identifiers":["zigbee2mqtt_bridge_0x00124b0028d59e43"],"manufacturer":"Zigbee2MQTT","model":"Bridge","name":"Zigbee2MQTT Bridge","sw_version":"1.36.1"},"entity_category":"diagnostic","icon":"mdi:zigbee","name":"Version","object_id":"zigbee2mqtt_bridge_version","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"state_topic":"zigbee2mqtt_3/bridge/info","unique_id":"bridge_0x00124b0028d59e43_version_zigbee2mqtt_3","value_template":"{{ value_json.version }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/sensor/12210510398101101501091131161169551_0x00124b0028d59e43/coordinator_version/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"}],"availability_mode":"all","device":{"hw_version":"zStack3x0 20230507","identifiers":["zigbee2mqtt_bridge_0x00124b0028d59e43"],"manufacturer":"Zigbee2MQTT","model":"Bridge","name":"Zigbee2MQTT Bridge","sw_version":"1.36.1"},"enabled_by_default":false,"entity_category":"diagnostic","icon":"mdi:chip","name":"Coordinator version","object_id":"zigbee2mqtt_bridge_coordinator_version","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"state_topic":"zigbee2mqtt_3/bridge/info","unique_id":"bridge_0x00124b0028d59e43_coordinator_version_zigbee2mqtt_3","value_template":"{{ value_json.coordinator.meta.revision }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/sensor/12210510398101101501091131161169551_0x00124b0028d59e43/network_map/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"}],"availability_mode":"all","device":{"hw_version":"zStack3x0 20230507","identifiers":["zigbee2mqtt_bridge_0x00124b0028d59e43"],"manufacturer":"Zigbee2MQTT","model":"Bridge","name":"Zigbee2MQTT Bridge","sw_version":"1.36.1"},"enabled_by_default":false,"entity_category":"diagnostic","json_attributes_template":"{{ value_json.data.value | tojson }}","json_attributes_topic":"zigbee2mqtt_3/bridge/response/networkmap","name":"Network map","object_id":"zigbee2mqtt_bridge_network_map","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"state_topic":"zigbee2mqtt_3/bridge/response/networkmap","unique_id":"bridge_0x00124b0028d59e43_network_map_zigbee2mqtt_3","value_template":"{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/sensor/12210510398101101501091131161169551_0x00124b0028d59e43/permit_join_timeout/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"}],"availability_mode":"all","device":{"hw_version":"zStack3x0 20230507","identifiers":["zigbee2mqtt_bridge_0x00124b0028d59e43"],"manufacturer":"Zigbee2MQTT","model":"Bridge","name":"Zigbee2MQTT Bridge","sw_version":"1.36.1"},"device_class":"duration","entity_category":"diagnostic","name":"Permit join timeout","object_id":"zigbee2mqtt_bridge_permit_join_timeout","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"state_topic":"zigbee2mqtt_3/bridge/info","unique_id":"bridge_0x00124b0028d59e43_permit_join_timeout_zigbee2mqtt_3","unit_of_measurement":"s","value_template":"{{ iif(value_json.permit_join_timeout is defined, value_json.permit_join_timeout, None) }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/switch/12210510398101101501091131161169551_0x00124b0028d59e43/permit_join/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"}],"availability_mode":"all","command_topic":"zigbee2mqtt_3/bridge/request/permit_join","device":{"hw_version":"zStack3x0 20230507","identifiers":["zigbee2mqtt_bridge_0x00124b0028d59e43"],"manufacturer":"Zigbee2MQTT","model":"Bridge","name":"Zigbee2MQTT Bridge","sw_version":"1.36.1"},"icon":"mdi:human-greeting-proximity","name":"Permit join","object_id":"zigbee2mqtt_bridge_permit_join","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"payload_off":"false","payload_on":"true","state_topic":"zigbee2mqtt_3/bridge/info","unique_id":"bridge_0x00124b0028d59e43_permit_join_zigbee2mqtt_3","value_template":"{{ value_json.permit_join | lower }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/switch/0x54ef4410000f4741/switch_left/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"},{"topic":"zigbee2mqtt_3/KN wd enter E1/availability"}],"availability_mode":"all","command_topic":"zigbee2mqtt_3/KN wd enter E1/left/set","device":{"identifiers":["zigbee2mqtt_0x54ef4410000f4741"],"manufacturer":"Aqara","model":"Smart wall switch E1 (no neutral, double rocker) (QBKG39LM)","name":"KN wd enter E1","via_device":"zigbee2mqtt_bridge_0x00124b0028d59e43"},"json_attributes_topic":"zigbee2mqtt_3/KN wd enter E1","name":"Left","object_id":"kn_wd_enter_e1_left","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"payload_off":"OFF","payload_on":"ON","state_topic":"zigbee2mqtt_3/KN wd enter E1","unique_id":"0x54ef4410000f4741_switch_left_zigbee2mqtt_3","value_template":"{{ value_json.state_left }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/switch/0x54ef4410000f4741/switch_right/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"},{"topic":"zigbee2mqtt_3/KN wd enter E1/availability"}],"availability_mode":"all","command_topic":"zigbee2mqtt_3/KN wd enter E1/right/set","device":{"identifiers":["zigbee2mqtt_0x54ef4410000f4741"],"manufacturer":"Aqara","model":"Smart wall switch E1 (no neutral, double rocker) (QBKG39LM)","name":"KN wd enter E1","via_device":"zigbee2mqtt_bridge_0x00124b0028d59e43"},"json_attributes_topic":"zigbee2mqtt_3/KN wd enter E1","name":"Right","object_id":"kn_wd_enter_e1_right","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"payload_off":"OFF","payload_on":"ON","state_topic":"zigbee2mqtt_3/KN wd enter E1","unique_id":"0x54ef4410000f4741_switch_right_zigbee2mqtt_3","value_template":"{{ value_json.state_right }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/sensor/0x54ef4410000f4741/device_temperature/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"},{"topic":"zigbee2mqtt_3/KN wd enter E1/availability"}],"availability_mode":"all","device":{"identifiers":["zigbee2mqtt_0x54ef4410000f4741"],"manufacturer":"Aqara","model":"Smart wall switch E1 (no neutral, double rocker) (QBKG39LM)","name":"KN wd enter E1","via_device":"zigbee2mqtt_bridge_0x00124b0028d59e43"},"device_class":"temperature","enabled_by_default":true,"entity_category":"diagnostic","json_attributes_topic":"zigbee2mqtt_3/KN wd enter E1","object_id":"kn_wd_enter_e1_device_temperature","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"state_class":"measurement","state_topic":"zigbee2mqtt_3/KN wd enter E1","unique_id":"0x54ef4410000f4741_device_temperature_zigbee2mqtt_3","unit_of_measurement":"°C","value_template":"{{ value_json.device_temperature }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/sensor/0x54ef4410000f4741/operation_mode_left/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"},{"topic":"zigbee2mqtt_3/KN wd enter E1/availability"}],"availability_mode":"all","device":{"identifiers":["zigbee2mqtt_0x54ef4410000f4741"],"manufacturer":"Aqara","model":"Smart wall switch E1 (no neutral, double rocker) (QBKG39LM)","name":"KN wd enter E1","via_device":"zigbee2mqtt_bridge_0x00124b0028d59e43"},"enabled_by_default":false,"entity_category":"diagnostic","icon":"mdi:tune","json_attributes_topic":"zigbee2mqtt_3/KN wd enter E1","name":"Operation mode left","object_id":"kn_wd_enter_e1_operation_mode_left","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"state_topic":"zigbee2mqtt_3/KN wd enter E1","unique_id":"0x54ef4410000f4741_operation_mode_left_zigbee2mqtt_3","value_template":"{{ value_json.operation_mode_left }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/select/0x54ef4410000f4741/operation_mode_left/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"},{"topic":"zigbee2mqtt_3/KN wd enter E1/availability"}],"availability_mode":"all","command_topic":"zigbee2mqtt_3/KN wd enter E1/left/set/operation_mode_left","device":{"identifiers":["zigbee2mqtt_0x54ef4410000f4741"],"manufacturer":"Aqara","model":"Smart wall switch E1 (no neutral, double rocker) (QBKG39LM)","name":"KN wd enter E1","via_device":"zigbee2mqtt_bridge_0x00124b0028d59e43"},"enabled_by_default":true,"entity_category":"config","icon":"mdi:tune","json_attributes_topic":"zigbee2mqtt_3/KN wd enter E1","name":"Operation mode left","object_id":"kn_wd_enter_e1_operation_mode_left","options":["control_relay","decoupled"],"origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"state_topic":"zigbee2mqtt_3/KN wd enter E1","unique_id":"0x54ef4410000f4741_operation_mode_left_zigbee2mqtt_3","value_template":"{{ value_json.operation_mode_left }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/sensor/0x54ef4410000f4741/operation_mode_right/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"},{"topic":"zigbee2mqtt_3/KN wd enter E1/availability"}],"availability_mode":"all","device":{"identifiers":["zigbee2mqtt_0x54ef4410000f4741"],"manufacturer":"Aqara","model":"Smart wall switch E1 (no neutral, double rocker) (QBKG39LM)","name":"KN wd enter E1","via_device":"zigbee2mqtt_bridge_0x00124b0028d59e43"},"enabled_by_default":false,"entity_category":"diagnostic","icon":"mdi:tune","json_attributes_topic":"zigbee2mqtt_3/KN wd enter E1","name":"Operation mode right","object_id":"kn_wd_enter_e1_operation_mode_right","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"state_topic":"zigbee2mqtt_3/KN wd enter E1","unique_id":"0x54ef4410000f4741_operation_mode_right_zigbee2mqtt_3","value_template":"{{ value_json.operation_mode_right }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/select/0x54ef4410000f4741/operation_mode_right/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"},{"topic":"zigbee2mqtt_3/KN wd enter E1/availability"}],"availability_mode":"all","command_topic":"zigbee2mqtt_3/KN wd enter E1/right/set/operation_mode_right","device":{"identifiers":["zigbee2mqtt_0x54ef4410000f4741"],"manufacturer":"Aqara","model":"Smart wall switch E1 (no neutral, double rocker) (QBKG39LM)","name":"KN wd enter E1","via_device":"zigbee2mqtt_bridge_0x00124b0028d59e43"},"enabled_by_default":true,"entity_category":"config","icon":"mdi:tune","json_attributes_topic":"zigbee2mqtt_3/KN wd enter E1","name":"Operation mode right","object_id":"kn_wd_enter_e1_operation_mode_right","options":["control_relay","decoupled"],"origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"state_topic":"zigbee2mqtt_3/KN wd enter E1","unique_id":"0x54ef4410000f4741_operation_mode_right_zigbee2mqtt_3","value_template":"{{ value_json.operation_mode_right }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/sensor/0x54ef4410000f4741/mode_switch/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"},{"topic":"zigbee2mqtt_3/KN wd enter E1/availability"}],"availability_mode":"all","device":{"identifiers":["zigbee2mqtt_0x54ef4410000f4741"],"manufacturer":"Aqara","model":"Smart wall switch E1 (no neutral, double rocker) (QBKG39LM)","name":"KN wd enter E1","via_device":"zigbee2mqtt_bridge_0x00124b0028d59e43"},"enabled_by_default":false,"icon":"mdi:tune","json_attributes_topic":"zigbee2mqtt_3/KN wd enter E1","name":"Mode switch","object_id":"kn_wd_enter_e1_mode_switch","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"state_topic":"zigbee2mqtt_3/KN wd enter E1","unique_id":"0x54ef4410000f4741_mode_switch_zigbee2mqtt_3","value_template":"{{ value_json.mode_switch }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/select/0x54ef4410000f4741/mode_switch/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"},{"topic":"zigbee2mqtt_3/KN wd enter E1/availability"}],"availability_mode":"all","command_topic":"zigbee2mqtt_3/KN wd enter E1/set/mode_switch","device":{"identifiers":["zigbee2mqtt_0x54ef4410000f4741"],"manufacturer":"Aqara","model":"Smart wall switch E1 (no neutral, double rocker) (QBKG39LM)","name":"KN wd enter E1","via_device":"zigbee2mqtt_bridge_0x00124b0028d59e43"},"enabled_by_default":true,"icon":"mdi:tune","json_attributes_topic":"zigbee2mqtt_3/KN wd enter E1","name":"Mode switch","object_id":"kn_wd_enter_e1_mode_switch","options":["anti_flicker_mode","quick_mode"],"origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"state_topic":"zigbee2mqtt_3/KN wd enter E1","unique_id":"0x54ef4410000f4741_mode_switch_zigbee2mqtt_3","value_template":"{{ value_json.mode_switch }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/switch/0x54ef4410000f4741/switch_power_outage_memory/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"},{"topic":"zigbee2mqtt_3/KN wd enter E1/availability"}],"availability_mode":"all","command_topic":"zigbee2mqtt_3/KN wd enter E1/set/power_outage_memory","device":{"identifiers":["zigbee2mqtt_0x54ef4410000f4741"],"manufacturer":"Aqara","model":"Smart wall switch E1 (no neutral, double rocker) (QBKG39LM)","name":"KN wd enter E1","via_device":"zigbee2mqtt_bridge_0x00124b0028d59e43"},"entity_category":"config","icon":"mdi:memory","json_attributes_topic":"zigbee2mqtt_3/KN wd enter E1","name":"Power outage memory","object_id":"kn_wd_enter_e1_power_outage_memory","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"payload_off":"false","payload_on":"true","state_topic":"zigbee2mqtt_3/KN wd enter E1","unique_id":"0x54ef4410000f4741_switch_power_outage_memory_zigbee2mqtt_3","value_template":"{% if value_json.power_outage_memory %} true {% else %} false {% endif %}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/switch/0x54ef4410000f4741/switch_flip_indicator_light/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"},{"topic":"zigbee2mqtt_3/KN wd enter E1/availability"}],"availability_mode":"all","command_topic":"zigbee2mqtt_3/KN wd enter E1/set/flip_indicator_light","device":{"identifiers":["zigbee2mqtt_0x54ef4410000f4741"],"manufacturer":"Aqara","model":"Smart wall switch E1 (no neutral, double rocker) (QBKG39LM)","name":"KN wd enter E1","via_device":"zigbee2mqtt_bridge_0x00124b0028d59e43"},"entity_category":"config","icon":"mdi:arrow-left-right","json_attributes_topic":"zigbee2mqtt_3/KN wd enter E1","name":"Flip indicator light","object_id":"kn_wd_enter_e1_flip_indicator_light","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"payload_off":"OFF","payload_on":"ON","state_topic":"zigbee2mqtt_3/KN wd enter E1","unique_id":"0x54ef4410000f4741_switch_flip_indicator_light_zigbee2mqtt_3","value_template":"{{ value_json.flip_indicator_light }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/sensor/0x54ef4410000f4741/action/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"},{"topic":"zigbee2mqtt_3/KN wd enter E1/availability"}],"availability_mode":"all","device":{"identifiers":["zigbee2mqtt_0x54ef4410000f4741"],"manufacturer":"Aqara","model":"Smart wall switch E1 (no neutral, double rocker) (QBKG39LM)","name":"KN wd enter E1","via_device":"zigbee2mqtt_bridge_0x00124b0028d59e43"},"enabled_by_default":true,"entity_category":"diagnostic","icon":"mdi:gesture-double-tap","json_attributes_topic":"zigbee2mqtt_3/KN wd enter E1","name":"Action","object_id":"kn_wd_enter_e1_action","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"state_topic":"zigbee2mqtt_3/KN wd enter E1","unique_id":"0x54ef4410000f4741_action_zigbee2mqtt_3","value_template":"{{ value_json.action }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/sensor/0x54ef4410000f4741/linkquality/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"},{"topic":"zigbee2mqtt_3/KN wd enter E1/availability"}],"availability_mode":"all","device":{"identifiers":["zigbee2mqtt_0x54ef4410000f4741"],"manufacturer":"Aqara","model":"Smart wall switch E1 (no neutral, double rocker) (QBKG39LM)","name":"KN wd enter E1","via_device":"zigbee2mqtt_bridge_0x00124b0028d59e43"},"enabled_by_default":false,"entity_category":"diagnostic","icon":"mdi:signal","json_attributes_topic":"zigbee2mqtt_3/KN wd enter E1","name":"Linkquality","object_id":"kn_wd_enter_e1_linkquality","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"state_class":"measurement","state_topic":"zigbee2mqtt_3/KN wd enter E1","unique_id":"0x54ef4410000f4741_linkquality_zigbee2mqtt_3","unit_of_measurement":"lqi","value_template":"{{ value_json.linkquality }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/sensor/0x54ef4410000f4741/last_seen/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"},{"topic":"zigbee2mqtt_3/KN wd enter E1/availability"}],"availability_mode":"all","device":{"identifiers":["zigbee2mqtt_0x54ef4410000f4741"],"manufacturer":"Aqara","model":"Smart wall switch E1 (no neutral, double rocker) (QBKG39LM)","name":"KN wd enter E1","via_device":"zigbee2mqtt_bridge_0x00124b0028d59e43"},"device_class":"timestamp","enabled_by_default":false,"entity_category":"diagnostic","icon":"mdi:clock","json_attributes_topic":"zigbee2mqtt_3/KN wd enter E1","name":"Last seen","object_id":"kn_wd_enter_e1_last_seen","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"state_topic":"zigbee2mqtt_3/KN wd enter E1","unique_id":"0x54ef4410000f4741_last_seen_zigbee2mqtt_3","value_template":"{{ value_json.last_seen }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/sensor/0x54ef4410000f4741/update_state/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"},{"topic":"zigbee2mqtt_3/KN wd enter E1/availability"}],"availability_mode":"all","device":{"identifiers":["zigbee2mqtt_0x54ef4410000f4741"],"manufacturer":"Aqara","model":"Smart wall switch E1 (no neutral, double rocker) (QBKG39LM)","name":"KN wd enter E1","via_device":"zigbee2mqtt_bridge_0x00124b0028d59e43"},"enabled_by_default":false,"entity_category":"diagnostic","icon":"mdi:update","json_attributes_topic":"zigbee2mqtt_3/KN wd enter E1","name":"Update state","object_id":"kn_wd_enter_e1_update_state","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"state_topic":"zigbee2mqtt_3/KN wd enter E1","unique_id":"0x54ef4410000f4741_update_state_zigbee2mqtt_3","value_template":"{{ value_json['update']['state'] }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/binary_sensor/0x54ef4410000f4741/update_available/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"},{"topic":"zigbee2mqtt_3/KN wd enter E1/availability"}],"availability_mode":"all","device":{"identifiers":["zigbee2mqtt_0x54ef4410000f4741"],"manufacturer":"Aqara","model":"Smart wall switch E1 (no neutral, double rocker) (QBKG39LM)","name":"KN wd enter E1","via_device":"zigbee2mqtt_bridge_0x00124b0028d59e43"},"device_class":"update","enabled_by_default":false,"entity_category":"diagnostic","json_attributes_topic":"zigbee2mqtt_3/KN wd enter E1","name":null,"object_id":"kn_wd_enter_e1_update_available","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"payload_off":false,"payload_on":true,"state_topic":"zigbee2mqtt_3/KN wd enter E1","unique_id":"0x54ef4410000f4741_update_available_zigbee2mqtt_3","value_template":"{{ value_json['update']['state'] == \"available\" }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'homeassistant/update/0x54ef4410000f4741/update/config', payload '{"availability":[{"topic":"zigbee2mqtt_3/bridge/state"},{"topic":"zigbee2mqtt_3/KN wd enter E1/availability"}],"availability_mode":"all","command_topic":"zigbee2mqtt_3/bridge/request/device/ota_update/update","device":{"identifiers":["zigbee2mqtt_0x54ef4410000f4741"],"manufacturer":"Aqara","model":"Smart wall switch E1 (no neutral, double rocker) (QBKG39LM)","name":"KN wd enter E1","via_device":"zigbee2mqtt_bridge_0x00124b0028d59e43"},"device_class":"firmware","entity_category":"config","entity_picture":"https://github.com/Koenkk/zigbee2mqtt/raw/master/images/logo.png","json_attributes_template":"{\"in_progress\": {{ iif(value_json['update']['state'] == 'updating', 'true', 'false') }} }","json_attributes_topic":"zigbee2mqtt_3/KN wd enter E1","latest_version_template":"{{ value_json['update']['latest_version'] }}","latest_version_topic":"zigbee2mqtt_3/KN wd enter E1","name":null,"object_id":"kn_wd_enter_e1","origin":{"name":"Zigbee2MQTT","sw":"1.36.1","url":"https://www.zigbee2mqtt.io"},"payload_install":"{\"id\": \"0x54ef4410000f4741\"}","state_topic":"zigbee2mqtt_3/KN wd enter E1","unique_id":"0x54ef4410000f4741_update_zigbee2mqtt_3","value_template":"{{ value_json['update']['installed_version'] }}"}'
+info  2024-04-09 23:58:35: MQTT publish: topic 'zigbee2mqtt_3/bridge/state', payload 'online'
+info  2024-04-09 23:58:35: MQTT publish: topic 'zigbee2mqtt_3/KN wd enter E1', payload '{"action":null,"device_temperature":25,"flip_indicator_light":null,"last_seen":"2024-04-09T19:59:21.256Z","linkquality":112,"mode_switch":null,"operation_mode_left":"decoupled","operation_mode_right":"decoupled","power_outage_count":24178,"power_outage_memory":true,"power_outage_memory_left":true,"state_left":"OFF","state_right":"ON","update":{"installed_version":-1,"latest_version":-1,"state":null},"update_available":null}'
+info  2024-04-09 23:58:35: Zigbee2MQTT started!
+info  2024-04-10 00:00:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 00:00:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 00:03:10: Removing device 'KN wd enter E1' (block: false, force: true)
+info  2024-04-10 00:03:10: MQTT publish: topic 'homeassistant/switch/0x54ef4410000f4741/switch_left/config', payload 'null'
+info  2024-04-10 00:03:10: MQTT publish: topic 'homeassistant/switch/0x54ef4410000f4741/switch_right/config', payload 'null'
+info  2024-04-10 00:03:10: MQTT publish: topic 'homeassistant/sensor/0x54ef4410000f4741/device_temperature/config', payload 'null'
+info  2024-04-10 00:03:10: MQTT publish: topic 'homeassistant/sensor/0x54ef4410000f4741/operation_mode_left/config', payload 'null'
+info  2024-04-10 00:03:10: MQTT publish: topic 'homeassistant/select/0x54ef4410000f4741/operation_mode_left/config', payload 'null'
+info  2024-04-10 00:03:10: MQTT publish: topic 'homeassistant/sensor/0x54ef4410000f4741/operation_mode_right/config', payload 'null'
+info  2024-04-10 00:03:10: MQTT publish: topic 'homeassistant/select/0x54ef4410000f4741/operation_mode_right/config', payload 'null'
+info  2024-04-10 00:03:10: MQTT publish: topic 'homeassistant/sensor/0x54ef4410000f4741/mode_switch/config', payload 'null'
+info  2024-04-10 00:03:10: MQTT publish: topic 'homeassistant/select/0x54ef4410000f4741/mode_switch/config', payload 'null'
+info  2024-04-10 00:03:10: MQTT publish: topic 'homeassistant/switch/0x54ef4410000f4741/switch_power_outage_memory/config', payload 'null'
+info  2024-04-10 00:03:10: MQTT publish: topic 'homeassistant/switch/0x54ef4410000f4741/switch_flip_indicator_light/config', payload 'null'
+info  2024-04-10 00:03:10: MQTT publish: topic 'homeassistant/sensor/0x54ef4410000f4741/action/config', payload 'null'
+info  2024-04-10 00:03:10: MQTT publish: topic 'homeassistant/sensor/0x54ef4410000f4741/linkquality/config', payload 'null'
+info  2024-04-10 00:03:10: MQTT publish: topic 'homeassistant/sensor/0x54ef4410000f4741/last_seen/config', payload 'null'
+info  2024-04-10 00:03:10: MQTT publish: topic 'homeassistant/sensor/0x54ef4410000f4741/update_state/config', payload 'null'
+info  2024-04-10 00:03:10: MQTT publish: topic 'homeassistant/binary_sensor/0x54ef4410000f4741/update_available/config', payload 'null'
+info  2024-04-10 00:03:10: MQTT publish: topic 'homeassistant/update/0x54ef4410000f4741/update/config', payload 'null'
+info  2024-04-10 00:03:10: MQTT publish: topic 'zigbee2mqtt_3/KN wd enter E1', payload ''
+info  2024-04-10 00:03:10: Successfully removed device 'KN wd enter E1' (block: false, force: true)
+info  2024-04-10 00:03:10: MQTT publish: topic 'zigbee2mqtt_3/bridge/response/device/remove', payload '{"data":{"block":false,"force":true,"id":"KN wd enter E1"},"status":"ok","transaction":"ngbyu-1"}'
+info  2024-04-10 00:05:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 00:05:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 00:10:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 00:10:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 00:15:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 00:15:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 00:20:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 00:20:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 00:25:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 00:25:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 00:30:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 00:30:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 00:35:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 00:35:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 00:40:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 00:40:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 00:45:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 00:45:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 00:50:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 00:50:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 00:55:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 00:55:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 01:00:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 01:00:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 01:05:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 01:05:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 01:10:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 01:10:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 01:15:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 01:15:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 01:20:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 01:20:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 01:25:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 01:25:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 01:30:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 01:30:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 01:35:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 01:35:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 01:40:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 01:40:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 01:45:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 01:45:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 01:50:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 01:50:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 01:55:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 01:55:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 02:00:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 02:00:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 02:05:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 02:05:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 02:10:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 02:10:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 02:15:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 02:15:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 02:20:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 02:20:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 02:25:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 02:25:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 02:30:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 02:30:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 02:35:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 02:35:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 02:40:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 02:40:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 02:45:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 02:45:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 02:50:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 02:50:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 02:55:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 02:55:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 03:00:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 03:00:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 03:05:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 03:05:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 03:10:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 03:10:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 03:15:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 03:15:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 03:20:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 03:20:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 03:25:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 03:25:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 03:30:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 03:30:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 03:35:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 03:35:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 03:40:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 03:40:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 03:45:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 03:45:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 03:50:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 03:50:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 03:55:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 03:55:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 04:00:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 04:00:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 04:05:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 04:05:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 04:10:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 04:10:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 04:15:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 04:15:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 04:20:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 04:20:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 04:25:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 04:25:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 04:30:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 04:30:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 04:35:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 04:35:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 04:40:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 04:40:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 04:45:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 04:45:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 04:50:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 04:50:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 04:55:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 04:55:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 05:00:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 05:00:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 05:05:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 05:05:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 05:10:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 05:10:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 05:15:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 05:15:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 05:20:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 05:20:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 05:25:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 05:25:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 05:30:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 05:30:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 05:35:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 05:35:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 05:40:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 05:40:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 05:45:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 05:45:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 05:50:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 05:50:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 05:55:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 05:55:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 06:00:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 06:00:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 06:05:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 06:05:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 06:10:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 06:10:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 06:15:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 06:15:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 06:20:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 06:20:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 06:25:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 06:25:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 06:30:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 06:30:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 06:35:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 06:35:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 06:40:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 06:40:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 06:45:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 06:45:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 06:50:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 06:50:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 06:55:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 06:55:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 07:00:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 07:00:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 07:05:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 07:05:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 07:10:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 07:10:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 07:15:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 07:15:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 07:20:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 07:20:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 07:25:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 07:25:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 07:30:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 07:30:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 07:35:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 07:35:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 07:40:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 07:40:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 07:45:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 07:45:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 07:50:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 07:50:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 07:55:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 07:55:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 08:00:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 08:00:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 08:05:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 08:05:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 08:10:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 08:10:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 08:15:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 08:15:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 08:20:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 08:20:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 08:25:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 08:25:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 08:30:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 08:30:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 08:35:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 08:35:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 08:40:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 08:40:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 08:45:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 08:45:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 08:50:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 08:50:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 08:55:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 08:55:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 09:00:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 09:00:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 09:05:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 09:05:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 09:10:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 09:10:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 09:15:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 09:15:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 09:20:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 09:20:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 09:25:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 09:25:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 09:30:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 09:30:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 09:35:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 09:35:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 09:40:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 09:40:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 09:45:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 09:45:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 09:50:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 09:50:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 09:55:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 09:55:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 10:00:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 10:00:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 10:05:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 10:05:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 10:10:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 10:10:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 10:15:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 10:15:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 10:20:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 10:20:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 10:25:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 10:25:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 10:30:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 10:30:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 10:35:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 10:35:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 10:40:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 10:40:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 10:45:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 10:45:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 10:50:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 10:50:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 10:55:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 10:55:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 11:00:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 11:00:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 11:05:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 11:05:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 11:10:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 11:10:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 11:15:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 11:15:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 11:20:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 11:20:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 11:25:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 11:25:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 11:30:00: MQTT publish: topic 'zigbee2mqtt_3/bridge/log', payload '{"message":{"friendly_name":"LR TV Strip"},"type":"entity_not_found"}'
+error 2024-04-10 11:30:00: Entity 'LR TV Strip' is unknown
+info  2024-04-10 11:31:11: MQTT publish: topic 'zigbee2mqtt_3/bridge/state', payload 'offline'
+info  2024-04-10 11:31:11: Disconnecting from MQTT server
+info  2024-04-10 11:31:11: Stopping zigbee-herdsman...
+info  2024-04-10 11:31:22: Stopped zigbee-herdsman
+info  2024-04-10 11:31:22: Stopped Zigbee2MQTT

@@ -1,16 +1,5 @@
 tt_reboot:
 
-    homeassistant:
-      customize:
- 
-        automation.tt_reboot_ceiling:
-          friendly_name: Туалет перезагрузка зависшей люстры 
-          icon: mdi:reload 
-      
-        automation.tt_reboot_switch:
-          friendly_name: Туалет включение выключателя
-          icon: phu:aqara-h1-switch
-
     template:
 
       - binary_sensor:
@@ -19,8 +8,7 @@ tt_reboot:
           - name: tt_light_unavailable
             unique_id: tt_light_unavailable
             state: >
-              {{ is_state('light.0x54ef44100096af68', 'unavailable')  
-                 and states('sensor.count_light_unavailable')|int < 3 }}
+              {{ is_state('light.0x54ef44100096af68', 'unavailable') }}
             delay_on: 
                 minutes: 3
             device_class: problem
@@ -43,14 +31,14 @@ tt_reboot:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Сенсор электричества - электропитание есть
-        - condition: state
-          entity_id: binary_sensor.electricity
-          state: 'off'
     # Сенсор определяющий недоступность люстры
         - condition: state
           entity_id: binary_sensor.tt_light_unavailable
           state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off'
         action:
     # Перезагрузка по питанию
         - service: switch.turn_off
@@ -80,3 +68,23 @@ tt_reboot:
         - delay: 00:00:05
         - service: switch.turn_on
           entity_id: switch.0x00158d00014dceb3_left
+          
+      - alias: tt_reboot_switch_check
+        id: tt_reboot_switch_check
+        description: Туалет проверка статуса выключателя
+        initial_state: true
+        trigger:
+    # Проверка раз в 15 минут
+        - platform: time_pattern
+          minutes: '/15'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+    # Принудительное обновление статуса
+        - service: mqtt.publish
+          data_template:
+            topic: "zigstar/TT wd 2ch enter/get"
+            payload_template: '{ "state_left": "" }'

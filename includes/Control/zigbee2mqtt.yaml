@@ -1,65 +1,40 @@
 zigbee2mqtt:
 
-    homeassistant:
-      customize:
-        
-        automation.control_zigstar_lan:
-          friendly_name: Активация zigstar LAN bridge
-          icon: mdi:zigbee
-          
-        automation.control_zigstar_poe:
-          friendly_name: Активация zigstar POE bridge
-          icon: mdi:zigbee
-
-        sensor.zigstar_lan_state:
-          friendly_name: ZigStar LAN State
-          icon: mdi:zigbee
-
-        sensor.zigstar_poe_state:
-          friendly_name: ZigStar POE State
-          icon: mdi:zigbee
-
-
-    mqtt:
-
-      sensor:
-        - name: zigstar_lan_state
-          unique_id: zigstar_lan_state
-          state_topic: "zigstar/bridge/state"
-          
-        - name: zigstar_poe_state
-          unique_id: zigstar_poe_state
-          state_topic: "zigstar_poe/bridge/state"
-          
-          
     template:
      
       - binary_sensor:
 
-          - name: zigstar_lan_state
-            unique_id: zigstar_lan_state
+          - name: zigbee2mqtt_1_state
+            unique_id: zigbee2mqtt_1_state
             state: >
-              {{ is_state('sensor.zigstar_lan_state', 'offline')  
+              {{ is_state('binary_sensor.zigbee2mqtt_bridge_connection_state_1', 'off')  
               }}
             delay_on: 00:00:15
             
-          - name: zigstar_poe_state
-            unique_id: zigstar_poe_state
+          - name: zigbee2mqtt_2_state
+            unique_id: zigbee2mqtt_2_state
             state: >
-              {{ is_state('sensor.zigstar_poe_state', 'offline')  
+              {{ is_state('binary_sensor.zigbee2mqtt_bridge_connection_state_2', 'off')  
+              }}
+            delay_on: 00:00:15
+            
+          - name: zigbee2mqtt_3_state
+            unique_id: zigbee2mqtt_3_state
+            state: >
+              {{ is_state('binary_sensor.zigbee2mqtt_bridge_connection_state_3', 'off')  
               }}
             delay_on: 00:00:15
 
 
     automation:
     
-      - alias: control_zigstar_lan
-        id: control_zigstar_lan
-        description: Активация zigstar LAN bridge
+      - alias: control_zigbee2mqtt_1
+        id: control_zigbee2mqtt_1
+        description: Активация zigbee2mqtt 1
         initial_state: true
         trigger:
          - platform: state
-           entity_id: binary_sensor.zigstar_lan_state
+           entity_id: binary_sensor.zigbee2mqtt_1_state
            from: 'off'    
            to: 'on'
         action:
@@ -68,19 +43,34 @@ zigbee2mqtt:
              topic: zigstar/bridge/state
              payload: online
              
-      - alias: control_zigstar_poe
-        id: control_zigstar_poe
-        description: Активация zigstar POE bridge
+      - alias: control_zigbee2mqtt_2
+        id: control_zigbee2mqtt_2
+        description: Активация zigbee2mqtt 2
         initial_state: true
         trigger:
          - platform: state
-           entity_id: binary_sensor.zigstar_poe_state
+           entity_id: binary_sensor.zigbee2mqtt_2_state
            from: 'off'    
            to: 'on'
         action:
          - service: mqtt.publish
            data:
              topic: zigstar_poe/bridge/state
+             payload: online 
+             
+      - alias: control_zigbee2mqtt_3
+        id: control_zigbee2mqtt_3
+        description: Активация zigstar zigbee2mqtt 3
+        initial_state: false
+        trigger:
+         - platform: state
+           entity_id: binary_sensor.zigbee2mqtt_3_state
+           from: 'off'    
+           to: 'on'
+        action:
+         - service: mqtt.publish
+           data:
+             topic: zigbee2mqtt_3/bridge/state
              payload: online 
         
         

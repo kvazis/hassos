@@ -1,0 +1,34 @@
+bt_sensors:
+
+
+    recorder:
+      include:
+        entities:
+           - sensor.0x00158d0001dcd47e_temperature
+           - sensor.0x00158d0001dcd47e_humidity
+           - binary_sensor.0x00158d0001e547a3_occupancy
+           - binary_sensor.0xa4c138a9cf8e75ef_presence
+
+    homeassistant:
+      customize:
+        
+        sensor.0x00158d0001dcd47e_humidity:
+          friendly_name: Ванная, влажность
+          icon: mdi:water-percent
+          unit_of_measurement: '%'
+        sensor.0x00158d0001dcd47e_temperature:
+          friendly_name: Ванная, температура
+          icon: mdi:temperature-celsius
+          unit_of_measurement: '°C'
+        sensor.0x00158d0001dcd47e_battery:
+          friendly_name: Ванная, климат
+        binary_sensor.0x00158d0001e547a3_occupancy:
+          friendly_name: Ванная, датчик движения
+        sensor.0x00158d0001e547a3_battery:
+          friendly_name: Ванная, датчик движения
+        binary_sensor.0xa4c138a9cf8e75ef_presence:
+          friendly_name: Ванная, датчик присутствия
+        sensor.0xa4c138a9cf8e75ef_illuminance_lux:
+          friendly_name: Ванная, освещенность
+        sensor.0xa4c138a9cf8e75ef_battery:
+          friendly_name: Ванная, датчик присутствия

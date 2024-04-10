@@ -1,12 +1,5 @@
 tt_fan:
 
-    homeassistant:
-      customize:
-
-        automation.tt_fan_control:
-          friendly_name: Туалет управление вентилятором
-          icon: mdi:fan
-      
     template:
      
       - binary_sensor:

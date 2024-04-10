@@ -1,0 +1,72 @@
+bt_reboot:
+
+
+    template:
+
+      - binary_sensor:
+      
+    # Сенсор определяющий недоступность люстры
+          - name: bt_ceiling_unavailable
+            unique_id: bt_ceiling_unavailable
+            state: >
+              {{ is_state('light.yeelight_ceiling3_0x45727f2', 'unavailable') }}
+            delay_on: 
+                minutes: 3
+            device_class: problem  
+            
+    automation:
+    
+#################### ПЕРЕЗАГРУЗКА ЛЮСТРЫ ####################
+               
+      - alias: bt_reboot_ceiling
+        id: bt_reboot_ceiling
+        description: Ванная - перезагрузка зависшей люстры
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Сенсор определяющий недоступность люстры
+        - condition: state
+          entity_id: binary_sensor.bt_ceiling_unavailable
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off'  
+        action: 
+     # Перезагрузка по питанию если люстра недоступна
+        - service: switch.turn_off
+          entity_id: switch.0x00158d0001117040_right
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0x00158d0001117040_right
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_log
+            message: | 
+                 {{"\U0001F916"}} Антонио. Ванная -  перезагрузка люстры {{ states('sensor.time_date') }} 
+                 
+#################### АВТОВКЛЮЧЕНИЕ ВЫКЛЮЧАТЕЛЯ ЛЮСТРЫ ####################
+
+      - alias: bt_reboot_switch
+        id: bt_reboot_switch
+        description: Ванная включение выключателя
+        initial_state: true
+        trigger:
+    # Выключение выключателя
+        - platform: state
+          entity_id: switch.0x00158d0001117040_right
+          to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+    # Включение
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0x00158d0001117040_right

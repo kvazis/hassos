@@ -1,40 +1,5 @@
 out_camera:
 
-    homeassistant:
-      customize:
-
-        automation.camera_hikvision1_photo:
-          friendly_name: Hikvision 1 - фото и отправка в телеграмм
-          icon: phu:reolink-811
-          
-        automation.camera_hikvision1_cast:
-          friendly_name: Hikvision 1 - Google Cast
-          icon: phu:nest-hub
-          
-        automation.camera_hikvision3_photo:
-          friendly_name: Hikvision 3 - фото и отправка в телеграмм
-          icon: phu:reolink-811
-          
-        automation.camera_hikvision3_cast:
-          friendly_name: Hikvision 3 - Google Cast
-          icon: phu:nest-hub
-
-        automation.camera_hikvision5_photo:
-          friendly_name: Hikvision 5 - фото и отправка в телеграмм
-          icon: phu:reolink-811
-          
-        automation.camera_hikvision5_cast:
-          friendly_name: Hikvision 5 - Google Cast
-          icon: phu:nest-hub
-
-        automation.camera_hikvision7_photo:
-          friendly_name: Hikvision 7 - фото и отправка в телеграмм
-          icon: phu:reolink-811
-          
-        automation.camera_hikvision7_cast:
-          friendly_name: Hikvision 7 - Google Cast
-          icon: phu:nest-hub
-
     input_button:
 
       hikvision1_photo:

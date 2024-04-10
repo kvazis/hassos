@@ -11,8 +11,7 @@ da_reboot:
           - name: da_wled_unavailable
             unique_id: da_wled_unavailable
             state: >
-              {{ is_state('light.da_wled', 'unavailable')  
-                 and states('sensor.count_light_unavailable')|int < 3 }}
+              {{ is_state('light.da_wled', 'unavailable') }}
             delay_on: 
                 minutes: 5
             device_class: problem    
@@ -21,15 +20,11 @@ da_reboot:
           - name: da_yeelight_unavailable
             unique_id: da_yeelight_unavailable
             state: >
-              {{ is_state('light.yeelight_stripe_0x3618ad8', 'unavailable')  
-                 and states('sensor.count_light_unavailable')|int < 3 }}
+              {{ is_state('light.yeelight_stripe_0x3618ad8', 'unavailable') }}
             delay_on: 
                 minutes: 5
             device_class: problem 
-            
-            
-            
-            
+
     automation:
     
 #################### ПЕРЕЗАГРУЗКА WLED ЛЕНТЫ ####################

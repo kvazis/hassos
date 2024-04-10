@@ -7,6 +7,8 @@ cr_sensor:
            - sensor.0x00124b0022659c04_temperature
            - sensor.0x00124b0022659c04_humidity
            - binary_sensor.0x00158d00010f8920_occupancy
+           - sensor.0x00158d0002a4f77e_action
+           - binary_sensor.0x00158d0002a4f77e_vibration
 
 
     homeassistant:

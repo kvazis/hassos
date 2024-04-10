@@ -11,26 +11,6 @@ cr_light:
           friendly_name: Коридор - амбилайт
           icon: phu:recessed-ceiling
 
-        automation.cr_ceiling_light_manual_control:
-          friendly_name: Коридор - ручное управление люстрой
-          icon: phu:ceiling-adore-alt-flush
-          
-        automation.cr_ceiling_light_vibration:
-          friendly_name: Коридор - включение по датчику вибрации
-          icon: phu:aqara-vibration
-          
-        automation.cr_ceiling_light_auto_off:
-          friendly_name: Коридор - автоматическое выключение освещения
-          icon: phu:aqara-motion
-          
-        automation.cr_ceiling_light_moving:
-          friendly_name: Коридор - включение по датчику движения ночью
-          icon: phu:aqara-motion
-          
-        automation.cr_en_light_control:
-          friendly_name: Коридор и прихожая, управление освещением
-          icon: phu:bulb-group-ceiling-round          
-
     template:
      
       - binary_sensor:

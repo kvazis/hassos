@@ -3,8 +3,8 @@ lr_fan:
     automation:
     
     # Управление охлаждающей подставкой ноута
-      - alias: lr_fan_notebook
-        id: lr_fan_notebook
+      - alias: lr_control_fan_notebook
+        id: lr_control_fan_notebook
         description: Управление охлаждающей подставкой ноута
         initial_state: true
         trigger:

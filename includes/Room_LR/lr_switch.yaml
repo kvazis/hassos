@@ -1,0 +1,8 @@
+lr_switch:
+
+
+    homeassistant:
+      customize:
+
+        switch.0xa4c138cd1b6a0a9a:
+          friendly_name: Датчик электрики в гостиной, питание

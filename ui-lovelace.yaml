@@ -8,3 +8,5 @@ views:
   - !include lovelace/130_tt_control.yaml
   - !include lovelace/140_kn_climate.yaml
   - !include lovelace/141_kn_control.yaml
+  - !include lovelace/151_lr_control.yaml
+  - !include lovelace/160_bt_control.yaml

@@ -1,0 +1,16 @@
+lr_tv_control:
+
+    template:
+     
+      - binary_sensor:
+
+          - name: lr_tv_work
+            unique_id: lr_tv_work
+            state: >
+              {{ states('sensor.0xa4c1384452a34172_power')|int > 50 }}
+            icon: >
+              {% if is_state("binary_sensor.lr_tv_work", "on") %}
+              mdi:television
+              {% else %}
+              mdi:television-off
+              {% endif %}

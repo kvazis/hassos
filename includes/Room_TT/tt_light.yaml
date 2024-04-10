@@ -34,30 +34,6 @@ tt_light:
         sensor.0x70ac08fffe263e24_battery:
           friendly_name: Туалет Moes диммер
 
-        automation.tt_light_fixation:
-          friendly_name: Туалет фиксация освещения
-          icon: mdi:lock
-          
-        automation.tt_light_on:
-          friendly_name: Туалет включение света
-          icon: phu:ceiling-devere
-
-        automation.tt_light_off:
-          friendly_name: Туалет выключение света
-          icon: phu:ceiling-devere
-          
-        automation.tt_light_mirror:
-          friendly_name: Туалет управление подсветкой зеркала
-          icon: mdi:mirror
-          
-        automation.tt_light_switching:
-          friendly_name: Туалет переключение основного и аварийного освещения
-          icon: mdi:swap-horizontal
-          
-        automation.tt_light_main_sublight_toggle:
-          friendly_name: Туалет переключение люстры и подсветки
-          icon: mdi:swap-horizontal
-          
     input_boolean:
     
       tt_occupancy:
@@ -65,7 +41,19 @@ tt_light:
         icon: mdi:toilet
         
     template:
-     
+
+    # # Сенсор работающий 2 секунды после открытия двери
+    #   - trigger:
+    # # Датчик открытия - дверь открылась
+    #     - platform: state
+    #       entity_id: light.0x54ef44100096af68
+    #       to: 'off'
+    #     binary_sensor:
+    #       - name: tt_light_on_block
+    #         unique_id: tt_light_on_block
+    #         auto_off: 3
+    #         state: "true"
+
       - binary_sensor:
 
     # Определение работы освещения
@@ -139,7 +127,6 @@ tt_light:
               }}
             device_class: light
             
-
     automation:
 
     # Фиксация присуствия в туалете
@@ -172,6 +159,12 @@ tt_light:
                 sequence:         
                   - service: input_boolean.turn_off
                     entity_id: input_boolean.tt_occupancy
+                #   - service: light.turn_off
+                #     entity_id:
+                #       - light.0x54ef44100096af68
+                #       - light.0x00124b0023ae464d_righ
+                #       - light.0x00124b0023ae464d_left
+
             
       - alias: tt_light_on
         id: tt_light_on
@@ -313,7 +306,8 @@ tt_light:
             - light.0x54ef44100096af68
             - light.0x00124b0023ae464d_righ
             - light.0x00124b0023ae464d_left
-            
+ 
+
     # Управление подсветкой зеркала
       - alias: tt_light_mirror
         id: tt_light_mirror
@@ -335,8 +329,24 @@ tt_light:
           entity_id: switch.control_mode
           state: 'on'
         action:
-        - service: light.toggle
-          entity_id: light.0x00124b0023ae464d_right
+            - choose:
+    # Есть электрика
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.electricity
+                    state: 'off'
+                sequence:        
+                  - service: light.turn_on
+                    entity_id: light.0x00124b0023ae464d_right
+    # Нет электрики
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.electricity
+                    state: 'on'
+                sequence:        
+                  - service: light.turn_on
+                    entity_id: light.0x00124b0023ae464d_left
+
             
     # Переключение основного и аварийного освещения
       - alias: tt_light_switching

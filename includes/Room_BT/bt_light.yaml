@@ -6,3 +6,151 @@ bt_light:
         light.yeelight_ceiling3_0x45727f2:
           friendly_name: Ванная, люстра
           icon: phu:yeelight-ceiling
+          
+          
+    template:
+
+      - binary_sensor:
+    
+    # Свет без движения в ванной днем дверь открыта
+          - name: bt_light_day_open_door
+            unique_id: bt_light_day_open_door
+            state: >
+              {{ is_state('light.yeelight_ceiling3_0x45727f2', 'on')  
+                 and is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'off')
+                 and is_state('binary_sensor.0xa4c138a9cf8e75ef_presence', 'off')
+                 and is_state('binary_sensor.0x00158d00054495dc_contact', 'on')
+                 and is_state('binary_sensor.night_time', 'off')
+              }}
+            delay_on: 00:01:00
+            device_class: light
+            
+    # Свет без движения в ванной ночью дверь открыта
+          - name: bt_light_night_open_door
+            unique_id: bt_night_day_open_door
+            state: >
+              {{ is_state('light.yeelight_ceiling3_0x45727f2', 'on')  
+                 and is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'off')
+                 and is_state('binary_sensor.0xa4c138a9cf8e75ef_presence', 'off')
+                 and is_state('binary_sensor.0x00158d00054495dc_contact', 'on')
+                 and is_state('binary_sensor.night_time', 'on')
+              }}
+            device_class: light
+            
+    # Свет без движения в ванной дверь закрыта
+          - name: bt_light_closed_door
+            unique_id: bt_light_closed_door
+            state: >
+              {{ is_state('light.yeelight_ceiling3_0x45727f2', 'on')  
+                 and is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'off')
+                 and is_state('binary_sensor.0xa4c138a9cf8e75ef_presence', 'off')
+                 and is_state('binary_sensor.0x00158d00054495dc_contact', 'off')
+              }}
+            delay_on: 00:15:00
+            device_class: light
+            
+    automation:
+    
+      - alias: bt_light_on
+        id: bt_light_on
+        description: Ванная включение света
+        initial_state: true
+        trigger:
+    # Датчик присутствия 
+        - platform: state
+          entity_id: binary_sensor.0xa4c138a9cf8e75ef_presence
+          to: 'on'
+    # Датчик движения
+        - platform: state
+          entity_id: binary_sensor.0x00158d0001e547a3_occupancy
+          to: 'on'
+    # Выключатель на стене у входа
+        - platform: state
+          entity_id: sensor.0x00158d0001117040_action
+          to: 'single_right'
+    # Выключатель в ванной
+        - platform: state
+          entity_id: sensor.0x00158d000238a140_action
+          to: 'single_left'
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_5_triple'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Свет выключен
+        - condition: state
+          entity_id: light.yeelight_ceiling3_0x45727f2
+          state: 'off'
+        action:
+            - choose:
+    # Включение днем
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.night_time
+                    state: 'off' 
+                sequence:        
+                  - service: light.turn_on
+                    entity_id: light.yeelight_ceiling3_0x45727f2
+                    data_template:
+                      brightness_pct: 100
+                      kelvin: 4000         
+    # Включение ночью
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.night_time
+                    state: 'on' 
+                sequence:        
+                  - service: light.turn_on
+                    entity_id: light.yeelight_ceiling3_0x45727f2
+                    data_template:
+                      brightness_pct: 60
+                      kelvin: 4000 
+                      
+      - alias: bt_light_off
+        id: bt_light_off
+        description: Ванная выключение света
+        initial_state: true
+        trigger:
+    # Виртуальные сущности 
+    # Выключение света без движения в ванной днем дверь открыта
+        - platform: state
+          entity_id: binary_sensor.bt_light_day_open_door
+          to: 'on'
+    # Выключение света без движения в ванной ночью дверь открыта
+        - platform: state
+          entity_id: binary_sensor.bt_light_night_open_door
+          to: 'on'
+    # Выключение света без движения в ванной дверь закрыта
+        - platform: state
+          entity_id: binary_sensor.bt_light_closed_door
+          to: 'on'
+    # Физические сущности 
+    # Выключатель на стене у входа
+        - platform: state
+          entity_id: sensor.0x00158d0001117040_action
+          to: 'single_right'
+    # Выключатель в ванной
+        - platform: state
+          entity_id: sensor.0x00158d000238a140_action
+          to: 'single_left'
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_5_triple'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Свет включен
+        - condition: state
+          entity_id: light.yeelight_ceiling3_0x45727f2
+          state: 'on'
+        action:
+        - service: light.turn_off
+          entity_id:
+            - light.yeelight_ceiling3_0x45727f2

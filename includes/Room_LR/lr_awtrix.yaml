@@ -30,21 +30,25 @@ lr_awtrix:
                     entity_id: binary_sensor.night_time
                     state: 'on'
                 sequence:
-                  - service: light.turn_on
-                    entity_id:
-                      - light.awtrix_6c9da0_matrix
-                    data_template:
-                      brightness_pct: 5
+                  - service: mqtt.publish
+                    data:
+                      qos: 0
+                      retain: false
+                      topic: awtrix_6c9da0/settings
+                      payload: >-
+                         { "WD": false, "TIME_COL": "#5CE0FF", "TMODE": 0, "BRI": 10, "ABRI": false, "ATRANS": false }
               - conditions:
                   - condition: state
                     entity_id: binary_sensor.night_time
                     state: 'off'
                 sequence:
-                  - service: light.turn_on
-                    entity_id:
-                      - light.awtrix_6c9da0_matrix
-                    data_template:
-                      brightness_pct: 50
+                  - service: mqtt.publish
+                    data:
+                      qos: 0
+                      retain: false
+                      topic: awtrix_6c9da0/settings
+                      payload: >-
+                         { "WD": true, "TIME_COL": [255,255,255], "TMODE": 1, "BRI": 50, "ABRI": false, "ATRANS": false }
           
       - alias: lr_light_awtrix_dog_food
         id: lr_light_awtrix_dog_food
@@ -68,7 +72,7 @@ lr_awtrix:
         - service: mqtt.publish
           data_template:
             topic: "awtrix_6c9da0/notify"
-            payload_template: '{ "icon": "5582", "pushIcon": "2", "text": "Dog food", "duration": 30, "color": "#FFB266" }'
+            payload_template: '{ "icon": "5582", "pushIcon": "2", "text": "Собача їжа", "duration": 30, "color": "#FFB266" }'
         - service: telegram_bot.send_message
           data_template:
             target:
@@ -148,7 +152,7 @@ lr_awtrix:
         - service: mqtt.publish
           data_template:
             topic: "awtrix_6c9da0/notify"
-            payload_template: '{ "text": "air raid alert", "color": "#FFD4FF", "effect": "Radar", "effectSettings":{ "speed":2, "palette":"Lava", "blend":true }, "duration": 30 }'
+            payload_template: '{ "text": "повітряна тривога", "color": "#FFD4FF", "effect": "Radar", "effectSettings":{ "speed":2, "palette":"Lava", "blend":true }, "duration": 30 }'
             
             
       - alias: lr_light_awtrix_threat_cancel
@@ -174,4 +178,4 @@ lr_awtrix:
         - service: mqtt.publish
           data_template:
             topic: "awtrix_6c9da0/notify"
-            payload_template: '{ "text": "air raid cancelation", "color": "#FFD4FF", "effect": "PlasmaCloud", "effectSettings":{ "speed":2, "palette":"Forest", "blend":true }, "duration": 30 }'
+            payload_template: '{ "text": "відбій тривоги", "color": "#FFD4FF", "effect": "PlasmaCloud", "effectSettings":{ "speed":2, "palette":"Forest", "blend":true }, "duration": 30 }'

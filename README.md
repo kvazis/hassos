@@ -1,5 +1,20 @@
 ## Новый рабочий сервер
 
+
+### Обновление 2024 04 10     
+#### Пакаджи (незначительные изменения - синтаксис, правки - не описываю, только новое)     
+:arrow_right: [camera_reboot.yaml.yaml](https://github.com/kvazis/hassos/blob/master/includes/Camera/out_camera.yaml) - автоматическая перезагрузка камер в случае пропадания потока       
+:arrow_right: [power_failure.yaml](https://github.com/kvazis/hassos/blob/master/includes/Global/power_failure.yaml) - добавил проверку на залипание датчика, когда свет есть а датчик выключен, переключается розеткой      
+:arrow_right: [bt_boiler.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_BT/bt_boiler.yaml) - управление бойлером в ванной, логика показана в [уроке](https://youtu.be/554WOsyl0-Y)     
+:arrow_right: [bt_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_BT/bt_light.yaml) - управление освещением в ванной, зависимость от времени суток, закрытия двери, присутствия     
+:arrow_right: [bt_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_BT/bt_reboot.yaml) - перезагрузка люстры и контроль работы выключателя в ванной     
+:arrow_right: [bt_sensors.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_BT/bt_sensors.yaml) - описание сенсоров в ванной     
+:arrow_right: [bt_switch.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_BT/bt_switch.yaml) - описание реле (розеток, выключателей) в ванной     
+
+#### Интерфейс, в режиме yaml (правки существующих страниц не описываю)    
+:arrow_right: [ui-lovelace.yaml](https://github.com/kvazis/hassos/blob/master/ui-lovelace.yaml) - добавлена новая страница - ванная    
+:arrow_right: [160_bt_control.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/160_bt_control.yaml) - страница ванной    
+
 ### Обновление 2024 03 10     
 #### Пакаджи     
 

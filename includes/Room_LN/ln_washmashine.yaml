@@ -22,10 +22,6 @@ ln_washmashine:
           icon: mdi:chart-line
         sensor.0x842e14fffe51c5ae_voltage:
           friendly_name: Cтиральная машина, напряжение
-
-        automation.ln_washing_end:
-          friendly_name: Уведомление о завершении стирки
-          icon: mdi:washing-machine-alert
           
     template:
     

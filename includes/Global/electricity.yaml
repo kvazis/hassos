@@ -185,6 +185,7 @@ electricity:
             unique_id: phase_1_energy
             state: >
                 {{ states('sensor.0x70ac08fffe99c363_energy')|float(0) }}
+            availability: "{{ (states('sensor.0x70ac08fffe99c363_energy')|float > 0 ) }}" 
 
           - name: phase_1_power
             unique_id: phase_1_power
@@ -207,6 +208,7 @@ electricity:
             unique_id: phase_2_energy
             state: >
                 {{ states('sensor.0x187a3efffe355cf1_energy')|float(0) }}
+            availability: "{{ (states('sensor.0x187a3efffe355cf1_energy')|float > 0 ) }}" 
 
           - name: phase_2_power
             unique_id: phase_2_power
@@ -228,6 +230,7 @@ electricity:
             unique_id: phase_3_energy
             state: >
                 {{ states('sensor.0x187a3efffe303832_energy')|float(0) }}
+            availability: "{{ (states('sensor.0x187a3efffe303832_energy')|float > 0 ) }}" 
                 
           - name: phase_3_power
             unique_id: phase_3_power

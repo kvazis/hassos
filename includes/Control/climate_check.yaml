@@ -1,12 +1,5 @@
 climate_check:
 
-    homeassistant:
-      customize:
-        
-        automation.control_mosquitto_reload:
-          friendly_name: Перезагрузка аддона mosquitto
-          icon: phu:mosquitto
-
     template:
     
       - binary_sensor:
@@ -46,7 +39,7 @@ climate_check:
           entity_id: binary_sensor.all_climate_unavailable
           state: 'on'
         action:
-        - service: hassio.addon_restart
+        - service: hassio.addon_stop
           data:
             addon: core_mosquitto
         - service: telegram_bot.send_message
@@ -55,3 +48,9 @@ climate_check:
                 - !secret chat_id_log
             message: | 
                  {{"\U0001F916"}} Антонио - Отвалились термоголовки, дергаю москито {{ states('sensor.time_date') }} 
+        - delay: 00:00:10
+        - service: hassio.addon_start
+          data:
+            addon: core_mosquitto        
+
+        

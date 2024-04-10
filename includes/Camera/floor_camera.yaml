@@ -11,33 +11,6 @@ floor_camera:
         input: !secret reolink_410_sub_rtsp
             
 
-    homeassistant:
-      customize:
-
-        automation.camera_reolink411_photo:
-          friendly_name: Reolink 411 ws - фото и отправка в телеграмм
-          icon: phu:reolink-811
-          
-        automation.camera_reolink411_cast:
-          friendly_name: Reolink 411 ws - Google Cast, кнопка
-          icon: phu:nest-hub
-          
-        automation.camera_reolink410_photo:
-          friendly_name: Reolink 410 - фото и отправка в телеграмм
-          icon: phu:reolink-811
-          
-        automation.camera_reolink410_cast:
-          friendly_name: Reolink 410 - Google Cast, кнопка
-          icon: phu:nest-hub
-          
-        automation.camera_reolink411_cast_motion:
-          friendly_name: Reolink 411 ws - Google Cast, датчик движения
-          icon: phu:nest-hub
-          
-        automation.camera_reolink411_cast_motion_block:
-          friendly_name: Reolink 411 ws - Google Cast, блокировка
-          icon: mdi:cancel
-
     template:
     
       - binary_sensor:

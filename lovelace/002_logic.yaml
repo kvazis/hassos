@@ -36,6 +36,36 @@ cards:
                    options:
                       secondary_info: last-changed
                       state_color: true 
+
+################# Электрика #################
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:
+      
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #009933;
+                     font-weight: bold;
+                     font-size: 20px;
+                   }          
+              content: >
+                 **Электрика**
+                 
+            - type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                show_header_toggle: false
+              filter:
+                include:
+                 - entity_id: automation.electricity*
+                #   state: 'unavailable'
+                   options:
+                      secondary_info: last-changed
+                      state_color: true
                       
 ################# Уведомления #################
         - type: custom:stack-in-card
@@ -67,7 +97,7 @@ cards:
                       secondary_info: last-changed
                       state_color: true 
                       
-                      
+
 ################# Камеры #################
         - type: custom:stack-in-card
           mode: vertical
@@ -401,6 +431,31 @@ cards:
               content: >
                  **Освещение люстра**
 
+            - type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                show_header_toggle: false
+              filter:
+                include:
+                 - entity_id: automation.lr_ceiling_*
+                 - entity_id: automation.lr_light_*
+                   options:
+                      secondary_info: last-changed
+                      state_color: true
+
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Управление**
+
 
             - type: custom:auto-entities
               show_empty: false
@@ -409,7 +464,7 @@ cards:
                 show_header_toggle: false
               filter:
                 include:
-                 - entity_id: automation.lr_light_*
+                 - entity_id: automation.lr_control_*
                    options:
                       secondary_info: last-changed
                       state_color: true
@@ -439,6 +494,47 @@ cards:
                       secondary_info: last-changed
                       state_color: true
 
+################# Ванная #################
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:
+      
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #009933;
+                     font-weight: bold;
+                     font-size: 20px;
+                   }          
+              content: >
+                 **Ванная**
+
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Контроль и перезагрузка**
+
+
+            - type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                show_header_toggle: false
+              filter:
+                include:
+                 - entity_id: automation.bt_reboot_*
+                   options:
+                      secondary_info: last-changed
+                      state_color: true
                       
 ############################ Колонка 4 ############################
     - type: vertical-stack
@@ -485,3 +581,57 @@ cards:
                    options:
                       secondary_info: last-changed
                       state_color: true
+                      
+################# Остальное #################
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:
+      
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #009933;
+                     font-weight: bold;
+                     font-size: 20px;
+                   }          
+              content: >
+                 **Остальное**
+                 
+            - type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                show_header_toggle: false
+              filter:
+                include:
+                 - domain: automation
+                exclude:
+                 - entity_id: automation.control*
+                 - entity_id: automation.electricity*
+                 - entity_id: automation.telegram*
+                 - entity_id: automation.camera*
+                 - entity_id: automation.tt_light_*
+                 - entity_id: automation.tt_fan_*
+                 - entity_id: automation.tt_reboot_*
+                 - entity_id: automation.ln*
+                 - entity_id: automation.en*
+                 - entity_id: automation.cr_ceiling_*
+                 - entity_id: automation.cr_en_light_control
+                 - entity_id: automation.cr_reboot_*
+                 - entity_id: automation.cr_turn_on_*
+                 - entity_id: automation.kn_ceiling_*
+                 - entity_id: automation.kn_light_*
+                 - entity_id: automation.kn_reboot_*
+                 - entity_id: automation.lr_ceiling_*
+                 - entity_id: automation.lr_light_*
+                 - entity_id: automation.lr_reboot_*
+                 - entity_id: automation.lr_control_*
+                 - entity_id: automation.da_reboot_*
+                 - entity_id: automation.bt_reboot_*
+                 
+                 
+                 
+                 
+                 

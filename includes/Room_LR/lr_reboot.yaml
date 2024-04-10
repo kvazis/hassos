@@ -18,8 +18,7 @@ lr_reboot:
           - name: lr_ceiling_1_unavailable
             unique_id: lr_ceiling_1_unavailable
             state: >
-              {{ is_state('light.yeelight_ceiling4_0x49c726b', 'unavailable')  
-                 and states('sensor.count_light_unavailable')|int < 3 }}
+              {{ is_state('light.yeelight_ceiling4_0x49c726b', 'unavailable') }}
             delay_on: 
                 minutes: 5
             device_class: problem
@@ -28,11 +27,36 @@ lr_reboot:
           - name: lr_ceiling_2_unavailable
             unique_id: lr_ceiling_2_unavailable
             state: >
-              {{ is_state('light.yeelight_ceiling4_0x4a1dacd', 'unavailable')  
-                 and states('sensor.count_light_unavailable')|int < 3 }}
+              {{ is_state('light.yeelight_ceiling4_0x4a1dacd', 'unavailable') }}
             delay_on: 
                 minutes: 5
             device_class: problem       
+
+    # Сенсор определяющий недоступность IR контроллера Broadlink
+          - name: lr_broadlin_ir
+            unique_id: lr_broadlin_ir
+            state: >
+              {{ is_state('sensor.lr_broadlin_ir_temperature', 'unavailable') }}
+            delay_on: 
+                minutes: 2
+            device_class: problem 
+
+    # Сенсор определяющий залипание датчика электрики в гостиной
+          - name: lr_broadlin_ir
+            unique_id: lr_broadlin_ir
+            state: >
+              {{ is_state('sensor.lr_broadlin_ir_temperature', 'unavailable') }}
+            delay_on: 
+                minutes: 2
+            device_class: problem 
+
+    input_button:
+
+      lr_ceiling_1_reset:
+        name: LR ceiling 1 reboot
+        
+      lr_ceiling_2_reset:
+        name: LR ceiling 2 reboot
 
     automation:
 
@@ -47,14 +71,18 @@ lr_reboot:
         - platform: time_pattern
           minutes: '/5'
         condition:
-    # Сенсор определяющий недоступность люстры
-        - condition: state
-          entity_id: binary_sensor.lr_ceiling_1_unavailable
-          state: 'on'
     # Переключатель режима работы сервера
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
+    # Сенсор определяющий недоступность люстры
+        - condition: state
+          entity_id: binary_sensor.lr_ceiling_1_unavailable
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off'  
         action:
     # Перезагрузка по питанию
         - service: switch.turn_off
@@ -62,6 +90,31 @@ lr_reboot:
         - delay: 00:00:05
         - service: switch.turn_on
           entity_id: switch.0x00158d00062fbb54_right
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_log
+            message: | 
+                 {{"\U0001F916"}} Антонио. Гостиная -  перезагрузка люстры 1 {{ states('sensor.time_date') }}    
+
+          
+      - alias: lr_reboot_ceiling_1_manual
+        id: lr_reboot_ceiling_1_manual
+        description: Гостиная - ручная перезагрузка зависшей люстры 1
+        initial_state: true
+        trigger:
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.lr_ceiling_1_reset
+        action:
+    # Перезагрузка по питанию
+        - service: switch.turn_off
+          entity_id: switch.0x00158d00062fbb54_right
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0x00158d00062fbb54_right
+
+
           
       - alias: lr_reboot_ceiling_2
         id: lr_reboot_ceiling_2
@@ -72,14 +125,41 @@ lr_reboot:
         - platform: time_pattern
           minutes: '/5'
         condition:
-    # Сенсор определяющий недоступность люстры
-        - condition: state
-          entity_id: binary_sensor.lr_ceiling_2_unavailable
-          state: 'on'
     # Переключатель режима работы сервера
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
+    # Сенсор определяющий недоступность люстры
+        - condition: state
+          entity_id: binary_sensor.lr_ceiling_2_unavailable
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off'  
+        action:
+    # Перезагрузка по питанию
+        - service: switch.turn_off
+          entity_id: switch.0x842e14fffee5451a
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0x842e14fffee5451a
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_log
+            message: | 
+                 {{"\U0001F916"}} Антонио. Гостиная -  перезагрузка люстры 2 {{ states('sensor.time_date') }}    
+
+          
+      - alias: lr_reboot_ceiling_2_manual
+        id: lr_reboot_ceiling_2_manual
+        description: Гостиная - ручная перезагрузка зависшей люстры 2
+        initial_state: true
+        trigger:
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.lr_ceiling_2_reset
         action:
     # Перезагрузка по питанию
         - service: switch.turn_off
@@ -107,7 +187,7 @@ lr_reboot:
     # Принудительное обновление статуса
         - service: mqtt.publish
           data_template:
-            topic: "zigstar/LR TV Led strip/get"
+            topic: "zigbee2mqtt_3/LR TV Strip/get"
             payload_template: '{ "state": "" }'
 
       - alias: lr_reboot_tvled_off
@@ -127,6 +207,10 @@ lr_reboot:
         - condition: state
           entity_id: binary_sensor.lr_tvled_enabled
           state: 'on'
+    # Телевизор
+        - condition: state
+          entity_id: binary_sensor.lr_tv_work
+          state: 'off'
         action:
         - service: light.turn_off
           entity_id:
@@ -138,3 +222,39 @@ lr_reboot:
             message: | 
                  {{"\U0001F916"}} Антонио. Отключение ТВ подсветки {{ states('sensor.time_date') }} 
 
+#################### ПЕРЕЗАГРУЗКА IR BROADLINK ####################
+              
+      - alias: lr_reboot_broadlink_ir
+        id: lr_reboot_broadlink_ir
+        description: Гостиная - перезагрузка ИК контроллера Broadlink
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор определяющий недоступность ИК контроллера 
+        - condition: state
+          entity_id: binary_sensor.lr_broadlin_ir
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off'  
+        action:
+    # Перезагрузка по питанию
+        - service: switch.turn_off
+          entity_id: switch.smart_power_strip_44eu_w_socket_5
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.smart_power_strip_44eu_w_socket_5
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_log
+            message: | 
+                 {{"\U0001F916"}} Антонио. Гостиная -  перезагрузка ИК контроллера Broadlink {{ states('sensor.time_date') }}    

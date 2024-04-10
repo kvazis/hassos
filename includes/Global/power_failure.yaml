@@ -45,6 +45,16 @@ power_failure:
              {{ is_state('binary_sensor.0xa4c138bae3526a07_contact', 'on') }}
             device_class: problem
 
+    # Сенсор залипание сенсора отключения гостиная
+          - name: lr_electricity_reset
+            unique_id: lr_electricity_reset
+            state: >
+             {{ is_state('binary_sensor.0xa4c138bae3526a07_contact', 'on') and
+                 is_state('switch.0xa4c138cd1b6a0a9a', 'on')  }}
+            delay_on: 
+                minutes: 5
+            device_class: problem
+
     # Сенсор определения отключения кухня
           - name: kn_electricity
             unique_id: kn_electricity
@@ -60,3 +70,31 @@ power_failure:
                 and is_state('binary_sensor.kn_electricity', 'on')
              }}
             device_class: problem
+
+    automation:           
+#################### ПЕРЕЗАГРУЗКА СЕНСОРОВ ЭЛЕКТРИКИ ####################
+              
+      - alias: electricity_reboot_lr_sensor
+        id: electricity_reboot_lr_sensor
+        description: Электрика - перезагрузка сенсора в гостиной
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут, перезагрузка если сенсор залип
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор определяющий недоступность люстры
+        - condition: state
+          entity_id: binary_sensor.lr_electricity_reset
+          state: 'on'
+        action:
+    # Перезагрузка по питанию
+        - service: switch.turn_off
+          entity_id: switch.0xa4c138cd1b6a0a9a
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0xa4c138cd1b6a0a9a

@@ -208,25 +208,25 @@ cards:
               - type: custom:mushroom-template-card
                 primary: Доступность
                 secondary: |-
-                  {% if is_state("binary_sensor.cr_ceiling_unavailable", "off") %}
-                  Люстра коридор OK
+                  {% if is_state("light.yeelight_ceiling4_0x456e813", "unavailable") %}
+                  Недоступно
                   {% else %}
-                  Люстра коридор не доступна
+                  ОК
                   {% endif %}
                 layout: horizontal
                 entity: binary_sensor.cr_ceiling_unavailable
                 icon: |-
-                  {% if is_state("binary_sensor.cr_ceiling_unavailable", "off") %}
-                  mdi:check-bold
-                  {% else %}
+                  {% if is_state("light.yeelight_ceiling4_0x456e813", "unavailable") %}
                   mdi:alert
+                  {% else %}
+                  mdi:check-bold
                   {% endif %}
                 multiline_secondary: true
                 icon_color: |-
-                  {% if is_state("binary_sensor.cr_ceiling_unavailable", "off") %}
-                  green
-                  {% else %}
+                  {% if is_state("light.yeelight_ceiling4_0x456e813", "unavailable") %}
                   red
+                  {% else %}
+                  green
                   {% endif %}
                 tap_action:
                   action: more-info
@@ -251,6 +251,21 @@ cards:
                   {% else %}
                   red
                   {% endif %}
+
+
+              - type: custom:mushroom-template-card
+                primary: Ручная перезагрузка
+                layout: horizontal
+                entity: input_button.cr_ceiling_reboot
+                icon: mdi:reload
+                multiline_secondary: true
+                icon_color: amber
+                tap_action:
+                  action: call-service
+                  service: input_button.press
+                  target:
+                    entity_id: input_button.cr_ceiling_reboot
+
                     
             - type: markdown
               content: >

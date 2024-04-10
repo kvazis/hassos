@@ -17,10 +17,6 @@ en_light:
         sensor.0x00158d00010b1963_battery:
           friendly_name: Прихожая кнопка на шкафу
 
-        automation.en_light_control:
-          friendly_name: Прихожая - управление лампочкой
-          icon: phu:bulbs-classic
-          
     template:
      
       - binary_sensor:

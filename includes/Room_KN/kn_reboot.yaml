@@ -21,14 +21,28 @@ kn_reboot:
           - name: kn_ceiling_unavailable
             unique_id: kn_ceiling_unavailable
             state: >
-              {{ is_state('light.kn_ceiling_light', 'unavailable')  
-                 and states('sensor.count_light_unavailable')|int < 3 }}
+              {{ is_state('light.kn_ceiling_light', 'unavailable') }}
             delay_on: 
                 minutes: 3
             device_class: problem    
     
-    
+    # Сенсор определяющий недоступность ночника
+          - name: kn_migateway_unavailable
+            unique_id: kn_migateway_unavailable
+            state: >
+              {{ is_state('light.gateway_light_7811dc64f4c8', 'unavailable') }}
+            delay_on: 
+                minutes: 3
+            device_class: problem     
 
+    input_button:
+
+      kn_gateway_reset:
+        name: KN Mi Gateway reboot
+
+      kn_ceiling_reset:
+        name: KN ceiling reboot
+        
     automation:
     
 #################### ПЕРЕЗАГРУЗКА ЛЮСТРЫ ####################
@@ -55,7 +69,27 @@ kn_reboot:
           entity_id: binary_sensor.electricity
           state: 'off'  
         action:
-    # Перезагрузка по питанию если люстра недоступна
+        - service: input_button.press
+          target:
+             entity_id: input_button.kn_ceiling_reset
+          data: {}
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_log
+            message: | 
+                 {{"\U0001F916"}} Антонио. Кухня -  перезагрузка люстры {{ states('sensor.time_date') }} 
+
+
+      - alias: kn_reboot_ceiling_manual
+        id: kn_reboot_ceiling_manual
+        description: Кухня - ручная перезагрузка зависшей люстры
+        trigger:
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.kn_ceiling_reset
+        action: 
+     # Перезагрузка по питанию если люстра недоступна
         - service: switch.turn_off
           entity_id: switch.0x54ef4410000f4741_right
         - delay: 00:00:05
@@ -66,9 +100,10 @@ kn_reboot:
             target:
                 - !secret chat_id_log
             message: | 
-                 {{"\U0001F916"}} Антонио. Кухня -  перезагрузка люстры {{ states('sensor.time_date') }} 
-
-
+                 {{"\U0001F916"}} Антонио. Кухня -  перезагрузка люстры {{ states('sensor.time_date') }}        
+        
+        
+        
 #################### ПЕРЕЗАГРУЗКА ВЫКЛЮЧАТЕЛЯ ЛЮСТРЫ ####################
                  
       - alias: kn_reboot_switch_e1
@@ -124,3 +159,63 @@ kn_reboot:
                 - !secret chat_id_log
             message: | 
                  {{"\U0001F916"}} Антонио. Кухня -  перезагрузка выключателя {{ states('sensor.time_date') }} 
+                 
+                 
+#################### ПЕРЕЗАГРУЗКА ШЛЮЗА ####################
+
+      - alias: kn_reboot_gateway
+        id: kn_reboot_gateway
+        description: Кухня - перезагрузка шлюза xiaomi
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор определяющий недоступность люстры
+        - condition: state
+          entity_id: binary_sensor.kn_migateway_unavailable
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off'  
+        action:
+        - service: input_button.press
+          target:
+             entity_id: input_button.kn_gateway_reset
+          data: {}
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_log
+            message: | 
+                 {{"\U0001F916"}} Антонио. Кухня -  перезагрузка шлюза {{ states('sensor.time_date') }}    
+
+
+      - alias: kn_reboot_gateway_manual
+        id: kn_reboot_gateway_manual
+        description: Кухня - ручная перезагрузка шлюза xiaomi
+        initial_state: true
+        trigger:
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.kn_gateway_reset
+        action:  
+        - service: switch.turn_off
+          entity_id:
+            - switch.0x00158d000114a1e1
+        - delay: 00:00:03
+        - service: switch.turn_on
+          entity_id:
+            - switch.0x00158d000114a1e1
+        - delay: 00:00:15 
+ 
+        - service: homeassistant.reload_config_entry
+          data: {}
+          target:
+             entity_id: light.gateway_light_7811dc64f4c8

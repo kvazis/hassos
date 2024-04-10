@@ -1,0 +1,242 @@
+##################   Управление
+title: Гостиная
+icon: phu:rooms-living
+cards:
+
+############################ Колонка 1 ############################
+
+    - type: vertical-stack
+      cards:
+      
+        - type: markdown
+          style: |
+              ha-card {
+                font-size: 26px;
+              }          
+          content: >
+             **Управление**
+
+
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Освещение**
+
+            - type: horizontal-stack
+              cards:        
+                - type: button
+                  name: Люстра 1
+                  entity: light.yeelight_ceiling4_0x49c726b
+                  tap_action:
+                    action: toggle
+
+                - type: button
+                  name: Амби 1
+                  entity: light.yeelight_ceiling4_0x49c726b_ambilight
+                  tap_action:
+                    action: toggle             
+
+                - type: button
+                  name: Люстра 2
+                  entity: light.yeelight_ceiling4_0x4a1dacd
+                  tap_action:
+                    action: toggle
+
+                - type: button
+                  name: Амби 2
+                  entity: light.yeelight_ceiling4_0x4a1dacd_ambilight
+                  tap_action:
+                    action: toggle  
+
+            - type: horizontal-stack
+              cards:        
+                - type: button
+                  name: Настольная
+                  entity: light.yeelight_lamp1_0x32a4ab4
+                  tap_action:
+                    action: toggle
+
+                - type: button
+                  name: ТВ лента
+                  entity: light.0xa4c138b72a314e97
+                  tap_action:
+                    action: toggle
+
+                - type: button
+                  name: Прикроватник
+                  entity: light.lr_bedside_lamp
+                  tap_action:
+                    action: toggle
+
+                - type: button
+                  name: Балкон
+                  entity: light.0xa4c13812b94c8365
+                  tap_action:
+                    action: toggle
+                    
+                    
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Люстра 1**
+
+            - type: horizontal-stack
+              cards:
+
+              - type: custom:mushroom-template-card
+                primary: Доступность
+                secondary: |-
+                  {% if is_state('light.yeelight_ceiling4_0x49c726b', 'unavailable') %}
+                  Не доступно
+                  {% else %}
+                  OK
+                  {% endif %}
+                layout: horizontal
+                entity: binary_sensor.lr_ceiling_1_unavailable
+                icon: |-
+                  {% if is_state('light.yeelight_ceiling4_0x49c726b', 'unavailable') %}
+                  mdi:alert
+                  {% else %}
+                  mdi:check-bold
+                  {% endif %}
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state('light.yeelight_ceiling4_0x49c726b', 'unavailable') %}
+                  red
+                  {% else %}
+                  green
+                  {% endif %}
+                tap_action:
+                  action: more-info
+
+              - type: custom:mushroom-template-card
+                primary: Питание
+                secondary: |-
+                  {% if is_state("switch.0x00158d00062fbb54_right", "on") %}
+                  Вкл
+                  {% else %}
+                  Выкл
+                  {% endif %}
+                layout: horizontal
+                tap_action:
+                  action: toggle
+                entity: switch.0x00158d00062fbb54_right
+                icon: phu:aqara-h1-switch
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("switch.0x00158d00062fbb54_right", "on") %}
+                  green
+                  {% else %}
+                  red
+                  {% endif %}
+
+              - type: custom:mushroom-template-card
+                primary: Ручная перезагрузка
+                layout: horizontal
+                entity: input_button.lr_ceiling_1_reset
+                icon: mdi:reload
+                multiline_secondary: true
+                icon_color: amber
+                tap_action:
+                  action: call-service
+                  service: input_button.press
+                  target:
+                    entity_id: input_button.lr_ceiling_1_reset
+                    
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Люстра 2**
+
+            - type: horizontal-stack
+              cards:
+
+              - type: custom:mushroom-template-card
+                primary: Доступность
+                secondary: |-
+                  {% if is_state('light.yeelight_ceiling4_0x4a1dacd', 'unavailable') %}
+                  Не доступно
+                  {% else %}
+                  OK
+                  {% endif %}
+                layout: horizontal
+                entity: binary_sensor.lr_ceiling_2_unavailable
+                icon: |-
+                  {% if is_state('light.yeelight_ceiling4_0x4a1dacd', 'unavailable') %}
+                  mdi:alert
+                  {% else %}
+                  mdi:check-bold
+                  {% endif %}
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state('light.yeelight_ceiling4_0x4a1dacd', 'unavailable') %}
+                  red
+                  {% else %}
+                  green
+                  {% endif %}
+                tap_action:
+                  action: more-info
+
+              - type: custom:mushroom-template-card
+                primary: Питание
+                secondary: |-
+                  {% if is_state("switch.0x842e14fffee5451a", "on") %}
+                  Вкл
+                  {% else %}
+                  Выкл
+                  {% endif %}
+                layout: horizontal
+                tap_action:
+                  action: toggle
+                entity: switch.0x842e14fffee5451a
+                icon: mdi:power-socket-eu
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("switch.0x842e14fffee5451a", "on") %}
+                  green
+                  {% else %}
+                  red
+                  {% endif %}
+
+              - type: custom:mushroom-template-card
+                primary: Ручная перезагрузка
+                layout: horizontal
+                entity: input_button.lr_ceiling_2_reset
+                icon: mdi:reload
+                multiline_secondary: true
+                icon_color: amber
+                tap_action:
+                  action: call-service
+                  service: input_button.press
+                  target:
+                    entity_id: input_button.lr_ceiling_2_reset

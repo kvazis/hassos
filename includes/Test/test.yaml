@@ -20,9 +20,7 @@ test:
         - service: mqtt.publish
           data_template:
             topic: "awtrix_6c9da0/notify"
-            payload_template: '{"draw":[ {"dt": [0, 0, "Привет", "#00FF00"]} ]}'
-
-
+            payload_template: '{ "text": "И радугой тоже", "duration": 10, "rainbow": true }'
     
 
 

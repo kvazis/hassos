@@ -1,20 +1,5 @@
 en_door:
 
-    homeassistant:
-      customize:
-      
-        automation.camera_xiaofang_photo:
-          friendly_name: Хiaofang - фото и отправка в телеграмм
-          icon: phu:wyzecam
-
-        automation.camera_xiaofang_reload:
-          friendly_name: Xiaofang - перезагрузка
-          icon: mdi:reload
-
-        automation.en_open_door_photo:
-          friendly_name: Прихожая - фото и отправка в телеграмм при открытии двери
-          icon: mdi:camera
-
     template:
      
       - binary_sensor:

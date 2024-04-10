@@ -16,27 +16,6 @@ kn_light:
           friendly_name: Кухня WLED светильник
           icon: phu:daylo-wall
 
-        automation.kn_light_wled_control:
-          friendly_name: Кухня - ручное управление WLED
-          icon: phu:daylo-wall
-
-        automation.kn_ceiling_manual_light_control:
-          friendly_name: Кухня - ручное управление освещением
-          icon: phu:ceiling-being
-
-        automation.kn_ceiling_auto_light_on:
-          friendly_name: Кухня - автоматическое включение освещения
-          icon: phu:aqara-motion
-
-        automation.kn_ceiling_auto_light_off:
-          friendly_name: Кухня - автоматическое выключение освещения
-          icon: phu:aqara-motion
-
-        automation.kn_ceiling_full_light:
-          friendly_name: Кухня - включение полного освещения
-          icon: phu:ceiling-being
-
-
     input_button:
 
 

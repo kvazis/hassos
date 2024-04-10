@@ -1,17 +1,5 @@
 cr_reboot:
 
-
-    homeassistant:
-      customize:
-
-        automation.cr_reboot_ceiling:
-          friendly_name: Коридор - перезагрузка зависшей люстры
-          icon: phu:ceiling-adore-alt-flush
-      
-        automation.cr_turn_on_switch:
-          friendly_name: Коридор - включение выключателя
-          icon: phu:aqara-h1-switch
-          
     template:
      
       - binary_sensor:
@@ -20,11 +8,16 @@ cr_reboot:
           - name: cr_ceiling_unavailable
             unique_id: cr_ceiling_unavailable
             state: >
-              {{ is_state('light.yeelight_ceiling4_0x456e813', 'unavailable')  
-                 and states('sensor.count_light_unavailable')|int < 3 }}
+              {{ is_state('light.yeelight_ceiling4_0x456e813', 'unavailable') }}
             delay_on: 
                 minutes: 3
             device_class: problem  
+
+    input_button:
+
+      cr_ceiling_reboot:
+        name: CR Light reboot
+
               
     automation:
     
@@ -58,11 +51,34 @@ cr_reboot:
         - delay: 00:00:05
         - service: switch.turn_on
           entity_id: switch.0x00158d00057305ac_left
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_log
+            message: | 
+                 {{"\U0001F916"}} Антонио. Коридор -  перезагрузка люстры {{ states('sensor.time_date') }} 
+
+      - alias: cr_reboot_ceiling_manual
+        id: cr_reboot_ceiling_manual
+        description: Коридор - ручная перезагрузка зависшей люстры
+        initial_state: true
+        trigger:
+    ## Virtual button
+        - platform: state
+          entity_id: input_button.cr_ceiling_reboot
+        action:
+    # Перезагрузка по питанию
+        - service: switch.turn_off
+          entity_id: switch.0x00158d00057305ac_left
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0x00158d00057305ac_left
+
           
 #################### КОНТРОЛЬ ВЫКЛЮЧАТЕЛЯ ЛЮСТРЫ ####################          
 
-      - alias: cr_turn_on_switch
-        id: cr_turn_on_switch
+      - alias: cr_reboot_switch_turn_on
+        id: cr_reboot_switch_turn_on
         description: Коридор - включение выключателя
         initial_state: true
         trigger:
@@ -81,3 +97,22 @@ cr_reboot:
         - service: switch.turn_on
           entity_id: switch.0x00158d00057305ac_left
           
+      - alias: cr_reboot_switch_check
+        id: cr_reboot_switch_check
+        description: Коридор проверка статуса выключателя
+        initial_state: true
+        trigger:
+    # Проверка раз в 15 минут
+        - platform: time_pattern
+          minutes: '/15'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+    # Принудительное обновление статуса
+        - service: mqtt.publish
+          data_template:
+            topic: "zigstar/EN wd 2ch/get"
+            payload_template: '{ "state_right": "" }'

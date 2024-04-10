@@ -63,3 +63,7 @@ lovelace:
      type: module
    - url: /hacsfiles/battery-state-card/battery-state-card.js
      type: module
+   - url: /hacsfiles/timer-bar-card/timer-bar-card.js
+     type: module
+                
+     

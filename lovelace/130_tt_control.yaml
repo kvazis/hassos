@@ -135,7 +135,7 @@ cards:
               cards:
 
                 - type: custom:mushroom-template-card
-                  primary: Автовключение света
+                  primary: Авто вкл
                   secondary: |-
                     {% if is_state("binary_sensor.tt_light_on", "on") %}
                     Свет включен
@@ -167,7 +167,7 @@ cards:
                     action: more-info
 
                 - type: custom:mushroom-template-card
-                  primary: Фиксация присутствия
+                  primary: Фиксация
                   secondary: |-
                     {% if is_state("input_boolean.tt_occupancy", "on") %}
                     Зафиксровано
