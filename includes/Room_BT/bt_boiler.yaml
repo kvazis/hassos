@@ -582,6 +582,10 @@ bt_boiler:
           from: 'off'
           to: 'on'
           id: period_5
+        condition:
+         - condition: state
+           entity_id: binary_sensor.electricity
+           state: 'off'
         action:
             - choose:
               - conditions:
@@ -680,6 +684,9 @@ bt_boiler:
          - condition: state
            entity_id: switch.control_mode
            state: 'on'
+         - condition: state
+           entity_id: binary_sensor.electricity
+           state: 'off'
         action:
             - choose:
               - conditions:
@@ -758,6 +765,13 @@ bt_boiler:
                 sequence:
                   - service: switch.turn_off
                     entity_id: switch.0x00158d0003584401
+                  - service: telegram_bot.send_message
+                    data_template:
+                      target:
+                          - !secret chat_id_group_tech
+                      message: | 
+                           {{"\U0001F916"}} Ванная бойлер - Включение запрещено {{ states('sensor.time_date') }} 
+
               - conditions:
                   - condition: state
                     entity_id: switch.0x00158d0003584401_mode
@@ -768,12 +782,49 @@ bt_boiler:
                      data_template: 
                          duration: >
                                {{strptime(states("sensor.0x00158d0003584401_timer_manual"), "%H:%M:%S").time()}}
+                   - service: telegram_bot.send_message
+                     data_template:
+                       target:
+                          - !secret chat_id_group_tech
+                       message: | 
+                            {{"\U0001F916"}} Ванная бойлер - ручное включение {{ states('sensor.time_date') }} 
 
-                           
+      - alias: 0x00158d0003584401_blackout_on
+        id: 0x00158d0003584401_blackout_on
+        description: Ванная бойлер - включение после блекаута
+        initial_state: true
+        trigger:
+    # Сработка сенсора блекаута
+         - platform: state
+           entity_id: binary_sensor.blackout
+           from: 'on'
+           to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+         - condition: state
+           entity_id: switch.control_mode
+           state: 'on'
+    # Ржима работы бойлера
+         - condition: state
+           entity_id: switch.0x00158d0003584401_mode
+           state: 'on'
+        action:
+         - service: timer.start
+           entity_id: timer.0x00158d0003584401
+           data_template: 
+               duration: >
+                     {{strptime(states("sensor.0x00158d0003584401_timer_manual"), "%H:%M:%S").time()}}
+         - service: telegram_bot.send_message
+           data_template:
+             target:
+                - !secret chat_id_group_tech
+             message: | 
+                  {{"\U0001F916"}} Ванная бойлер - включение после блекаута {{ states('sensor.time_date') }} 
+
       - alias: 0x00158d0003584401_manual_message
         id: 0x00158d0003584401_manual_message
         description: Ванная бойлер - ручное включение уведомление
-        initial_state: true
+        initial_state: false
         trigger:    
          - platform: state
            entity_id: binary_sensor.0x00158d0003584401_switch
@@ -867,6 +918,10 @@ bt_boiler:
            entity_id: binary_sensor.0x00158d0003584401_switch
            from: 'on'
            to: 'off'
+         - platform: state
+           entity_id: binary_sensor.blackout
+           from: 'off'
+           to: 'on'
         action:
          - service: timer.cancel
            entity_id: timer.0x00158d0003584401

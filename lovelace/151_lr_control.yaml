@@ -66,11 +66,33 @@ cards:
                   tap_action:
                     action: toggle
 
-                - type: button
-                  name: ТВ лента
-                  entity: light.0xa4c138b72a314e97
+                - type: custom:mushroom-template-card
+                  primary: TV light
+                  layout: horizontal
+                  entity: input_button.lr_light_cinema
+                  icon: |-
+                    {% if is_state('switch.lr_light_cinema_mode', 'on') %}
+                    mdi:led-strip-variant
+                    {% else %}
+                    mdi:led-strip-variant-off
+                    {% endif %}
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state('switch.lr_light_cinema_mode', 'on') %}
+                    amber
+                    {% else %}
+                    grey
+                    {% endif %}
                   tap_action:
-                    action: toggle
+                    action: call-service
+                    service: input_button.press
+                    target:
+                      entity_id: input_button.lr_light_cinema
+
+
+
+
+
 
                 - type: button
                   name: Прикроватник
@@ -132,7 +154,7 @@ cards:
               - type: custom:mushroom-template-card
                 primary: Питание
                 secondary: |-
-                  {% if is_state("switch.0x00158d00062fbb54_right", "on") %}
+                  {% if is_state("switch.0x54ef4410008e96fd_top", "on") %}
                   Вкл
                   {% else %}
                   Выкл
@@ -140,11 +162,11 @@ cards:
                 layout: horizontal
                 tap_action:
                   action: toggle
-                entity: switch.0x00158d00062fbb54_right
+                entity: switch.0x54ef4410008e96fd_top
                 icon: phu:aqara-h1-switch
                 multiline_secondary: true
                 icon_color: |-
-                  {% if is_state("switch.0x00158d00062fbb54_right", "on") %}
+                  {% if is_state("switch.0x54ef4410008e96fd_top", "on") %}
                   green
                   {% else %}
                   red
@@ -240,3 +262,22 @@ cards:
                   service: input_button.press
                   target:
                     entity_id: input_button.lr_ceiling_2_reset
+                    
+                    
+############################ Колонка 2 ############################
+
+    - type: vertical-stack
+      cards:
+      
+        - type: markdown
+          style: |
+              ha-card {
+                color: #f8ffd8;
+                --paper-item-icon-color: #f8ffd8;
+                --paper-item-icon-active-color: #f8ffd8;
+                font-weight: bold;
+                font-size: 26px;
+              }     
+          content: >
+              **Питание** 
+                    

@@ -17,10 +17,15 @@ test:
         - platform: state
           entity_id: input_button.test_test
         action:
-        - service: mqtt.publish
+        - service: telegram_bot.send_message
           data_template:
-            topic: "awtrix_6c9da0/notify"
-            payload_template: '{ "text": "И радугой тоже", "duration": 10, "rainbow": true }'
+            target:
+                - !secret chat_id_log
+            message: | 
+               {{"\U00002705"}} Електрика (введення на секцію 4-7) {{"\U000026A1"}} відновлена в {{ states('sensor.time_date') }}
+               {% set s = (strptime(states("input_datetime.electricity_on"), "%Y-%m-%d %H:%M:%S").timestamp() | int - strptime(states("input_datetime.electricity_off"), "%Y-%m-%d %H:%M:%S").timestamp() | int) %}
+               {{"\U0000231B"}} {{ 'Тривалість - {:02d}:{:02d}:{:02d}'.format ( s % 86400 // 3600, s % 3600 // 60, s % 60) }} 
+                   
     
 
 

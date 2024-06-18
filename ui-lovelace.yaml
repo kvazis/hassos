@@ -10,3 +10,4 @@ views:
   - !include lovelace/141_kn_control.yaml
   - !include lovelace/151_lr_control.yaml
   - !include lovelace/160_bt_control.yaml
+  - !include lovelace/test.yaml

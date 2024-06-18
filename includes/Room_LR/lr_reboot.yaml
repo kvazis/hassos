@@ -81,15 +81,15 @@ lr_reboot:
           state: 'on'
     # Сенсор электричества
         - condition: state
-          entity_id: binary_sensor.electricity
-          state: 'off'  
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
         action:
     # Перезагрузка по питанию
         - service: switch.turn_off
-          entity_id: switch.0x00158d00062fbb54_right
+          entity_id: switch.0x54ef4410008e96fd_top
         - delay: 00:00:05
         - service: switch.turn_on
-          entity_id: switch.0x00158d00062fbb54_right
+          entity_id: switch.0x54ef4410008e96fd_top
         - service: telegram_bot.send_message
           data_template:
             target:
@@ -109,10 +109,10 @@ lr_reboot:
         action:
     # Перезагрузка по питанию
         - service: switch.turn_off
-          entity_id: switch.0x00158d00062fbb54_right
+          entity_id: switch.0x54ef4410008e96fd_top
         - delay: 00:00:05
         - service: switch.turn_on
-          entity_id: switch.0x00158d00062fbb54_right
+          entity_id: switch.0x54ef4410008e96fd_top
 
 
           
@@ -135,7 +135,7 @@ lr_reboot:
           state: 'on'
     # Сенсор электричества
         - condition: state
-          entity_id: binary_sensor.electricity
+          entity_id: binary_sensor.blackout_after
           state: 'off'  
         action:
     # Перезагрузка по питанию
@@ -183,11 +183,15 @@ lr_reboot:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
         action:
     # Принудительное обновление статуса
         - service: mqtt.publish
           data_template:
-            topic: "zigbee2mqtt_3/LR TV Strip/get"
+            topic: "zigstar_poe/LR TV Strip/get"
             payload_template: '{ "state": "" }'
 
       - alias: lr_reboot_tvled_off
@@ -207,6 +211,10 @@ lr_reboot:
         - condition: state
           entity_id: binary_sensor.lr_tvled_enabled
           state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
     # Телевизор
         - condition: state
           entity_id: binary_sensor.lr_tv_work
@@ -243,7 +251,7 @@ lr_reboot:
           state: 'on'
     # Сенсор электричества
         - condition: state
-          entity_id: binary_sensor.electricity
+          entity_id: binary_sensor.blackout_after
           state: 'off'  
         action:
     # Перезагрузка по питанию

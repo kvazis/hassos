@@ -66,7 +66,7 @@ kn_reboot:
           state: 'on'
     # Сенсор электричества
         - condition: state
-          entity_id: binary_sensor.electricity
+          entity_id: binary_sensor.blackout_after
           state: 'off'  
         action:
         - service: input_button.press
@@ -129,7 +129,7 @@ kn_reboot:
           state: 'unavailable'
     # Сенсор электричества
         - condition: state
-          entity_id: binary_sensor.electricity
+          entity_id: binary_sensor.blackout_after
           state: 'off'  
     # Лампа выключена
         - condition: state
@@ -182,8 +182,8 @@ kn_reboot:
           state: 'on'
     # Сенсор электричества
         - condition: state
-          entity_id: binary_sensor.electricity
-          state: 'off'  
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
         action:
         - service: input_button.press
           target:
@@ -219,3 +219,131 @@ kn_reboot:
           data: {}
           target:
              entity_id: light.gateway_light_7811dc64f4c8
+             
+             
+#################### ВКЛЮЧЕНИЕ РОЗЕТОК ####################             
+             
+      - alias: kn_reboot_airgrill_turn_on_check
+        id: kn_reboot_airgrill_turn_on_check
+        description: Кухня, включение розетки аэрогриля
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Не включен
+        - condition: template
+          value_template: "{{ states('switch.0xa4c138d571b656c5') != 'on' }}"
+    # Режим работы
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
+        action:
+    # Включение
+        - service: switch.turn_on
+          entity_id: switch.0xa4c138d571b656c5
+          
+      - alias: kn_reboot_microwave_turn_on_check
+        id: kn_reboot_microwave_turn_on_check
+        description: Кухня, включение розетки микроволновки
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Не включен
+        - condition: template
+          value_template: "{{ states('switch.0xa4c138273b49e4d0') != 'on' }}"
+    # Режим работы
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
+        action:
+    # Включение
+        - service: switch.turn_on
+          entity_id: switch.0xa4c138273b49e4d0
+          
+      - alias: kn_reboot_kettle_turn_on_check
+        id: kn_reboot_kettle_turn_on_check
+        description: Кухня, включение розетки чайника
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Не включен
+        - condition: template
+          value_template: "{{ states('switch.0xa4c1385bcf7d00c9') != 'on' }}"
+    # Режим работы
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
+        action:
+    # Включение
+        - service: switch.turn_on
+          entity_id: switch.0xa4c1385bcf7d00c9
+          
+      - alias: kn_reboot_grill_turn_on_check
+        id: kn_reboot_grill_turn_on_check
+        description: Кухня, включение розетки гриля
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Не включен
+        - condition: template
+          value_template: "{{ states('switch.0xa4c138201dcb67f6') != 'on' }}"
+    # Режим работы
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
+        action:
+    # Включение
+        - service: switch.turn_on
+          entity_id: switch.0xa4c138201dcb67f6
+          
+      - alias: kn_reboot_coffemachine_turn_on_check
+        id: kn_reboot_cofeemachine_turn_on_check
+        description: Кухня, включение розетки кофемашины
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Не включен
+        - condition: template
+          value_template: "{{ states('switch.0xa4c13874f3d1d1c0') != 'on' }}"
+    # Режим работы
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
+        action:
+    # Включение
+        - service: switch.turn_on
+          entity_id: switch.0xa4c13874f3d1d1c0

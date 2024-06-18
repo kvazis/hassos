@@ -88,18 +88,35 @@ en_door:
            entity_id: switch.control_mode
            state: 'on'
         action:
-         - service: telegram_bot.send_message
-           data_template:
-             target:
-                 - !secret chat_id_group
-             message: | 
-                  {{"\U0001F6AA"}} Входная дверь открыта в {{ states.sensor.time_date.state }}
-         - service: input_button.press
-           target:
-             entity_id: 
-              - input_button.reolink_411_ws_photo
-              - input_button.reolink_410_photo
-              - input_button.xiaofang_photo
-        
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.electricity
+                    state: 'off'
+                sequence:
+                  - service: telegram_bot.send_message
+                    data_template:
+                      target:
+                          - !secret chat_id_group
+                      message: | 
+                           {{"\U0001F6AA"}} Входная дверь открыта в {{ states.sensor.time_date.state }}
+                  - service: input_button.press
+                    target:
+                      entity_id: 
+                       - input_button.reolink_411_ws_photo
+                       - input_button.reolink_410_photo
+                       - input_button.xiaofang_photo
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.electricity
+                    state: 'on'
+                sequence:
+                  - service: telegram_bot.send_message
+                    data_template:
+                      target:
+                          - !secret chat_id_group
+                      message: | 
+                           {{"\U0001F6AA"}} Входная дверь открыта в {{ states.sensor.time_date.state }}
+                           {{"\U0001F4F7"}} Фото не будет - электричество кончилось 
               
               

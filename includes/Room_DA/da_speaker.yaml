@@ -35,3 +35,62 @@ da_speaker:
          - service: media_player.turn_off
            target:
              entity_id: media_player.mi_speaker
+             
+      - alias: da_speaker_threat_notification
+        id: da_speaker_threat_notification
+        description: Детская А динамик - тревога
+        initial_state: false          
+        trigger:
+    # Сборный сенсор тревоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'off'
+          to: 'on'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Дневное время
+        - condition: state
+          entity_id: binary_sensor.night_time
+          state: 'off'          
+        action:             
+        - service: media_player.volume_set
+          data:
+            volume_level: 0.4
+          target:
+            entity_id: media_player.mi_speaker
+        - service: tts.reversotts_say
+          data:
+            cache: false
+            entity_id: media_player.mi_speaker
+            message: Воздушная тревога
+
+      - alias: da_speaker_threat_cancel
+        id: da_speaker_threat_cancel
+        description: Детская А динамик - отмена тревоги
+        initial_state: false          
+        trigger:
+    # Сборный сенсор тревоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'on'
+          to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Дневное время
+        - condition: state
+          entity_id: binary_sensor.night_time
+          state: 'off'          
+        action:             
+        - service: tts.reversotts_say
+          data:
+            cache: false
+            entity_id: media_player.mi_speaker
+            message: Отмена воздушной тревоги
+        
+     

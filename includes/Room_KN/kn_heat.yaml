@@ -1,0 +1,149 @@
+kn_heat:
+## Кухня термоголовка
+
+    recorder:
+      include:
+        entities:
+           - climate.0x2c1165fffeb3e531
+           
+    homeassistant:
+      customize:
+        
+        climate.0x2c1165fffeb3e531:
+          friendly_name: Кухня TRV
+        sensor.0x2c1165fffeb3e531_boost_heating_countdown:
+          friendly_name: Кухня TRV boost таймер
+        sensor.0x2c1165fffeb3e531_battery:
+          friendly_name: Кухня TRV
+        switch.0x2c1165fffeb3e531_heating_stop:
+          friendly_name: Кухня TRV стоп нагрев
+        number.0x2c1165fffeb3e531_local_temperature_calibration:
+          friendly_name: Кухня TRV t калибровка
+          unit_of_measurement: '°C'
+        number.0x2c1165fffeb3e531_comfort_temperature:
+          friendly_name: Кухня TRV t комфорт
+          unit_of_measurement: '°C'
+        number.0x2c1165fffeb3e531_open_window_temperature:
+          friendly_name: Кухня TRV t окно
+          unit_of_measurement: '°C'
+        number.0x2c1165fffeb3e531_holiday_temperature:
+          friendly_name: Кухня TRV t выходные
+          unit_of_measurement: '°C'
+        number.0x2c1165fffeb3e531_eco_temperature:
+          friendly_name: Кухня TRV t эко
+          unit_of_measurement: '°C'
+        binary_sensor.0x2c1165fffeb3e531_battery_low:
+          friendly_name: Кухня TRV питание
+        binary_sensor.kn_thermostat_need_for_calibration:
+          friendly_name: Кухня необходимость калибровки
+          device_class: update
+          
+          
+    mqtt:
+      binary_sensor:
+        - name: kn_thermostat
+          unique_id: kn_thermostat
+          state_topic: "states/kn_thermostat"
+
+    switch:
+
+      - platform: template
+        switches:
+          kn_thermostat_mode:
+            unique_id: kn_thermostat_mode
+            friendly_name: "Режим отопления Кухня"
+            value_template: "{{  is_state('binary_sensor.kn_thermostat', 'on') }}"
+            turn_on:
+              service: mqtt.publish
+              data_template:
+                topic: "states/kn_thermostat"
+                payload_template: 'ON'
+                retain: true 
+            turn_off:
+              service: mqtt.publish
+              data_template:
+                topic: "states/kn_thermostat"
+                payload_template: 'OFF'
+                retain: true 
+            icon_template: >-
+              {% if is_state('switch.kn_thermostat_mode', 'on') %}
+                mdi:radiator
+              {% else %}
+                mdi:radiator-off
+              {% endif %}
+              
+    template:
+    
+      - binary_sensor:
+      
+          - name: kn_thermostat_need_for_calibration
+            unique_id: kn_thermostat_need_for_calibration
+            state: >
+                    {{((states('sensor.0x00158d0001581109_temperature') | float - state_attr('climate.0x2c1165fffeb3e531', 'local_temperature') | float))|round(1) > 1
+                     or ((states('sensor.0x00158d0001581109_temperature') | float - state_attr('climate.0x2c1165fffeb3e531', 'local_temperature') | float))|round(1) < -1}}
+                     
+                     
+    script:
+    
+        kn_thermostat_calibration:
+          alias: Кухня калибровка термостата
+          sequence:
+          - service: mqtt.publish
+            data_template:   
+               topic: zigstar/KN thermostat/set/local_temperature_calibration
+               payload_template: "0.0"
+          - delay: 00:00:10
+          - service: mqtt.publish
+            data_template:
+               topic: zigstar/KN thermostat/set/local_temperature_calibration
+               payload_template: "{{((states('sensor.0x00158d0001581109_temperature') | float - state_attr('climate.0x2c1165fffeb3e531', 'local_temperature') | float))|round(1) }}" 
+               
+    automation:
+
+
+      - alias: kn_thermostat_calibration
+        id: kn_thermostat_calibration
+        description: Кухня калибровка термостата
+        initial_state: true
+        trigger:
+          - platform: time_pattern
+            minutes: "/15"
+        condition:
+          - condition: state
+            entity_id: switch.control_mode
+            state: 'on'
+          - condition: state
+            entity_id: binary_sensor.kn_thermostat
+            state: 'on' 
+          - condition: state
+            entity_id: binary_sensor.kn_thermostat_need_for_calibration
+            state: 'on'
+        action:
+         - service: script.turn_on
+           entity_id: script.kn_thermostat_calibration
+         - service: telegram_bot.send_message
+           data_template:
+             target:
+                - !secret chat_id_group_tech
+             message: | 
+                 {{"\U0001F916"}} Антонио - кухня калибровка термостата на {{ states('number.0x2c1165fffeb3e531_local_temperature_calibration') }} С           
+
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     

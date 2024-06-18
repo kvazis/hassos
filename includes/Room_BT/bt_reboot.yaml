@@ -31,9 +31,13 @@ bt_reboot:
         - condition: state
           entity_id: binary_sensor.bt_ceiling_unavailable
           state: 'on'
+    # Режим работы
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
     # Сенсор электричества
         - condition: state
-          entity_id: binary_sensor.electricity
+          entity_id: binary_sensor.blackout_after
           state: 'off'  
         action: 
      # Перезагрузка по питанию если люстра недоступна
@@ -47,12 +51,12 @@ bt_reboot:
             target:
                 - !secret chat_id_log
             message: | 
-                 {{"\U0001F916"}} Антонио. Ванная -  перезагрузка люстры {{ states('sensor.time_date') }} 
+                 {{"\U0001F916"}} Антонио. Ванная - перезагрузка люстры {{ states('sensor.time_date') }} 
                  
 #################### АВТОВКЛЮЧЕНИЕ ВЫКЛЮЧАТЕЛЯ ЛЮСТРЫ ####################
 
-      - alias: bt_reboot_switch
-        id: bt_reboot_switch
+      - alias: bt_reboot_switch_turn_on
+        id: bt_reboot_switch_turn_on
         description: Ванная включение выключателя
         initial_state: true
         trigger:
@@ -65,8 +69,60 @@ bt_reboot:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
         action:
     # Включение
         - delay: 00:00:05
         - service: switch.turn_on
           entity_id: switch.0x00158d0001117040_right
+
+      - alias: bt_reboot_switch_turn_on_check
+        id: bt_reboot_switch_on_turn_on_check
+        description: Ванная проверка состояния выключателя
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Не включен
+        - condition: template
+          value_template: "{{ states('switch.0x00158d0001117040_right') != 'on' }}"
+    # Режим работы
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
+        action:
+        - service: switch.turn_on
+          entity_id: switch.0x00158d0001117040_right
+          
+      - alias: bt_reboot_switch_check
+        id: bt_reboot_switch_check
+        description: Ванная проверка статуса выключателя
+        initial_state: true
+        trigger:
+    # Проверка раз в 15 минут
+        - platform: time_pattern
+          minutes: '/15'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
+        action:
+    # Принудительное обновление статуса
+        - service: mqtt.publish
+          data_template:
+            topic: "zigstar_poe/BT wd 2ch enter/get"
+            payload_template: '{ "state_right": "" }'

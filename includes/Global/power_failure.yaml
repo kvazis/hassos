@@ -45,6 +45,13 @@ power_failure:
              {{ is_state('binary_sensor.0xa4c138bae3526a07_contact', 'on') }}
             device_class: problem
 
+    # Сенсор определения отключения кухня
+          - name: kn_electricity
+            unique_id: kn_electricity
+            state: >
+             {{ is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on') }}
+            device_class: problem
+
     # Сенсор залипание сенсора отключения гостиная
           - name: lr_electricity_reset
             unique_id: lr_electricity_reset
@@ -54,12 +61,15 @@ power_failure:
             delay_on: 
                 minutes: 5
             device_class: problem
-
-    # Сенсор определения отключения кухня
-          - name: kn_electricity
-            unique_id: kn_electricity
+            
+    # Сенсор залипание сенсора отключения гостиная
+          - name: kn_electricity_reset
+            unique_id: kn_electricity_reset
             state: >
-             {{ is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on') }}
+             {{ is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on') and
+                 is_state('switch.0xa4c138235d1e6877', 'on')  }}
+            delay_on: 
+                minutes: 5
             device_class: problem
 
     # Сенсор определения отключения электрики
@@ -70,6 +80,17 @@ power_failure:
                 and is_state('binary_sensor.kn_electricity', 'on')
              }}
             device_class: problem
+
+    input_datetime:
+      electricity_off:
+        name: Электропитание отключено
+        has_date: true
+        has_time: true
+        
+      electricity_on:
+        name: Электропитание возобновлено
+        has_date: true
+        has_time: true
 
     automation:           
 #################### ПЕРЕЗАГРУЗКА СЕНСОРОВ ЭЛЕКТРИКИ ####################
@@ -98,3 +119,142 @@ power_failure:
         - delay: 00:00:05
         - service: switch.turn_on
           entity_id: switch.0xa4c138cd1b6a0a9a
+          
+      - alias: electricity_reboot_kn_sensor
+        id: electricity_reboot_kn_sensor
+        description: Электрика - перезагрузка сенсора в кухне
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут, перезагрузка если сенсор залип
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор определяющий недоступность люстры
+        - condition: state
+          entity_id: binary_sensor.kn_electricity_reset
+          state: 'on'
+        action:
+    # Перезагрузка по питанию
+        - service: switch.turn_off
+          entity_id: switch.0xa4c138235d1e6877
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0xa4c138235d1e6877
+          
+#################### ФИКСАЦИЯ И УВЕДОМЛЕНИЯ ####################          
+          
+      - alias: control_electricity_shotdown_log
+        id: control_electricity_shotdown_log
+        description: Фиксирование отключений электрики
+        initial_state: true
+        trigger:
+    # Сработка сенсора электрики
+        - platform: state
+          entity_id: binary_sensor.electricity
+          from: 'off'
+          to: 'on'
+        - platform: state
+          entity_id: binary_sensor.electricity
+          from: 'on'
+          to: 'off'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.electricity
+                    state: 'on'
+                sequence:        
+                  - service: input_datetime.set_datetime
+                    target:
+                      entity_id: input_datetime.electricity_off
+                    data:
+                      datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}" 
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.electricity
+                    state: 'off'
+                sequence:        
+                  - service: input_datetime.set_datetime
+                    target:
+                      entity_id: input_datetime.electricity_on
+                    data:
+                      datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}" 
+                      
+      - alias: control_electricity_notification
+        id: control_electricity_notification
+        description: Уведомление о работе электрики
+        initial_state: true
+        trigger:
+    # Сработка сенсора электрики
+        - platform: state
+          entity_id: binary_sensor.electricity
+          from: 'off'
+          to: 'on'
+        - platform: state
+          entity_id: binary_sensor.electricity
+          from: 'on'
+          to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.electricity
+                    state: 'on'
+                sequence:        
+                  - service: telegram_bot.send_message
+                    data_template:
+                      target:
+                          - !secret chat_id_group
+                      message: | 
+                           {{"\U000026A1"}} Электрика отключена 
+                           {{"\U0001F559"}} В {{ states('sensor.time_date') }} 
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.electricity
+                    state: 'off'
+                sequence:
+                  - delay: 00:00:02
+                  - service: telegram_bot.send_message
+                    data_template:
+                      target:
+                          - !secret chat_id_group
+                      message: | 
+                           {{"\U000026A1"}} Электрика восстановлена 
+                           {{"\U0001F559"}} В {{ states('sensor.time_date') }} 
+                           {% set s = (strptime(states("input_datetime.electricity_on"), "%Y-%m-%d %H:%M:%S").timestamp() | int - strptime(states("input_datetime.electricity_off"), "%Y-%m-%d %H:%M:%S").timestamp() | int) %}
+                           {{"\U0000231B"}} {{ 'Длительность - {:02d}:{:02d}:{:02d}'.format ( s % 86400 // 3600, s % 3600 // 60, s % 60) }}
+
+      - alias: control_ecoflow_battery
+        id: ccontrol_ecoflow_battery
+        description: Уведомление о уровне заряда аккумуляторов Ecoflow
+        initial_state: true
+        trigger:
+    # Сработка сенсора электрики
+        - platform: state
+          entity_id: binary_sensor.electricity
+          from: 'on'
+          to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+              - !secret chat_id_log
+            message: | 
+               {{"\U0001F50B"}} Кухня, Ecoflow 2 Pro 768 Wh текущий заряд - {{ states('sensor.river_2_pro_main_battery_level') }} 
+               {{"\U0001F50B"}} Гостиная, Ecoflow 2 Max 512 Wh текущий заряд - {{ states('sensor.river_2_max_main_battery_level') }}
+               {{"\U0001F50B"}} Гостиная, Ecoflow 2 256 Wh текущий заряд - {{ states('sensor.river_2_main_battery_level') }}
+               

@@ -1,12 +1,13 @@
 homeassistant:
   name: Home
   country: UA
+  language: en
   currency: UAH
   latitude: !secret latitude_coord
   longitude: !secret longitude_coord
   elevation: 50
   unit_system: metric
-  time_zone: Europe/Kiev
+  time_zone: Europe/Kyiv
   packages: !include_dir_merge_named includes
   auth_providers:
    - type: homeassistant
@@ -24,6 +25,15 @@ frontend:
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
+
+# Text to speech
+tts:
+  - platform: google_translate
+  
+  - platform: reversotts
+    language: 'Alyona-Russian'
+    pitch: "100"
+    bitrate: "128k"
 
 panel_custom:
   - name: server_state
@@ -47,6 +57,7 @@ telegram_bot:
       - !secret chat_id_group
       - !secret chat_id_group_tech
       - !secret chat_id_log
+      - !secret chat_id_k7
       
 lovelace:
   mode: yaml
@@ -65,5 +76,12 @@ lovelace:
      type: module
    - url: /hacsfiles/timer-bar-card/timer-bar-card.js
      type: module
-                
+   - url: /hacsfiles/lovelace-plotly-graph-card/plotly-graph-card.js
+     type: module                
+   - url: /hacsfiles/power-flow-card-plus/power-flow-card-plus.js
+     type: module
+   - url: /hacsfiles/ha-sankey-chart/ha-sankey-chart.js
+     type: module      
+     
+     
      

@@ -37,54 +37,87 @@ tt_reboot:
           state: 'on'
     # Сенсор электричества
         - condition: state
-          entity_id: binary_sensor.electricity
-          state: 'off'
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
         action:
     # Перезагрузка по питанию
         - service: switch.turn_off
-          entity_id: switch.0x00158d00014dceb3_left
+          entity_id: switch.0x00158d00062fbb54_left
         - delay: 00:00:05
         - service: switch.turn_on
-          entity_id: switch.0x00158d00014dceb3_left 
+          entity_id: switch.0x00158d00062fbb54_left 
           
 #################### АВТОВКЛЮЧЕНИЕ ВЫКЛЮЧАТЕЛЯ ЛЮСТРЫ ####################
 
-      - alias: tt_reboot_switch
-        id: tt_reboot_switch
+      - alias: tt_reboot_switch_turn_on
+        id: tt_reboot_switch_turn_on
         description: Туалет включение выключателя
         initial_state: true
         trigger:
     # Выключение выключателя
         - platform: state
-          entity_id: switch.0x00158d00014dceb3_left
+          entity_id: switch.0x00158d00062fbb54_left
           to: 'off'
         condition:
     # Переключатель режима работы сервера
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
         action:
     # Включение
         - delay: 00:00:05
         - service: switch.turn_on
-          entity_id: switch.0x00158d00014dceb3_left
+          entity_id: switch.0x00158d00062fbb54_left
+
+      - alias: tt_reboot_switch_turn_on_check
+        id: tt_reboot_switch_turn_on_check
+        description: Туалет проверка состояния выключателя
+        initial_state: true
+        trigger:
+    # Проверка раз в в минуту
+        - platform: time_pattern
+          minutes: '/1'
+        condition:
+    # Не включен
+        - condition: template
+          value_template: "{{ states('switch.0x00158d00062fbb54_left') != 'on' }}"
+    # Режим работы
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
+        action:
+    # Включение
+        - service: switch.turn_on
+          entity_id: switch.0x00158d00062fbb54_left
           
       - alias: tt_reboot_switch_check
         id: tt_reboot_switch_check
         description: Туалет проверка статуса выключателя
         initial_state: true
         trigger:
-    # Проверка раз в 15 минут
+    # Проверка раз в минуту
         - platform: time_pattern
-          minutes: '/15'
+          minutes: '/10'
         condition:
     # Переключатель режима работы сервера
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
         action:
     # Принудительное обновление статуса
         - service: mqtt.publish
           data_template:
-            topic: "zigstar/TT wd 2ch enter/get"
+            topic: "zigstar_poe/TT wd D1 enter/get"
             payload_template: '{ "state_left": "" }'

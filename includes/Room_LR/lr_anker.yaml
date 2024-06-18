@@ -1,0 +1,321 @@
+lr_anker:
+
+    recorder:
+      include:
+        entities:
+           - binary_sensor.0xa4c138084b9d3356
+           - switch.0xa4c138ceae6fe4bf
+           
+           
+    homeassistant:
+      customize:
+
+        binary_sensor.0xa4c138084b9d3356:
+          friendly_name: Гостиная Anker, AC out
+          icon: mdi:home-lightning-bolt-outline
+
+        switch.0xa4c138ceae6fe4bf:
+          friendly_name: Гостиная Anker, AC out
+          icon: mdi:power 
+
+
+
+    input_number:
+      lr_anker:
+        name: Anker attempt
+        initial: 0
+        min: 0
+        max: 4
+        step: 1
+
+    mqtt:
+
+      binary_sensor:
+        - name: 'lr_anker_mode'
+          unique_id: 'lr_anker_mode'
+          state_topic: "states/lr_anker/mode"
+
+    switch:
+    
+      - platform: template
+        switches:
+
+          lr_anker_mode:
+            friendly_name: "Включение инвертера Anker"
+            unique_id: 'lr_anker_mode_switch'
+            value_template: "{{ is_state('binary_sensor.lr_anker_mode', 'on') }}"
+            turn_on:
+              service: mqtt.publish
+              data_template:
+                topic: "states/lr_anker/mode"
+                payload_template: 'ON'
+                retain: true 
+            turn_off:
+              service: mqtt.publish
+              data_template:
+                topic: "states/lr_anker/mode"
+                payload_template: 'OFF'
+                retain: true 
+            icon_template: >-
+              {% if is_state('switch.lr_anker_mode', 'on') %}
+                mdi:power-plug
+              {% else %}
+                mdi:power-plug-off
+              {% endif %}
+
+    template:
+
+    
+      - trigger:
+          - platform: homeassistant
+            event: start
+        binary_sensor:
+          - name: lr_anker_reboot_fuse
+            unique_id: lr_anker_reboot_fuse
+            auto_off: 70
+            state: "true"
+
+    
+      - binary_sensor:
+      
+    # Сенсор для включения инвертера
+          - name: lr_anker_power_on
+            unique_id: lr_anker_power_on
+            state: >
+             {{ is_state('binary_sensor.electricity', 'on') and
+                 is_state('binary_sensor.0xa4c138084b9d3356', 'off')  }}
+            delay_on: 00:00:30
+
+    # Сенсор для выключения инвертера
+          - name: lr_anker_power_off
+            unique_id: lr_anker_power_off
+            state: >
+             {{ is_state('binary_sensor.electricity', 'off') and
+                 is_state('binary_sensor.0xa4c138084b9d3356', 'on')  }}
+            delay_on: 00:00:30
+
+    # Определение включения инвертера
+          - name: lr_anker_power_on_ok
+            unique_id: lr_anker_power_on_ok
+            state: >
+             {{ is_state('binary_sensor.electricity', 'on') and
+                 is_state('binary_sensor.0xa4c138084b9d3356', 'on')  }}
+            delay_on: 00:00:30
+            delay_off: 00:00:30
+                 
+    # Определение выключения инвертера
+          - name: lr_anker_power_off_ok
+            unique_id: lr_anker_power_off_ok
+            state: >
+             {{ is_state('binary_sensor.electricity', 'off') and
+                 is_state('binary_sensor.0xa4c138084b9d3356', 'off')  }}
+            delay_on: 00:00:30
+            delay_off: 00:00:30
+                
+    # Инвертер не включен
+          - name: lr_anker_power_on_not_ok
+            unique_id: lr_anker_power_on_not_ok
+            state: >
+                {{ (states('input_number.lr_anker')|int) > 3 and
+                is_state('binary_sensor.electricity', 'on')  and
+                is_state('binary_sensor.0xa4c138084b9d3356', 'off')  }}
+            delay_on: 00:00:10 
+            
+    # Инвертер не выключен
+          - name: lr_anker_power_off_not_ok
+            unique_id: lr_anker_power_off_not_ok
+            state: >
+                {{ (states('input_number.lr_anker')|int) > 3 and
+                is_state('binary_sensor.electricity', 'off')  and
+                is_state('binary_sensor.0xa4c138084b9d3356', 'on')  }}
+            delay_on: 00:00:10    
+            
+    automation:
+
+      - alias: lr_power_anker_attempt_reload
+        id: lr_power_anker_attempt_reload
+        description: Сброс попыток Anker
+        initial_state: false
+        trigger:
+    # Сработка сенсора включения инвертера
+        - platform: state
+          entity_id: binary_sensor.lr_anker_power_on
+          from: 'off'
+          to: 'on'
+    # Сработка сенсора выключения инвертера
+        - platform: state
+          entity_id: binary_sensor.lr_anker_power_off
+          from: 'off'
+          to: 'on'
+        condition:
+    # Режим работы
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action: 
+        - service: input_number.set_value
+          data:
+            value: 0
+          target:
+            entity_id: input_number.lr_anker
+          
+          
+    
+      - alias: lr_power_anker_ac_on
+        id: lr_power_anker_ac_on
+        description: Включение инвертера Anker
+        initial_state: false
+        trigger:
+    # Проверка раз в минуту
+        - platform: time_pattern
+          minutes: '/1'
+        condition:
+    # Сенсор включения инвертера
+        - condition: state
+          entity_id: binary_sensor.lr_anker_power_on
+          state: 'on'
+    # Режим работы
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Режим работы автоматизации
+        - condition: state
+          entity_id: switch.lr_anker_mode
+          state: 'on'
+    # Не более трех попыток
+        - condition: template
+          value_template: "{{ (states('input_number.lr_anker')|int) <= 3 }}"
+        action: 
+        - service: input_number.increment
+          data: {}
+          target:
+            entity_id: input_number.lr_anker
+        - service: switch.toggle
+          entity_id: switch.0xa4c138ceae6fe4bf
+
+
+      - alias: lr_power_anker_ac_off
+        id: lr_power_anker_ac_off
+        description: Выключение инвертера Anker
+        initial_state: false
+        trigger:
+    # Проверка раз в минуту
+        - platform: time_pattern
+          minutes: '/1'
+        condition:
+    # Сенсор включения инвертера
+        - condition: state
+          entity_id: binary_sensor.lr_anker_power_off
+          state: 'on'
+    # Режим работы
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Режим работы автоматизации
+        - condition: state
+          entity_id: switch.lr_anker_mode
+          state: 'on'
+    # Не более трех попыток
+        - condition: template
+          value_template: "{{ (states('input_number.lr_anker')|int) <= 3 }}"
+        action: 
+        - service: input_number.increment
+          data: {}
+          target:
+            entity_id: input_number.lr_anker
+        - service: switch.toggle
+          entity_id: switch.0xa4c138ceae6fe4bf
+
+            
+      - alias: lr_power_anker_ac_notification
+        id: lr_power_anker_ac_notification
+        description: Уведомление о состоянии инвертера
+        initial_state: false
+        trigger:
+    # Сработка сенсоров 
+        - platform: state
+          entity_id: binary_sensor.lr_anker_power_on_ok
+          from: 'off'
+          to: 'on'
+
+        - platform: state
+          entity_id: binary_sensor.lr_anker_power_off_ok
+          from: 'off'
+          to: 'on'
+
+        - platform: state
+          entity_id: binary_sensor.lr_anker_power_on_not_ok
+          from: 'off'
+          to: 'on'
+
+        - platform: state
+          entity_id: binary_sensor.lr_anker_power_off_not_ok
+          from: 'off'
+          to: 'on'
+          
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Режим работы автоматизации
+        - condition: state
+          entity_id: switch.lr_anker_mode
+          state: 'on'
+    # Мусорное срабатывание при перезагрузке
+        - condition: state
+          entity_id: binary_sensor.lr_anker_reboot_fuse
+          state: 'off'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.lr_anker_power_on_ok
+                    state: 'on'
+                sequence:        
+                  - service: telegram_bot.send_message
+                    data_template:
+                      target:
+                        - !secret chat_id_log
+                      message: | 
+                         {{"\U0001F916"}} Антонио. Инвертер Anker включен в {{ states('sensor.time_date') }}, Количество попыток - {{ (states('input_number.lr_anker')|int) }}
+
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.lr_anker_power_off_ok
+                    state: 'on'
+                sequence:        
+                  - service: telegram_bot.send_message
+                    data_template:
+                      target:
+                        - !secret chat_id_log
+                      message: | 
+                         {{"\U0001F916"}} Антонио. Инвертер Anker выключен в {{ states('sensor.time_date') }}, Количество попыток - {{ (states('input_number.lr_anker')|int) }}  
+            
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.lr_anker_power_on_not_ok
+                    state: 'on'
+                sequence:        
+                  - service: telegram_bot.send_message
+                    data_template:
+                      target:
+                        - !secret chat_id_log
+                      message: | 
+                         {{"\U0001F916"}} Антонио. Инвертер Anker НЕ ВКЛЮЧЕН, время события - {{ states('sensor.time_date') }}, Количество попыток - {{ (states('input_number.lr_anker')|int) }}        
+            
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.lr_anker_power_off_not_ok
+                    state: 'on'
+                sequence:        
+                  - service: telegram_bot.send_message
+                    data_template:
+                      target:
+                        - !secret chat_id_log
+                      message: | 
+                         {{"\U0001F916"}} Антонио. Инвертер Anker НЕ ВЫКЛЮЧЕН, время события - {{ states('sensor.time_date') }}, Количество попыток - {{ (states('input_number.lr_anker')|int) }}             
+            
+            
+            
+            

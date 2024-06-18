@@ -288,7 +288,7 @@ electricity:
     utility_meter:
     
       phase_1_energy_meter:
-        source: sensor.phase_1_energy
+        source: sensor.0x70ac08fffe99c363_energy
         unique_id: phase_1_energy_meter
         cycle: monthly
         tariffs:
@@ -296,7 +296,7 @@ electricity:
           - day
           
       phase_2_energy_meter:
-        source: sensor.phase_2_energy
+        source: sensor.0x187a3efffe355cf1_energy
         unique_id: phase_2_energy_meter
         cycle: monthly
         tariffs:
@@ -304,7 +304,7 @@ electricity:
           - day
           
       phase_3_energy_meter:
-        source: sensor.phase_3_energy
+        source: sensor.0x187a3efffe303832_energy
         unique_id: phase_3_energy_meter
         cycle: monthly
         tariffs:
@@ -439,15 +439,23 @@ electricity:
     ## Виртуальная кнопка
         - platform: state
           entity_id: input_button.select_tariff
-    ## Старт сервера
-        - platform: homeassistant
-          event: start
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off'  
         action:
             - choose:
               - conditions:
                   - condition: state
                     entity_id: binary_sensor.energy_tariff
                     state: 'off'
+                  - condition: state
+                    entity_id: select.phase_1_energy_meter
+                    state: 'night'
                 sequence:
                   - service: select.select_option
                     target:
@@ -463,6 +471,9 @@ electricity:
                   - condition: state
                     entity_id: binary_sensor.energy_tariff
                     state: 'on'
+                  - condition: state
+                    entity_id: select.phase_1_energy_meter
+                    state: 'day'
                 sequence:
                   - service: select.select_option
                     target:

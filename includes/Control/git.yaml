@@ -7,6 +7,9 @@ git:
           friendly_name: Обновление конфигурации на github
           icon: mdi:git
           
+        input_button.git_update:
+          friendly_name: Обновление конфигурации на github
+          icon: mdi:git
           
     shell_command:
       git_config: 'bash ./ha_git.sh'

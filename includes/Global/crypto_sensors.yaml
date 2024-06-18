@@ -1,0 +1,15 @@
+crypto_sensors:
+
+    recorder:
+      include:
+        entities:
+           - sensor.cryptoinfo_ton_sensor
+
+    sensor:
+     - platform: cryptoinfo_advanced
+       id: ton_sensor
+       cryptocurrency_name: "the-open-network" 
+       currency_name: "usd"
+       unit_of_measurement: "$"
+       multiplier: 1 
+       update_frequency: 15

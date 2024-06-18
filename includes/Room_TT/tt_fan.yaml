@@ -10,7 +10,7 @@ tt_fan:
             state: >
               {{ is_state('binary_sensor.tt_light_on', 'on') 
                  and is_state('binary_sensor.0xa4c1384e55f274ef_contact', 'off')
-                 and is_state('fan.0x00158d00014dceb3_right', 'off')
+                 and is_state('fan.0x00158d00062fbb54_right', 'off')
               }}
             delay_on: 00:05:00
             icon: >
@@ -25,7 +25,7 @@ tt_fan:
             unique_id: tt_fan_off
             state: >
               {{ is_state('binary_sensor.tt_light_on', 'off') 
-                 and is_state('fan.0x00158d00014dceb3_right', 'on')
+                 and is_state('fan.0x00158d00062fbb54_right', 'on')
               }}
             delay_on: 00:10:00
             icon: >
@@ -64,5 +64,5 @@ tt_fan:
           state: 'on'
         action:
         - service: fan.toggle
-          entity_id: fan.0x00158d00014dceb3_right
+          entity_id: fan.0x00158d00062fbb54_right
 

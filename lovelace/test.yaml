@@ -1,0 +1,30 @@
+title: Test
+icon: mdi:test-tube
+cards:
+
+    - type: vertical-stack
+      cards:
+
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:
+          
+            - type: custom:auto-entities
+              show_empty: false
+              card:
+                type: entities
+                show_header_toggle: false
+                card_mod:
+                 style: |
+                  ha-card {
+                    color: #FA8072;
+                    --paper-item-icon-color: #E6E6FA;
+                    font-weight: bold;
+                    font-size: 14px;
+                  }
+              filter:
+                include:
+                 - domain: '*'
+                   state: 'unavailable'
+
+

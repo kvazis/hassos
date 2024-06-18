@@ -259,10 +259,6 @@ cards:
           show_state: false
           show_name: false
 
-
-        # - type: custom:webrtc-camera
-        #   entity: camera.reolink_e1_zoom_rtsp
-
         - type: custom:stack-in-card
           mode: vertical
           cards:  
@@ -439,18 +435,188 @@ cards:
                   {% endif %} 
                 tap_action:
                   action: more-info
+
+
+                   
+
+############################ Колонка 3 ############################
+
+    - type: vertical-stack
+      cards:
+      
+        - type: markdown
+          style: |
+              ha-card {
+                color: #f8ffd8;
+                --paper-item-icon-color: #f8ffd8;
+                --paper-item-icon-active-color: #f8ffd8;
+                font-weight: bold;
+                font-size: 26px;
+              }     
+          content: >
+              **Питание** 
+      
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Розетки** 
+
+            - type: horizontal-stack
+              cards:
+    
+                - type: custom:mushroom-template-card
+                  primary: Микроволновка
+                  secondary: |-
+                      {{states ('sensor.0xa4c138273b49e4d0_power')}} Ватт
+                  layout: horizontal
+                  tap_action:
+                    action: toggle
+                  entity: switch.0xa4c138273b49e4d0
+                  icon: mdi:power-standby
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state("switch.0xa4c138273b49e4d0", "on") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %} 
+              
+                - type: custom:mushroom-template-card
+                  primary: Аэрогриль
+                  secondary: |-
+                      {{states ('sensor.0xa4c138d571b656c5_power')}} Ватт
+                  layout: horizontal
+                  tap_action:
+                    action: toggle
+                  entity: switch.0xa4c138d571b656c5
+                  icon: mdi:power-standby
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state("switch.0xa4c138d571b656c5", "on") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %} 
                     
-
-
+            - type: horizontal-stack
+              cards:
+    
+                - type: custom:mushroom-template-card
+                  primary: Электрогриль
+                  secondary: |-
+                      {{states ('sensor.0xa4c138201dcb67f6_power')}} Ватт
+                  layout: horizontal
+                  tap_action:
+                    action: toggle
+                  entity: switch.0xa4c138201dcb67f6
+                  icon: mdi:power-standby
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state("switch.0xa4c138201dcb67f6", "on") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %} 
               
+                - type: custom:mushroom-template-card
+                  primary: Кофемашина
+                  secondary: |-
+                      {{states ('sensor.0xa4c13874f3d1d1c0_power')}} Ватт
+                  layout: horizontal
+                  tap_action:
+                    action: toggle
+                  entity: switch.0xa4c13874f3d1d1c0
+                  icon: mdi:power-standby
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state("switch.0xa4c13874f3d1d1c0", "on") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %} 
+                    
+            - type: horizontal-stack
+              cards:
+    
+                - type: custom:mushroom-template-card
+                  primary: Чайник
+                  secondary: |-
+                      {{states ('sensor.0xa4c1385bcf7d00c9_power')}} Ватт
+                  layout: horizontal
+                  tap_action:
+                    action: toggle
+                  entity: switch.0xa4c1385bcf7d00c9
+                  icon: mdi:power-standby
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state("switch.0xa4c1385bcf7d00c9", "on") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %} 
               
+                - type: custom:mushroom-template-card
+                  primary: Холодильник
+                  secondary: |-
+                      {{states ('sensor.0x00158d0001fa2934_power')}} Ватт
+                  layout: horizontal
+                  tap_action:
+                    action: toggle
+                  entity: switch.0x00158d0001fa2934
+                  icon: mdi:power-standby
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state("switch.0x00158d0001fa2934", "on") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %} 
+                    
+            - type: horizontal-stack
+              cards:
+    
+                - type: custom:mushroom-template-card
+                  primary: Питание шлюза
+                  secondary: |-
+                      {{states ('sensor.0x00158d000114a1e1_power')}} Ватт
+                  layout: horizontal
+                  tap_action:
+                    action: toggle
+                  entity: switch.0x00158d000114a1e1
+                  icon: mdi:power-standby
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state("switch.0x00158d000114a1e1", "on") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %} 
               
-              
-              
-              
-              
-              
-              
-              
+                - type: custom:mushroom-template-card
+                  primary: Питание телевизора
+                  secondary: |-
+                      {{states ('sensor.0x00158d0001291d12_power')}} Ватт
+                  layout: horizontal
+                  tap_action:
+                    action: toggle
+                  entity: switch.0x00158d0001291d12
+                  icon: mdi:power-standby
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state("switch.0x00158d0001291d12", "on") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %} 
               
               

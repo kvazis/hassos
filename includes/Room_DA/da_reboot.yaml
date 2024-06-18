@@ -48,7 +48,7 @@ da_reboot:
           state: 'on'
     # Сенсор электричества
         - condition: state
-          entity_id: binary_sensor.electricity
+          entity_id: binary_sensor.blackout_after
           state: 'off'  
         action:
     # Перезагрузка по питанию если люстра недоступна
@@ -85,8 +85,8 @@ da_reboot:
           state: 'on'
     # Сенсор электричества
         - condition: state
-          entity_id: binary_sensor.electricity
-          state: 'off'  
+          entity_id: binary_sensor.blackout_after
+          state: 'off'   
         action:
     # Перезагрузка по питанию если люстра недоступна
         - service: switch.turn_off

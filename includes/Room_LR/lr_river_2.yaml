@@ -1,0 +1,50 @@
+lr_river_2:
+
+    homeassistant:
+      customize:
+
+        sensor.river_2_battery_in_power:
+          friendly_name: Ecoflow River 2, мощность на батарею
+          device_class: power
+          unit_of_measurement: W
+          
+        sensor.river_2_battery_out_power:
+          friendly_name: Ecoflow River 2, мощность с батареи
+          device_class: power
+          unit_of_measurement: W
+
+    recorder:
+      include:
+        entities:
+          - sensor.river_2_ac_in_power
+          - sensor.river_2_ac_in_volts
+          - sensor.river_2_ac_out_power
+          - sensor.river_2_ac_out_volts
+          - sensor.river_2_total_in_power
+          - sensor.river_2_total_out_power
+          - sensor.river_2_battery_in_power
+          - sensor.river_2_battery_out_power
+          - sensor.river_2_main_battery_level
+          - sensor.river_2_battery_level
+          
+    template:
+
+        sensor:
+
+          - name: river_2_battery_in_power
+            unique_id: river_2_battery_in_power
+            state: >
+                {% if states('sensor.river_2_total_in_power')|float > states('sensor.river_2_total_out_power')|float %}
+                {{ states('sensor.river_2_total_in_power')|float - states('sensor.river_2_total_out_power')|float }}
+                {% else %}
+                0
+                {% endif %} 
+                
+          - name: river_2_battery_out_power
+            unique_id: river_2_battery_out_power
+            state: >
+                {% if states('sensor.river_2_total_out_power')|float > states('sensor.river_2_total_in_power')|float %}
+                {{ states('sensor.river_2_total_out_power')|float - states('sensor.river_2_total_in_power')|float }}
+                {% else %}
+                0
+                {% endif %} 

@@ -1,0 +1,192 @@
+blackout:
+
+
+    homeassistant:
+      customize:    
+        binary_sensor.blackout:
+          friendly_name: Blackout
+
+          
+    template:
+    
+      - binary_sensor:
+      
+    # Сенсор определения отключения электрики
+          - name: blackout
+            unique_id: blackout
+            state: >
+              {{ states('sensor.server_telemetry') | float  > 800 
+                 and is_state('binary_sensor.electricity', 'on')
+              }}              
+              
+            delay_on: 
+                minutes: 1
+            delay_off: 
+                minutes: 1
+            device_class: problem
+            
+          - name: blackout_after
+            unique_id: blackout_after
+            state: >
+              {{ is_state('binary_sensor.electricity', 'on') }}              
+              
+            delay_off: 
+                minutes: 5
+            device_class: problem
+            
+
+    automation:
+
+      - alias: control_host_shotdown
+        id: control_host_shotdown
+        description: Действия при отключении электрики
+        initial_state: true
+        trigger:
+    # Сработка сенсора блекаута
+        - platform: state
+          entity_id: binary_sensor.blackout
+          from: 'off'
+          to: 'on'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: switch.turn_off
+          entity_id:
+            - switch.lr_light_cinema_mode  
+            
+            
+      - alias: control_host_after_shotdown_local
+        id: control_host_after_shotdown_local
+        description: Запуск после блекаута - локальный
+        initial_state: true
+        trigger:
+    # Сработка сенсора блекаута
+        - platform: state
+          entity_id: binary_sensor.blackout
+          from: 'on'
+          to: 'off'
+        action:
+    # Шлюз кухня  
+        - service: homeassistant.reload_config_entry
+          data: {}
+          target:
+            entity_id: light.gateway_light_7811dc64f4c8
+        - delay: 00:00:05
+    # # Шлюз ДА
+    #     - service: homeassistant.reload_config_entry
+    #       data: {}
+    #       target:
+    #         device_id: 686dc0bff60c982563531ee37679ed21
+    #     - delay: 00:00:05
+    # Шлюз LR
+        - service: homeassistant.reload_config_entry
+          data: {}
+          target:
+            entity_id: light.gateway_light_34ce0088b039
+            
+      - alias: control_after_shotdown
+        id: control_after_shotdown
+        description: Запуск после блекаута
+        initial_state: true
+        trigger:
+    # Сработка сенсора блекаута
+        - platform: state
+          entity_id: binary_sensor.blackout
+          from: 'on'
+          to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+    # Выключатель прихожая
+        - service: switch.turn_off
+          entity_id: switch.0x00158d00057305ac_right
+        - delay: 00:00:03
+        - service: switch.turn_on
+          entity_id: switch.0x00158d00057305ac_right
+        - delay: 00:00:03 
+    # Выключатель коридор
+        - service: switch.turn_off
+          entity_id: switch.0x00158d00057305ac_left
+        - delay: 00:00:03
+        - service: switch.turn_on
+          entity_id: switch.0x00158d00057305ac_left
+        - delay: 00:00:03 
+    # Выключатель ванная
+        - service: switch.turn_off
+          entity_id: switch.0x00158d0001117040_right
+        - delay: 00:00:03
+        - service: switch.turn_on
+          entity_id: switch.0x00158d0001117040_right
+        - delay: 00:00:03 
+    # Выключатель туалет
+        - service: switch.turn_off
+          entity_id: switch.0x00158d00062fbb54_left
+        - delay: 00:00:03
+        - service: switch.turn_on
+          entity_id: switch.0x00158d00062fbb54_left
+        - delay: 00:00:03  
+    # ИК база
+        - service: switch.turn_off
+          entity_id: switch.smart_power_strip_44eu_w_socket_5
+        - delay: 00:00:03
+        - service: switch.turn_on
+          entity_id: switch.smart_power_strip_44eu_w_socket_5
+        - delay: 00:00:03
+    # Обновление статуса лента за телевизором
+        - service: mqtt.publish
+          data_template:
+            topic: "zigstar_poe/LR TV Strip/get"
+            payload_template: '{ "state": "" }'
+        - delay: 00:00:03
+    # Обновление статуса люстра на балконе
+        - service: mqtt.publish
+          data_template:
+            topic: "zigstar/LR balcony light/get"
+            payload_template: '{ "state": "" }'
+        - delay: 00:00:03
+    # Перезагрузка Tuya
+        - service: homeassistant.reload_config_entry
+          data: {}
+          target:
+            entity_id: light.smart_star_projector_ug9z
+        - delay: 00:00:10 
+    # Выключение света
+        - service: light.turn_off
+          entity_id:
+            - light.yeelight_ceiling4_0x456e813
+            - light.yeelight_ceiling4_0x49c726b
+            - light.yeelight_ceiling3_0x45727f2
+            - light.kn_ceiling_light
+            - light.dd_ceiling_light
+            - light.0xa4c13812b94c8365
+            - light.hdmi_tv_lighting_65
+            - light.0x54ef4410008e96fd_bottom
+            - light.smart_star_projector_ug9z   
+    # Питание на выключатель гостиная балкон
+        - service: light.turn_on
+          entity_id: light.0xa4c13812b94c8365
+        - delay: 00:00:03
+        - service: mqtt.publish
+          data_template:
+            topic: "zigstar/LR balcony light/get"
+            payload_template: '{ "state": "" }'
+        - delay: 00:00:03
+        - service: light.turn_off
+          entity_id: light.0xa4c13812b94c8365
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+              - !secret chat_id_log
+            message: | 
+               {{"\U0001F916"}} Антонио. Сценарий восстановления работоспособности после блекаута - выполнен в {{ states('sensor.time_date') }} 
+        - delay: 00:00:05
+        - service: mqtt.publish
+          data_template:
+            topic: "zigstar/LR balcony light/get"
+            payload_template: '{ "state": "" }'

@@ -128,7 +128,25 @@ lr_awtrix:
             topic: "awtrix_6c9da0/notify"
             payload_template: '{ "icon": "1165", "text": "{{ states(''sensor.0x00158d0001a4b9da_temperature'')}} C", "duration": 10, "color": "#FFF97D", "noScroll": true }'
 
-    
+      - alias: lr_light_awtrix_currency_ton
+        id: lr_light_awtrix_currency_ton
+        description: Гостиная AWTRIX - курс TON 
+        initial_state: true
+        trigger:
+    ## 1 кнопка Aqara Opple
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c79360a_action
+          to: 'button_3_double'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: mqtt.publish
+          data_template:
+            topic: "awtrix_6c9da0/notify"
+            payload_template: '{ "icon": "44591", "text": "{{ states(''sensor.cryptoinfo_ton_sensor'')}} USD", "duration": 10, "color": "#00FFFF", "noScroll": true }'
+
       - alias: lr_light_awtrix_threat_notification
         id: lr_light_awtrix_threat_notification
         description: Гостиная AWTRIX - тревога

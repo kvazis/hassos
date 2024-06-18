@@ -36,8 +36,8 @@ en_reboot:
           state: 'on'
     # Сенсор электричества
         - condition: state
-          entity_id: binary_sensor.electricity
-          state: 'off' 
+          entity_id: binary_sensor.blackout_after
+          state: 'off'  
         action:
     # Перезагрузка по питанию
         - service: switch.turn_off
@@ -69,6 +69,36 @@ en_reboot:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
+        action:
+    # Включение
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0x00158d00057305ac_right
+
+      - alias: en_reboot_switch_turn_on_check
+        id: en_reboot_switch_turn_on_check
+        description: Прихожая проверка состояния выключателя
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Не включен
+        - condition: template
+          value_template: "{{ states('switch.0x00158d00057305ac_right') != 'on' }}"
+    # Режим работы
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
         action:
     # Включение
         - delay: 00:00:05
@@ -80,7 +110,7 @@ en_reboot:
         description: Прихожая проверка статуса выключателя
         initial_state: true
         trigger:
-    # Проверка раз в 5 минут
+    # Проверка раз в 15 минут
         - platform: time_pattern
           minutes: '/15'
         condition:
@@ -88,6 +118,10 @@ en_reboot:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
         action:
     # Принудительное обновление статуса
         - service: mqtt.publish

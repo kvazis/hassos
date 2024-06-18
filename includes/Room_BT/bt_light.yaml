@@ -4,8 +4,12 @@ bt_light:
       customize:
 
         light.yeelight_ceiling3_0x45727f2:
-          friendly_name: Ванная, люстра
+          friendly_name: Ванная люстра
           icon: phu:yeelight-ceiling
+          
+        light.0xa4c13861cd14a054:
+          friendly_name: Ванная автономный свет
+          icon: phu:light-strip
           
           
     template:
@@ -48,6 +52,18 @@ bt_light:
               }}
             delay_on: 00:15:00
             device_class: light
+
+    # Автономный свет без движения в ванной 
+          - name: bt_blackout_light
+            unique_id: bt_blackout_light
+            state: >
+              {{ is_state('light.0xa4c13861cd14a054', 'on')  
+                 and is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'off')
+                 and is_state('binary_sensor.0xa4c138a9cf8e75ef_presence', 'off')
+              }}
+            device_class: light
+            delay_on: 00:01:00
+
             
     automation:
     
@@ -81,34 +97,61 @@ bt_light:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Свет выключен
-        - condition: state
-          entity_id: light.yeelight_ceiling3_0x45727f2
-          state: 'off'
         action:
             - choose:
-    # Включение днем
               - conditions:
+            # Свет выключен
+                  - condition: state
+                    entity_id: light.yeelight_ceiling3_0x45727f2
+                    state: 'off'
+            # Включение днем
                   - condition: state
                     entity_id: binary_sensor.night_time
                     state: 'off' 
+            # Есть электрика
+                  - condition: state
+                    entity_id: binary_sensor.electricity
+                    state: 'off'
                 sequence:        
                   - service: light.turn_on
                     entity_id: light.yeelight_ceiling3_0x45727f2
                     data_template:
                       brightness_pct: 100
                       kelvin: 4000         
-    # Включение ночью
               - conditions:
+            # Свет выключен
+                  - condition: state
+                    entity_id: light.yeelight_ceiling3_0x45727f2
+                    state: 'off'
+            # Включение днем
                   - condition: state
                     entity_id: binary_sensor.night_time
                     state: 'on' 
+            # Есть электрика
+                  - condition: state
+                    entity_id: binary_sensor.electricity
+                    state: 'off'
                 sequence:        
                   - service: light.turn_on
                     entity_id: light.yeelight_ceiling3_0x45727f2
                     data_template:
                       brightness_pct: 60
                       kelvin: 4000 
+              - conditions:
+            # Свет выключен
+                  - condition: state
+                    entity_id: light.0xa4c13861cd14a054
+                    state: 'off'
+            # Нет электрики
+                  - condition: state
+                    entity_id: binary_sensor.electricity
+                    state: 'on'
+                sequence:        
+                  - service: light.turn_on
+                    entity_id: light.0xa4c13861cd14a054
+                    data_template:
+                      brightness_pct: 50
+
                       
       - alias: bt_light_off
         id: bt_light_off
@@ -146,11 +189,41 @@ bt_light:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Свет включен
-        - condition: state
-          entity_id: light.yeelight_ceiling3_0x45727f2
-          state: 'on'
         action:
         - service: light.turn_off
           entity_id:
             - light.yeelight_ceiling3_0x45727f2
+
+      - alias: bt_blackout_light_off
+        id: bt_blackout_light_off
+        description: Ванная выключение автономного света
+        initial_state: true
+        trigger:
+    # Виртуальные сущности 
+    # Выключение света без движения 
+        - platform: state
+          entity_id: binary_sensor.bt_blackout_light
+          to: 'on'
+    # Физические сущности 
+    # Выключатель на стене у входа
+        - platform: state
+          entity_id: sensor.0x00158d0001117040_action
+          to: 'single_right'
+    # Выключатель в ванной
+        - platform: state
+          entity_id: sensor.0x00158d000238a140_action
+          to: 'single_left'
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_5_triple'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: light.turn_off
+          entity_id:
+            - light.0xa4c13861cd14a054          
+    

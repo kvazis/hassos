@@ -24,7 +24,7 @@ camera_reboot:
           state: 'unavailable'
     # Сенсор электричества
         - condition: state
-          entity_id: binary_sensor.electricity
+          entity_id: binary_sensor.blackout_after
           state: 'off' 
         action:
     # Перезагрузка по питанию
@@ -60,7 +60,7 @@ camera_reboot:
           state: 'unavailable'
     # Сенсор электричества
         - condition: state
-          entity_id: binary_sensor.electricity
+          entity_id: binary_sensor.blackout_after
           state: 'off' 
         action:
     # Перезагрузка по питанию

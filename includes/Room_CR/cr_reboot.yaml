@@ -28,22 +28,22 @@ cr_reboot:
         description: Коридор - перезагрузка зависшей люстры
         initial_state: true
         trigger:
-    # Проверка раз в 5 минут, перезагрузка если люстра недоступна
+    # Проверка раз в 5 минут
         - platform: time_pattern
           minutes: '/5'
         condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
     # Сенсор определяющий недоступность люстры
         - condition: state
           entity_id: binary_sensor.cr_ceiling_unavailable
           state: 'on'
+    # Режим работы
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
     # Сенсор электричества
         - condition: state
-          entity_id: binary_sensor.electricity
-          state: 'off' 
+          entity_id: binary_sensor.blackout_after
+          state: 'off'  
         action:
     # Перезагрузка по питанию
         - service: switch.turn_off
@@ -75,11 +75,11 @@ cr_reboot:
           entity_id: switch.0x00158d00057305ac_left
 
           
-#################### КОНТРОЛЬ ВЫКЛЮЧАТЕЛЯ ЛЮСТРЫ ####################          
+#################### АВТОВКЛЮЧЕНИЕ ВЫКЛЮЧАТЕЛЯ ЛЮСТРЫ ####################     
 
       - alias: cr_reboot_switch_turn_on
         id: cr_reboot_switch_turn_on
-        description: Коридор - включение выключателя
+        description: Коридор включение выключателя
         initial_state: true
         trigger:
     # Выключение выключателя
@@ -91,12 +91,41 @@ cr_reboot:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
         action:
     # Включение
         - delay: 00:00:05
         - service: switch.turn_on
           entity_id: switch.0x00158d00057305ac_left
-          
+
+      - alias: cr_reboot_switch_turn_on_check
+        id: cr_reboot_switch_turn_on_check
+        description: Коридор проверка состояния выключателя
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Не включен
+        - condition: template
+          value_template: "{{ states('switch.0x00158d00057305ac_left') != 'on' }}"
+    # Режим работы
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
+        action:
+    # Включение
+        - service: switch.turn_on
+          entity_id: switch.0x00158d00057305ac_left
+
       - alias: cr_reboot_switch_check
         id: cr_reboot_switch_check
         description: Коридор проверка статуса выключателя
@@ -110,6 +139,10 @@ cr_reboot:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
         action:
     # Принудительное обновление статуса
         - service: mqtt.publish

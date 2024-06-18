@@ -44,6 +44,46 @@ cards:
                   entity: light.yeelight_ceiling3_0x45727f2
                   tap_action:
                     action: toggle
+                    
+                - type: button
+                  name: Аварийный свет
+                  entity: light.0xa4c13861cd14a054
+                  tap_action:
+                    action: toggle
+
+            - type: conditional
+              conditions:
+                - entity: light.yeelight_ceiling3_0x45727f2
+                  state: "on"
+              card:
+                  type: custom:mushroom-light-card
+                  entity: light.yeelight_ceiling3_0x45727f2
+                  name: Люстра
+                  icon_type: none
+                  primary_info: name
+                  secondary_info: none
+                  use_light_color: true
+                  show_brightness_control: true
+                  show_color_temp_control: true
+                  show_color_control: false
+                  collapsible_controls: true
+                  
+            - type: conditional
+              conditions:
+                - entity: light.0xa4c13861cd14a054
+                  state: "on"
+              card:
+                  type: custom:mushroom-light-card
+                  entity: light.0xa4c13861cd14a054
+                  name: Аварийный свет
+                  icon_type: none
+                  primary_info: name
+                  secondary_info: none
+                  use_light_color: true
+                  show_brightness_control: true
+                  show_color_temp_control: true
+                  show_color_control: false
+                  collapsible_controls: true
 
         - type: custom:stack-in-card
           mode: vertical
@@ -121,16 +161,16 @@ cards:
           layout: horizontal
           tap_action:
             action: toggle
-          entity: ffan.0x00158d0001117040
+          entity: fan.0x00158d0001117040
           icon: |-
-            {% if is_state("ffan.0x00158d0001117040", "on") %}
+            {% if is_state("fan.0x00158d0001117040", "on") %}
             mdi:fan
             {% else %}
             mdi:fan-off
             {% endif %}
           multiline_secondary: true
           icon_color: |-
-            {% if is_state("ffan.0x00158d0001117040", "on") %}
+            {% if is_state("fan.0x00158d0001117040", "on") %}
             green
             {% else %}
             grey

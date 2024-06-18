@@ -19,7 +19,7 @@ lr_light:
           friendly_name: Гостиная амбилайт люстра 2 
           icon: phu:recessed-ceiling
 
-        light.0x00158d00062fbb54_left:
+        light.0x54ef4410008e96fd_bottom:
           friendly_name: Гостиная свет стена
           icon: phu:wall-fuzo
 
@@ -38,6 +38,10 @@ lr_light:
         light.0xa4c138b72a314e97:
           friendly_name: Гостиная ТВ подсветка
           icon: phu:lightstrip-tv-alt
+          
+        light.0xa4c138da30166b8f:
+          friendly_name: Гостиная автономный свет
+          icon: phu:light-strip
 
     template:
 
@@ -53,7 +57,7 @@ lr_light:
                  is_state('light.yeelight_ceiling4_0x49c726b_ambilight', 'off') and
                  is_state('light.yeelight_ceiling4_0x4a1dacd', 'off') and
                  is_state('light.yeelight_ceiling4_0x4a1dacd_ambilight', 'off') and
-                 is_state('light.0x00158d00062fbb54_left', 'off') and
+                 is_state('light.0x54ef4410008e96fd_bottom', 'off') and
                  is_state('light.lr_bedside_lamp', 'off') and
                  is_state('light.0xa4c138b72a314e97', 'off') and
                  is_state('light.hdmi_tv_lighting_65', 'off') and
@@ -66,13 +70,281 @@ lr_light:
               {{ is_state('light.yeelight_lamp1_0x32a4ab4', 'off') and
                  is_state('light.yeelight_ceiling4_0x49c726b', 'off') and                 
                  is_state('light.yeelight_ceiling4_0x4a1dacd', 'off') and
-                 is_state('light.0x00158d00062fbb54_left', 'off') and
+                 is_state('light.0x54ef4410008e96fd_bottom', 'off') and
                  is_state('light.0xa4c138b72a314e97', 'off') and
                  is_state('light.lr_bedside_lamp', 'off') and
                  is_state('binary_sensor.lr_light_tv_cinema', 'off') }}
 
 
     automation:
+
+#################### ВКЛЮЧЕНИЕ СВЕТА ####################          
+
+      - alias: lr_ceiling_1_manual_control
+        id: lr_ceiling_1_manual_control
+        description: Гостиная - ручное управление люстра 1
+        initial_state: true
+        trigger:
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_1_double'
+    # Выключатель на стене внутри у входа
+        - platform: state
+          entity_id: sensor.0x54ef4410008e96fd_action
+          to: 'single_top'
+    ## Sonoff button
+        - platform: state
+          entity_id: sensor.0x84ba20fffed2331e_action
+          to: "long"
+    # Выключатель на стене снаружи у входа
+        - platform: state
+          entity_id: sensor.0x00158d00013fc3bc_action
+          to: 'single_left'          
+    ## 3 кнопка Aqara Opple
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c79360a_action
+          to: 'button_3_single'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: light.yeelight_ceiling4_0x49c726b
+                    state: 'off'
+                sequence:
+                  - service: light.turn_on
+                    entity_id:
+                      - light.yeelight_ceiling4_0x49c726b
+                    data_template:
+                      brightness_pct: 60
+                      kelvin: 4000
+              - conditions:
+                  - condition: state
+                    entity_id: light.yeelight_ceiling4_0x49c726b
+                    state: 'on'
+                sequence:
+                  - service: light.turn_off
+                    entity_id:
+                      - light.yeelight_ceiling4_0x49c726b
+                      
+      - alias: lr_light_blackout_manual_control
+        id: lr_light_blackout_manual_control
+        description: Гостиная - ручное управление автономный свет
+        initial_state: true
+        trigger:
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_1_double'
+    # Выключатель на стене внутри у входа
+        - platform: state
+          entity_id: sensor.0x00158d00062fbb54_action
+          to: 'single_right'
+    ## Sonoff button
+        - platform: state
+          entity_id: sensor.0x84ba20fffed2331e_action
+          to: "long"
+    # Выключатель на стене снаружи у входа
+        - platform: state
+          entity_id: sensor.0x00158d00013fc3bc_action
+          to: 'single_left'          
+    ## 3 кнопка Aqara Opple
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c79360a_action
+          to: 'button_3_single'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: light.0xa4c138da30166b8f
+                    state: 'off'
+                sequence:
+                  - service: light.turn_on
+                    entity_id:
+                      - light.0xa4c138da30166b8f
+                    data_template:
+                      brightness_pct: 60
+              - conditions:
+                  - condition: state
+                    entity_id: light.0xa4c138da30166b8f
+                    state: 'on'
+                sequence:
+                  - service: light.turn_off
+                    entity_id:
+                      - light.0xa4c138da30166b8f
+
+      - alias: lr_ceiling_2_manual_control
+        id: lr_ceiling_2_manual_control
+        description: Гостиная - ручное управление люстра 2
+        initial_state: true
+        trigger:
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_2_double'
+    ## 4 кнопка Aqara Opple
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c79360a_action
+          to: 'button_4_single'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: light.yeelight_ceiling4_0x49c726b
+                    state: 'off'
+                  - condition: state
+                    entity_id: light.yeelight_ceiling4_0x4a1dacd
+                    state: 'off'
+                sequence:
+                  - service: light.turn_on
+                    entity_id:
+                      - light.yeelight_ceiling4_0x49c726b
+                      - light.yeelight_ceiling4_0x4a1dacd
+                    data_template:
+                      brightness_pct: 100
+                      kelvin: 5000
+              - conditions:
+                  - condition: state
+                    entity_id: light.yeelight_ceiling4_0x49c726b
+                    state: 'on'
+                  - condition: state
+                    entity_id: light.yeelight_ceiling4_0x4a1dacd
+                    state: 'on'
+                sequence:
+                  - service: light.turn_off
+                    entity_id:
+                      - light.yeelight_ceiling4_0x49c726b
+                      - light.yeelight_ceiling4_0x4a1dacd
+                      
+      - alias: lr_ceiling_max_light
+        id: lr_ceiling_max_light
+        description: Гостиная - ручное управление люстра 2
+        initial_state: true
+        trigger:
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_1_triple'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: light.yeelight_ceiling4_0x4a1dacd
+                    state: 'off'
+                sequence:
+                  - service: light.turn_on
+                    entity_id:
+                      - light.yeelight_ceiling4_0x4a1dacd
+                    data_template:
+                      brightness_pct: 60
+                      kelvin: 4000
+              - conditions:
+                  - condition: state
+                    entity_id: light.yeelight_ceiling4_0x4a1dacd
+                    state: 'on'
+                sequence:
+                  - service: light.turn_off
+                    entity_id:
+                      - light.yeelight_ceiling4_0x4a1dacd
+
+      - alias: lr_light_wall_toggle
+        id: lr_light_wall_toggle
+        description: Гостиная - ручное управление светильник на стене
+        initial_state: true
+        trigger:
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_2_single'
+    # Выключатель на стене снаружи у входа
+        - platform: state
+          entity_id: sensor.0x00158d00013fc3bc_action
+          to: 'single_right' 
+    ## Sonoff button
+        - platform: state
+          entity_id: sensor.0x84ba20fffed2331e_action
+          to: "single"
+    ## 2 кнопка Aqara Opple
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c79360a_action
+          to: 'button_2_single' 
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off'
+        action:
+        - service: light.toggle
+          entity_id: light.0x54ef4410008e96fd_bottom
+
+      - alias: lr_light_table_lamp_toggle
+        id: lr_light_table_lamp_toggle
+        description: Гостиная - ручное управление настольной лампой
+        initial_state: true
+        trigger:
+    ## 1 кнопка Aqara Opple
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c79360a_action
+          to: 'button_1_single' 
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_1_single'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: light.yeelight_lamp1_0x32a4ab4
+                    state: 'off'
+                sequence:
+                  - service: light.turn_on
+                    entity_id:
+                      - light.yeelight_lamp1_0x32a4ab4
+                    data_template:
+                      brightness_pct: 100
+                      kelvin: 2700
+              - conditions:
+                  - condition: state
+                    entity_id: light.yeelight_lamp1_0x32a4ab4
+                    state: 'on'
+                sequence:
+                  - service: light.turn_off
+                    entity_id:
+                      - light.yeelight_lamp1_0x32a4ab4
 
 #################### АВТОМАТИЧЕСКОЕ ОСВЕЩЕНИЕ ####################
     
@@ -140,7 +412,7 @@ lr_light:
 
 
 #################### ВСПОМОГАТЕЛЬНОЕ ОСВЕЩЕНИЕ ####################
-          
+
       - alias: lr_light_philips_on_off
         id: lr_light_philips_on_off
         description: Гостиная - управление прикроватником
@@ -150,6 +422,10 @@ lr_light:
         - platform: state
           entity_id: sensor.0x04cf8cdf3c79360a_action
           to: 'button_5_double'
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_2_triple'
         condition:
         - condition: state
           entity_id: switch.control_mode
@@ -166,8 +442,7 @@ lr_light:
                       - light.yeelight_lamp1_0x32a4ab4
                       - light.yeelight_ceiling4_0x49c726b
                       - light.yeelight_ceiling4_0x4a1dacd
-                      - light.0x00158d00062fbb54_left
-                      - light.lr_bedside_lamp
+                      - light.0x54ef4410008e96fd_bottom
                   - service: light.turn_on
                     entity_id:
                       - light.lr_bedside_lamp
@@ -189,6 +464,66 @@ lr_light:
                   - service: light.turn_off
                     entity_id:
                       - light.lr_bedside_lamp
+                      
+      - alias: lr_light_philips_temp_on_and_off
+        id: lr_light_philips_temp_on_and_off
+        description: Гостиная - отключение всего освещения с временной подсветкой
+        initial_state: true
+        trigger:
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_6_triple'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: light.turn_off
+          entity_id:
+            - light.yeelight_lamp1_0x32a4ab4
+            - light.yeelight_ceiling4_0x49c726b
+            - light.yeelight_ceiling4_0x4a1dacd
+            - light.0x54ef4410008e96fd_bottom
+        - service: light.turn_on
+          entity_id:
+            - light.lr_bedside_lamp
+          data_template:
+            brightness_pct: 100
+            kelvin: 4000
+        - delay: 00:00:15
+        - service: light.turn_off
+          entity_id:
+            - light.lr_bedside_lamp
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
             
             
             

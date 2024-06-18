@@ -1,0 +1,76 @@
+k7_notification:
+
+    input_boolean:
+    
+      k7_notification:
+        name: Уведомления К7
+        icon: mdi:toggle-switch-outline
+
+    input_button:
+
+      k7_notification:
+        name: Уведомления К7
+
+    automation:
+    
+    
+      - alias: k7_notification_4_section
+        id: k7_notification_4_section
+        description: Уведомления К7 4 секция
+        initial_state: true
+        trigger:
+    ## Virtual button
+        - platform: state
+          entity_id: input_button.test_test
+    # Выключение электрики
+        - platform: state
+          entity_id: binary_sensor.electricity
+          from: 'off'
+          to: 'on'
+    # Включение электрики
+        - platform: state
+          entity_id: binary_sensor.electricity
+          from: 'on'
+          to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Переключатель режима работы уведомлений
+        - condition: state
+          entity_id: input_boolean.k7_notification
+          state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.electricity
+                    state: 'on'
+                sequence:        
+                  - service: telegram_bot.send_message
+                    data_template:
+                      target:
+                          - !secret chat_id_k7
+                      message: | 
+                           {{"\U0001F534"}} Електрика (введення на секцію 4-7) {{"\U000026A1"}} вимкнена в {{ states('sensor.time_date') }}
+
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.electricity
+                    state: 'off'
+                sequence:
+                  - delay: 00:00:05
+                  - service: telegram_bot.send_message
+                    data_template:
+                      target:
+                          - !secret chat_id_k7
+                      message: | 
+                           {{"\U00002705"}} Електрика (введення на секцію 4-7) {{"\U000026A1"}} відновлена в {{ states('sensor.time_date') }}
+                           {% set s = (strptime(states("input_datetime.electricity_on"), "%Y-%m-%d %H:%M:%S").timestamp() | int - strptime(states("input_datetime.electricity_off"), "%Y-%m-%d %H:%M:%S").timestamp() | int) %}
+                           {{"\U0000231B"}} {{ 'Тривалість - {:02d}:{:02d}:{:02d}'.format ( s % 86400 // 3600, s % 3600 // 60, s % 60) }} 
+                           
+                           
+
+                           
+                           

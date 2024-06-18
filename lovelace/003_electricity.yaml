@@ -15,107 +15,48 @@ cards:
           content: >
              **Электрика**
 
-
-        - type: custom:stack-in-card
-          mode: vertical
+        - type: horizontal-stack
+    
           cards:
 
-            - type: horizontal-stack
-        
-              cards:
-              
-                - type: custom:mushroom-template-card
-                  primary: Гостиная 220В
-                  secondary: |-
-                    {% if is_state("binary_sensor.lr_electricity", "off") %}
-                    Питание есть
-                    {% else %}
-                    Питание отключено
-                    {% endif %}
-                  layout: horizontal
-                  entity: binary_sensor.lr_electricity
-                  icon_color: |-
-                    {% if is_state("binary_sensor.lr_electricity", "off") %}
-                    green
-                    {% else %}
-                    red
-                    {% endif %}
-                  icon: |-
-                    {% if is_state("binary_sensor.lr_electricity", "off") %}
-                    mdi:power-plug
-                    {% else %}
-                    mdi:power-plug-off
-                    {% endif %}
-                  tap_action:
-                    action: more-info
-                    
-                - type: custom:mushroom-template-card
-                  primary: Кухня 220В
-                  secondary: |-
-                    {% if is_state("binary_sensor.kn_electricity", "off") %}
-                    Питание есть
-                    {% else %}
-                    Питание отключено
-                    {% endif %}
-                  layout: horizontal
-                  entity: binary_sensor.kn_electricity
-                  icon_color: |-
-                    {% if is_state("binary_sensor.kn_electricity", "off") %}
-                    green
-                    {% else %}
-                    red
-                    {% endif %}
-                  icon: |-
-                    {% if is_state("binary_sensor.kn_electricity", "off") %}
-                    mdi:power-plug
-                    {% else %}
-                    mdi:power-plug-off
-                    {% endif %}
-                  tap_action:
-                    action: more-info
-
-            - type: horizontal-stack
-        
-              cards:
-
-                - type: custom:mushroom-template-card
-                  primary: Текущий тариф
-                  secondary: |-
-                    {% if is_state("select.total_counter_energy", "day") %}
-                    День
-                    {% else %}
-                    Ночь
-                    {% endif %}
-                  layout: horizontal
-                  entity: select.total_monthly_energy
-                  icon_color: |-
-                    {% if is_state("select.total_counter_energy", "day") %}
-                    white
-                    {% else %}
-                    grey
-                    {% endif %}
-                  icon: |-
-                    {% if is_state("select.total_counter_energy", "day") %}
-                    mdi:weather-sunny
-                    {% else %}
-                    mdi:weather-night
-                    {% endif %}
-                  tap_action:
-                    action: more-info
+            - type: custom:mushroom-template-card
+              primary: Текущий тариф
+              secondary: |-
+                {% if is_state("select.total_counter_energy", "day") %}
+                День
+                {% else %}
+                Ночь
+                {% endif %}
+              layout: horizontal
+              entity: select.total_monthly_energy
+              icon_color: |-
+                {% if is_state("select.total_counter_energy", "day") %}
+                white
+                {% else %}
+                grey
+                {% endif %}
+              icon: |-
+                {% if is_state("select.total_counter_energy", "day") %}
+                mdi:weather-sunny
+                {% else %}
+                mdi:weather-night
+                {% endif %}
+              tap_action:
+                action: more-info
 
 
-                - type: custom:mushroom-template-card
-                  primary: Установка тарифа
-                  layout: horizontal
-                  entity: input_button.select_tariff
-                  icon: mdi:reload
-                  multiline_secondary: true
-                  icon_color: amber
-                  tap_action:
-                    action: call-service
-                    service: input_button.press
-                    target:
-                      entity_id: input_button.select_tariff
+            - type: custom:mushroom-template-card
+              primary: Установка тарифа
+              layout: horizontal
+              entity: input_button.select_tariff
+              icon: mdi:reload
+              multiline_secondary: true
+              icon_color: amber
+              tap_action:
+                action: call-service
+                service: input_button.press
+                target:
+                  entity_id: input_button.select_tariff
                       
         - type: custom:stack-in-card
           mode: vertical
@@ -223,6 +164,208 @@ cards:
                     service: input_button.press
                     target:
                       entity_id: input_button.energy_correction_night
+
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:
+
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Подача питания**
+
+
+            - type: horizontal-stack
+        
+              cards:
+              
+                - type: custom:mushroom-template-card
+                  primary: Старый сенсор
+                  secondary: |-
+                    {% if is_state("binary_sensor.electricity", "off") %}
+                    Питание есть
+                    {% else %}
+                    Питание отключено
+                    {% endif %}
+                  layout: horizontal
+                  entity: binary_sensor.electricity
+                  icon_color: |-
+                    {% if is_state("binary_sensor.electricity", "off") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %}
+                  icon: |-
+                    {% if is_state("binary_sensor.electricity", "off") %}
+                    mdi:power-plug
+                    {% else %}
+                    mdi:power-plug-off
+                    {% endif %}
+                  tap_action:
+                    action: more-info
+
+                - type: custom:mushroom-template-card
+                  primary: Новый сенсор
+                  secondary: |-
+                    {% if is_state("binary_sensor.electricity_new", "off") %}
+                    Питание есть
+                    {% else %}
+                    Питание отключено
+                    {% endif %}
+                  layout: horizontal
+                  entity: binary_sensor.electricity_new
+                  icon_color: |-
+                    {% if is_state("binary_sensor.electricity_new", "off") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %}
+                  icon: |-
+                    {% if is_state("binary_sensor.electricity_new", "off") %}
+                    mdi:power-plug
+                    {% else %}
+                    mdi:power-plug-off
+                    {% endif %}
+                  tap_action:
+                    action: more-info
+
+            - type: horizontal-stack
+        
+              cards:
+              
+                - type: custom:mushroom-template-card
+                  primary: Гостиная 220В
+                  secondary: |-
+                    {% if is_state("binary_sensor.lr_electricity", "off") %}
+                    Питание есть
+                    {% else %}
+                    Питание отключено
+                    {% endif %}
+                  layout: horizontal
+                  entity: binary_sensor.lr_electricity
+                  icon_color: |-
+                    {% if is_state("binary_sensor.lr_electricity", "off") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %}
+                  icon: |-
+                    {% if is_state("binary_sensor.lr_electricity", "off") %}
+                    mdi:power-plug
+                    {% else %}
+                    mdi:power-plug-off
+                    {% endif %}
+                  tap_action:
+                    action: more-info
+
+                - type: custom:mushroom-template-card
+                  primary: Гостиная 220В 2
+                  secondary: |-
+                    {% if is_state("binary_sensor.0xa4c138135e284964_contact", "off") %}
+                    Питание есть
+                    {% else %}
+                    Питание отключено
+                    {% endif %}
+                  layout: horizontal
+                  entity: binary_sensor.0xa4c138135e284964_contact
+                  icon_color: |-
+                    {% if is_state("binary_sensor.0xa4c138135e284964_contact", "off") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %}
+                  icon: |-
+                    {% if is_state("binary_sensor.0xa4c138135e284964_contact", "off") %}
+                    mdi:power-plug
+                    {% else %}
+                    mdi:power-plug-off
+                    {% endif %}
+                  tap_action:
+                    action: more-info
+                    
+                - type: custom:mushroom-template-card
+                  primary: Кухня 220В
+                  secondary: |-
+                    {% if is_state("binary_sensor.kn_electricity", "off") %}
+                    Питание есть
+                    {% else %}
+                    Питание отключено
+                    {% endif %}
+                  layout: horizontal
+                  entity: binary_sensor.kn_electricity
+                  icon_color: |-
+                    {% if is_state("binary_sensor.kn_electricity", "off") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %}
+                  icon: |-
+                    {% if is_state("binary_sensor.kn_electricity", "off") %}
+                    mdi:power-plug
+                    {% else %}
+                    mdi:power-plug-off
+                    {% endif %}
+                  tap_action:
+                    action: more-info
+
+            - type: horizontal-stack
+        
+              cards:
+
+                - type: custom:mushroom-template-card
+                  primary: Гостиная
+                  secondary: |-
+                    {% if is_state("switch.0xa4c138cd1b6a0a9a", "on") %}
+                    Вкл
+                    {% else %}
+                    Выкл
+                    {% endif %}
+                  layout: horizontal
+                  tap_action:
+                    action: toggle
+                  entity: switch.0xa4c138cd1b6a0a9a
+                  icon: mdi:power-standby
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state("switch.0xa4c138cd1b6a0a9a", "on") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %}
+
+                - type: custom:mushroom-template-card
+                  primary: Кухня
+                  secondary: |-
+                    {% if is_state("switch.0xa4c138235d1e6877", "on") %}
+                    Вкл
+                    {% else %}
+                    Выкл
+                    {% endif %}
+                  layout: horizontal
+                  tap_action:
+                    action: toggle
+                  entity: switch.0xa4c138235d1e6877
+                  icon: mdi:power-standby
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state("switch.0xa4c138235d1e6877", "on") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %}
+
+            - type: entities
+              show_header_toggle: false
+              entities:
+               - entity: input_datetime.electricity_off                
+               - entity: input_datetime.electricity_on 
                       
 ############################ Колонка 2 ############################
 
@@ -291,6 +434,82 @@ cards:
                   icon: mdi:lightning-bolt-circle
                   tap_action:
                     action: more-info
+
+        - type: custom:plotly-graph
+          hours_to_show: 24
+          refresh_interval: 10      
+          entities:
+            - entity: sensor.phase_1_voltage
+              show_value: true
+              line:
+                 width: 1
+                 color: lightgreen
+
+        - type: custom:plotly-graph
+          hours_to_show: 24
+          refresh_interval: 10      
+          entities:
+            - entity: sensor.phase_1_power
+              show_value: true
+              line:
+                 width: 1
+                 color: lightblue
+
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Кухня Ecoflow River 2 Pro 768 Wh** 
+
+    
+            - type: custom:power-flow-card-plus
+              clickable_entities: true
+              entities:
+                grid:
+                  entity: sensor.river_2_pro_total_in_power
+                  power_outage:
+                    entity: binary_sensor.electricity
+                    state_alert: "on"
+                    display_state: one_way
+                    color_circle: true
+                solar:
+                  entity: sensor.river_2_pro_solar_in_power
+                battery:
+                  entity:
+                    consumption: sensor.river_2_pro_battery_out_power
+                    production: sensor.river_2_pro_battery_in_power
+                  state_of_charge: sensor.river_2_pro_battery_level
+                  display_state: one_way
+                  color_circle: true
+                home:
+                  entity: sensor.river_2_pro_total_out_power
+                  override_state: true
+                individual:
+                - entity: sensor.river_2_pro_ac_out_power
+                  name: AC out
+                  icon: mdi:power-socket-eu
+                  display_zero: true
+                - entity: sensor.river_2_pro_usb_out_power
+                  name: USB A out
+                  icon: mdi:usb-port
+                  display_zero: true
+                - entity: sensor.river_2_pro_type_c_out_power
+                  name: USB C out
+                  icon: mdi:usb-c-port
+                  display_zero: true
+                - entity: sensor.river_2_pro_dc_out_power
+                  name: DC out
+                  icon: mdi:current-dc
+                  display_zero: true
                     
 ############################ Колонка 3 ############################
 
@@ -359,7 +578,83 @@ cards:
                   icon: mdi:lightning-bolt-circle
                   tap_action:
                     action: more-info
-                    
+
+        - type: custom:plotly-graph
+          hours_to_show: 24
+          refresh_interval: 10      
+          entities:
+            - entity: sensor.phase_2_voltage
+              show_value: true
+              line:
+                 width: 1
+                 color: lightgreen
+
+        - type: custom:plotly-graph
+          hours_to_show: 24
+          refresh_interval: 10      
+          entities:
+            - entity: sensor.phase_2_power
+              show_value: true
+              line:
+                 width: 1
+                 color: lightblue    
+                 
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Гостиная Ecoflow River 2 Max 512 Wh** 
+
+    
+            - type: custom:power-flow-card-plus
+              clickable_entities: true
+              entities:
+                grid:
+                  entity: sensor.river_2_max_total_in_power
+                  power_outage:
+                    entity: binary_sensor.electricity
+                    state_alert: "on"
+                    display_state: one_way
+                    color_circle: true
+                solar:
+                  entity: sensor.river_2_max_solar_in_power
+                battery:
+                  entity:
+                    consumption: sensor.river_2_max_battery_out_power
+                    production: sensor.river_2_max_battery_in_power
+                  state_of_charge: sensor.river_2_max_battery_level
+                  display_state: one_way
+                  color_circle: true
+                home:
+                  entity: sensor.river_2_max_total_out_power
+                  override_state: true
+                individual:
+                - entity: sensor.river_2_max_ac_out_power
+                  name: AC out
+                  icon: mdi:power-socket-eu
+                  display_zero: true
+                - entity: sensor.river_2_max_usb_out_power
+                  name: USB A out
+                  icon: mdi:usb-port
+                  display_zero: true
+                - entity: sensor.river_2_max_type_c_out_power
+                  name: USB C out
+                  icon: mdi:usb-c-port
+                  display_zero: true
+                - entity: sensor.river_2_max_dc_out_power
+                  name: DC out
+                  icon: mdi:current-dc
+                  display_zero: true                  
+
 ############################ Колонка 4 ############################
 
 
@@ -427,3 +722,81 @@ cards:
                   icon: mdi:lightning-bolt-circle
                   tap_action:
                     action: more-info
+
+        - type: custom:plotly-graph
+          hours_to_show: 24
+          refresh_interval: 10      
+          entities:
+            - entity: sensor.phase_3_voltage
+              show_value: true
+              line:
+                 width: 1
+                 color: lightgreen
+                    
+        - type: custom:plotly-graph
+          hours_to_show: 24
+          refresh_interval: 10      
+          entities:
+            - entity: sensor.phase_3_power
+              show_value: true
+              line:
+                 width: 1
+                 color: lightblue  
+                 
+                  
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Гостиная Ecoflow River 2 256 Wh** 
+
+    
+            - type: custom:power-flow-card-plus
+              clickable_entities: true
+              entities:
+                grid:
+                  entity: sensor.river_2_total_in_power
+                  power_outage:
+                    entity: binary_sensor.electricity
+                    state_alert: "on"
+                    display_state: one_way
+                    color_circle: true
+                solar:
+                  entity: sensor.river_2_solar_in_power
+                battery:
+                  entity:
+                    consumption: sensor.river_2_battery_out_power
+                    production: sensor.river_2_battery_in_power
+                  state_of_charge: sensor.river_2_battery_level
+                  display_state: one_way
+                  color_circle: true
+                home:
+                  entity: sensor.river_2_total_out_power
+                  override_state: true
+                individual:
+                - entity: sensor.river_2_ac_out_power
+                  name: AC out
+                  icon: mdi:power-socket-eu
+                  display_zero: true
+                - entity: sensor.river_2_usb_out_power
+                  name: USB A out
+                  icon: mdi:usb-port
+                  display_zero: true
+                - entity: sensor.river_2_type_c_out_power
+                  name: USB C out
+                  icon: mdi:usb-c-port
+                  display_zero: true
+                - entity: sensor.river_2_dc_out_power
+                  name: DC out
+                  icon: mdi:current-dc
+                  display_zero: true  
+                    

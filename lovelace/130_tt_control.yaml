@@ -114,7 +114,7 @@ cards:
               - type: custom:mushroom-template-card
                 primary: Люстра туалет питание
                 secondary: |-
-                  {% if is_state("switch.0x00158d00014dceb3_left", "on") %}
+                  {% if is_state("switch.0x00158d00062fbb54_left", "on") %}
                   Вкл
                   {% else %}
                   Выкл
@@ -122,11 +122,11 @@ cards:
                 layout: horizontal
                 tap_action:
                   action: toggle
-                entity: switch.0x00158d00014dceb3_left
+                entity: switch.0x00158d00062fbb54_left
                 icon: phu:aqara-h1-switch
                 multiline_secondary: true
                 icon_color: |-
-                  {% if is_state("switch.0x00158d00014dceb3_left", "on") %}
+                  {% if is_state("switch.0x00158d00062fbb54_left", "on") %}
                   green
                   {% else %}
                   red
@@ -199,7 +199,7 @@ cards:
         - type: custom:mushroom-template-card
           primary: Вытяжка
           secondary: |-
-            {% if is_state("fan.0x00158d00014dceb3_right", "on") %}
+            {% if is_state("fan.0x00158d00062fbb54_right", "on") %}
             Вытяжка работает
             {% else %}
             Вытяжка отключена
@@ -207,16 +207,16 @@ cards:
           layout: horizontal
           tap_action:
             action: toggle
-          entity: fan.0x00158d00014dceb3_right
+          entity: fan.0x00158d00062fbb54_right
           icon: |-
-            {% if is_state("fan.0x00158d00014dceb3_right", "on") %}
+            {% if is_state("fan.0x00158d00062fbb54_right", "on") %}
             mdi:fan
             {% else %}
             mdi:fan-off
             {% endif %}
           multiline_secondary: true
           icon_color: |-
-            {% if is_state("fan.0x00158d00014dceb3_right", "on") %}
+            {% if is_state("fan.0x00158d00062fbb54_right", "on") %}
             green
             {% else %}
             grey

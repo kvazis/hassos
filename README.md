@@ -1,6 +1,30 @@
 ## Новый рабочий сервер
 
 
+### Обновление 2024 06 18     
+#### Пакаджи (незначительные изменения - синтаксис, правки - не описываю, только новое)     
+:arrow_right: [blackout.yaml](https://github.com/kvazis/hassos/blob/master/includes/Global/blackout.yaml) - сценарии действий которые система проводит после восстановления питания      
+:arrow_right: [bt_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_BT/bt_light.yaml) - добавлено аварийное освещение на автономном питании     
+:arrow_right: [bt_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_BT/bt_reboot.yaml) - добавлено условие проверки наличия электрики     
+:arrow_right: [cr_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_CR/cr_reboot.yaml) - добавлено условие проверки наличия электрики     
+:arrow_right: [da_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_DA/da_reboot.yaml) - добавлено условие проверки наличия электрики     
+:arrow_right: [en_door.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_EN/en_door.yaml) - при отсутвии электрики фото не шлются, только уведомление      
+:arrow_right: [en_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_EN/en_reboot.yaml) - добавлено условие проверки наличия электрики     
+:arrow_right: [kn_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_KN/kn_reboot.yaml) - добавлено условие проверки наличия электрики     
+:arrow_right: [kn_ecoflow.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_KN/kn_ecoflow.yaml) - описание сенсоров Ecoflow river 2 pro, темплейт для определения мощности на и от аккумулятора    
+:arrow_right: [kn_heat.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_KN/kn_heat.yaml) - пакадж управления термоголовкой в кухне    
+:arrow_right: [lr_anker.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_anker.yaml) - временный пакадж (уже отключен) запуска станции Anker, есть проверка количества попыток включения     
+:arrow_right: [lr_river_max.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_river_max.yaml) - описание сенсоров Ecoflow river 2 max, темплейт для определения мощности на и от аккумулятора    
+:arrow_right: [lr_river_2.yam](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_river_2.yam) - описание сенсоров Ecoflow river 2 max, темплейт для определения мощности на и от аккумулятора    
+:arrow_right: [lr_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_light.yaml) - добавлено управление люстрами, работа автономного освещения     
+:arrow_right: [lr_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_reboot.yaml) - добавлено условие проверки наличия электрики     
+:arrow_right: [tt_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_TT/tt_reboot.yaml) - добавлено условие проверки наличия электрики     
+:arrow_right: [k7_notification.yaml](https://github.com/kvazis/hassos/blob/master/includes/Telegram/k7_notification.yaml) - уведомление о отключении электрики в домовой чат    
+
+#### Интерфейс, в режиме yaml (из интересного)    
+:arrow_right: [003_electricity.yaml](https://github.com/kvazis/hassos/blob/master/lovelace/003_electricity.yaml) - карты power-flow-card-plus для станций Ecoflow     
+
+
 ### Обновление 2024 04 10     
 #### Пакаджи (незначительные изменения - синтаксис, правки - не описываю, только новое)     
 :arrow_right: [camera_reboot.yaml.yaml](https://github.com/kvazis/hassos/blob/master/includes/Camera/out_camera.yaml) - автоматическая перезагрузка камер в случае пропадания потока       
@@ -23,7 +47,7 @@
 :arrow_right: [da_speaker.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_DA/da_speaker.yaml) - отключение Google колонки в вечернее время     
 :arrow_right: [ln_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LN/ln_light.yaml) - управление освещением в прачечной    
 :arrow_right: [ln_sensors.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LN/ln_sensors.yamll) - описание сенсоров в прачечной    
-:arrow_right: [lr_awtrix.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_awtrix.yaml.yaml) - уведомления для часов Ulanzi, подробнее [Ulanzi TC001, установка Awtrix Light, интеграция в Home Assistant](https://youtu.be/FfI4hmtDWR8)     
+:arrow_right: [lr_awtrix.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_awtrix.yaml) - уведомления для часов Ulanzi, подробнее [Ulanzi TC001, установка Awtrix Light, интеграция в Home Assistant](https://youtu.be/FfI4hmtDWR8)     
 :arrow_right: [lr_fan.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_fan.yaml) - добавлено управление охлаждающей подставкой ноутбка через [ZigUSB](https://youtu.be/pj1XJApBjb8)     
 :arrow_right: [lr_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_light.yaml) - добавлено управление прикроватным светильником в гостиной     
 :arrow_right: [lr_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_reboot.yaml) - перезагрузка люстр и контроль работы zigbee LED ленты в гостиной     

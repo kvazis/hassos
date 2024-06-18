@@ -18,7 +18,7 @@ tt_light:
           friendly_name: Туалет люстра, питание
         fan.0x00158d00014dceb3_right:
           friendly_name: Туалет вытяжка, питание
-        sensor.0x00158d00014dceb3_action:
+        sensor.0x00158d00062fbb54_action:
           friendly_name: Туалет выключатель на входе
         sensor.0x00158d00014dceb3_device_temperature:
           friendly_name: Туалет выключатель на входе, температура
@@ -181,7 +181,7 @@ tt_light:
           to: 'on'
     # Выключатель на стене у входа
         - platform: state
-          entity_id: sensor.0x00158d00014dceb3_action
+          entity_id: sensor.0x00158d00062fbb54_action
           to: 'single_left'
     # Выключатель в туалете
         - platform: state
@@ -277,7 +277,7 @@ tt_light:
     # Физические сущности 
     # Выключатель на стене у входа
         - platform: state
-          entity_id: sensor.0x00158d00014dceb3_action
+          entity_id: sensor.0x00158d00062fbb54_action
           to: 'single_left'
     # Выключатель в туалете
         - platform: state

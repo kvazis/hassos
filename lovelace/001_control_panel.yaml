@@ -257,7 +257,12 @@ cards:
               - type: divider
               - entity: input_button.git_update
               - type: divider
+              - entity: input_button.mosquitto_reload
+              - type: divider
               - entity: input_button.test_test
+              - type: divider
+              - entity: input_button.k7_notification
+              - entity: input_boolean.k7_notification
               - type: divider
               - entity: sensor.server_telemetry
                 icon: mdi:alert
@@ -266,8 +271,8 @@ cards:
                 name: Zigbee2mqtt 1
               - entity: binary_sensor.zigbee2mqtt_bridge_connection_state_2
                 name: Zigbee2mqtt 2                   
-              - entity: binary_sensor.zigbee2mqtt_bridge_connection_state_3
-                name: Zigbee2mqtt 3  
+            #   - entity: binary_sensor.zigbee2mqtt_bridge_connection_state_3
+            #     name: Zigbee2mqtt 3  
               - type: divider
               - entity: switch.control_mode
                 state_color: true

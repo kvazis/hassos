@@ -6,72 +6,41 @@ lr_tvlight:
       lr_light_cinema:
         name: Гостиная кино подсветка
 
+    mqtt:
 
-   # Виртуальный светильник, для управления в интерфейсе
-    light:
+      binary_sensor:
+        - name: 'lr_light_cinema_mode'
+          unique_id: 'lr_light_cinema_mode'
+          state_topic: "states/lr_light_cinema_mode"
+
+    switch:
+    
       - platform: template
-        lights:
-          lr_light_cinema:
-            friendly_name: "Подсветка"
-            value_template: >-
-              {{ is_state('light.0xa4c138b72a314e97', 'on')  
-                 and is_state('light.yeelight_ceiling4_0x49c726b_ambilight', 'on')
-                 and is_state('light.yeelight_ceiling4_0x4a1dacd_ambilight', 'on')
-              }}
-            icon_template: >-
-              {% if is_state("light.lr_light_cinema", "on") %}
-              mdi:filmstrip-box
-              {% else %}
-              mdi:filmstrip-off
-              {% endif %}
+        switches:
+
+          lr_light_cinema_mode:
+            friendly_name: "Гостиная кино подсветка"
+            unique_id: 'lr_light_cinema_mode'
+            value_template: "{{ is_state('binary_sensor.lr_light_cinema_mode', 'on') }}"
             turn_on:
-              service: input_button.press
-              target:
-                entity_id: input_button.lr_light_cinema
+              service: mqtt.publish
+              data_template:
+                topic: "states/lr_light_cinema_mode"
+                payload_template: 'ON'
+                retain: true 
             turn_off:
-              service: input_button.press
-              target:
-                entity_id: input_button.lr_light_cinema
-            level_template: >-
-                {{ state_attr('light.yeelight_ceiling4_0x49c726b_ambilight', 'brightness') | int }}
-            set_level:
-              service: light.turn_on
-              entity_id:
-              - light.yeelight_ceiling4_0x49c726b_ambilight
-              - light.yeelight_ceiling4_0x4a1dacd_ambilight
-              - light.0xa4c138b72a314e97
+              service: mqtt.publish
               data_template:
-                brightness: "{{ brightness }}"
-            temperature_template: >-
-                {{ state_attr('light.yeelight_ceiling4_0x49c726b_ambilight', 'color_temp') | int }}
-            set_temperature:
-              service: light.turn_on
-              entity_id:
-              - light.yeelight_ceiling4_0x49c726b_ambilight
-              - light.yeelight_ceiling4_0x4a1dacd_ambilight
-              - light.0xa4c138b72a314e97
-              data_template:
-                color_temp: "{{ color_temp }}"
-            color_template: >-
-                {{ state_attr('light.yeelight_ceiling4_0x49c726b_ambilight', 'hs_color') }}
-            set_color:
-              service: light.turn_on
-              entity_id:
-              - light.yeelight_ceiling4_0x49c726b_ambilight
-              - light.yeelight_ceiling4_0x4a1dacd_ambilight
-              - light.0xa4c138b72a314e97
-              data_template:
-                hs_color: "[{{h}}, {{s}}]"
-            effect_list_template: "{{ state_attr('light.yeelight_ceiling4_0x49c726b_ambilight', 'effect_list') }}"
-            effect_template: Stop
-            set_effect:
-              service: light.turn_on
-              entity_id:
-              - light.yeelight_ceiling4_0x49c726b_ambilight
-              - light.yeelight_ceiling4_0x4a1dacd_ambilight
-              - light.0xa4c138b72a314e97
-              data_template:
-                effect: "{{ effect }}"
+                topic: "states/lr_light_cinema_mode"
+                payload_template: 'OFF'
+                retain: true 
+            icon_template: >-
+              {% if is_state('switch.lr_light_cinema_mode', 'on') %}
+                mdi:led-strip-variant
+              {% else %}
+                mdi:led-strip-variant-off
+              {% endif %}  
+
 
     template:
 
@@ -95,7 +64,7 @@ lr_tvlight:
         binary_sensor:
           - name: lr_light_tv_cinema
             unique_id: lr_light_tv_cinema
-            auto_off: 5
+            auto_off: 3
             state: "true"
 
     automation:
@@ -114,43 +83,51 @@ lr_tvlight:
           entity_id: switch.control_mode
           state: 'on'
         action:
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: light.lr_light_cinema
-                    state: 'off'
-                sequence:
-                  - service: light.turn_off
-                    entity_id:
-                      - light.yeelight_lamp1_0x32a4ab4
-                      - light.yeelight_ceiling4_0x49c726b
-                      - light.yeelight_ceiling4_0x4a1dacd
-                      - light.0x00158d00062fbb54_left
-                      - light.lr_bedside_lamp
-                  - service: light.turn_on
-                    entity_id:
-                      - light.yeelight_ceiling4_0x49c726b_ambilight
-                      - light.yeelight_ceiling4_0x4a1dacd_ambilight
-                      - light.0xa4c138b72a314e97
-                    data_template:
-                      brightness_pct: 100
-                      rgb_color: [169, 153, 255]
-                  - service: light.turn_on
-                    entity_id:
-                      - light.0xa4c138b72a314e97
-                    data_template:
-                      brightness_pct: 100
-                      rgb_color: [172, 35, 255]                      
-              - conditions:
-                  - condition: state
-                    entity_id: light.lr_light_cinema
-                    state: 'on'
-                sequence:
-                  - service: light.turn_off
-                    entity_id:
-                      - light.yeelight_ceiling4_0x49c726b_ambilight
-                      - light.yeelight_ceiling4_0x4a1dacd_ambilight
-                      - light.0xa4c138b72a314e97
+        - service: switch.toggle
+          entity_id:
+            - switch.lr_light_cinema_mode
+        - delay: 00:00:01
+        - choose:
+          - conditions:
+              - condition: state
+                entity_id: switch.lr_light_cinema_mode
+                state: 'on'
+            sequence:
+              - service: light.turn_off
+                entity_id:
+                  - light.yeelight_lamp1_0x32a4ab4
+                  - light.yeelight_ceiling4_0x49c726b
+                  - light.yeelight_ceiling4_0x4a1dacd
+                  - light.0x00158d00062fbb54_left
+                  - light.lr_bedside_lamp
+              - service: light.turn_on
+                entity_id:
+                  - light.yeelight_ceiling4_0x49c726b_ambilight
+                  - light.yeelight_ceiling4_0x4a1dacd_ambilight
+                data_template:
+                  brightness_pct: 100
+                  rgb_color: [169, 153, 255]
+            #   - delay: 00:00:03
+            #   - service: mqtt.publish
+            #     data_template:
+            #       topic: "zigstar_poe/LR TV Strip/set"
+            #       payload_template: '{"state": "ON"}'
+            #   - service: mqtt.publish
+            #     data_template:
+            #       topic: "zigstar_poe/LR TV Strip/get"
+            #       payload_template: '{"state": ""}'
+          - conditions:
+              - condition: state
+                entity_id: switch.lr_light_cinema_mode
+                state: 'off'
+            sequence:
+              - service: light.turn_off
+                entity_id:
+                  - light.yeelight_ceiling4_0x49c726b_ambilight
+                  - light.yeelight_ceiling4_0x4a1dacd_ambilight
+                  - light.0xa4c138b72a314e97
+
+
                       
                       
       - alias: lr_light_tv_ambilight

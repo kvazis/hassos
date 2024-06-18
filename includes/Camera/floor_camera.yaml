@@ -31,6 +31,13 @@ floor_camera:
               {{ is_state('media_player.living_room', 'buffering') }}
             delay_on: 
                 minutes: 1
+                
+          - name: living_room_media_music
+            unique_id: living_room_media_music
+            state: >
+              {{ state_attr('media_player.living_room', 'app_name') == 'YouTube Music' }}
+            delay_off: 
+                minutes: 1
 
     input_boolean:
     
@@ -218,6 +225,9 @@ floor_camera:
               - conditions:
                   - condition: state
                     entity_id: binary_sensor.cam_reolink411_auto_cast
+                    state: 'off'
+                  - condition: state
+                    entity_id: binary_sensor.living_room_media_music
                     state: 'off'
                 sequence:
                   - service: media_player.volume_set
