@@ -28,11 +28,24 @@ power_failure:
         sensor.0xa4c138bae3526a07_battery:
           friendly_name: Сенсор определения отключения гостиная
           
+        binary_sensor.0xa4c138135e284964_contact:
+          friendly_name: Сенсор определения отключения гостиная 2
+          device_class: problem
+        sensor.0xa4c138135e284964_battery:
+          friendly_name: Сенсор определения отключения гостиная 2
+          
         binary_sensor.0xa4c138744bf2fbf0_contact:
           friendly_name: Сенсор определения отключения кухня
           device_class: problem
         sensor.0xa4c138744bf2fbf0_battery:
           friendly_name: Сенсор определения отключения кухня
+
+        binary_sensor.0xa4c138084b9d3356:
+          friendly_name: Сенсор электричества ванная
+          icon: mdi:home-lightning-bolt-outline
+        sensor.0xa4c138084b9d3356_battery:
+          friendly_name: Сенсор электричества ванная
+
 
     template:
     
@@ -80,6 +93,27 @@ power_failure:
                 and is_state('binary_sensor.kn_electricity', 'on')
              }}
             device_class: problem
+
+    # Сенсор определения отключения электрики
+
+          - name: electricity_new
+            unique_id: electricity_new
+            state: >
+                {% if is_state('binary_sensor.0xa4c138bae3526a07_contact', 'on') and is_state('binary_sensor.0xa4c138135e284964_contact', 'on') %}
+                True
+                {% elif is_state('binary_sensor.0xa4c138bae3526a07_contact', 'on') and is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on') %}
+                True
+                {% elif is_state('binary_sensor.0xa4c138bae3526a07_contact', 'on') and is_state('binary_sensor.0xa4c138084b9d3356', 'on') %}
+                True
+                {% elif is_state('binary_sensor.0xa4c138135e284964_contact', 'on') and is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on') %}
+                True
+                {% elif is_state('binary_sensor.0xa4c138135e284964_contact', 'on') and is_state('binary_sensor.0xa4c138084b9d3356', 'on') %}
+                True
+                {% elif is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on') and is_state('binary_sensor.0xa4c138084b9d3356', 'on') %}
+                True
+                {% endif %}    
+            device_class: problem
+
 
     input_datetime:
       electricity_off:
@@ -254,7 +288,7 @@ power_failure:
             target:
               - !secret chat_id_log
             message: | 
-               {{"\U0001F50B"}} Кухня, Ecoflow 2 Pro 768 Wh текущий заряд - {{ states('sensor.river_2_pro_main_battery_level') }} 
-               {{"\U0001F50B"}} Гостиная, Ecoflow 2 Max 512 Wh текущий заряд - {{ states('sensor.river_2_max_main_battery_level') }}
-               {{"\U0001F50B"}} Гостиная, Ecoflow 2 256 Wh текущий заряд - {{ states('sensor.river_2_main_battery_level') }}
-               
+               {{"\U0001F50B"}} Кухня, Ecoflow 2 Pro 768 Wh текущий заряд - {{ states('sensor.river_2_pro_battery_level') }} %
+               {{"\U0001F50B"}} Гостиная, Ecoflow 2 Max 512 Wh текущий заряд - {{ states('sensor.river_2_max_battery_level') }} %
+               {{"\U0001F50B"}} Гостиная, Ecoflow 2 256 Wh текущий заряд - {{ states('sensor.river_2_battery_level') }} %
+                

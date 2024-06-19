@@ -222,6 +222,10 @@ bt_light:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
+    # Аварийный свет включен
+        - condition: state
+          entity_id: light.0xa4c13861cd14a054
+          state: 'on'
         action:
         - service: light.turn_off
           entity_id:

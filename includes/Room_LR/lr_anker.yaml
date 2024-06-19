@@ -10,10 +10,6 @@ lr_anker:
     homeassistant:
       customize:
 
-        binary_sensor.0xa4c138084b9d3356:
-          friendly_name: Гостиная Anker, AC out
-          icon: mdi:home-lightning-bolt-outline
-
         switch.0xa4c138ceae6fe4bf:
           friendly_name: Гостиная Anker, AC out
           icon: mdi:power 
