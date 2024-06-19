@@ -235,6 +235,31 @@ cards:
                     {% endif %}
                   tap_action:
                     action: more-info
+                    
+                - type: custom:mushroom-template-card
+                  primary: power_loss
+                  secondary: |-
+                    {% if is_state("binary_sensor.power_loss", "off") %}
+                    Питание есть
+                    {% else %}
+                    Питание отключено
+                    {% endif %}
+                  layout: horizontal
+                  entity: binary_sensor.power_loss
+                  icon_color: |-
+                    {% if is_state("binary_sensor.power_loss", "off") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %}
+                  icon: |-
+                    {% if is_state("binary_sensor.power_loss", "off") %}
+                    mdi:power-plug
+                    {% else %}
+                    mdi:power-plug-off
+                    {% endif %}
+                  tap_action:
+                    action: more-info
 
             - type: horizontal-stack
         
@@ -322,15 +347,15 @@ cards:
                 - type: custom:mushroom-template-card
                   primary: Ванная 220В
                   secondary: |-
-                    {% if is_state("binary_sensor.0xa4c138084b9d3356", "off") %}
+                    {% if is_state("binary_sensor.bt_electricity", "off") %}
                     Питание есть
                     {% else %}
                     Питание отключено
                     {% endif %}
                   layout: horizontal
-                  entity: binary_sensor.0xa4c138084b9d3356
+                  entity: binary_sensor.bt_electricity
                   icon_color: |-
-                    {% if is_state("binary_sensor.0xa4c138084b9d3356", "off") %}
+                    {% if is_state("binary_sensor.bt_electricity", "off") %}
                     green
                     {% else %}
                     red

@@ -211,6 +211,45 @@ lr_light:
             - choose:
               - conditions:
                   - condition: state
+                    entity_id: light.yeelight_ceiling4_0x4a1dacd
+                    state: 'off'
+                sequence:
+                  - service: light.turn_on
+                    entity_id:
+                      - light.yeelight_ceiling4_0x4a1dacd
+                    data_template:
+                      brightness_pct: 60
+                      kelvin: 4000
+              - conditions:
+                  - condition: state
+                    entity_id: light.yeelight_ceiling4_0x4a1dacd
+                    state: 'on'
+                sequence:
+                  - service: light.turn_off
+                    entity_id:
+                      - light.yeelight_ceiling4_0x4a1dacd
+
+
+      - alias: lr_ceiling_max_light
+        id: lr_ceiling_max_light
+        description: Гостиная - максимальное освещение
+        initial_state: true
+        trigger:
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_1_triple'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
                     entity_id: light.yeelight_ceiling4_0x49c726b
                     state: 'off'
                   - condition: state
@@ -235,44 +274,6 @@ lr_light:
                   - service: light.turn_off
                     entity_id:
                       - light.yeelight_ceiling4_0x49c726b
-                      - light.yeelight_ceiling4_0x4a1dacd
-                      
-      - alias: lr_ceiling_max_light
-        id: lr_ceiling_max_light
-        description: Гостиная - ручное управление люстра 2
-        initial_state: true
-        trigger:
-    ## Aqara Opple на столе
-        - platform: state
-          entity_id: sensor.0x54ef4410004c1707_action
-          to: 'button_1_triple'
-        condition:
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-        - condition: state
-          entity_id: binary_sensor.electricity
-          state: 'off'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: light.yeelight_ceiling4_0x4a1dacd
-                    state: 'off'
-                sequence:
-                  - service: light.turn_on
-                    entity_id:
-                      - light.yeelight_ceiling4_0x4a1dacd
-                    data_template:
-                      brightness_pct: 60
-                      kelvin: 4000
-              - conditions:
-                  - condition: state
-                    entity_id: light.yeelight_ceiling4_0x4a1dacd
-                    state: 'on'
-                sequence:
-                  - service: light.turn_off
-                    entity_id:
                       - light.yeelight_ceiling4_0x4a1dacd
 
       - alias: lr_light_wall_toggle

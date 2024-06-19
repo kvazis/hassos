@@ -5,8 +5,11 @@ power_failure:
         entities:
            - binary_sensor.lr_electricity
            - binary_sensor.kn_electricity
+           - binary_sensor.bt_electricity
            - binary_sensor.electricity
-
+           - binary_sensor.electricity_new
+           - binary_sensor.power_loss
+           
     homeassistant:
       customize:
 
@@ -64,6 +67,13 @@ power_failure:
             state: >
              {{ is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on') }}
             device_class: problem
+            
+    # Сенсор определения отключения ванная
+          - name: bt_electricity
+            unique_id: bt_electricity
+            state: >
+             {{ is_state('binary_sensor.0xa4c138084b9d3356', 'off') }}
+            device_class: problem
 
     # Сенсор залипание сенсора отключения гостиная
           - name: lr_electricity_reset
@@ -94,26 +104,41 @@ power_failure:
              }}
             device_class: problem
 
-    # Сенсор определения отключения электрики
+    # Сенсор определения отключения электрики 2
 
           - name: electricity_new
             unique_id: electricity_new
             state: >
-                {% if is_state('binary_sensor.0xa4c138bae3526a07_contact', 'on') and is_state('binary_sensor.0xa4c138135e284964_contact', 'on') %}
+                {% if is_state('binary_sensor.lr_electricity', 'on') and is_state('binary_sensor.0xa4c138135e284964_contact', 'on') %}
                 True
-                {% elif is_state('binary_sensor.0xa4c138bae3526a07_contact', 'on') and is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on') %}
+                {% elif is_state('binary_sensor.lr_electricity', 'on') and is_state('binary_sensor.kn_electricity', 'on') %}
                 True
-                {% elif is_state('binary_sensor.0xa4c138bae3526a07_contact', 'on') and is_state('binary_sensor.0xa4c138084b9d3356', 'on') %}
+                {% elif is_state('binary_sensor.lr_electricity', 'on') and is_state('binary_sensor.bt_electricity', 'on') %}
                 True
-                {% elif is_state('binary_sensor.0xa4c138135e284964_contact', 'on') and is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on') %}
+                {% elif is_state('binary_sensor.0xa4c138135e284964_contact', 'on') and is_state('binary_sensor.kn_electricity', 'on') %}
                 True
-                {% elif is_state('binary_sensor.0xa4c138135e284964_contact', 'on') and is_state('binary_sensor.0xa4c138084b9d3356', 'on') %}
+                {% elif is_state('binary_sensor.0xa4c138135e284964_contact', 'on') and is_state('binary_sensor.bt_electricity', 'on') %}
                 True
-                {% elif is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on') and is_state('binary_sensor.0xa4c138084b9d3356', 'on') %}
+                {% elif is_state('binary_sensor.kn_electricity', 'on') and is_state('binary_sensor.bt_electricity', 'on') %}
                 True
                 {% endif %}    
             device_class: problem
 
+    # Сенсор определения отключения электрики 3
+
+          - name: power_loss
+            unique_id: power_loss
+            state: >
+                {% if (states('sensor.phase_1_power')|float(0) + states('sensor.phase_2_power')|float(0) + states('sensor.phase_3_power')|float(0)) < 5 %}
+                True
+                {% else %}
+                False
+                {% endif %}                
+            delay_on: 
+                seconds: 15
+            delay_off: 
+                seconds: 15
+            device_class: problem
 
     input_datetime:
       electricity_off:
@@ -237,6 +262,10 @@ power_failure:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
+    # Переключатель режима работы уведомлений
+        - condition: state
+          entity_id: input_boolean.k7_notification
+          state: 'on'
         action:
             - choose:
               - conditions:
@@ -291,4 +320,59 @@ power_failure:
                {{"\U0001F50B"}} Кухня, Ecoflow 2 Pro 768 Wh текущий заряд - {{ states('sensor.river_2_pro_battery_level') }} %
                {{"\U0001F50B"}} Гостиная, Ecoflow 2 Max 512 Wh текущий заряд - {{ states('sensor.river_2_max_battery_level') }} %
                {{"\U0001F50B"}} Гостиная, Ecoflow 2 256 Wh текущий заряд - {{ states('sensor.river_2_battery_level') }} %
+               
+      - alias: control_electricity_notification_test
+        id: control_electricity_notification_test
+        description: Уведомление о работе электрики по сенсорам мощности
+        initial_state: true
+        trigger:
+    # Сработка сенсора электрики
+        - platform: state
+          entity_id: binary_sensor.power_loss
+          from: 'off'
+          to: 'on'
+        - platform: state
+          entity_id: binary_sensor.power_loss
+          from: 'on'
+          to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Переключатель режима работы уведомлений
+        - condition: state
+          entity_id: input_boolean.k7_notification
+          state: 'on'
+    # Не срабатывать после старта
+        - condition: state
+          entity_id: binary_sensor.startup
+          state: 'off' 
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.power_loss
+                    state: 'on'
+                sequence:        
+                  - service: telegram_bot.send_message
+                    data_template:
+                      target:
+                          - !secret chat_id_log
+                      message: | 
+                           {{"\U000026A1"}} Электрика отключена по данным сенсоров энергомониторинга
+                           {{"\U0001F559"}} В {{ states('sensor.time_date') }} 
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.power_loss
+                    state: 'off'
+                sequence:
+                  - delay: 00:00:02
+                  - service: telegram_bot.send_message
+                    data_template:
+                      target:
+                          - !secret chat_id_log
+                      message: | 
+                           {{"\U000026A1"}} Электрика восстановлена по данным сенсоров энергомониторинга
+                           {{"\U0001F559"}} В {{ states('sensor.time_date') }} 
                 

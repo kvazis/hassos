@@ -1,5 +1,23 @@
 startup:
 
+    recorder:
+      include:
+        entities:
+           - binary_sensor.startup
+           
+    template:
+
+    # Сенсор работающий минуту после старта системы 
+      - trigger:
+          - platform: homeassistant
+            event: start
+        binary_sensor:
+          - name: startup
+            unique_id: startup
+            auto_off: 60
+            state: "true"
+
+
     automation:
     
       - alias: control_mosquitto_startup_reload
