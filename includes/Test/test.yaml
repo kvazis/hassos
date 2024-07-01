@@ -11,7 +11,7 @@ test:
       - alias: awtrix_test_message
         id: awtrix_test_message
         description: Awtrix test message
-        initial_state: true
+        initial_state: false
         trigger:
     ## Virtual button
         - platform: state
@@ -22,10 +22,10 @@ test:
             target:
                 - !secret chat_id_log
             message: | 
-               {{"\U00002705"}} Електрика (введення на секцію 4-7) {{"\U000026A1"}} відновлена в {{ states('sensor.time_date') }}
-               {% set s = (strptime(states("input_datetime.electricity_on"), "%Y-%m-%d %H:%M:%S").timestamp() | int - strptime(states("input_datetime.electricity_off"), "%Y-%m-%d %H:%M:%S").timestamp() | int) %}
-               {{"\U0000231B"}} {{ 'Тривалість - {:02d}:{:02d}:{:02d}'.format ( s % 86400 // 3600, s % 3600 // 60, s % 60) }} 
-                   
+                 {{"\U00002705"}} Електрика {{"\U000026A1"}} відновлена в {{ states('sensor.time') }}
+                 {{"\U0001F3E2"}} Секції {{"\U00000034"}} {{"\U00000035"}} {{"\U00000036"}} {{"\U00000037"}}
+                 {% set s = (strptime(states("input_datetime.electricity_on"), "%Y-%m-%d %H:%M:%S").timestamp() | int - strptime(states("input_datetime.electricity_off"), "%Y-%m-%d %H:%M:%S").timestamp() | int) %}
+                 {{"\U0000231B"}} {{ 'Тривалість - {:02d}:{:02d}:{:02d}'.format ( s % 86400 // 3600, s % 3600 // 60, s % 60) }} 
     
 
 

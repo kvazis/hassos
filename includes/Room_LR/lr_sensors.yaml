@@ -5,6 +5,8 @@ lr_sensors:
         entities:
            - binary_sensor.0x00158d0005414857_occupancy
            - sensor.0x04cf8cdf3c7cf19e_illuminance_lux
+           - binary_sensor.0x00158d000449b773_occupancy
+           - sensor.0x00158d000449b773_illuminance_lux
 
     homeassistant:
       customize:
@@ -21,3 +23,10 @@ lr_sensors:
           friendly_name: Гостиная освещенность
         sensor.0x04cf8cdf3c7cf19e_battery:
           friendly_name: Гостиная освещенность
+          
+        binary_sensor.0x00158d000449b773_occupancy:
+          friendly_name: Гостиная балкон движение 
+        sensor.0x00158d000449b773_illuminance_lux:
+          friendly_name: Гостиная балкон освещенность
+        sensor.0x00158d000449b773_battery:
+          friendly_name: Гостиная балкон движение 

@@ -77,7 +77,8 @@ kn_light:
             state: >
               {{ is_state('binary_sensor.kn_full_light', 'on') and
                  is_state('binary_sensor.kn_presence', 'off') and 
-                 is_state('binary_sensor.night_time', 'off')
+                 is_state('binary_sensor.night_time', 'off') and 
+                 is_state('binary_sensor.kn_tv_work', 'off')
               }}
             delay_on: 
                 minutes: 10

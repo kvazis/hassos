@@ -152,6 +152,31 @@ bt_light:
                     data_template:
                       brightness_pct: 50
 
+    # Переключение основного и аварийного освещения
+      - alias: bt_light_switching
+        id: bt_light_switching
+        description: Ванная, переключение на аварийное освещение
+        initial_state: true
+        trigger:
+    # Сработка сенсора электричества
+        - platform: state
+          entity_id: binary_sensor.electricity
+          from: 'off'
+          to: 'on'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Был включен основной свет
+        - condition: state
+          entity_id: light.yeelight_ceiling3_0x45727f2
+          state: 'on'
+        action:
+        - service: light.turn_on
+          entity_id: light.0xa4c13861cd14a054
+          data_template:
+            brightness_pct: 50
                       
       - alias: bt_light_off
         id: bt_light_off

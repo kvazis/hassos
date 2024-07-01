@@ -7,15 +7,15 @@ lr_switch:
         switch.0xa4c138cd1b6a0a9a:
           friendly_name: Датчик электрики в гостиной, питание
           
-        switch.0xa4c1382dc9fecb3e:
-          friendly_name: Гостиная UPS 1 in
-          icon: phu:apc-ups-upright
-        sensor.0xa4c1382dc9fecb3e_power:
-          friendly_name: Гостиная UPS 1 in, мощность
-          unit_of_measurement: Вт
-          device_class: power
-        sensor.0xa4c1382dc9fecb3e_voltage:
-          friendly_name: Гостиная UPS 1 in, напряжение
-        sensor.0xa4c1382dc9fecb3e_energy:
-          friendly_name: Гостиная UPS 1 in, энергия
-          icon: mdi:chart-line
+        # switch.0xa4c1382dc9fecb3e:
+        #   friendly_name: Гостиная UPS 1 in
+        #   icon: phu:apc-ups-upright
+        # sensor.0xa4c1382dc9fecb3e_power:
+        #   friendly_name: Гостиная UPS 1 in, мощность
+        #   unit_of_measurement: Вт
+        #   device_class: power
+        # sensor.0xa4c1382dc9fecb3e_voltage:
+        #   friendly_name: Гостиная UPS 1 in, напряжение
+        # sensor.0xa4c1382dc9fecb3e_energy:
+        #   friendly_name: Гостиная UPS 1 in, энергия
+        #   icon: mdi:chart-line

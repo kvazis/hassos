@@ -115,5 +115,6 @@ kn_sensors:
             state: >
               {{ is_state('binary_sensor.kn_occupancy', 'on')  
                  or is_state('binary_sensor.0x54ef44100042e226_presence', 'on')
+                 or is_state('binary_sensor.kn_tv_work', 'on')                 
               }}
             device_class: presence

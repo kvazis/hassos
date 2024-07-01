@@ -5,13 +5,13 @@ lr_reboot:
 
       - binary_sensor:
       
-    # Несанкционированное включение zigbee ленты
-          - name: lr_tvled_enabled
-            unique_id: lr_tvled_enabled
-            state: >
-              {{ is_state('light.0xa4c138b72a314e97', 'on')  
-                 and is_state('light.lr_light_cinema', 'off') }}
-            delay_on: '00:00:05'
+    # # Несанкционированное включение zigbee ленты
+    #       - name: lr_tvled_enabled
+    #         unique_id: lr_tvled_enabled
+    #         state: >
+    #           {{ is_state('light.0xa4c138b72a314e97', 'on')  
+    #              and is_state('light.lr_light_cinema', 'off') }}
+    #         delay_on: '00:00:05'
              
 
     # Сенсор определяющий недоступность люстры 1
@@ -170,65 +170,65 @@ lr_reboot:
     
 #################### ЛЕНТА ЗА ТЕЛЕВИЗОРОМ ####################    
     
-      - alias: lr_reboot_tvled_check
-        id: lr_reboot_tvled_check
-        description: Гостиная - проверка статуса zigbee LED ленты
-        initial_state: true
-        trigger:
-    # Проверка раз в 5 минут
-        - platform: time_pattern
-          minutes: '/5'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-    # Сенсор электричества
-        - condition: state
-          entity_id: binary_sensor.blackout_after
-          state: 'off' 
-        action:
-    # Принудительное обновление статуса
-        - service: mqtt.publish
-          data_template:
-            topic: "zigstar_poe/LR TV Strip/get"
-            payload_template: '{ "state": "" }'
+    #   - alias: lr_reboot_tvled_check
+    #     id: lr_reboot_tvled_check
+    #     description: Гостиная - проверка статуса zigbee LED ленты
+    #     initial_state: true
+    #     trigger:
+    # # Проверка раз в 5 минут
+    #     - platform: time_pattern
+    #       minutes: '/5'
+    #     condition:
+    # # Переключатель режима работы сервера
+    #     - condition: state
+    #       entity_id: switch.control_mode
+    #       state: 'on'
+    # # Сенсор электричества
+    #     - condition: state
+    #       entity_id: binary_sensor.blackout_after
+    #       state: 'off' 
+    #     action:
+    # # Принудительное обновление статуса
+    #     - service: mqtt.publish
+    #       data_template:
+    #         topic: "zigstar_poe/LR TV Strip/get"
+    #         payload_template: '{ "state": "" }'
 
-      - alias: lr_reboot_tvled_off
-        id: lr_reboot_tvled_off
-        description: Гостиная - отключение zigbee LED ленты
-        initial_state: true
-        trigger:
-    # Проверка раз в 3 минуты
-        - platform: time_pattern
-          minutes: '/3'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-    # Сенсор несанкционированное включение zigbee ленты
-        - condition: state
-          entity_id: binary_sensor.lr_tvled_enabled
-          state: 'on'
-    # Сенсор электричества
-        - condition: state
-          entity_id: binary_sensor.blackout_after
-          state: 'off' 
-    # Телевизор
-        - condition: state
-          entity_id: binary_sensor.lr_tv_work
-          state: 'off'
-        action:
-        - service: light.turn_off
-          entity_id:
-            - light.0xa4c138b72a314e97
-        - service: telegram_bot.send_message
-          data_template:
-            target:
-                - !secret chat_id_log
-            message: | 
-                 {{"\U0001F916"}} Антонио. Отключение ТВ подсветки {{ states('sensor.time_date') }} 
+    #   - alias: lr_reboot_tvled_off
+    #     id: lr_reboot_tvled_off
+    #     description: Гостиная - отключение zigbee LED ленты
+    #     initial_state: true
+    #     trigger:
+    # # Проверка раз в 3 минуты
+    #     - platform: time_pattern
+    #       minutes: '/3'
+    #     condition:
+    # # Переключатель режима работы сервера
+    #     - condition: state
+    #       entity_id: switch.control_mode
+    #       state: 'on'
+    # # Сенсор несанкционированное включение zigbee ленты
+    #     - condition: state
+    #       entity_id: binary_sensor.lr_tvled_enabled
+    #       state: 'on'
+    # # Сенсор электричества
+    #     - condition: state
+    #       entity_id: binary_sensor.blackout_after
+    #       state: 'off' 
+    # # Телевизор
+    #     - condition: state
+    #       entity_id: binary_sensor.lr_tv_work
+    #       state: 'off'
+    #     action:
+    #     - service: light.turn_off
+    #       entity_id:
+    #         - light.0xa4c138b72a314e97
+    #     - service: telegram_bot.send_message
+    #       data_template:
+    #         target:
+    #             - !secret chat_id_log
+    #         message: | 
+    #              {{"\U0001F916"}} Антонио. Отключение ТВ подсветки {{ states('sensor.time_date') }} 
 
 #################### ПЕРЕЗАГРУЗКА IR BROADLINK ####################
               
@@ -266,3 +266,49 @@ lr_reboot:
                 - !secret chat_id_log
             message: | 
                  {{"\U0001F916"}} Антонио. Гостиная -  перезагрузка ИК контроллера Broadlink {{ states('sensor.time_date') }}    
+                 
+#################### ПЕРЕЗАГРУЗКА ВЫКЛЮЧАТЕЛЯ ЛЮСТРЫ БАЛКОНА ####################
+                 
+      - alias: lr_reboot_balcony_switch_e1
+        id: lr_reboot_balcony_switch_e1
+        description: Гостиная -  восстановление работы выключателя Aqara E1 на входе балкона
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Только днем
+        - condition: state
+          entity_id: binary_sensor.night_time
+          state: 'off'
+    # Выключатель недоступен
+        - condition: state
+          entity_id: switch.0x54ef441000681a6f_right
+          state: 'unavailable'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off'  
+        action:
+    # Включаем люстру чтобы повысить потребляемую мощность на выключателе
+        - service: light.turn_on
+          entity_id:
+            - light.0xa4c13812b94c8365
+          data_template:
+            brightness_pct: 100
+            kelvin: 4000
+        - delay: 00:00:10
+        - service: light.turn_off
+          entity_id:
+            - light.0xa4c13812b94c8365
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_log
+            message: | 
+                 {{"\U0001F916"}} Антонио. Гостиная, балкон -  перезагрузка выключателя {{ states('sensor.time_date') }} 

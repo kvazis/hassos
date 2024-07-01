@@ -187,7 +187,7 @@ cards:
               cards:
               
                 - type: custom:mushroom-template-card
-                  primary: Старый сенсор
+                  primary: Сенсор электрики
                   secondary: |-
                     {% if is_state("binary_sensor.electricity", "off") %}
                     Питание есть
@@ -210,50 +210,25 @@ cards:
                     {% endif %}
                   tap_action:
                     action: more-info
-
-                - type: custom:mushroom-template-card
-                  primary: Новый сенсор
-                  secondary: |-
-                    {% if is_state("binary_sensor.electricity_new", "off") %}
-                    Питание есть
-                    {% else %}
-                    Питание отключено
-                    {% endif %}
-                  layout: horizontal
-                  entity: binary_sensor.electricity_new
-                  icon_color: |-
-                    {% if is_state("binary_sensor.electricity_new", "off") %}
-                    green
-                    {% else %}
-                    red
-                    {% endif %}
-                  icon: |-
-                    {% if is_state("binary_sensor.electricity_new", "off") %}
-                    mdi:power-plug
-                    {% else %}
-                    mdi:power-plug-off
-                    {% endif %}
-                  tap_action:
-                    action: more-info
                     
                 - type: custom:mushroom-template-card
-                  primary: power_loss
+                  primary: Сенсор блекаут
                   secondary: |-
-                    {% if is_state("binary_sensor.power_loss", "off") %}
-                    Питание есть
+                    {% if is_state("binary_sensor.blackout", "off") %}
+                    ОК
                     {% else %}
-                    Питание отключено
+                    Блекаут
                     {% endif %}
                   layout: horizontal
-                  entity: binary_sensor.power_loss
+                  entity: binary_sensor.blackout
                   icon_color: |-
-                    {% if is_state("binary_sensor.power_loss", "off") %}
+                    {% if is_state("binary_sensor.blackout", "off") %}
                     green
                     {% else %}
                     red
                     {% endif %}
                   icon: |-
-                    {% if is_state("binary_sensor.power_loss", "off") %}
+                    {% if is_state("binary_sensor.blackout", "off") %}
                     mdi:power-plug
                     {% else %}
                     mdi:power-plug-off
@@ -266,7 +241,7 @@ cards:
               cards:
               
                 - type: custom:mushroom-template-card
-                  primary: Гостиная 220В
+                  primary: Гостиная
                   secondary: |-
                     {% if is_state("binary_sensor.lr_electricity", "off") %}
                     Питание есть
@@ -291,7 +266,37 @@ cards:
                     action: more-info
 
                 - type: custom:mushroom-template-card
-                  primary: Кухня 220В
+                  primary: Гостиная 2
+                  secondary: |-
+                    {% if is_state("binary_sensor.lr2_electricity", "off") %}
+                    Питание есть
+                    {% else %}
+                    Питание отключено
+                    {% endif %}
+                  layout: horizontal
+                  entity: binary_sensor.lr2_electricity
+                  icon_color: |-
+                    {% if is_state("binary_sensor.lr2_electricity", "off") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %}
+                  icon: |-
+                    {% if is_state("binary_sensor.lr2_electricity", "off") %}
+                    mdi:power-plug
+                    {% else %}
+                    mdi:power-plug-off
+                    {% endif %}
+                  tap_action:
+                    action: more-info
+
+
+            - type: horizontal-stack
+        
+              cards:
+
+                - type: custom:mushroom-template-card
+                  primary: Кухня
                   secondary: |-
                     {% if is_state("binary_sensor.kn_electricity", "off") %}
                     Питание есть
@@ -315,37 +320,8 @@ cards:
                   tap_action:
                     action: more-info
 
-            - type: horizontal-stack
-        
-              cards:
-
                 - type: custom:mushroom-template-card
-                  primary: Гостиная 220В 2
-                  secondary: |-
-                    {% if is_state("binary_sensor.0xa4c138135e284964_contact", "off") %}
-                    Питание есть
-                    {% else %}
-                    Питание отключено
-                    {% endif %}
-                  layout: horizontal
-                  entity: binary_sensor.0xa4c138135e284964_contact
-                  icon_color: |-
-                    {% if is_state("binary_sensor.0xa4c138135e284964_contact", "off") %}
-                    green
-                    {% else %}
-                    red
-                    {% endif %}
-                  icon: |-
-                    {% if is_state("binary_sensor.0xa4c138135e284964_contact", "off") %}
-                    mdi:power-plug
-                    {% else %}
-                    mdi:power-plug-off
-                    {% endif %}
-                  tap_action:
-                    action: more-info
-                    
-                - type: custom:mushroom-template-card
-                  primary: Ванная 220В
+                  primary: Ванная
                   secondary: |-
                     {% if is_state("binary_sensor.bt_electricity", "off") %}
                     Питание есть
@@ -361,7 +337,7 @@ cards:
                     red
                     {% endif %}
                   icon: |-
-                    {% if is_state("binary_sensor.0xa4c138084b9d3356", "off") %}
+                    {% if is_state("binary_sensor.bt_electricity", "off") %}
                     mdi:power-plug
                     {% else %}
                     mdi:power-plug-off
@@ -369,6 +345,8 @@ cards:
                   tap_action:
                     action: more-info
 
+
+                    
             - type: horizontal-stack
         
               cards:
@@ -410,6 +388,27 @@ cards:
                   multiline_secondary: true
                   icon_color: |-
                     {% if is_state("switch.0xa4c138235d1e6877", "on") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %}
+                    
+                - type: custom:mushroom-template-card
+                  primary: Ванная
+                  secondary: |-
+                    {% if is_state("switch.0xa4c1382dc9fecb3e", "on") %}
+                    Вкл
+                    {% else %}
+                    Выкл
+                    {% endif %}
+                  layout: horizontal
+                  tap_action:
+                    action: toggle
+                  entity: switch.0xa4c1382dc9fecb3e
+                  icon: mdi:power-standby
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state("switch.0xa4c1382dc9fecb3e", "on") %}
                     green
                     {% else %}
                     red
