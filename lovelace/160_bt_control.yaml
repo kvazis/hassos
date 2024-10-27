@@ -736,6 +736,17 @@ cards:
               - attribute: linkquality
                 name: Сигнал          
             - type: divider
+            - entity: sensor.0xa4c138a9cf8e75ef_battery
+              type: custom:multiple-entity-row
+              icon: mdi:motion-sensor
+              state_color: true
+              name: Датчик присутствия
+              secondary_info: last-changed
+              state_header: Батарейка
+              entities:
+              - attribute: linkquality
+                name: Сигнал          
+            - type: divider
             - entity: sensor.0x00158d0001dcd47e_battery
               type: custom:multiple-entity-row
               icon: mdi:coolant-temperature

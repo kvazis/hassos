@@ -1381,7 +1381,9 @@ cards:
                   options:
                       secondary_info: last-changed
                       state_color: true
-
+                exclude:
+                 - entity_id: binary_sensor.kn_occupancy
+                 - entity_id: binary_sensor.kn_presence
 ################# Окна и двери #################
 
         - type: custom:stack-in-card

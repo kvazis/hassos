@@ -50,6 +50,23 @@ kn_sensors:
           device_class: window
         sensor.0x00158d0001a99562_battery:
           friendly_name: Кухня, окно
+
+############# Растения
+
+        sensor.0x00124b0022027bd2_soil_moisture:
+          friendly_name: Растение - Диффенбахия
+        sensor.0x00124b0022027bd2_battery:
+          friendly_name: Растение - Диффенбахия
+
+        sensor.0x00124b0022145bc7_soil_moisture:
+          friendly_name: Растение - Юкка
+        sensor.0x00124b0022145bc7_battery:
+          friendly_name: Растение - Юкка
+          
+        sensor.0x00124b0022145c90_soil_moisture:
+          friendly_name: Растение - Замиокулькас
+        sensor.0x00124b0022145c90_battery :
+          friendly_name: Растение - Замиокулькас
           
 ############# Балкон
 

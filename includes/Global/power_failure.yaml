@@ -330,7 +330,7 @@ power_failure:
                       
       - alias: control_electricity_notification
         id: control_electricity_notification
-        description: Уведомление о работе электрики
+        description: Уведомление о пропадании и появлении электрики
         initial_state: true
         trigger:
     # Сработка сенсора электрики
@@ -414,7 +414,7 @@ power_failure:
                
       - alias: control_electricity_state
         id: control_electricity_state
-        description: Уведомление о статусе сенсоров
+        description: Уведомление о статусе сенсоров электрики
         initial_state: true
         trigger:
     # Сработка сенсора электрики

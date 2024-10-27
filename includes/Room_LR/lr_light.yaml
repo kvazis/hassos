@@ -66,6 +66,7 @@ lr_light:
                  is_state('light.yeelight_ceiling4_0x4a1dacd_ambilight', 'off') and
                  is_state('light.0x54ef4410008e96fd_bottom', 'off') and
                  is_state('light.0xa4c13826d6a56255', 'off') and
+                 is_state('light.lr_bedside_lamp', 'off') and
                  is_state('light.0xa4c138da30166b8f', 'off') and
                  is_state('binary_sensor.lr_tv_work', 'off') and
                  states('sensor.0x04cf8cdf3c7cf19e_illuminance_lux')|int < 30 }}
@@ -491,7 +492,7 @@ lr_light:
       - alias: lr_light_philips_on_off
         id: lr_light_philips_on_off
         description: Гостиная - управление прикроватником
-        initial_state: false
+        initial_state: true
         trigger:
     ## 5 кнопка Aqara Opple
         - platform: state

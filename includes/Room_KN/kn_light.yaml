@@ -226,8 +226,8 @@ kn_light:
                      - light.kn_ceiling_light
                      - light.0x00158d000420dbab
 
-      - alias: kn_blackout_manual_control
-        id: kn_blackout_manual_control
+      - alias: kn_light_blackout_manual_control
+        id: kn_light_blackout_manual_control
         description: Кухня - ручное управление автономный свет
         initial_state: true
         trigger:
