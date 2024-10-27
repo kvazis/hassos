@@ -1,0 +1,305 @@
+##################   Управление
+title: Детская А
+icon: mdi:human-female-girl
+cards:
+
+############################ Колонка 1 ############################
+
+    - type: vertical-stack
+      cards:
+      
+        - type: markdown
+          style: |
+              ha-card {
+                color: #f8ffd8;
+                --paper-item-icon-color: #f8ffd8;
+                --paper-item-icon-active-color: #f8ffd8;
+                font-weight: bold;
+                font-size: 26px;
+              }          
+          content: >
+             **Управление**
+             
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Освещение**
+
+
+            - type: horizontal-stack
+              cards:
+
+                - type: button
+                  name: Люстра
+                  entity: light.0x00158d000635ded8_right
+                  tap_action:
+                    action: toggle 
+
+                - type: light
+                  name: Настольная лампа
+                  entity: light.smart_desk_lamp
+                  
+            - type: horizontal-stack
+              cards:
+
+                - type: light
+                  name: WLED лента
+                  entity: light.da_wled
+
+                - type: light
+                  name: Неоновая лента
+                  entity: light.24key_rbg_strip
+                    
+        - type: custom:mushroom-cover-card
+          entity: cover.0x00124b0029dee0c9
+          name: Шторы
+          layout: horizontal
+          show_buttons_control: true
+          show_position_control: true
+          
+        - type: markdown
+          style: |
+              ha-card {
+                color: #f8ffd8;
+                --paper-item-icon-color: #f8ffd8;
+                --paper-item-icon-active-color: #f8ffd8;
+                font-weight: bold;
+                font-size: 26px;
+              }     
+          content: >
+              **Питание** 
+              
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:
+
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Розетки**
+
+            - type: horizontal-stack
+              cards:
+              
+                - type: custom:mushroom-template-card
+                  primary: Рекуператор
+                  secondary: |-
+                      {{states ('sensor.0x04cf8cdf3c764e0a_power')}} Ватт
+                  layout: horizontal
+                  tap_action:
+                    action: toggle
+                  entity: switch.0x04cf8cdf3c764e0a
+                  icon: mdi:power-standby
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state("switch.0x04cf8cdf3c764e0a", "on") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %} 
+
+                - type: custom:mushroom-template-card
+                  primary: Питание WLED
+                  secondary: |-
+                      {{states ('sensor.0xa4c138131a85d3ff_power')}} Ватт
+                  layout: horizontal
+                  tap_action:
+                    action: toggle
+                  entity: switch.0xa4c138131a85d3ff
+                  icon: mdi:power-standby
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state("switch.0xa4c138131a85d3ff", "on") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %} 
+          
+############################ Колонка 2 ############################
+
+    - type: vertical-stack
+      cards:
+      
+        - type: markdown
+          style: |
+              ha-card {
+                color: #f8ffd8;
+                --paper-item-icon-color: #f8ffd8;
+                --paper-item-icon-active-color: #f8ffd8;
+                font-weight: bold;
+                font-size: 26px;
+              }     
+          content: >
+              **Мониторинг** 
+
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Датчики и сенсоры**
+
+            - type: horizontal-stack
+              cards:
+
+              - type: custom:mushroom-template-card
+                primary: Движение
+                secondary: |-
+                  {% if is_state("binary_sensor.0x00158d00016d56f5_occupancy", "off") %}
+                  Не обнаружено
+                  {% else %}
+                  Движение
+                  {% endif %}
+                layout: vertical
+                entity: binary_sensor.0x00158d00016d56f5_occupancy
+                icon: |-
+                  {% if is_state("binary_sensor.0x00158d00016d56f5_occupancy", "off") %}
+                  mdi:motion-sensor-off
+                  {% else %}
+                  mdi:motion-sensor
+                  {% endif %}
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("binary_sensor.0x00158d00016d56f5_occupancy", "off") %}
+                  grey
+                  {% else %}
+                  amber
+                  {% endif %} 
+                tap_action:
+                  action: more-info
+                  
+              - type: custom:mushroom-template-card
+                primary: Освещенность
+                secondary: |-
+                      {{states ('sensor.0x04cf8cdf3c78ca91_illuminance_lux')}} lux
+                layout: vertical
+                entity: sensor.0x04cf8cdf3c78ca91_illuminance_lux
+                icon_color: |-
+                  {% if states("sensor.0x04cf8cdf3c78ca91_illuminance_lux")|float <= 100 %}
+                  blue-grey
+                  {% elif states("sensor.0x04cf8cdf3c78ca91_illuminance_lux")|float <= 200 %}
+                  grey
+                  {% elif states("sensor.0x04cf8cdf3c78ca91_illuminance_lux")|float > 200 %}
+                  white
+                  {% endif %}
+                icon: mdi:brightness-5
+                tap_action:
+                  action: more-info 
+                  
+            - type: markdown
+              content: >
+                 ** **
+
+############################ Колонка 3 ############################
+
+    - type: vertical-stack
+      cards:
+      
+        - type: markdown
+          style: |
+              ha-card {
+                color: #f8ffd8;
+                --paper-item-icon-color: #f8ffd8;
+                --paper-item-icon-active-color: #f8ffd8;
+                font-weight: bold;
+                font-size: 26px;
+              }     
+          content: >
+              **Телеметрия** 
+
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+              
+            - type: entities
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              show_header_toggle: false
+              entities:
+                - type: divider
+                - entity: sensor.0x00158d00016d56f5_battery
+                  type: custom:multiple-entity-row
+                  icon: phu:aqara-motion
+                  state_color: true
+                  name: Датчик движения
+                  secondary_info: last-changed
+                  state_header: Батарейка
+                  entities:
+                  - attribute: linkquality
+                    name: Сигнал
+                - type: divider
+                - entity: sensor.0x00158d000159c7e6_battery
+                  type: custom:multiple-entity-row
+                  icon: phu:aqara-temperature
+                  state_color: true
+                  name: Датчик климата
+                  secondary_info: last-changed
+                  state_header: Батарейка
+                  entities:
+                  - attribute: linkquality
+                    name: Сигнал 
+                - type: divider
+                - entity: sensor.0x04cf8cdf3c78ca91_battery
+                  type: custom:multiple-entity-row
+                  icon: phu:friends-of-hue-aurora-dimmer-switch
+                  state_color: true
+                  name: Датчик освещенности
+                  secondary_info: last-changed
+                  state_header: Батарейка
+                  entities:
+                  - attribute: linkquality
+                    name: Сигнал
+                - type: divider
+                - entity: sensor.0x00158d0001583c7b_battery
+                  type: custom:multiple-entity-row
+                  icon: phu:aqara-contact
+                  state_color: true
+                  name: Датчик открытия окно 
+                  secondary_info: last-changed
+                  state_header: Батарейка
+                  entities:
+                  - attribute: linkquality
+                    name: Сигнал
+                - type: divider
+                - entity: sensor.0x54ef4410004c16d9_battery
+                  type: custom:multiple-entity-row
+                  icon: phu:aqara-h1-switch
+                  state_color: true
+                  name: Беспроводный выключатель на входе
+                  secondary_info: last-changed
+                  state_header: Батарейка
+                  entities:
+                  - attribute: linkquality
+                    name: Сигнал              
+                - type: divider

@@ -1,0 +1,106 @@
+river_2_max:
+
+    homeassistant:
+      customize:
+
+        sensor.river_2_max_battery_in_power:
+          friendly_name: Ecoflow River 2 Max, мощность на батарею
+          device_class: power
+          unit_of_measurement: W
+          
+        sensor.river_2_max_battery_out_power:
+          friendly_name: Ecoflow River 2 Max, мощность с батареи
+          device_class: power
+          unit_of_measurement: W
+
+    recorder:
+      include:
+        entities:
+          - sensor.river_2_max_ac_in_power
+          - sensor.river_2_max_ac_in_volts
+          - sensor.river_2_max_ac_out_power
+          - sensor.river_2_max_ac_out_volts
+          - sensor.river_2_max_total_in_power
+          - sensor.river_2_max_total_out_power
+          - sensor.river_2_max_battery_in_power
+          - sensor.river_2_max_battery_out_power
+          - sensor.river_2_max_main_battery_level
+          - sensor.river_2_max_battery_level
+          
+    template:
+
+        sensor:
+
+          - name: river_2_max_battery_in_power
+            unique_id: river_2_max_battery_in_power
+            state: >
+                {% if states('sensor.river_2_max_total_in_power')|float > states('sensor.river_2_max_total_out_power')|float %}
+                {{ states('sensor.river_2_max_total_in_power')|float - states('sensor.river_2_max_total_out_power')|float }}
+                {% else %}
+                0
+                {% endif %} 
+                
+          - name: river_2_max_battery_out_power
+            unique_id: river_2_max_battery_out_power
+            state: >
+                {% if states('sensor.river_2_max_total_out_power')|float > states('sensor.river_2_max_total_in_power')|float %}
+                {{ states('sensor.river_2_max_total_out_power')|float - states('sensor.river_2_max_total_in_power')|float }}
+                {% else %}
+                0
+                {% endif %} 
+                
+    automation:
+
+      - alias: lr_river_2_max_turn_on_DC_12
+        id: lr_river_2_max_turn_on_DC_12
+        description: Включение DC 12 Ecoflow River 2 Max
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Режим работы
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Не включен          
+        - condition: state
+          entity_id: switch.river_2_max_dc_12v_enabled
+          state: 'off'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'on' 
+    # Заряд на Delta 2
+        - condition: numeric_state
+          entity_id: sensor.delta_2_battery_level
+          below: 60
+        action:
+    # Включение
+        - service: switch.turn_on
+          entity_id: switch.river_2_max_dc_12v_enabled
+          
+      - alias: lr_river_2_max_turn_off_DC_12
+        id: lr_river_2_max_turn_off_DC_12
+        description: Выключение DC 12 Ecoflow River 2 Max
+        initial_state: true
+        trigger:
+    # Сработка сенсора блекаута
+        - platform: state
+          entity_id: binary_sensor.blackout
+          from: 'on'
+          to: 'off'
+        condition:
+    # Режим работы
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Не включен          
+        - condition: state
+          entity_id: switch.river_2_max_dc_12v_enabled
+          state: 'on'
+        action:
+    # Включение
+        - service: switch.turn_off
+          entity_id: switch.river_2_max_dc_12v_enabled

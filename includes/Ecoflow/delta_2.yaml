@@ -1,0 +1,51 @@
+delta_2:
+
+    homeassistant:
+      customize:
+
+        sensor.delta_2_battery_in_power:
+          friendly_name: Ecoflow Delta 2, мощность на батарею
+          device_class: power
+          unit_of_measurement: W
+          
+        sensor.delta_2_battery_out_power:
+          friendly_name: Ecoflow Delta 2, мощность с батареи
+          device_class: power
+          unit_of_measurement: W
+          
+    recorder:
+      include:
+        entities:
+          - sensor.delta_2_ac_in_power
+          - sensor.delta_2_ac_in_volts
+          - sensor.delta_2_ac_out_power
+          - sensor.delta_2_ac_out_volts
+          - sensor.delta_2_total_in_power
+          - sensor.delta_2_total_out_power
+          - sensor.delta_2_battery_in_power
+          - sensor.delta_2_battery_out_power
+          - sensor.delta_2_main_battery_level
+          - sensor.delta_2_battery_level
+          - sensor.delta_2_solar_in_power
+          
+    template:
+
+        sensor:
+
+          - name: delta_2_battery_in_power
+            unique_id: delta_2_battery_in_power
+            state: >
+                {% if states('sensor.delta_2_total_in_power')|float > states('sensor.delta_2_total_out_power')|float %}
+                {{ states('sensor.delta_2_total_in_power')|float - states('sensor.delta_2_total_out_power')|float }}
+                {% else %}
+                0
+                {% endif %} 
+                
+          - name: delta_2_battery_out_power
+            unique_id: delta_2_battery_out_power
+            state: >
+                {% if states('sensor.delta_2_total_out_power')|float > states('sensor.delta_2_total_in_power')|float %}
+                {{ states('sensor.delta_2_total_out_power')|float - states('sensor.delta_2_total_in_power')|float }}
+                {% else %}
+                0
+                {% endif %} 

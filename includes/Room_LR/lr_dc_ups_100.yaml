@@ -1,0 +1,26 @@
+lr_dc_ups_100:
+
+    recorder:
+      include:
+        entities:
+          - binary_sensor.0xa4c1389d8b41b47d_power
+          - sensor.0xa4c138716822e6a7_power
+          - sensor.lr_ups_dc_voltage
+          - sensor.lr_ups_dc_current
+          - sensor.lr_ups_dc_power
+          
+    template:
+    
+      - sensor:
+
+          - name: lr_ups_dc_voltage
+            state: >
+                {{ ((states('sensor.0x00124b00199e40bf_val1_l2')|float)/100) |round(2) }}
+
+          - name: lr_ups_dc_current
+            state: >
+                {{ ((states('sensor.0x00124b00199e40bf_val2_l2')|float)/100) |round(2) }}
+            
+          - name: lr_ups_dc_power
+            state: >
+                {{ ((states('sensor.0x00124b00199e40bf_val3_l2')|float)/10) |round(2) }}

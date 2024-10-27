@@ -304,7 +304,7 @@ tt_light:
         - service: light.turn_off
           entity_id:
             - light.0x54ef44100096af68
-            - light.0x00124b0023ae464d_righ
+            - light.0x00124b0023ae464d_right
             - light.0x00124b0023ae464d_left
  
 

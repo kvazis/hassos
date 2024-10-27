@@ -21,7 +21,7 @@ da_speaker:
       - alias: da_reboot_speaker_auto_off
         id: da_reboot_speaker_auto_off
         description: Mi Speaker Night Auto off
-        initial_state: true
+        initial_state: false
         trigger:
         - platform: state
           entity_id: binary_sensor.da_speaker_night

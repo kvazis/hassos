@@ -56,11 +56,11 @@ lr_awtrix:
         initial_state: true          
         trigger:
         - platform: time
-          at: "13:00:00"
+          at: "14:00:00"
         - platform: time
-          at: "17:00:00"          
+          at: "18:00:00"          
         - platform: time
-          at: "19:00:00"          
+          at: "20:00:00"          
         - platform: time
           at: "21:00:00"          
         condition:
@@ -72,7 +72,7 @@ lr_awtrix:
         - service: mqtt.publish
           data_template:
             topic: "awtrix_6c9da0/notify"
-            payload_template: '{ "icon": "5582", "pushIcon": "2", "text": "Собача їжа", "duration": 30, "color": "#FFB266" }'
+            payload: '{ "icon": "5582", "pushIcon": "2", "text": "Собача їжа", "duration": 30, "color": "#FFB266" }'
         - service: telegram_bot.send_message
           data_template:
             target:
@@ -97,17 +97,17 @@ lr_awtrix:
         - service: mqtt.publish
           data_template:
             topic: "awtrix_6c9da0/notify"
-            payload_template: '{"icon": "10835", "text": "{{ states(''sensor.youtube_subscriber_count'')}}", "duration": 5 }'
+            payload: '{"icon": "10835", "text": "{{ states(''sensor.youtube_subscriber_count'')}}", "duration": 5 }'
         - delay: 00:00:05
         - service: mqtt.publish
           data_template:
             topic: "awtrix_6c9da0/notify"
-            payload_template: '{"icon": "10519", "text": "{{ states(''sensor.youtube_view_count'')}}", "color": "#00FF00", "duration": 5 }' 
+            payload: '{"icon": "10519", "text": "{{ states(''sensor.youtube_view_count'')}}", "color": "#00FF00", "duration": 5 }' 
         - delay: 00:00:05
         - service: mqtt.publish
           data_template:
             topic: "awtrix_6c9da0/notify"
-            payload_template:  '{"icon": "9452", "text": "{{ states(''sensor.youtube_video_count'')}}", "color": "#007FFF", "duration": 5 }'
+            payload:  '{"icon": "9452", "text": "{{ states(''sensor.youtube_video_count'')}}", "color": "#007FFF", "duration": 5 }'
             
       - alias: lr_light_awtrix_outside_weather
         id: lr_light_awtrix_outside_weather
@@ -126,7 +126,7 @@ lr_awtrix:
         - service: mqtt.publish
           data_template:
             topic: "awtrix_6c9da0/notify"
-            payload_template: '{ "icon": "1165", "text": "{{ states(''sensor.0x00158d0001a4b9da_temperature'')}} C", "duration": 10, "color": "#FFF97D", "noScroll": true }'
+            payload: '{ "icon": "1165", "text": "{{ states(''sensor.0x00158d0001a4b9da_temperature'')}} C", "duration": 10, "color": "#FFF97D", "noScroll": true }'
 
       - alias: lr_light_awtrix_currency_ton
         id: lr_light_awtrix_currency_ton
@@ -145,7 +145,7 @@ lr_awtrix:
         - service: mqtt.publish
           data_template:
             topic: "awtrix_6c9da0/notify"
-            payload_template: '{ "icon": "44591", "text": "{{ states(''sensor.cryptoinfo_ton_sensor'')}} USD", "duration": 10, "color": "#00FFFF", "noScroll": true }'
+            payload: '{ "icon": "44591", "text": "{{ states(''sensor.cryptoinfo_ton_sensor'')}} USD", "duration": 10, "color": "#00FFFF", "noScroll": true }'
 
       - alias: lr_light_awtrix_threat_notification
         id: lr_light_awtrix_threat_notification
@@ -170,7 +170,7 @@ lr_awtrix:
         - service: mqtt.publish
           data_template:
             topic: "awtrix_6c9da0/notify"
-            payload_template: '{ "text": "повітряна тривога", "color": "#FFD4FF", "effect": "Radar", "effectSettings":{ "speed":2, "palette":"Lava", "blend":true }, "duration": 30 }'
+            payload: '{ "text": "повітряна тривога", "color": "#FFD4FF", "effect": "Radar", "effectSettings":{ "speed":2, "palette":"Lava", "blend":true }, "duration": 30 }'
             
             
       - alias: lr_light_awtrix_threat_cancel
@@ -196,4 +196,4 @@ lr_awtrix:
         - service: mqtt.publish
           data_template:
             topic: "awtrix_6c9da0/notify"
-            payload_template: '{ "text": "відбій тривоги", "color": "#FFD4FF", "effect": "PlasmaCloud", "effectSettings":{ "speed":2, "palette":"Forest", "blend":true }, "duration": 30 }'
+            payload: '{ "text": "відбій тривоги", "color": "#FFD4FF", "effect": "PlasmaCloud", "effectSettings":{ "speed":2, "palette":"Forest", "blend":true }, "duration": 30 }'

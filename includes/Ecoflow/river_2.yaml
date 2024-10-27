@@ -1,4 +1,4 @@
-lr_river_2:
+river_2:
 
     homeassistant:
       customize:
@@ -48,3 +48,4 @@ lr_river_2:
                 {% else %}
                 0
                 {% endif %} 
+                

@@ -12,6 +12,11 @@ en_reboot:
             delay_on: 
                 minutes: 3
             device_class: problem  
+
+    input_button:
+
+      en_light_reboot:
+        name: EN Light reboot
             
     automation:
     
@@ -50,9 +55,35 @@ en_reboot:
             target:
                 - !secret chat_id_log
             message: | 
-                 {{"\U0001F916"}} Антонио. Прихожая -  перезагрузка лампочки {{ states('sensor.time_date') }} 
+                 {{"\U0001F916"}} Прихожая -  перезагрузка лампочки {{ states('sensor.time_date') }} 
 
-
+      - alias: en_reboot_bulb_manual
+        id: en_reboot_bulb_manual
+        description: Прихожая - ручная перезагрузка зависшей лампочки
+        initial_state: true
+        trigger:
+    ## Virtual button
+        - platform: state
+          entity_id: input_button.en_light_reboot
+        condition:
+    # Сенсор определяющий недоступность люстры
+        - condition: state
+          entity_id: binary_sensor.en_light_unavailable
+          state: 'on'
+        action:
+    # Перезагрузка по питанию
+        - service: switch.turn_off
+          entity_id: switch.0x00158d00057305ac_right
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0x00158d00057305ac_right
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_log
+            message: | 
+                 {{"\U0001F916"}} Прихожая -  перезагрузка лампочки {{ states('sensor.time_date') }} 
+                 
 #################### КОНТРОЛЬ ВЫКЛЮЧАТЕЛЯ ЛАМПОЧКИ #################### 
 
       - alias: en_reboot_switch_turn_on
@@ -127,4 +158,4 @@ en_reboot:
         - service: mqtt.publish
           data_template:
             topic: "zigstar/EN wd 2ch/get"
-            payload_template: '{ "state_left": "" }'
+            payload: '{ "state_left": "" }'

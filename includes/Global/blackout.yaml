@@ -142,13 +142,13 @@ blackout:
         - service: mqtt.publish
           data_template:
             topic: "zigstar_poe/LR TV Strip/get"
-            payload_template: '{ "state": "" }'
+            payload: '{ "state": "" }'
         - delay: 00:00:03
     # Обновление статуса люстра на балконе
         - service: mqtt.publish
           data_template:
             topic: "zigstar/LR balcony light/get"
-            payload_template: '{ "state": "" }'
+            payload: '{ "state": "" }'
         - delay: 00:00:03
     # Перезагрузка Tuya
         - service: homeassistant.reload_config_entry
@@ -167,7 +167,8 @@ blackout:
             - light.0xa4c13812b94c8365
             - light.hdmi_tv_lighting_65
             - light.0x54ef4410008e96fd_bottom
-            - light.smart_star_projector_ug9z   
+            - light.smart_star_projector_ug9z
+            - light.24key_rbg_strip
     # Питание на выключатель гостиная балкон
         - service: light.turn_on
           entity_id: light.0xa4c13812b94c8365
@@ -175,7 +176,7 @@ blackout:
         - service: mqtt.publish
           data_template:
             topic: "zigstar/LR balcony light/get"
-            payload_template: '{ "state": "" }'
+            payload: '{ "state": "" }'
         - delay: 00:00:03
         - service: light.turn_off
           entity_id: light.0xa4c13812b94c8365
@@ -189,4 +190,4 @@ blackout:
         - service: mqtt.publish
           data_template:
             topic: "zigstar/LR balcony light/get"
-            payload_template: '{ "state": "" }'
+            payload: '{ "state": "" }'

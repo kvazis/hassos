@@ -148,4 +148,4 @@ cr_reboot:
         - service: mqtt.publish
           data_template:
             topic: "zigstar/EN wd 2ch/get"
-            payload_template: '{ "state_right": "" }'
+            payload: '{ "state_right": "" }'

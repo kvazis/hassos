@@ -7,6 +7,10 @@ kn_light:
         light.kn_ceiling_light:
           friendly_name: Кухня люстра
           icon: phu:ceiling-being
+          
+        light.0x00158d000420dbab:
+          friendly_name: Кухня лампочка
+          icon: phu:bulbs-classic
 
         light.gateway_light_7811dc64f4c8:
           friendly_name: Кухня шлюз
@@ -187,6 +191,9 @@ kn_light:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off'
         action:
             - choose:
               - conditions:
@@ -200,6 +207,9 @@ kn_light:
                     data_template:
                       brightness_pct: 100
                       kelvin: 4000
+                  - service: light.turn_off
+                    entity_id:
+                     - light.0x00158d000420dbab
               - conditions:
                   - condition: state
                     entity_id: light.kn_ceiling_light
@@ -214,7 +224,61 @@ kn_light:
                  - service: light.turn_off
                    entity_id:
                      - light.kn_ceiling_light
-            
+                     - light.0x00158d000420dbab
+
+      - alias: kn_blackout_manual_control
+        id: kn_blackout_manual_control
+        description: Кухня - ручное управление автономный свет
+        initial_state: true
+        trigger:
+    # Виртуальная кнопка для интерфейса
+        - platform: state
+          entity_id: input_button.kn_ceiling_light
+    # Выключатель на входе в кухню - правая кнопка
+        - platform: state
+          entity_id: sensor.0x54ef4410000f4741_action
+          to: 'single_right'
+    # 6 клавишник на входе
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c794209_action
+          to: 'button_1_single'
+    # 4 клавишник на комоде
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c7942ca_action
+          to: 'button_4_single'
+    ## Aqara Opple на столе
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: 'button_5_single'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: light.0x00158d000420dbab
+                    state: 'off'
+                sequence:
+                  - service: light.turn_on
+                    entity_id:
+                      - light.0x00158d000420dbab
+                    data_template:
+                      brightness_pct: 100
+                      kelvin: 4000
+              - conditions:
+                  - condition: state
+                    entity_id: light.0x00158d000420dbab
+                    state: 'on'
+                sequence:
+                 - service: light.turn_off
+                   entity_id:
+                     - light.0x00158d000420dbab
             
       - alias: kn_ceiling_auto_light_on
         id: kn_ceiling_auto_light_on

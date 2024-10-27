@@ -31,6 +31,15 @@ kn_sensors:
         sensor.0x54ef44100042e226_presence_event:
           friendly_name: Кухня FP1, событие
 
+        sensor.0x00158d0001581109_humidity:
+          friendly_name: Кухня влажность
+          icon: mdi:water-percent
+        sensor.0x00158d0001581109_temperature:
+          friendly_name: Кухня температура
+          icon: mdi:temperature-celsius
+        sensor.0x00158d0001581109_battery:
+          friendly_name: Кухня климат
+          
         sensor.0x04cf8cdf3c772379_illuminance_lux:
           friendly_name: Кухня освещенность
         sensor.0x04cf8cdf3c772379_battery:
@@ -59,16 +68,16 @@ kn_sensors:
         binary_sensor.0xec1bbdfffe302df1_occupancy:
           friendly_name: Кухня, балкон движение
 
-        sensor.0x00158d000171ffde_humidity:
-          friendly_name: Кухня, балкон влажность
-          icon: mdi:water-percent
-        sensor.0x00158d000171ffde_temperature:
-          friendly_name: Кухня, балкон температура
-          icon: mdi:temperature-celsius
-        sensor.0x00158d000171ffde_mmhg_pressure:
-          friendly_name: Кухня, балкон давление мм рт. ст.
-        sensor.0x00158d000171ffde_battery:
-          friendly_name: Кухня, балкон климат          
+        # sensor.0x00158d000171ffde_humidity:
+        #   friendly_name: Кухня, балкон влажность
+        #   icon: mdi:water-percent
+        # sensor.0x00158d000171ffde_temperature:
+        #   friendly_name: Кухня, балкон температура
+        #   icon: mdi:temperature-celsius
+        # sensor.0x00158d000171ffde_mmhg_pressure:
+        #   friendly_name: Кухня, балкон давление мм рт. ст.
+        # sensor.0x00158d000171ffde_battery:
+        #   friendly_name: Кухня, балкон климат          
           
     template:
 

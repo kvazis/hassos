@@ -7,6 +7,28 @@ lr_switch:
         switch.0xa4c138cd1b6a0a9a:
           friendly_name: Датчик электрики в гостиной, питание
           
+        switch.0xa4c138716822e6a7:
+          friendly_name: DC UPS, вход
+
+        switch.0xa4c138ee9e1e5451:
+          friendly_name: Гостиная UPS
+
+        switch.0xa4c1382600c57620:
+          friendly_name: Гостиная удлинитель на стойке ТВ
+
+        switch.0xa4c1384452a34172:
+          friendly_name: Гостиная телевизор
+
+        switch.0xa4c1387c6584d955:
+          friendly_name: Шлюз Mi
+
+        switch.0xa4c138f41459f92a:
+          friendly_name: Ноутбук Asus
+
+        switch.0xa4c1388c89a46970:
+          friendly_name: Ноутбук Acer
+
+          
         # switch.0xa4c1382dc9fecb3e:
         #   friendly_name: Гостиная UPS 1 in
         #   icon: phu:apc-ups-upright

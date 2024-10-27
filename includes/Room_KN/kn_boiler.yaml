@@ -255,13 +255,13 @@ kn_boiler:
               service: mqtt.publish
               data_template:
                 topic: "states/0xa4c1388ce0ff53a8/mode"
-                payload_template: 'ON'
+                payload: 'ON'
                 retain: true 
             turn_off:
               service: mqtt.publish
               data_template:
                 topic: "states/0xa4c1388ce0ff53a8/mode"
-                payload_template: 'OFF'
+                payload: 'OFF'
                 retain: true 
             icon_template: >-
               {% if is_state('switch.0xa4c1388ce0ff53a8_mode', 'on') %}
@@ -278,13 +278,13 @@ kn_boiler:
               service: mqtt.publish
               data_template:
                 topic: "states/0xa4c1388ce0ff53a8/period_1_mode"
-                payload_template: 'ON'
+                payload: 'ON'
                 retain: true 
             turn_off:
               service: mqtt.publish
               data_template:
                 topic: "states/0xa4c1388ce0ff53a8/period_1_mode"
-                payload_template: 'OFF'
+                payload: 'OFF'
                 retain: true 
             icon_template: >-
               {% if is_state('switch.0xa4c1388ce0ff53a8_period_1_mode', 'on') %}
@@ -301,13 +301,13 @@ kn_boiler:
               service: mqtt.publish
               data_template:
                 topic: "states/0xa4c1388ce0ff53a8/period_2_mode"
-                payload_template: 'ON'
+                payload: 'ON'
                 retain: true 
             turn_off:
               service: mqtt.publish
               data_template:
                 topic: "states/0xa4c1388ce0ff53a8/period_2_mode"
-                payload_template: 'OFF'
+                payload: 'OFF'
                 retain: true 
             icon_template: >-
               {% if is_state('switch.0xa4c1388ce0ff53a8_period_2_mode', 'on') %}
@@ -324,13 +324,13 @@ kn_boiler:
               service: mqtt.publish
               data_template:
                 topic: "states/0xa4c1388ce0ff53a8/period_3_mode"
-                payload_template: 'ON'
+                payload: 'ON'
                 retain: true 
             turn_off:
               service: mqtt.publish
               data_template:
                 topic: "states/0xa4c1388ce0ff53a8/period_3_mode"
-                payload_template: 'OFF'
+                payload: 'OFF'
                 retain: true 
             icon_template: >-
               {% if is_state('switch.0xa4c1388ce0ff53a8_period_3_mode', 'on') %}
@@ -347,13 +347,13 @@ kn_boiler:
               service: mqtt.publish
               data_template:
                 topic: "states/0xa4c1388ce0ff53a8/period_4_mode"
-                payload_template: 'ON'
+                payload: 'ON'
                 retain: true 
             turn_off:
               service: mqtt.publish
               data_template:
                 topic: "states/0xa4c1388ce0ff53a8/period_4_mode"
-                payload_template: 'OFF'
+                payload: 'OFF'
                 retain: true 
             icon_template: >-
               {% if is_state('switch.0xa4c1388ce0ff53a8_period_4_mode', 'on') %}
@@ -370,13 +370,13 @@ kn_boiler:
               service: mqtt.publish
               data_template:
                 topic: "states/0xa4c1388ce0ff53a8/period_5_mode"
-                payload_template: 'ON'
+                payload: 'ON'
                 retain: true 
             turn_off:
               service: mqtt.publish
               data_template:
                 topic: "states/0xa4c1388ce0ff53a8/period_5_mode"
-                payload_template: 'OFF'
+                payload: 'OFF'
                 retain: true 
             icon_template: >-
               {% if is_state('switch.0xa4c1388ce0ff53a8_period_5_mode', 'on') %}
@@ -422,7 +422,7 @@ kn_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0xa4c1388ce0ff53a8/period_1"
-                      payload_template: "{{states('input_datetime.0xa4c1388ce0ff53a8_period')}}"
+                      payload: "{{states('input_datetime.0xa4c1388ce0ff53a8_period')}}"
                       retain: true
               - conditions:
                   - condition: trigger
@@ -431,7 +431,7 @@ kn_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0xa4c1388ce0ff53a8/period_2"
-                      payload_template: "{{states('input_datetime.0xa4c1388ce0ff53a8_period')}}"
+                      payload: "{{states('input_datetime.0xa4c1388ce0ff53a8_period')}}"
                       retain: true
               - conditions:
                   - condition: trigger
@@ -440,7 +440,7 @@ kn_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0xa4c1388ce0ff53a8/period_3"
-                      payload_template: "{{states('input_datetime.0xa4c1388ce0ff53a8_period')}}"
+                      payload: "{{states('input_datetime.0xa4c1388ce0ff53a8_period')}}"
                       retain: true
               - conditions:
                   - condition: trigger
@@ -449,7 +449,7 @@ kn_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0xa4c1388ce0ff53a8/period_4"
-                      payload_template: "{{states('input_datetime.0xa4c1388ce0ff53a8_period')}}"
+                      payload: "{{states('input_datetime.0xa4c1388ce0ff53a8_period')}}"
                       retain: true
               - conditions:
                   - condition: trigger
@@ -458,7 +458,7 @@ kn_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0xa4c1388ce0ff53a8/period_5"
-                      payload_template: "{{states('input_datetime.0xa4c1388ce0ff53a8_period')}}"
+                      payload: "{{states('input_datetime.0xa4c1388ce0ff53a8_period')}}"
                       retain: true 
                       
       - alias: 0xa4c1388ce0ff53a8_timer
@@ -499,7 +499,7 @@ kn_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0xa4c1388ce0ff53a8/timer_1"
-                      payload_template: "{{states('input_datetime.0xa4c1388ce0ff53a8_timer')}}"
+                      payload: "{{states('input_datetime.0xa4c1388ce0ff53a8_timer')}}"
                       retain: true
               - conditions:
                   - condition: trigger
@@ -508,7 +508,7 @@ kn_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0xa4c1388ce0ff53a8/timer_2"
-                      payload_template: "{{states('input_datetime.0xa4c1388ce0ff53a8_timer')}}"
+                      payload: "{{states('input_datetime.0xa4c1388ce0ff53a8_timer')}}"
                       retain: true
               - conditions:
                   - condition: trigger
@@ -517,7 +517,7 @@ kn_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0xa4c1388ce0ff53a8/timer_3"
-                      payload_template: "{{states('input_datetime.0xa4c1388ce0ff53a8_timer')}}"
+                      payload: "{{states('input_datetime.0xa4c1388ce0ff53a8_timer')}}"
                       retain: true
               - conditions:
                   - condition: trigger
@@ -526,7 +526,7 @@ kn_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0xa4c1388ce0ff53a8/timer_4"
-                      payload_template: "{{states('input_datetime.0xa4c1388ce0ff53a8_timer')}}"
+                      payload: "{{states('input_datetime.0xa4c1388ce0ff53a8_timer')}}"
                       retain: true
               - conditions:
                   - condition: trigger
@@ -535,7 +535,7 @@ kn_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0xa4c1388ce0ff53a8/timer_5"
-                      payload_template: "{{states('input_datetime.0xa4c1388ce0ff53a8_timer')}}"
+                      payload: "{{states('input_datetime.0xa4c1388ce0ff53a8_timer')}}"
                       retain: true 
               - conditions:
                   - condition: trigger
@@ -544,7 +544,7 @@ kn_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0xa4c1388ce0ff53a8/timer_manual"
-                      payload_template: "{{states('input_datetime.0xa4c1388ce0ff53a8_timer')}}"
+                      payload: "{{states('input_datetime.0xa4c1388ce0ff53a8_timer')}}"
                       retain: true 
 
       - alias: 0xa4c1388ce0ff53a8_period_on
@@ -804,11 +804,13 @@ kn_boiler:
          - condition: state
            entity_id: switch.control_mode
            state: 'on'
-    # Ржима работы бойлера
+    # Режим работы бойлера
          - condition: state
            entity_id: switch.0xa4c1388ce0ff53a8_mode
            state: 'on'
         action:
+         - service: switch.turn_on
+           entity_id: switch.0xa4c1388ce0ff53a8
          - service: timer.start
            entity_id: timer.0xa4c1388ce0ff53a8
            data_template: 
@@ -857,6 +859,9 @@ kn_boiler:
                   - condition: state
                     entity_id: switch.0xa4c1388ce0ff53a8_mode
                     state: 'on'
+                  - condition: state
+                    entity_id: binary_sensor.blackout_after
+                    state: 'off'                    
                 sequence:
                   - service: telegram_bot.send_message
                     data_template:

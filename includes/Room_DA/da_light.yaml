@@ -7,6 +7,83 @@ da_light:
           friendly_name: Детская А люстра
           icon: phu:ceiling-being
         
-        light.yeelight_stripe_0x3618ad8:
-          friendly_name: Детская А LED лента
-          icon: mdi:led-strip-variant
+        light.smart_desk_lamp:
+          friendly_name: Детская А настольная лампа
+          icon: mdi:desk-lamp
+          
+        sensor.0x00158d00010b5c6e_action:
+          friendly_name: Детская А беспроводный выключатель на входе
+        sensor.0x00158d00010b5c6e_battery:
+          friendly_name: Детская А беспроводный выключатель на входе
+          
+        sensor.0x54ef4410004c16d9_action:
+          friendly_name: Детская А беспроводный выключатель на входе
+        sensor.0x54ef4410004c16d9_battery:
+          friendly_name: Детская А беспроводный выключатель на входе
+
+
+    automation:
+
+      - alias: dа_light_ceiling
+        id: dа_light_ceiling
+        description: Детская A ручное управление люстрой
+        initial_state: true          
+        trigger:
+    # Выключатель возле двери
+        - platform: state
+          entity_id: sensor.0x00158d00010b5c6e_action
+          to: 'single'
+    # Aqara Opple
+        - platform: state
+          entity_id: sensor.0x54ef4410004c16d9_action
+          to: 'button_1_single' 
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: light.toggle
+          entity_id: light.0x00158d000635ded8_right
+
+      - alias: dа_light_rgb_strip_manual_control
+        id: dа_light_rgb_strip_manual_control
+        description: Детская A ручное rgb лентой
+        initial_state: true          
+        trigger:
+    # Aqara Opple
+        - platform: state
+          entity_id: sensor.0x54ef4410004c16d9_action
+          to: 'button_1_double' 
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: light.toggle
+          entity_id: light.24key_rbg_strip
+          
+      - alias: dа_light_table_lamp_manual_control
+        id: dа_light_table_lamp_light_manual_control
+        description: Детская A ручное управление настольной лампой
+        initial_state: true          
+        trigger:
+    # Выключатель на входе
+        - platform: state
+          entity_id: sensor.0x00158d000635ded8_action
+          to: 'single_left'
+    # Aqara Opple
+        - platform: state
+          entity_id: sensor.0x54ef4410004c16d9_action
+          to: 'button_1_triple' 
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: light.toggle
+          entity_id: light.smart_desk_lamp
+        - delay: 00:00:03
+        - service: homeassistant.reload_config_entry
+          data: {}
+          target:
+            entity_id: light.smart_desk_lamp

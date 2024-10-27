@@ -5,15 +5,6 @@ lr_reboot:
 
       - binary_sensor:
       
-    # # Несанкционированное включение zigbee ленты
-    #       - name: lr_tvled_enabled
-    #         unique_id: lr_tvled_enabled
-    #         state: >
-    #           {{ is_state('light.0xa4c138b72a314e97', 'on')  
-    #              and is_state('light.lr_light_cinema', 'off') }}
-    #         delay_on: '00:00:05'
-             
-
     # Сенсор определяющий недоступность люстры 1
           - name: lr_ceiling_1_unavailable
             unique_id: lr_ceiling_1_unavailable
@@ -41,14 +32,14 @@ lr_reboot:
                 minutes: 2
             device_class: problem 
 
-    # Сенсор определяющий залипание датчика электрики в гостиной
-          - name: lr_broadlin_ir
-            unique_id: lr_broadlin_ir
+    # Сенсор определяющий недоступность ночника
+          - name: lr_migateway_unavailable
+            unique_id: lr_migateway_unavailable
             state: >
-              {{ is_state('sensor.lr_broadlin_ir_temperature', 'unavailable') }}
+              {{ is_state('light.gateway_light_34ce0088b039', 'unavailable') }}
             delay_on: 
-                minutes: 2
-            device_class: problem 
+                minutes: 3
+            device_class: problem  
 
     input_button:
 
@@ -57,6 +48,9 @@ lr_reboot:
         
       lr_ceiling_2_reset:
         name: LR ceiling 2 reboot
+        
+      lr_gateway_reset:
+        name: LR Mi Gateway reboot
 
     automation:
 
@@ -168,67 +162,64 @@ lr_reboot:
         - service: switch.turn_on
           entity_id: switch.0x842e14fffee5451a
     
-#################### ЛЕНТА ЗА ТЕЛЕВИЗОРОМ ####################    
-    
-    #   - alias: lr_reboot_tvled_check
-    #     id: lr_reboot_tvled_check
-    #     description: Гостиная - проверка статуса zigbee LED ленты
-    #     initial_state: true
-    #     trigger:
-    # # Проверка раз в 5 минут
-    #     - platform: time_pattern
-    #       minutes: '/5'
-    #     condition:
-    # # Переключатель режима работы сервера
-    #     - condition: state
-    #       entity_id: switch.control_mode
-    #       state: 'on'
-    # # Сенсор электричества
-    #     - condition: state
-    #       entity_id: binary_sensor.blackout_after
-    #       state: 'off' 
-    #     action:
-    # # Принудительное обновление статуса
-    #     - service: mqtt.publish
-    #       data_template:
-    #         topic: "zigstar_poe/LR TV Strip/get"
-    #         payload_template: '{ "state": "" }'
+#################### ПЕРЕЗАГРУЗКА ШЛЮЗА ####################
 
-    #   - alias: lr_reboot_tvled_off
-    #     id: lr_reboot_tvled_off
-    #     description: Гостиная - отключение zigbee LED ленты
-    #     initial_state: true
-    #     trigger:
-    # # Проверка раз в 3 минуты
-    #     - platform: time_pattern
-    #       minutes: '/3'
-    #     condition:
-    # # Переключатель режима работы сервера
-    #     - condition: state
-    #       entity_id: switch.control_mode
-    #       state: 'on'
-    # # Сенсор несанкционированное включение zigbee ленты
-    #     - condition: state
-    #       entity_id: binary_sensor.lr_tvled_enabled
-    #       state: 'on'
-    # # Сенсор электричества
-    #     - condition: state
-    #       entity_id: binary_sensor.blackout_after
-    #       state: 'off' 
-    # # Телевизор
-    #     - condition: state
-    #       entity_id: binary_sensor.lr_tv_work
-    #       state: 'off'
-    #     action:
-    #     - service: light.turn_off
-    #       entity_id:
-    #         - light.0xa4c138b72a314e97
-    #     - service: telegram_bot.send_message
-    #       data_template:
-    #         target:
-    #             - !secret chat_id_log
-    #         message: | 
-    #              {{"\U0001F916"}} Антонио. Отключение ТВ подсветки {{ states('sensor.time_date') }} 
+      - alias: lr_reboot_gateway
+        id: lr_reboot_gateway
+        description: Гостиная - перезагрузка шлюза xiaomi
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор определяющий недоступность люстры
+        - condition: state
+          entity_id: binary_sensor.lr_migateway_unavailable
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off' 
+        action:
+        - service: input_button.press
+          target:
+             entity_id: input_button.lr_gateway_reset
+          data: {}
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_log
+            message: | 
+                 {{"\U0001F916"}} Антонио. Гостиная -  перезагрузка шлюза {{ states('sensor.time_date') }}    
+
+
+      - alias: lr_reboot_gateway_manual
+        id: lr_reboot_gateway_manual
+        description: Гостиная - ручная перезагрузка шлюза xiaomi
+        initial_state: true
+        trigger:
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.lr_gateway_reset
+        action:  
+        - service: switch.turn_off
+          entity_id:
+            - switch.0xa4c1387c6584d955
+        - delay: 00:00:03
+        - service: switch.turn_on
+          entity_id:
+            - switch.0xa4c1387c6584d955
+        - delay: 00:00:15 
+ 
+        - service: homeassistant.reload_config_entry
+          data: {}
+          target:
+             entity_id: light.gateway_light_34ce0088b039
 
 #################### ПЕРЕЗАГРУЗКА IR BROADLINK ####################
               

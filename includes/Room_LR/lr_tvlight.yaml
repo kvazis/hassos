@@ -26,13 +26,13 @@ lr_tvlight:
               service: mqtt.publish
               data_template:
                 topic: "states/lr_light_cinema_mode"
-                payload_template: 'ON'
+                payload: 'ON'
                 retain: true 
             turn_off:
               service: mqtt.publish
               data_template:
                 topic: "states/lr_light_cinema_mode"
-                payload_template: 'OFF'
+                payload: 'OFF'
                 retain: true 
             icon_template: >-
               {% if is_state('switch.lr_light_cinema_mode', 'on') %}
@@ -98,7 +98,7 @@ lr_tvlight:
                   - light.yeelight_lamp1_0x32a4ab4
                   - light.yeelight_ceiling4_0x49c726b
                   - light.yeelight_ceiling4_0x4a1dacd
-                  - light.0x00158d00062fbb54_left
+                  - light.0x54ef4410008e96fd_bottom
                   - light.lr_bedside_lamp
               - service: light.turn_on
                 entity_id:
@@ -108,15 +108,6 @@ lr_tvlight:
                 data_template:
                   brightness_pct: 100
                   rgb_color: [169, 153, 255]
-            #   - delay: 00:00:03
-            #   - service: mqtt.publish
-            #     data_template:
-            #       topic: "zigstar_poe/LR TV Strip/set"
-            #       payload_template: '{"state": "ON"}'
-            #   - service: mqtt.publish
-            #     data_template:
-            #       topic: "zigstar_poe/LR TV Strip/get"
-            #       payload_template: '{"state": ""}'
           - conditions:
               - condition: state
                 entity_id: switch.lr_light_cinema_mode

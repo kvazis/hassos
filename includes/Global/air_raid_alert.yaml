@@ -56,7 +56,136 @@ air_raid_alert:
 
 
     automation:
-              
+
+      - alias: lr_ceiling_threat_notification
+        id: lr_ceiling_threat_notification
+        description: Включение световой индикации в гостиной при сработке сенсоров тревоги
+        initial_state: true
+        trigger:
+    # Сборный сенсор тревоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'off'
+          to: 'on'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Отключен ночной режим работы
+        - condition: state
+          entity_id: binary_sensor.night_time
+          state: 'off'
+        action:
+     # Сохранение состояния светильников
+        - service: scene.create
+          data:
+           scene_id: light_before_threat
+           snapshot_entities:
+             - light.yeelight_ceiling4_0x456e813
+             - light.yeelight_ceiling4_0x456e813_ambilight
+             - light.yeelight_ceiling4_0x49c726b
+             - light.yeelight_ceiling4_0x49c726b_ambilight
+             - light.yeelight_ceiling4_0x4a1dacd
+             - light.yeelight_ceiling4_0x4a1dacd_ambilight
+             - light.yeelight_stripe_0x3618ad8
+    # Отключение основного освещения
+        - service: light.turn_off
+          entity_id: 
+             - light.yeelight_ceiling4_0x456e813
+             - light.yeelight_ceiling4_0x49c726b
+             - light.yeelight_ceiling4_0x4a1dacd
+             - light.yeelight_stripe_0x3618ad8
+    # Включение эффекта Alarm на задней подсветке на 30 секунд
+        - service: light.turn_on
+          data:
+            transition: 2
+            brightness_pct: 70
+            effect: Alarm
+          target:
+            entity_id:
+             - light.yeelight_ceiling4_0x456e813_ambilight
+             - light.yeelight_ceiling4_0x49c726b_ambilight
+             - light.yeelight_ceiling4_0x4a1dacd_ambilight
+             - light.yeelight_stripe_0x3618ad8
+        - delay: 00:00:30
+    # Включение эффекта Stop, иначе эффект Alarm применится при следующем включении
+        - service: light.turn_on
+          data:
+            effect: Stop
+          target:
+            entity_id:
+             - light.yeelight_ceiling4_0x456e813_ambilight
+             - light.yeelight_ceiling4_0x49c726b_ambilight
+             - light.yeelight_ceiling4_0x4a1dacd_ambilight
+             - light.yeelight_stripe_0x3618ad8
+    # Отключение подсветки
+        - service: light.turn_off
+          entity_id: 
+             - light.yeelight_ceiling4_0x456e813_ambilight
+             - light.yeelight_ceiling4_0x49c726b_ambilight
+             - light.yeelight_ceiling4_0x4a1dacd_ambilight
+             - light.yeelight_stripe_0x3618ad8
+    # Возврат к предыдущему состоянию
+        - service: scene.turn_on
+          target:
+            entity_id: scene.light_before_threat
+
+      - alias: lr_ceiling_threat_cancel
+        id: lr_ceiling_threat_cancel
+        description: Включение световой индикации в гостиной - отмена тревоги
+        initial_state: true
+        trigger:
+    # Сборный сенсор тревоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'on'
+          to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Отключен ночной режим работы
+        - condition: state
+          entity_id: binary_sensor.night_time
+          state: 'off'
+        action:
+    # Сохранение состояния светильников
+        - service: scene.create
+          data:
+           scene_id: light_after_threat
+           snapshot_entities:
+             - light.yeelight_ceiling4_0x456e813
+             - light.yeelight_ceiling4_0x456e813_ambilight
+             - light.yeelight_ceiling4_0x49c726b
+             - light.yeelight_ceiling4_0x49c726b_ambilight
+             - light.yeelight_ceiling4_0x4a1dacd
+             - light.yeelight_ceiling4_0x4a1dacd_ambilight
+             - light.yeelight_stripe_0x3618ad8
+    # Отключение основного освещения
+        - service: light.turn_off
+          entity_id: 
+             - light.yeelight_ceiling4_0x456e813
+             - light.yeelight_ceiling4_0x49c726b
+             - light.yeelight_ceiling4_0x4a1dacd
+             - light.yeelight_stripe_0x3618ad8
+    # Запуск скрипта светового уведомления и ожидание 20 сек
+        - service: script.turn_on
+          entity_id: script.lr_threat_cancel_notification
+        - delay: 00:00:20
+    # Отключение подсветки
+        - service: light.turn_off
+          entity_id: 
+             - light.yeelight_ceiling4_0x456e813_ambilight
+             - light.yeelight_ceiling4_0x49c726b_ambilight
+             - light.yeelight_ceiling4_0x4a1dacd_ambilight
+             - light.yeelight_stripe_0x3618ad8
+    # Возврат к предыдущему состоянию
+        - service: scene.turn_on
+          target:
+            entity_id: scene.light_after_threat
+
       - alias: lr_light_wled_threat_notification
         id: lr_light_wled_threat_notification
         description: Гостиная WLED - тревога
@@ -228,3 +357,200 @@ air_raid_alert:
           entity_id: light.kn_wled
         - delay: 00:00:15
         - service: light.turn_off
+
+      - alias: br_light_wled_threat_notification
+        id: br_light_wled_threat_notification
+        description: Спальня WLED - тревога
+        initial_state: true          
+        trigger:
+    # Сборный сенсор тревоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'off'
+          to: 'on'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: light.turn_on
+          entity_id: light.br_wled_round
+          data:
+            effect: Scanner
+            brightness_pct: 30
+        - service: select.select_option
+          data:
+            option: Red Shift
+          target:
+            entity_id: select.br_wled_round_color_palette
+        - service: number.set_value
+          target:
+            entity_id: number.br_wled_round_speed
+          data:
+            value: 85
+        - service: number.set_value
+          target:
+            entity_id: number.br_wled_round_intensity
+          data:
+            value: 0
+        - delay: 00:00:30
+        - service: light.turn_off
+          entity_id: light.br_wled_round
+        - delay: 00:00:15
+        - service: light.turn_off
+          entity_id: light.br_wled_round
+
+      - alias: br_light_wled_threat_cancel
+        id: br_light_wled_threat_cancel
+        description: Спальня WLED - отмена тревоги
+        initial_state: true          
+        trigger:
+    # Сборный сенсор тревоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'on'
+          to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: light.turn_on
+          entity_id: light.br_wled_round
+          data:
+            effect: Scanner Dual
+            brightness_pct: 30
+        - service: select.select_option
+          data:
+            option: Aurora
+          target:
+            entity_id: select.br_wled_round_color_palette
+        - service: number.set_value
+          target:
+            entity_id: number.br_wled_round_speed
+          data:
+            value: 0
+        - service: number.set_value
+          target:
+            entity_id: number.br_wled_round_intensity
+          data:
+            value: 11
+        - delay: 00:00:30
+        - service: light.turn_off
+          entity_id: light.br_wled_round
+        - delay: 00:00:15
+        - service: light.turn_off
+          entity_id: light.br_wled_round
+
+
+      - alias: kn_gateway_threat_notification
+        id: kn_gateway_threat_notification
+        description: Кухня шлюз - тревога
+        initial_state: true          
+        trigger:
+    # Сборный сенсор тревоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'off'
+          to: 'on'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+         - service: script.turn_on
+           entity_id: script.kn_threat_notification
+
+      - alias: kn_gateway_threat_cancel
+        id: kn_gateway_threat_cancel
+        description: Кухня шлюз  - отмена тревоги
+        initial_state: true          
+        trigger:
+    # Сборный сенсор тревоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'on'
+          to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+         - service: script.turn_on
+           entity_id: script.kn_threat_cancel_notification
+
+
+    script:
+    
+      lr_threat_cancel_notification:
+        alias: Амбилайт в гостиной 5 зеленых вспышек
+        sequence:
+            repeat:
+              count: 5 
+              sequence:
+              - service: light.turn_on
+                entity_id: 
+                 - light.yeelight_ceiling4_0x456e813_ambilight
+                 - light.yeelight_ceiling4_0x49c726b_ambilight
+                 - light.yeelight_ceiling4_0x4a1dacd_ambilight
+                 - light.yeelight_stripe_0x3618ad8
+                data:
+                  brightness_pct: 70
+                  color_name: green
+                  transition: 2
+              - delay: 2
+              - service: light.turn_off
+                entity_id: 
+                 - light.yeelight_ceiling4_0x456e813_ambilight
+                 - light.yeelight_ceiling4_0x49c726b_ambilight
+                 - light.yeelight_ceiling4_0x4a1dacd_ambilight
+                 - light.yeelight_stripe_0x3618ad8
+                data:
+                  transition: 2
+              - delay: 2
+
+      kn_threat_notification:
+        alias: Шлюз в кухне 5 красных вспышек
+        sequence:
+            repeat:
+              count: 5 
+              sequence:
+              - service: light.turn_on
+                entity_id: 
+                   - light.gateway_light_7811dc64f4c8
+                data:
+                  brightness_pct: 70
+                  color_name: red
+                  transition: 2
+              - delay: 2
+              - service: light.turn_off
+                entity_id: 
+                   - light.gateway_light_7811dc64f4c8
+                data:
+                  transition: 2
+              - delay: 2              
+              
+      kn_threat_cancel_notification:
+        alias: Шлюз в кухне 5 красных вспышек
+        sequence:
+            repeat:
+              count: 5 
+              sequence:
+              - service: light.turn_on
+                entity_id: 
+                   - light.gateway_light_7811dc64f4c8
+                data:
+                  brightness_pct: 70
+                  color_name: green
+                  transition: 2
+              - delay: 2
+              - service: light.turn_off
+                entity_id: 
+                   - light.gateway_light_7811dc64f4c8
+                data:
+                  transition: 2
+              - delay: 2 

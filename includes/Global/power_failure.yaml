@@ -6,7 +6,7 @@ power_failure:
            - binary_sensor.lr_electricity
            - binary_sensor.lr2_electricity
            - binary_sensor.kn_electricity
-           - binary_sensor.bt_electricity
+           - binary_sensor.br_electricity
            - binary_sensor.electricity
 
            
@@ -16,9 +16,17 @@ power_failure:
         binary_sensor.lr_electricity:
           friendly_name: Сенсор электричества гостиная
           icon: mdi:home-lightning-bolt-outline
+          
+        binary_sensor.lr2_electricity:
+          friendly_name: Сенсор электричества 2 гостиная
+          icon: mdi:home-lightning-bolt-outline
 
         binary_sensor.kn_electricity:
           friendly_name: Сенсор электричества кухня
+          icon: mdi:home-lightning-bolt-outline
+
+        binary_sensor.br_electricity:
+          friendly_name: Сенсор электричества спальня
           icon: mdi:home-lightning-bolt-outline
 
         binary_sensor.electricity:
@@ -44,10 +52,10 @@ power_failure:
           friendly_name: Сенсор определения отключения кухня
 
         binary_sensor.0xa4c138084b9d3356:
-          friendly_name: Сенсор электричества ванная
+          friendly_name: Сенсор электричества спальня
           icon: mdi:home-lightning-bolt-outline
         sensor.0xa4c138084b9d3356_battery:
-          friendly_name: Сенсор электричества ванная
+          friendly_name: Сенсор электричества спальня
 
 
     template:
@@ -75,9 +83,9 @@ power_failure:
              {{ is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on') }}
             device_class: problem
             
-    # Сенсор определения отключения ванная
-          - name: bt_electricity
-            unique_id: bt_electricity
+    # Сенсор определения отключения спальня
+          - name: br_electricity
+            unique_id: br_electricity
             state: >
              {{ is_state('binary_sensor.0xa4c138084b9d3356', 'off') }}
             device_class: problem
@@ -92,6 +100,16 @@ power_failure:
                 minutes: 1
             device_class: problem
             
+    # Сенсор залипание сенсора отключения гостиная 2
+          - name: lr_electricity_reset_2
+            unique_id: lr_electricity_reset_2
+            state: >
+             {{ is_state('binary_sensor.0xa4c138135e284964_contact', 'on') and
+                 is_state('switch.smart_power_strip_44eu_w_socket_3', 'on')  }}
+            delay_on: 
+                minutes: 3
+            device_class: problem
+            
     # Сенсор залипание сенсора отключения кухня
           - name: kn_electricity_reset
             unique_id: kn_electricity_reset
@@ -102,9 +120,9 @@ power_failure:
                 minutes: 1
             device_class: problem
             
-    # Сенсор залипание сенсора отключения ванная
-          - name: bt_electricity_reset
-            unique_id: bt_electricity_reset
+    # Сенсор залипание сенсора отключения спальня
+          - name: br_electricity_reset
+            unique_id: br_electricity_reset
             state: >
              {{ is_state('binary_sensor.0xa4c138084b9d3356', 'off') and
                  is_state('switch.0xa4c1382dc9fecb3e', 'on')  }}
@@ -121,7 +139,7 @@ power_failure:
         #      }}
         #     device_class: problem
 
-    # Сенсор определения отключения электрики 2
+    # Сенсор определения отключения электрики 
 
           - name: electricity
             unique_id: electricity
@@ -130,13 +148,13 @@ power_failure:
                 True
                 {% elif is_state('binary_sensor.lr_electricity', 'on') and is_state('binary_sensor.kn_electricity', 'on') %}
                 True
-                {% elif is_state('binary_sensor.lr_electricity', 'on') and is_state('binary_sensor.bt_electricity', 'on') %}
+                {% elif is_state('binary_sensor.lr_electricity', 'on') and is_state('binary_sensor.br_electricity', 'on') %}
                 True
                 {% elif is_state('binary_sensor.lr2_electricity', 'on') and is_state('binary_sensor.kn_electricity', 'on') %}
                 True
-                {% elif is_state('binary_sensor.lr2_electricity', 'on') and is_state('binary_sensor.bt_electricity', 'on') %}
+                {% elif is_state('binary_sensor.lr2_electricity', 'on') and is_state('binary_sensor.br_electricity', 'on') %}
                 True
-                {% elif is_state('binary_sensor.kn_electricity', 'on') and is_state('binary_sensor.bt_electricity', 'on') %}
+                {% elif is_state('binary_sensor.kn_electricity', 'on') and is_state('binary_sensor.br_electricity', 'on') %}
                 True
                 {% endif %}    
             device_class: problem
@@ -195,6 +213,31 @@ power_failure:
         - delay: 00:00:05
         - service: switch.turn_on
           entity_id: switch.0xa4c138cd1b6a0a9a
+          
+      - alias: electricity_reboot_lr_sensor_2
+        id: electricity_reboot_lr_sensor_2
+        description: Электрика - перезагрузка сенсора 2 в гостиной
+        initial_state: true
+        trigger:
+    # Проверка раз в минуту, перезагрузка если сенсор залип
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Розетка включена а сенсор нет
+        - condition: state
+          entity_id: binary_sensor.lr_electricity_reset_2
+          state: 'on'
+        action:
+    # Перезагрузка по питанию
+        - service: switch.turn_off
+          entity_id: switch.smart_power_strip_44eu_w_socket_3
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.smart_power_strip_44eu_w_socket_3
 
       - alias: electricity_reboot_kn_sensor
         id: electricity_reboot_kn_sensor
@@ -221,9 +264,9 @@ power_failure:
         - service: switch.turn_on
           entity_id: switch.0xa4c138235d1e6877
 
-      - alias: electricity_reboot_bt_sensor
-        id: electricity_reboot_bt_sensor
-        description: Электрика - перезагрузка сенсора в ванной
+      - alias: electricity_reboot_br_sensor
+        id: electricity_reboot_br_sensor
+        description: Электрика - перезагрузка сенсора в спальне
         initial_state: true
         trigger:
     # Проверка раз в минуту, перезагрузка если сенсор залип
@@ -236,7 +279,7 @@ power_failure:
           state: 'on'
     # Розетка включена а сенсор нет
         - condition: state
-          entity_id: binary_sensor.bt_electricity_reset
+          entity_id: binary_sensor.br_electricity_reset
           state: 'on'
         action:
     # Перезагрузка по питанию
@@ -360,9 +403,12 @@ power_failure:
               - !secret chat_id_log
             message: | 
                {{"\U0001F559"}} Отчет за - {{ states('sensor.time_date') }} 
-               {{"\U0001F50B"}} Кухня, Ecoflow 2 Pro 768 Wh текущий заряд - {{ states('sensor.river_2_pro_battery_level') }} %
-               {{"\U0001F50B"}} Гостиная, Ecoflow 2 Max 512 Wh текущий заряд - {{ states('sensor.river_2_max_battery_level') }} %
-               {{"\U0001F50B"}} Гостиная, Ecoflow 2 256 Wh текущий заряд - {{ states('sensor.river_2_battery_level') }} %
+               {{"\U000026A1"}} Кухня
+               {{"\U0001F50B"}} Ecoflow Delta 2 1024 Wh - {{ states('sensor.delta_2_battery_level') }} %
+               {{"\U0001F50B"}} Ecoflow 2 Max 512 Wh - {{ states('sensor.river_2_max_battery_level') }} %
+               {{"\U000026A1"}} Гостиная
+               {{"\U0001F50B"}} Ecoflow 2 Pro 768 Wh - {{ states('sensor.river_2_pro_battery_level') }} %
+               {{"\U0001F50B"}} Ecoflow 2 256 Wh - {{ states('sensor.river_2_battery_level') }} %
                {% set s = (strptime(states("input_datetime.electricity_on"), "%Y-%m-%d %H:%M:%S").timestamp() | int - strptime(states("input_datetime.electricity_off"), "%Y-%m-%d %H:%M:%S").timestamp() | int) %}
                {{"\U0000231B"}} {{ 'Длительность - {:02d}:{:02d}:{:02d}'.format ( s % 86400 // 3600, s % 3600 // 60, s % 60) }}
                
@@ -406,7 +452,7 @@ power_failure:
                          {{"\U0001F50C"}} Гостиная сенсор 1 - {{ states('binary_sensor.lr_electricity') }} 
                          {{"\U0001F50C"}} Гостиная сенсор 2 - {{ states('binary_sensor.lr2_electricity') }} 
                          {{"\U0001F50C"}} Кухня сенсор - {{ states('binary_sensor.kn_electricity') }} 
-                         {{"\U0001F50C"}} Ванная сенсор - {{ states('binary_sensor.bt_electricity') }} 
+                         {{"\U0001F50C"}} Ванная сенсор - {{ states('binary_sensor.br_electricity') }} 
                          
               - conditions:
                   - condition: state
@@ -422,4 +468,4 @@ power_failure:
                          {{"\U0001F50C"}} Гостиная сенсор 1 - {{ states('binary_sensor.lr_electricity') }} 
                          {{"\U0001F50C"}} Гостиная сенсор 2 - {{ states('binary_sensor.lr2_electricity') }} 
                          {{"\U0001F50C"}} Кухня сенсор - {{ states('binary_sensor.kn_electricity') }} 
-                         {{"\U0001F50C"}} Ванная сенсор - {{ states('binary_sensor.bt_electricity') }}
+                         {{"\U0001F50C"}} Ванная сенсор - {{ states('binary_sensor.br_electricity') }}

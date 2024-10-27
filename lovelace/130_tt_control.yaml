@@ -38,11 +38,16 @@ cards:
 
             - type: horizontal-stack
               cards:
-                - type: button
+
+                - type: light
                   name: Туалет люстра
                   entity: light.0x54ef44100096af68
-                  tap_action:
-                    action: toggle
+
+                # - type: button
+                #   name: Туалет люстра
+                #   entity: light.0x54ef44100096af68
+                #   tap_action:
+                #     action: toggle
 
                 - type: button
                   name: Прачечная люстра
@@ -65,72 +70,6 @@ cards:
                   tap_action:
                     action: toggle
 
-            - type: conditional
-              conditions:
-                - entity: light.tt_ceiling_light
-                  state: "on"
-              card:
-                  type: custom:mushroom-light-card
-                  entity: light.tt_ceiling_light
-                  name: Люстра
-                  icon_type: none
-                  primary_info: name
-                  secondary_info: none
-                  use_light_color: true
-                  show_brightness_control: true
-                  show_color_temp_control: true
-                  show_color_control: false
-                  collapsible_controls: true
-
-            - type: horizontal-stack
-              cards:
-
-              - type: custom:mushroom-template-card
-                primary: Доступность
-                secondary: |-
-                  {% if is_state("binary_sensor.tt_light_unavailable", "off") %}
-                  Люстра туалет OK
-                  {% else %}
-                  Люстра туалет не доступна
-                  {% endif %}
-                layout: horizontal
-                entity: binary_sensor.tt_light_unavailable
-                icon: |-
-                  {% if is_state("binary_sensor.tt_light_unavailable", "off") %}
-                  mdi:check-bold
-                  {% else %}
-                  mdi:alert
-                  {% endif %}
-                multiline_secondary: true
-                icon_color: |-
-                  {% if is_state("binary_sensor.tt_light_unavailable", "off") %}
-                  green
-                  {% else %}
-                  red
-                  {% endif %}
-                tap_action:
-                  action: more-info
-
-              - type: custom:mushroom-template-card
-                primary: Люстра туалет питание
-                secondary: |-
-                  {% if is_state("switch.0x00158d00062fbb54_left", "on") %}
-                  Вкл
-                  {% else %}
-                  Выкл
-                  {% endif %}
-                layout: horizontal
-                tap_action:
-                  action: toggle
-                entity: switch.0x00158d00062fbb54_left
-                icon: phu:aqara-h1-switch
-                multiline_secondary: true
-                icon_color: |-
-                  {% if is_state("switch.0x00158d00062fbb54_left", "on") %}
-                  green
-                  {% else %}
-                  red
-                  {% endif %}
             - type: horizontal-stack
               cards:
 
@@ -170,7 +109,7 @@ cards:
                   primary: Фиксация
                   secondary: |-
                     {% if is_state("input_boolean.tt_occupancy", "on") %}
-                    Зафиксровано
+                    Зафиксировано
                     {% else %}
                     Никого нет
                     {% endif %}
@@ -191,6 +130,84 @@ cards:
                     {% else %}
                     grey
                     {% endif %}
+
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Люстра в туалете**
+
+            - type: horizontal-stack
+              cards:
+
+              - type: custom:mushroom-template-card
+                primary: Доступность
+                secondary: |-
+                  {% if is_state("binary_sensor.tt_light_unavailable", "off") %}
+                  OK
+                  {% else %}
+                  Не доступна
+                  {% endif %}
+                layout: horizontal
+                entity: binary_sensor.tt_light_unavailable
+                icon: |-
+                  {% if is_state("binary_sensor.tt_light_unavailable", "off") %}
+                  mdi:check-bold
+                  {% else %}
+                  mdi:alert
+                  {% endif %}
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("binary_sensor.tt_light_unavailable", "off") %}
+                  green
+                  {% else %}
+                  red
+                  {% endif %}
+                tap_action:
+                  action: more-info
+
+              - type: custom:mushroom-template-card
+                primary: Люстра туалет питание
+                secondary: |-
+                  {% if is_state("switch.0x00158d00062fbb54_left", "on") %}
+                  Вкл
+                  {% else %}
+                  Выкл
+                  {% endif %}
+                layout: horizontal
+                tap_action:
+                  action: toggle
+                entity: switch.0x00158d00062fbb54_left
+                icon: phu:aqara-h1-switch
+                multiline_secondary: true
+                icon_color: |-
+                  {% if is_state("switch.0x00158d00062fbb54_left", "on") %}
+                  green
+                  {% else %}
+                  red
+                  {% endif %}
+
+              - type: custom:mushroom-template-card
+                primary: Ручная перезагрузка
+                layout: horizontal
+                entity: input_button.tt_light_reboot
+                icon: mdi:reload
+                multiline_secondary: true
+                icon_color: amber
+                tap_action:
+                  action: call-service
+                  service: input_button.press
+                  target:
+                    entity_id: input_button.tt_light_reboot
                     
             - type: markdown
               content: >
@@ -221,7 +238,67 @@ cards:
             {% else %}
             grey
             {% endif %}
+
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Стиральная машина** 
+
+            - type: horizontal-stack
+              cards:
                   
+                - type: custom:mushroom-template-card
+                  primary: Питание
+                  secondary: |-
+                      {{states ('sensor.0x842e14fffe51c5ae_power')}} Ватт
+                  layout: horizontal
+                  tap_action:
+                    action: toggle
+                  entity: switch.0x842e14fffe51c5ae
+                  icon: mdi:power-standby
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state("switch.0x842e14fffe51c5ae", "on") %}
+                    green
+                    {% else %}
+                    red
+                    {% endif %} 
+
+                - type: custom:mushroom-template-card
+                  primary: Стирка
+                  secondary: |-
+                    {% if is_state("binary_sensor.ln_washing", "on") %}
+                    В процессе
+                    {% else %}
+                    Ожидание
+                    {% endif %}
+                  layout: horizontal
+                  entity: binary_sensor.ln_washing
+                  icon: |-
+                   {% if is_state("binary_sensor.ln_washing", "on") %}
+                    mdi:washing-machine
+                    {% else %}
+                    mdi:washing-machine
+                    {% endif %}
+                  multiline_secondary: true
+                  icon_color: |-
+                    {% if is_state("binary_sensor.ln_washing", "on") %}
+                    green
+                    {% else %}
+                    grey
+                    {% endif %} 
+                  tap_action:
+                    action: more-info
 
 ############################ Колонка 2 ############################
 
@@ -582,70 +659,7 @@ cards:
                 tap_action:
                   action: more-info 
 
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
 
-            - type: markdown
-              style: |
-                   ha-card {
-                     color: #f8ffd8;
-                     --paper-item-icon-color: #f8ffd8;
-                     --paper-item-icon-active-color: #f8ffd8;
-                     font-weight: bold;
-                     font-size: 14px;
-                   } 
-              content: >
-                 **Розетки**
-
-            - type: custom:mushroom-chips-card
-              alignment: start
-              chips:
-
-                - type: template
-                  entity: switch.0x842e14fffe51c5ae
-                  icon: phu:socket-eu
-                  icon_color: |-
-                    {% if is_state("switch.0x842e14fffe51c5ae", "on") %}
-                    green
-                    {% else %}
-                    red
-                    {% endif %}
-                  content: |-
-                    Стиральная машина
-                  tap_action:
-                    action: toggle
-
-                - type: template
-                  entity: sensor.0x842e14fffe51c5ae_power
-                  icon: mdi:lightning-bolt-circle
-                  icon_color: green
-                  content: |-
-                      {{states ('sensor.0x842e14fffe51c5ae_power')}} Ватт
-                  tap_action:
-                    action: more-info
-
-                - type: template
-                  entity: sensor.0x842e14fffe51c5ae_voltage
-                  icon: mdi:sine-wave
-                  icon_color: green
-                  content: |-
-                      {{states ('sensor.0x842e14fffe51c5ae_voltage')}} В
-                  tap_action:
-                    action: more-info
-                    
-                - type: template
-                  entity: sensor.0x842e14fffe51c5ae_energy
-                  icon: mdi:home-lightning-bolt
-                  icon_color: light-green
-                  content: |-
-                      {{states ('sensor.0x842e14fffe51c5ae_energy')}} KВт*ч
-                  tap_action:
-                    action: more-info
-
-            - type: markdown
-              content: >
-                 **     **
 
 ############################ Колонка 3 ############################
 

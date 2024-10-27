@@ -1,15 +1,15 @@
-kn_ecoflow:
+river_2_pro:
 
     homeassistant:
       customize:
 
         sensor.river_2_pro_battery_in_power:
-          friendly_name: Ecoflow River, мощность на батарею
+          friendly_name: Ecoflow River 2 Pro, мощность на батарею
           device_class: power
           unit_of_measurement: W
           
         sensor.river_2_pro_battery_out_power:
-          friendly_name: Ecoflow River, мощность с батареи
+          friendly_name: Ecoflow River 2 Pro, мощность с батареи
           device_class: power
           unit_of_measurement: W
 
@@ -26,6 +26,7 @@ kn_ecoflow:
           - sensor.river_2_pro_battery_out_power
           - sensor.river_2_pro_main_battery_level
           - sensor.river_2_pro_battery_level
+          - sensor.river_2_pro_solar_in_power
           
     template:
 

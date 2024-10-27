@@ -14,6 +14,11 @@ cr_sensor:
     homeassistant:
       customize:
 
+        binary_sensor.0x00158d00010f8920_occupancy:
+          friendly_name: Коридор движение 
+        sensor.0x00158d00010f8920_battery:
+          friendly_name: Коридор движение         
+
         sensor.0x00124b0022659c04_humidity:
           friendly_name:  Коридор, влажность
           icon: mdi:water-percent

@@ -1,0 +1,290 @@
+br_wled_light:
+
+    homeassistant:
+      customize:
+      
+        light.br_wled_round:
+          friendly_name: Спальня wled шнур
+          icon: phu:lightstrip-wrap
+          
+        sensor.0x60a423fffe942cf2_action:
+          friendly_name: Спальня пульт Loratap
+        sensor.0x60a423fffe942cf2_battery:
+          friendly_name: Спальня пульт Loratap
+
+    input_button:
+        
+      br_gradient_wled:
+        name: Спальная шнур
+
+
+    template:
+
+      - binary_sensor:
+
+          - name: br_gradient_wled_on
+            unique_id: br_gradient_wled_on
+            state: >
+                {{ state_attr('light.br_wled_round', 'effect') == 'Percent' and
+                   state_attr('light.br_wled_round', 'brightness') == 255 and 
+                   states('number.br_wled_round_intensity')|int == 100 }}
+            device_class: light
+          
+    automation:
+
+      - alias: br_gradient_wled_on
+        id: br_gradient_wled_on
+        description: Спальня градиентное включение адресной ленты
+        initial_state: true
+        trigger:
+    ## Virtual button
+        - platform: state
+          entity_id: input_button.br_gradient_wled
+    # Пульт Loratap
+        - platform: state
+          entity_id: sensor.0x60a423fffe942cf2_action
+          to: '1_single' 
+    # Выключатель на входе
+        - platform: state
+          entity_id: sensor.0x54ef44100024689c_action
+          to: 'single_left'
+    # Выключатель возле кровати
+        - platform: state
+          entity_id: sensor.0x00158d0003d50723_action
+          to: 'right'
+        condition:
+        - condition: state
+          entity_id: binary_sensor.br_gradient_wled_on
+          state: 'off'
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: light.turn_on
+          entity_id: light.br_wled_round
+          data:
+            effect: Solid
+            rgb_color: [0, 0, 0]
+        - service: light.turn_on
+          entity_id: light.br_wled_round
+          data:
+            effect: Percent
+            brightness_pct: 100
+            rgb_color: [255, 255, 255]
+        - service: select.select_option
+          data:
+            option: Default
+          target:
+            entity_id: select.br_wled_round_color_palette
+        - service: number.set_value
+          target:
+            entity_id: number.br_wled_round_intensity
+          data:
+            value: 5
+        - service: script.turn_on
+          entity_id: script.br_gradient_wled_on
+
+      - alias: br_gradient_wled_off
+        id: br_gradient_wled_off
+        description: Спальня градиентное выключение адресной ленты
+        initial_state: true
+        trigger:
+    ## Virtual button
+        - platform: state
+          entity_id: input_button.br_gradient_wled
+    # Пульт Loratap
+        - platform: state
+          entity_id: sensor.0x60a423fffe942cf2_action
+          to: '1_single' 
+    # Выключатель на входе
+        - platform: state
+          entity_id: sensor.0x54ef44100024689c_action
+          to: 'single_left'
+    # Выключатель возле кровати
+        - platform: state
+          entity_id: sensor.0x00158d0003d50723_action
+          to: 'right'
+        condition:
+        - condition: state
+          entity_id: binary_sensor.br_gradient_wled_on
+          state: 'on'
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: script.turn_on
+          entity_id: script.br_gradient_wled_off
+
+      - alias: br_wled_round_effects
+        id: br_wled_round_effects
+        description: Спальня WLED - эффекты адресной ленты
+        initial_state: true          
+        trigger:
+    # Пульт Loratap кнопка 1, 2 нажатия
+        - platform: state
+          entity_id: sensor.0x60a423fffe942cf2_action
+          to: '1_double'
+          id: lr_loratap_button_1_2
+    # Пульт Loratap кнопка 2, 1 нажатие
+        - platform: state
+          entity_id: sensor.0x60a423fffe942cf2_action
+          to: '2_single'
+          id: lr_loratap_button_2_1
+    # Пульт Loratap кнопка 2, 2 нажатия
+        - platform: state
+          entity_id: sensor.0x60a423fffe942cf2_action
+          to: '2_double'
+          id: lr_loratap_button_2_2
+    # Пульт Loratap кнопка 3, 1 нажатие
+        - platform: state
+          entity_id: sensor.0x60a423fffe942cf2_action
+          to: '3_single'
+          id: lr_loratap_button_3_1
+    # Пульт Loratap кнопка 3, 2 нажатия
+        - platform: state
+          entity_id: sensor.0x60a423fffe942cf2_action
+          to: '3_double'
+          id: lr_loratap_button_3_2
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: trigger
+                    id: lr_loratap_button_1_2
+                sequence:
+                  - service: light.turn_off
+                    entity_id: light.br_wled_round
+              - conditions:
+                  - condition: trigger
+                    id: lr_loratap_button_2_1
+                sequence:
+                  - service: light.turn_on
+                    entity_id: light.br_wled_round
+                    data:
+                      effect: Gravimeter
+                      brightness_pct: 30
+                  - service: select.select_option
+                    data:
+                      option: Tiamat
+                    target:
+                      entity_id: select.br_wled_round_color_palette
+                  - service: number.set_value
+                    target:
+                      entity_id: number.br_wled_round_speed
+                    data:
+                      value: 28
+                  - service: number.set_value
+                    target:
+                      entity_id: number.br_wled_round_intensity
+                    data:
+                      value: 193
+              - conditions:
+                  - condition: trigger
+                    id: lr_loratap_button_2_2
+                sequence:
+                  - service: light.turn_on
+                    entity_id: light.br_wled_round
+                    data:
+                      effect: Scanner Dual
+                      brightness_pct: 30
+                  - service: select.select_option
+                    data:
+                      option: Party
+                    target:
+                      entity_id: select.br_wled_round_color_palette
+                  - service: number.set_value
+                    target:
+                      entity_id: number.br_wled_round_speed
+                    data:
+                      value: 35
+                  - service: number.set_value
+                    target:
+                      entity_id: number.br_wled_round_intensity
+                    data:
+                      value: 65
+              - conditions:
+                  - condition: trigger
+                    id: lr_loratap_button_3_1
+                sequence:
+                  - service: light.turn_on
+                    entity_id: light.br_wled_round
+                    data:
+                      effect: Flow
+                      brightness_pct: 30
+                  - service: select.select_option
+                    data:
+                      option: Magenta
+                    target:
+                      entity_id: select.br_wled_round_color_palette
+                  - service: number.set_value
+                    target:
+                      entity_id: number.br_wled_round_speed
+                    data:
+                      value: 96
+                  - service: number.set_value
+                    target:
+                      entity_id: number.br_wled_round_intensity
+                    data:
+                      value: 0
+              - conditions:
+                  - condition: trigger
+                    id: lr_loratap_button_3_2
+                sequence:
+                  - service: light.turn_on
+                    entity_id: light.br_wled_round
+                    data:
+                      effect: Saw
+                      brightness_pct: 100
+                  - service: select.select_option
+                    data:
+                      option: Hult
+                    target:
+                      entity_id: select.br_wled_round_color_palette
+                  - service: number.set_value
+                    target:
+                      entity_id: number.br_wled_round_speed
+                    data:
+                      value: 50
+                  - service: number.set_value
+                    target:
+                      entity_id: number.br_wled_round_intensity
+                    data:
+                      value: 30 
+                      
+    script:
+    
+      br_gradient_wled_on:
+        alias: br_gradient_wled_on
+        sequence:
+            repeat:
+              count: 19
+              sequence:
+              - service: light.turn_on
+                entity_id: light.br_wled_round
+                data:
+                  brightness_step_pct: 10
+              - service: number.set_value
+                target:
+                  entity_id: number.br_wled_round_intensity
+                data:
+                  value: "{{ states('number.br_wled_round_intensity') |int + 5 }}"
+
+                  
+      br_gradient_wled_off:
+        alias: br_gradient_wled_off
+        sequence:
+            repeat:
+              count: 20
+              sequence:
+              - service: light.turn_on
+                entity_id: light.br_wled_round
+                data:
+                  brightness_step_pct: -5
+              - service: number.set_value
+                target:
+                  entity_id: number.br_wled_round_intensity
+                data:
+                  value: "{{ states('number.br_wled_round_intensity') |int - 5 }}"

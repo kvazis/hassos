@@ -1,0 +1,110 @@
+br_sensors:
+
+    recorder:
+      include:
+        entities:
+           - sensor.0x00158d000156e92e_temperature
+           - sensor.0x00158d000156e92e_humidity
+
+           - sensor.0x00158d0001fa8321_temperature
+           - sensor.0x00158d0001fa8321_humidity
+           - sensor.0x00158d0001fa8321_pressure
+           
+           - binary_sensor.0x00158d0001a66222_occupancy
+           - binary_sensor.0xec1bbdfffe4521a3_occupancy
+
+    homeassistant:
+      customize:
+
+############# Комната
+        
+        binary_sensor.br_aeration:
+          friendly_name: Спальня проветривание
+
+        binary_sensor.0x00158d0001a66222_occupancy:
+          friendly_name: Спальня движение
+        sensor.0x00158d0001a66222_illuminance_lux:
+          friendly_name: Спальня освещенность
+        sensor.0x00158d0001a66222_battery:
+          friendly_name: Спальня движение
+
+
+        binary_sensor.0x00158d0001193697_contact:
+          friendly_name: Спальня окно
+          device_class: window
+        sensor.0x00158d0001193697_battery:
+          friendly_name: Спальня окно
+
+        sensor.0x00158d000156e92e_humidity:
+          friendly_name: Спальня влажность
+          icon: mdi:water-percent
+        sensor.0x00158d000156e92e_temperature:
+          friendly_name: Спальня температура
+          icon: mdi:temperature-celsius
+        sensor.0x00158d000156e92e_battery:
+          friendly_name: Спальня климат
+          
+############# Балкон
+
+        binary_sensor.0x00158d00015843d4_contact:
+          friendly_name: Спальня балкон дверь
+          device_class: door
+        sensor.0x00158d00015843d4_battery:
+          friendly_name: Спальня балкон дверь
+
+        binary_sensor.0x00158d0001a65b68_contact:
+          friendly_name: Спальня балкон окно 1
+          device_class: window
+        sensor.0x00158d0001a65b68_battery:
+          friendly_name: Спальня балкон окно 1
+          
+        binary_sensor.0xec1bbdfffe3a653e_contact:
+          friendly_name: Спальня балкон окно 2
+          device_class: window
+        sensor.0xec1bbdfffe3a653e_battery:
+          friendly_name: Спальня балкон окно 2
+          
+        sensor.0x00158d0001fa8321_humidity:
+          friendly_name: Спальня балкон влажность
+          icon: mdi:water-percent
+        sensor.0x00158d0001fa8321_temperature:
+          friendly_name: Спальня балкон температура
+          icon: mdi:temperature-celsius
+        sensor.0x00158d0001fa8321_pressure:
+          friendly_name: Спальня балкон давление
+          device_class: pressure
+        sensor.0x00158d0001fa8321_battery:
+          friendly_name: Спальня балкон климат
+          
+        binary_sensor.0xec1bbdfffe4521a3_occupancy:
+          friendly_name: Спальня балкон движение
+        sensor.0xec1bbdfffe4521a3_battery:
+          friendly_name: Спальня движение   
+          
+    template:
+     
+      - binary_sensor:
+
+          - name: br_aeration
+            unique_id: br_aeration
+            state: >
+              {{ is_state('binary_sensor.0x00158d0001193697_contact', 'on')  
+                 or is_state('binary_sensor.0x00158d00015843d4_contact', 'on')
+              }}
+            delay_on: 
+                seconds: 30
+            device_class: opening
+            icon: >
+              {% if is_state("binary_sensor.br_aeration", "on") %}
+              mdi:window-open-variant
+              {% else %}
+              mdi:window-closed-variant
+              {% endif %}
+          
+          
+          
+          
+          
+          
+          
+          

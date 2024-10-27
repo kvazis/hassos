@@ -399,7 +399,19 @@ cards:
 
     - type: vertical-stack
       cards:
-      
+
+        - type: markdown
+          style: |
+              ha-card {
+                color: #f8ffd8;
+                --paper-item-icon-color: #f8ffd8;
+                --paper-item-icon-active-color: #f8ffd8;
+                font-weight: bold;
+                font-size: 26px;
+              }          
+          content: >
+             **Бойлер**
+
         - type: custom:stack-in-card
           mode: vertical
           cards:
@@ -686,7 +698,7 @@ cards:
                 font-size: 26px;
               }          
           content: >
-             **Беспроводные устройства**
+             **Телеметрия**
              
         - type: entities
           show_header_toggle: false

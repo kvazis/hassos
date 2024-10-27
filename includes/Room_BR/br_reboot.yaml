@@ -1,0 +1,87 @@
+br_reboot:
+
+
+    homeassistant:
+      customize:
+
+        automation.br_reboot_ceiling:
+          friendly_name: Спальня - перезагрузка зависшей люстры
+          icon: phu:ceiling-being
+          
+    template:
+
+      - binary_sensor:
+      
+    # Сенсор определяющий недоступность люстры
+          - name: br_ceiling_unavailable
+            unique_id: br_ceiling_unavailable
+            state: >
+              {{ is_state('light.br_philips_62', 'unavailable') }}
+            delay_on: 
+                minutes: 3
+            device_class: problem
+            
+    input_button:
+
+      br_ceiling_reset:
+        name: BR ceiling reboot
+        
+    automation:
+    
+#################### ПЕРЕЗАГРУЗКА ЛЮСТРЫ ####################
+               
+      - alias: br_reboot_ceiling
+        id: br_reboot_ceiling
+        description: Спальня - перезагрузка зависшей люстры
+        initial_state: true
+        trigger:
+    # Проверка раз в 5 минут
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор определяющий недоступность люстры
+        - condition: state
+          entity_id: binary_sensor.br_ceiling_unavailable
+          state: 'on'
+    # Сенсор электричества
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off'  
+        action:
+     # Перезагрузка по питанию если люстра недоступна
+        - service: switch.turn_off
+          entity_id: switch.0x54ef44100024689c_right
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0x54ef44100024689c_right
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_log
+            message: | 
+                 {{"\U0001F916"}} Антонио. Спальня - перезагрузка люстры {{ states('sensor.time_date') }} 
+                 
+      - alias: br_reboot_ceiling_manual
+        id: br_reboot_ceiling_manual
+        description: Спальня - ручная перезагрузка зависшей люстры
+        trigger:
+    ## Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.br_ceiling_reset
+        action: 
+     # Перезагрузка по питанию если люстра недоступна
+        - service: switch.turn_off
+          entity_id: switch.0x54ef44100024689c_right
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0x54ef44100024689c_right
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_log
+            message: | 
+                 {{"\U0001F916"}} Антонио. Спальня - перезагрузка люстры {{ states('sensor.time_date') }}    

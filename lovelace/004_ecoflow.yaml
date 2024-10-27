@@ -1,0 +1,311 @@
+############################ Питание ############################
+title: Ecoflow
+icon: phu:solar-battery-10
+cards:
+
+############################ Колонка 1 ############################
+    - type: vertical-stack
+      cards:
+      
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                  ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                  } 
+              content: >
+                 **Ecoflow Delta 2 1024 Wh** 
+
+            - type: entities
+              entities:
+              - entity: switch.delta_2_ac_enabled
+              - entity: switch.delta_2_dc_12v_enabled
+              - type: divider
+              - entity: sensor.delta_2_ac_in_volts
+              - entity: sensor.delta_2_ac_out_volts
+              - type: divider
+              - entity: number.delta_2_ac_charging_power              
+              - entity: number.delta_2_max_charge_level
+              - entity: number.delta_2_min_discharge_level
+              - type: divider 
+              - entity: sensor.delta_2_battery_level
+              - type: divider 
+              - entity: sensor.delta_2_state_of_health
+              - entity: sensor.delta_2_cycles
+              
+            - type: custom:power-flow-card-plus
+              clickable_entities: true
+              entities:
+                grid:
+                  entity: sensor.delta_2_ac_in_power
+                  power_outage:
+                    entity: binary_sensor.electricity
+                    state_alert: "on"
+                    display_state: one_way
+                    color_circle: true
+                solar:
+                  entity: sensor.delta_2_solar_in_power
+                battery:
+                  entity:
+                    consumption: sensor.delta_2_battery_out_power
+                    production: sensor.delta_2_battery_in_power
+                  state_of_charge: sensor.delta_2_battery_level
+                  display_state: one_way
+                  color_circle: true
+                home:
+                  entity: sensor.delta_2_total_out_power
+                  override_state: true
+                individual:
+                - entity: sensor.delta_2_ac_out_power
+                  name: AC out
+                  icon: mdi:power-socket-eu
+                  display_zero: true
+                - entity: sensor.delta_2_usb_out_power
+                  name: USB A out
+                  icon: mdi:usb-port
+                  display_zero: true
+                - entity: sensor.delta_2_type_c_out_power
+                  name: USB C out
+                  icon: mdi:usb-c-port
+                  display_zero: true
+                - entity: sensor.delta_2_dc_out_power
+                  name: DC out
+                  icon: mdi:current-dc
+                  display_zero: true 
+
+############################ Колонка 2 ############################
+
+    - type: vertical-stack
+      cards:
+      
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
+              content: >
+                 **Ecoflow River 2 Pro 768 Wh** 
+
+            - type: entities
+              entities:
+              - entity: switch.river_2_pro_ac_enabled
+              - entity: switch.river_2_pro_dc_12v_enabled
+              - type: divider
+              - entity: sensor.river_2_pro_ac_in_volts
+              - entity: sensor.river_2_pro_ac_out_volts
+              - type: divider
+              - entity: number.river_2_pro_ac_charging_power              
+              - entity: number.river_2_pro_max_charge_level
+              - entity: number.river_2_pro_min_discharge_level
+              - type: divider 
+              - entity: sensor.river_2_pro_battery_level
+              - type: divider 
+              - entity: sensor.river_2_pro_state_of_health
+              - entity: sensor.river_2_pro_cycles
+    
+            - type: custom:power-flow-card-plus
+              clickable_entities: true
+              entities:
+                grid:
+                  entity: sensor.river_2_pro_ac_in_power
+                  power_outage:
+                    entity: binary_sensor.electricity
+                    state_alert: "on"
+                    display_state: one_way
+                    color_circle: true
+                solar:
+                  entity: sensor.river_2_pro_solar_in_power
+                battery:
+                  entity:
+                    consumption: sensor.river_2_pro_battery_out_power
+                    production: sensor.river_2_pro_battery_in_power
+                  state_of_charge: sensor.river_2_pro_battery_level
+                  display_state: one_way
+                  color_circle: true
+                home:
+                  entity: sensor.river_2_pro_total_out_power
+                  override_state: true
+                individual:
+                - entity: sensor.river_2_pro_ac_out_power
+                  name: AC out
+                  icon: mdi:power-socket-eu
+                  display_zero: true
+                - entity: sensor.river_2_pro_usb_out_power
+                  name: USB A out
+                  icon: mdi:usb-port
+                  display_zero: true
+                - entity: sensor.river_2_pro_type_c_out_power
+                  name: USB C out
+                  icon: mdi:usb-c-port
+                  display_zero: true
+                - entity: sensor.river_2_pro_dc_out_power
+                  name: DC out
+                  icon: mdi:current-dc
+                  display_zero: true
+
+############################ Колонка 3 ############################
+    - type: vertical-stack
+      cards:      
+      
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                  ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                  } 
+              content: >
+                 **Ecoflow River 2 Max 512 Wh** 
+
+            - type: entities
+              entities:
+              - entity: switch.river_2_max_ac_enabled
+              - entity: switch.river_2_max_dc_12v_enabled
+              - type: divider
+              - entity: sensor.river_2_max_ac_in_volts
+              - entity: sensor.river_2_max_ac_out_volts
+              - type: divider
+              - entity: number.river_2_max_ac_charging_power              
+              - entity: number.river_2_max_max_charge_level
+              - entity: number.river_2_max_min_discharge_level
+              - type: divider 
+              - entity: sensor.river_2_max_battery_level
+              - type: divider 
+              - entity: sensor.river_2_max_state_of_health
+              - entity: sensor.river_2_max_cycles
+
+            - type: custom:power-flow-card-plus
+              clickable_entities: true
+              entities:
+                grid:
+                  entity: sensor.river_2_max_ac_in_power
+                  power_outage:
+                    entity: binary_sensor.electricity
+                    state_alert: "on"
+                    display_state: one_way
+                    color_circle: true
+                solar:
+                  entity: sensor.river_2_max_solar_in_power
+                battery:
+                  entity:
+                    consumption: sensor.river_2_max_battery_out_power
+                    production: sensor.river_2_max_battery_in_power
+                  state_of_charge: sensor.river_2_max_battery_level
+                  display_state: one_way
+                  color_circle: true
+                home:
+                  entity: sensor.river_2_max_total_out_power
+                  override_state: true
+                individual:
+                - entity: sensor.river_2_max_ac_out_power
+                  name: AC out
+                  icon: mdi:power-socket-eu
+                  display_zero: true
+                - entity: sensor.river_2_max_usb_out_power
+                  name: USB A out
+                  icon: mdi:usb-port
+                  display_zero: true
+                - entity: sensor.river_2_max_type_c_out_power
+                  name: USB C out
+                  icon: mdi:usb-c-port
+                  display_zero: true
+                - entity: sensor.river_2_max_dc_out_power
+                  name: DC out
+                  icon: mdi:current-dc
+                  display_zero: true      
+      
+      
+
+############################ Колонка 3 ############################
+    - type: vertical-stack
+      cards: 
+      
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:  
+            - type: markdown
+              style: |
+                  ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                  } 
+              content: >
+                 **Ecoflow River 2 256 Wh** 
+
+            - type: entities
+              entities:
+              - entity: switch.river_2_ac_enabled
+              - entity: switch.river_2_dc_12v_enabled
+              - type: divider
+              - entity: sensor.river_2_ac_in_volts
+              - entity: sensor.river_2_ac_out_volts
+              - type: divider
+              - entity: number.river_2_ac_charging_power              
+              - entity: number.river_2_max_charge_level
+              - entity: number.river_2_min_discharge_level
+              - type: divider 
+              - entity: sensor.river_2_battery_level
+              - type: divider 
+              - entity: sensor.river_2_state_of_health
+              - entity: sensor.river_2_cycles
+    
+            - type: custom:power-flow-card-plus
+              clickable_entities: true
+              entities:
+                grid:
+                  entity: sensor.river_2_ac_in_power
+                  power_outage:
+                    entity: binary_sensor.electricity
+                    state_alert: "on"
+                    display_state: one_way
+                    color_circle: true
+                solar:
+                  entity: sensor.river_2_solar_in_power
+                battery:
+                  entity:
+                    consumption: sensor.river_2_battery_out_power
+                    production: sensor.river_2_battery_in_power
+                  state_of_charge: sensor.river_2_battery_level
+                  display_state: one_way
+                  color_circle: true
+                home:
+                  entity: sensor.river_2_total_out_power
+                  override_state: true
+                individual:
+                - entity: sensor.river_2_ac_out_power
+                  name: AC out
+                  icon: mdi:power-socket-eu
+                  display_zero: true
+                - entity: sensor.river_2_usb_out_power
+                  name: USB A out
+                  icon: mdi:usb-port
+                  display_zero: true
+                - entity: sensor.river_2_type_c_out_power
+                  name: USB C out
+                  icon: mdi:usb-c-port
+                  display_zero: true
+                - entity: sensor.river_2_dc_out_power
+                  name: DC out
+                  icon: mdi:current-dc
+                  display_zero: true 

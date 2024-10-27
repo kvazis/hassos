@@ -1,0 +1,12 @@
+br_switch:
+
+    recorder:
+      include:
+        entities:
+           - switch.0xa4c1382dc9fecb3e
+
+    homeassistant:
+      customize:
+
+        switch.0xa4c1382dc9fecb3e:
+          friendly_name: Датчик электрики в спальной, питание

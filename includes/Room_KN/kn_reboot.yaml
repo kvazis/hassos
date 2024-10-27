@@ -69,10 +69,12 @@ kn_reboot:
           entity_id: binary_sensor.blackout_after
           state: 'off'  
         action:
-        - service: input_button.press
-          target:
-             entity_id: input_button.kn_ceiling_reset
-          data: {}
+     # Перезагрузка по питанию если люстра недоступна
+        - service: switch.turn_off
+          entity_id: switch.0x54ef4410000f4741_right
+        - delay: 00:00:05
+        - service: switch.turn_on
+          entity_id: switch.0x54ef4410000f4741_right
         - service: telegram_bot.send_message
           data_template:
             target:
@@ -84,6 +86,7 @@ kn_reboot:
       - alias: kn_reboot_ceiling_manual
         id: kn_reboot_ceiling_manual
         description: Кухня - ручная перезагрузка зависшей люстры
+        initial_state: true
         trigger:
     ## Виртуальная кнопка
         - platform: state
@@ -100,7 +103,7 @@ kn_reboot:
             target:
                 - !secret chat_id_log
             message: | 
-                 {{"\U0001F916"}} Антонио. Кухня -  перезагрузка люстры {{ states('sensor.time_date') }}        
+                 {{"\U0001F916"}} Антонио. Кухня -  перезагрузка люстры {{ states('sensor.time_date') }}     
         
         
         

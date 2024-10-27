@@ -34,6 +34,7 @@ cards:
                    } 
               content: >
                  **Датчики и сенсоры**
+                 
             - type: horizontal-stack
               cards:
               
@@ -89,6 +90,9 @@ cards:
                 tap_action:
                   action: more-info
 
+            - type: horizontal-stack
+              cards:
+
               - type: custom:mushroom-template-card
                 primary: Дверь на балкон
                 secondary: |-
@@ -141,8 +145,60 @@ cards:
                 tap_action:
                   action: more-info
                   
-                  
-############################ Колонка 3 ############################
+            - type: horizontal-stack
+              cards:
+
+              - type: custom:mushroom-template-card
+                primary: Температура
+                secondary: |-
+                      {{states ('sensor.0x00158d0001581109_temperature')}} С°
+                layout: vertical
+                entity: sensor.0x00158d0001581109_temperature
+                icon_color: |-
+                  {% if states("sensor.0x00158d0001581109_temperature")|float <= -10 %}
+                  indigo
+                  {% elif states("sensor.0x00158d0001581109_temperature")|float <= 0 %}
+                  blue
+                  {% elif states("sensor.0x00158d0001581109_temperature")|float <= 10 %}
+                  light-blue
+                  {% elif states("sensor.0x00158d0001581109_temperature")|float <= 20 %}
+                  cyan
+                  {% elif states("sensor.0x00158d0001581109_temperature")|float <= 25 %}
+                  yellow
+                  {% elif states("sensor.0x00158d0001581109_temperature")|float <= 30 %}
+                  amber
+                  {% elif states("sensor.0x00158d0001581109_temperature")|float <= 40 %}
+                  orange
+                  {% endif %}
+                icon: mdi:temperature-celsius
+                tap_action:
+                  action: more-info
+
+              - type: custom:mushroom-template-card
+                primary: Влажность
+                secondary: |-
+                      {{states ('sensor.0x00158d0001581109_humidity')}} %
+                layout: vertical
+                entity: sensor.0x00158d0001581109_humidity
+                icon_color: |-
+                  {% if states("sensor.0x00158d0001581109_humidity")|float <= 30 %}
+                  deep-orange
+                  {% elif states("sensor.0x00158d0001581109_humidity")|float <= 40 %}
+                  yellow
+                  {% elif states("sensor.0x00158d0001581109_humidity")|float <= 50 %}
+                  light-blue
+                  {% elif states("sensor.0x00158d0001581109_humidity")|float <= 60 %}
+                  blue
+                  {% elif states("sensor.0x00158d0001581109_humidity")|float > 60 %}
+                  indigo
+                  {% endif %}
+                icon: mdi:water-percent
+                tap_action:
+                  action: more-info 
+
+
+############################ Колонка 2 ############################
+
 
     - type: vertical-stack
       cards:
@@ -270,11 +326,34 @@ cards:
                 tap_action:
                   action: more-info
                   
-                  
             - type: entities
+              style: |
+                   ha-card {
+                     color: #f8ffd8;
+                     --paper-item-icon-color: #f8ffd8;
+                     --paper-item-icon-active-color: #f8ffd8;
+                     font-weight: bold;
+                     font-size: 14px;
+                   } 
               show_header_toggle: false
               entities:
-              - entity: switch.kn_thermostat_mode
+              - type: divider
+              - entity: number.0x2c1165fffeb3e531_comfort_temperature
+                name: Целевая температура
+              - type: divider
+              - entity: number.0x2c1165fffeb3e531_open_window_temperature
+                name: Температура проветривания
+              - type: divider
+              - entity: number.0x2c1165fffeb3e531_eco_temperature
+                name: Ночная температура
+              - type: divider
+              - entity: binary_sensor.0x2c1165fffeb3e531_battery_low
+                type: custom:multiple-entity-row
+                state_header: Батарейка
+                entities:
+                  - attribute: last_seen
+                    format: relative
+                    name: Отклик
 
 
 ############################ Колонка 3 ############################

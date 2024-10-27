@@ -5,7 +5,7 @@ lr_light:
 
         light.yeelight_ceiling4_0x49c726b:
           friendly_name: Гостиная люстра 1
-          icon: phu:ceiling-adore-alt-flush
+          icon: phu:yeelight-ceiling
           
         light.yeelight_ceiling4_0x49c726b_ambilight:
           friendly_name: Гостиная амбилайт люстра 1 
@@ -13,7 +13,7 @@ lr_light:
           
         light.yeelight_ceiling4_0x4a1dacd:
           friendly_name: Гостиная люстра 2
-          icon: phu:ceiling-adore-alt-flush
+          icon: phu:yeelight-ceiling
           
         light.yeelight_ceiling4_0x4a1dacd_ambilight:
           friendly_name: Гостиная амбилайт люстра 2 
@@ -33,16 +33,24 @@ lr_light:
           
         light.lr_bedside_lamp:
           friendly_name: Гостиная прикроватник
-          icon: phu:bollard
+          icon: phu:lamp-bedside-table
 
-        light.0xa4c138b72a314e97:
+        light.gateway_light_34ce0088b039:
+          friendly_name: Гостиная шлюз
+          icon: phu:aqara-hub-n15-g2
+
+        light.0xa4c13826d6a56255:
           friendly_name: Гостиная ТВ подсветка
           icon: phu:lightstrip-tv-alt
           
         light.0xa4c138da30166b8f:
           friendly_name: Гостиная автономный свет
-          icon: phu:light-strip
+          icon: phu:lightstrip-wrap
 
+        light.0xa4c13812b94c8365:
+          friendly_name: Гостиная балкон
+          icon: phu:ceiling-adore-alt-flush
+          
     template:
 
       - binary_sensor:
@@ -51,16 +59,15 @@ lr_light:
           - name: lr_mode_auto_light_day_on
             unique_id: lr_mode_auto_light_day_on
             state: >
-              {{ is_state('binary_sensor.night_time', 'off') and
-                 is_state('light.yeelight_lamp1_0x32a4ab4', 'off') and
+              {{ is_state('light.yeelight_lamp1_0x32a4ab4', 'off') and
                  is_state('light.yeelight_ceiling4_0x49c726b', 'off') and                 
                  is_state('light.yeelight_ceiling4_0x49c726b_ambilight', 'off') and
                  is_state('light.yeelight_ceiling4_0x4a1dacd', 'off') and
                  is_state('light.yeelight_ceiling4_0x4a1dacd_ambilight', 'off') and
                  is_state('light.0x54ef4410008e96fd_bottom', 'off') and
-                 is_state('light.lr_bedside_lamp', 'off') and
-                 is_state('light.0xa4c138b72a314e97', 'off') and
-                 is_state('light.hdmi_tv_lighting_65', 'off') and
+                 is_state('light.0xa4c13826d6a56255', 'off') and
+                 is_state('light.0xa4c138da30166b8f', 'off') and
+                 is_state('binary_sensor.lr_tv_work', 'off') and
                  states('sensor.0x04cf8cdf3c7cf19e_illuminance_lux')|int < 30 }}
 
      # Все светильники без ambilight
@@ -68,10 +75,10 @@ lr_light:
             unique_id: lr_lights_no_ambi
             state: >
               {{ is_state('light.yeelight_lamp1_0x32a4ab4', 'off') and
-                 is_state('light.yeelight_ceiling4_0x49c726b', 'off') and                 
+                 is_state('light.yeelight_ceiling4_0x49c726b', 'off') and
                  is_state('light.yeelight_ceiling4_0x4a1dacd', 'off') and
                  is_state('light.0x54ef4410008e96fd_bottom', 'off') and
-                 is_state('light.0xa4c138b72a314e97', 'off') and
+                 is_state('light.0xa4c13826d6a56255', 'off') and
                  is_state('light.lr_bedside_lamp', 'off') and
                  is_state('binary_sensor.lr_light_tv_cinema', 'off') }}
 
@@ -464,14 +471,14 @@ lr_light:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # ТВ подсветка
-        - condition: state
-          entity_id: light.0xa4c138b72a314e97
-          state: 'off'
     # Телевизор
         - condition: state
           entity_id: binary_sensor.lr_tv_work
           state: 'off'
+    # Лента за телевизором
+        - condition: state
+          entity_id: light.0xa4c13826d6a56255
+          state: 'off'          
         action:
         - service: light.turn_off
           entity_id:
@@ -484,7 +491,7 @@ lr_light:
       - alias: lr_light_philips_on_off
         id: lr_light_philips_on_off
         description: Гостиная - управление прикроватником
-        initial_state: true
+        initial_state: false
         trigger:
     ## 5 кнопка Aqara Opple
         - platform: state
@@ -555,14 +562,16 @@ lr_light:
             - light.0x54ef4410008e96fd_bottom
         - service: light.turn_on
           entity_id:
-            - light.lr_bedside_lamp
+            - light.yeelight_ceiling4_0x49c726b_ambilight
+            - light.yeelight_ceiling4_0x4a1dacd_ambilight
           data_template:
-            brightness_pct: 100
+            brightness_pct: 75
             kelvin: 4000
         - delay: 00:00:15
         - service: light.turn_off
           entity_id:
-            - light.lr_bedside_lamp
+            - light.yeelight_ceiling4_0x49c726b_ambilight
+            - light.yeelight_ceiling4_0x4a1dacd_ambilight
           
 #################### ГОСТИНАЯ БАЛКОН ####################          
           

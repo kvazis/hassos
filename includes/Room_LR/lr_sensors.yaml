@@ -5,9 +5,16 @@ lr_sensors:
         entities:
            - binary_sensor.0x00158d0005414857_occupancy
            - sensor.0x04cf8cdf3c7cf19e_illuminance_lux
+
            - binary_sensor.0x00158d000449b773_occupancy
            - sensor.0x00158d000449b773_illuminance_lux
 
+           - sensor.0x00158d00015aebb6_temperature
+           - sensor.0x00158d00015aebb6_humidity
+
+           - sensor.0xec1bbdfffe4534c0_humidity
+           - sensor.0xec1bbdfffe4534c0_temperature
+           
     homeassistant:
       customize:
 
@@ -30,3 +37,100 @@ lr_sensors:
           friendly_name: Гостиная балкон освещенность
         sensor.0x00158d000449b773_battery:
           friendly_name: Гостиная балкон движение 
+          
+        sensor.0x00158d00015aebb6_humidity:
+          friendly_name: Гостиная влажность
+          icon: mdi:water-percent
+        sensor.0x00158d00015aebb6_temperature:
+          friendly_name: Гостиная температура
+          icon: mdi:temperature-celsius
+        sensor.0x00158d00015aebb6_battery:
+          friendly_name: Гостиная климат
+          
+        sensor.0xec1bbdfffe4534c0_humidity:
+          friendly_name: Гостиная балкон влажность
+          icon: mdi:water-percent
+        sensor.0xec1bbdfffe4534c0_temperature:
+          friendly_name: Гостиная балкон температура
+          icon: mdi:temperature-celsius
+        sensor.0xec1bbdfffe4534c0_battery:
+          friendly_name: Гостиная балкон климат
+
+        binary_sensor.0x00158d00013ed373_contact:
+          friendly_name: Гостиная окно справа
+          device_class: window
+        sensor.0x00158d00013ed373_battery:
+          friendly_name: Гостиная окно
+
+        binary_sensor.0xec1bbdfffedf6a6a_contact:
+          friendly_name: Гостиная окно слева
+          device_class: window
+
+        binary_sensor.0x00158d000445206b_contact:
+          friendly_name: Гостиная дверь на балкон
+          device_class: door
+        sensor.0x00158d000445206b_battery:
+          friendly_name: Гостиная дверь на балкон          
+
+        binary_sensor.0x00158d0001a2f5f7_contact:
+          friendly_name: Гостиная окно на балконе
+          device_class: window
+        sensor.0x00158d0001a2f5f7_battery:
+          friendly_name: Гостиная окно на балконе
+          
+    mqtt:
+      binary_sensor:
+        - name: lr_radiator
+          unique_id: lr_thermostat
+          state_topic: "states/lr_radiator"
+        
+    switch:
+
+      - platform: template
+        switches:
+          lr_radiator_mode:
+            unique_id: lr_radiator_mode
+            friendly_name: "Режим отопления Гостиная"
+            value_template: "{{  is_state('binary_sensor.lr_radiator', 'on') }}"
+            turn_on:
+              service: mqtt.publish
+              data_template:
+                topic: "states/lr_radiator"
+                payload: 'ON'
+                retain: true 
+            turn_off:
+              service: mqtt.publish
+              data_template:
+                topic: "states/lr_radiator"
+                payload: 'OFF'
+                retain: true 
+            icon_template: >-
+              {% if is_state('switch.lr_radiator_mode', 'on') %}
+                mdi:radiator
+              {% else %}
+                mdi:radiator-off
+              {% endif %}
+              
+              
+    template:
+     
+      - binary_sensor:
+
+          - name: lr_aeration
+            unique_id: lr_aeration
+            state: >
+              {{ is_state('binary_sensor.0x00158d00013ed373_contact', 'on')  
+                 or is_state('binary_sensor.0xec1bbdfffedf6a6a_contact', 'on')
+                 or is_state('binary_sensor.0x00158d000445206b_contact', 'on')
+              }}
+            delay_on: 
+                seconds: 30
+            delay_off: 
+                seconds: 30
+            device_class: opening
+            icon: >
+              {% if is_state("binary_sensor.lr_aeration", "on") %}
+              mdi:window-open-variant
+              {% else %}
+              mdi:window-closed-variant
+              {% endif %}

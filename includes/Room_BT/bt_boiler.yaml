@@ -255,13 +255,13 @@ bt_boiler:
               service: mqtt.publish
               data_template:
                 topic: "states/0x00158d0003584401/mode"
-                payload_template: 'ON'
+                payload: 'ON'
                 retain: true 
             turn_off:
               service: mqtt.publish
               data_template:
                 topic: "states/0x00158d0003584401/mode"
-                payload_template: 'OFF'
+                payload: 'OFF'
                 retain: true 
             icon_template: >-
               {% if is_state('switch.0x00158d0003584401_mode', 'on') %}
@@ -278,13 +278,13 @@ bt_boiler:
               service: mqtt.publish
               data_template:
                 topic: "states/0x00158d0003584401/period_1_mode"
-                payload_template: 'ON'
+                payload: 'ON'
                 retain: true 
             turn_off:
               service: mqtt.publish
               data_template:
                 topic: "states/0x00158d0003584401/period_1_mode"
-                payload_template: 'OFF'
+                payload: 'OFF'
                 retain: true 
             icon_template: >-
               {% if is_state('switch.0x00158d0003584401_period_1_mode', 'on') %}
@@ -301,13 +301,13 @@ bt_boiler:
               service: mqtt.publish
               data_template:
                 topic: "states/0x00158d0003584401/period_2_mode"
-                payload_template: 'ON'
+                payload: 'ON'
                 retain: true 
             turn_off:
               service: mqtt.publish
               data_template:
                 topic: "states/0x00158d0003584401/period_2_mode"
-                payload_template: 'OFF'
+                payload: 'OFF'
                 retain: true 
             icon_template: >-
               {% if is_state('switch.0x00158d0003584401_period_2_mode', 'on') %}
@@ -324,13 +324,13 @@ bt_boiler:
               service: mqtt.publish
               data_template:
                 topic: "states/0x00158d0003584401/period_3_mode"
-                payload_template: 'ON'
+                payload: 'ON'
                 retain: true 
             turn_off:
               service: mqtt.publish
               data_template:
                 topic: "states/0x00158d0003584401/period_3_mode"
-                payload_template: 'OFF'
+                payload: 'OFF'
                 retain: true 
             icon_template: >-
               {% if is_state('switch.0x00158d0003584401_period_3_mode', 'on') %}
@@ -347,13 +347,13 @@ bt_boiler:
               service: mqtt.publish
               data_template:
                 topic: "states/0x00158d0003584401/period_4_mode"
-                payload_template: 'ON'
+                payload: 'ON'
                 retain: true 
             turn_off:
               service: mqtt.publish
               data_template:
                 topic: "states/0x00158d0003584401/period_4_mode"
-                payload_template: 'OFF'
+                payload: 'OFF'
                 retain: true 
             icon_template: >-
               {% if is_state('switch.0x00158d0003584401_period_4_mode', 'on') %}
@@ -370,13 +370,13 @@ bt_boiler:
               service: mqtt.publish
               data_template:
                 topic: "states/0x00158d0003584401/period_5_mode"
-                payload_template: 'ON'
+                payload: 'ON'
                 retain: true 
             turn_off:
               service: mqtt.publish
               data_template:
                 topic: "states/0x00158d0003584401/period_5_mode"
-                payload_template: 'OFF'
+                payload: 'OFF'
                 retain: true 
             icon_template: >-
               {% if is_state('switch.0x00158d0003584401_period_5_mode', 'on') %}
@@ -422,7 +422,7 @@ bt_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0x00158d0003584401/period_1"
-                      payload_template: "{{states('input_datetime.0x00158d0003584401_period')}}"
+                      payload: "{{states('input_datetime.0x00158d0003584401_period')}}"
                       retain: true
               - conditions:
                   - condition: trigger
@@ -431,7 +431,7 @@ bt_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0x00158d0003584401/period_2"
-                      payload_template: "{{states('input_datetime.0x00158d0003584401_period')}}"
+                      payload: "{{states('input_datetime.0x00158d0003584401_period')}}"
                       retain: true
               - conditions:
                   - condition: trigger
@@ -440,7 +440,7 @@ bt_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0x00158d0003584401/period_3"
-                      payload_template: "{{states('input_datetime.0x00158d0003584401_period')}}"
+                      payload: "{{states('input_datetime.0x00158d0003584401_period')}}"
                       retain: true
               - conditions:
                   - condition: trigger
@@ -449,7 +449,7 @@ bt_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0x00158d0003584401/period_4"
-                      payload_template: "{{states('input_datetime.0x00158d0003584401_period')}}"
+                      payload: "{{states('input_datetime.0x00158d0003584401_period')}}"
                       retain: true
               - conditions:
                   - condition: trigger
@@ -458,7 +458,7 @@ bt_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0x00158d0003584401/period_5"
-                      payload_template: "{{states('input_datetime.0x00158d0003584401_period')}}"
+                      payload: "{{states('input_datetime.0x00158d0003584401_period')}}"
                       retain: true 
                       
       - alias: 0x00158d0003584401_timer
@@ -499,7 +499,7 @@ bt_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0x00158d0003584401/timer_1"
-                      payload_template: "{{states('input_datetime.0x00158d0003584401_timer')}}"
+                      payload: "{{states('input_datetime.0x00158d0003584401_timer')}}"
                       retain: true
               - conditions:
                   - condition: trigger
@@ -508,7 +508,7 @@ bt_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0x00158d0003584401/timer_2"
-                      payload_template: "{{states('input_datetime.0x00158d0003584401_timer')}}"
+                      payload: "{{states('input_datetime.0x00158d0003584401_timer')}}"
                       retain: true
               - conditions:
                   - condition: trigger
@@ -517,7 +517,7 @@ bt_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0x00158d0003584401/timer_3"
-                      payload_template: "{{states('input_datetime.0x00158d0003584401_timer')}}"
+                      payload: "{{states('input_datetime.0x00158d0003584401_timer')}}"
                       retain: true
               - conditions:
                   - condition: trigger
@@ -526,7 +526,7 @@ bt_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0x00158d0003584401/timer_4"
-                      payload_template: "{{states('input_datetime.0x00158d0003584401_timer')}}"
+                      payload: "{{states('input_datetime.0x00158d0003584401_timer')}}"
                       retain: true
               - conditions:
                   - condition: trigger
@@ -535,7 +535,7 @@ bt_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0x00158d0003584401/timer_5"
-                      payload_template: "{{states('input_datetime.0x00158d0003584401_timer')}}"
+                      payload: "{{states('input_datetime.0x00158d0003584401_timer')}}"
                       retain: true 
               - conditions:
                   - condition: trigger
@@ -544,7 +544,7 @@ bt_boiler:
                   - service: mqtt.publish
                     data_template:
                       topic: "states/0x00158d0003584401/timer_manual"
-                      payload_template: "{{states('input_datetime.0x00158d0003584401_timer')}}"
+                      payload: "{{states('input_datetime.0x00158d0003584401_timer')}}"
                       retain: true 
 
       - alias: 0x00158d0003584401_period_on
@@ -809,6 +809,8 @@ bt_boiler:
            entity_id: switch.0x00158d0003584401_mode
            state: 'on'
         action:
+         - service: switch.turn_on
+           entity_id: switch.0x00158d0003584401
          - service: timer.start
            entity_id: timer.0x00158d0003584401
            data_template: 

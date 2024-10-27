@@ -125,4 +125,4 @@ bt_reboot:
         - service: mqtt.publish
           data_template:
             topic: "zigstar_poe/BT wd 2ch enter/get"
-            payload_template: '{ "state_right": "" }'
+            payload: '{ "state_right": "" }'

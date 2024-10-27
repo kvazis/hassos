@@ -269,8 +269,12 @@ cards:
               - type: divider
               - entity: binary_sensor.zigbee2mqtt_bridge_connection_state_1
                 name: Zigbee2mqtt 1
+              - entity: switch.cloud_ps308g0011242300032c4copc_1_switch
+
               - entity: binary_sensor.zigbee2mqtt_bridge_connection_state_2
-                name: Zigbee2mqtt 2                   
+                name: Zigbee2mqtt 2 
+              - entity: switch.cloud_ps308g0011242300032c4copc_2_switch
+              
             #   - entity: binary_sensor.zigbee2mqtt_bridge_connection_state_3
             #     name: Zigbee2mqtt 3  
               - type: divider
@@ -1150,6 +1154,7 @@ cards:
                       secondary_info: none
                 exclude:
                  - entity_id: light.*virtual*
+                 - entity_id: light.awtrix_6c9da0_matrix                
 ################# Активные плееры #################
  
         - type: custom:stack-in-card
@@ -1359,6 +1364,13 @@ cards:
                   state: 'on'
                   attributes:
                     device_class: 'motion'
+                  options:
+                      secondary_info: last-changed
+                      state_color: true
+                - domain: binary_sensor
+                  state: 'on'
+                  attributes:
+                    device_class: 'occupancy'
                   options:
                       secondary_info: last-changed
                       state_color: true

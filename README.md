@@ -1,6 +1,37 @@
 ## Новый рабочий сервер
 
 
+### Обновление 2024 10 27
+#### Полный рабочий конфиг, предыдущий рабочий сервер отключен     
+
+#### Пакаджи (незначительные изменения - синтаксис, правки - не описываю, только новое)     
+:arrow_right: Пакаджи для зарядных станций Ecoflow скомпонованы в отдельной папке [Home Assistant - EcoFlow Cloud Integration](https://youtu.be/zIK3yFMLnNg)     
+:arrow_right: [delta_2.yaml](https://github.com/kvazis/hassos/blob/master/includes/Ecoflow/delta_2.yaml) - описание сенсоров Delta 2, темплейт для определения мощности на и от аккумулятора    
+:arrow_right: [river_2_pro.yaml](https://github.com/kvazis/hassos/blob/master/includes/Ecoflow/river_2_pro.yaml) - описание сенсоров Ecoflow River 2 Pro, темплейт для определения мощности на и от аккумулятора    
+:arrow_right: [river_2_max.yaml](https://github.com/kvazis/hassos/blob/master/includes/Ecoflow/river_2_max.yaml) - описание сенсоров Ecoflow River 2 Max, темплейт для определения мощности на и от аккумулятора    
+:arrow_right: [river_2.yaml](https://github.com/kvazis/hassos/blob/master/includes/Ecoflow/river_2.yaml) - описание сенсоров Ecoflow River 2, темплейт для определения мощности на и от аккумулятора    
+
+:arrow_right: [air_raid_alert.yaml](https://github.com/kvazis/hassos/blob/master/includes/Global/air_raid_alert.yaml) - добавлены дополнительные светильники по той же логике    
+:arrow_right: [blackout.yaml](https://github.com/kvazis/hassos/blob/master/includes/Global/blackout.yaml) - актуализация списка действий, логика таже    
+:arrow_right: [power_failure.yaml](https://github.com/kvazis/hassos/blob/master/includes/Global/power_failure.yaml) - добавлен дополнительный датчик    
+:arrow_right: [br_heat.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_BR/br_heat.yaml) - пакадж управления термоголовкой в спальне    
+:arrow_right: [br_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_BR/br_light.yaml) - пакадж управления люстрой Philips, при выключении сначала переводится в режим ночника, чтобы не включаться в ярком режиме при пропадании электрики. Контроль включения    
+:arrow_right: [br_reboot.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_BR/br_reboot.yaml) - перезагрузка люстры в спальне     
+:arrow_right: [br_sensors.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_BR/br_sensors.yaml) - описание сенсоров в спальне     
+:arrow_right: [br_wled_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_BR/br_wled_light.yaml) - пакадж управления адресной лентой, плавное включение подробнее [Home Assistant + WLED - включаем / выключаем адресную ленту с эффектом плавного заполнения](https://youtu.be/r5tF4O4fyl8)     
+:arrow_right: [bt_vent.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_BT/bt_vent.yaml) - пакадж управления вентиляцией в ванной     
+:arrow_right: [da_curtain.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_DA/da_curtain.yaml) - автоматическое открытие / закрытие штор     
+:arrow_right: [da_heat.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_DA/da_heat.yaml) - пакадж управления термоголовкой в детской    
+:arrow_right: [da_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_DA/da_light.yaml) - пакадж управления освещением в детской    
+:arrow_right: [da_wled_control.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_DA/da_wled_control.yaml) - пакадж управления адресной лентой в детской    
+:arrow_right: [lr_air_quality.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_air_quality.yaml) - проверка качества воздуха в гостиной     
+:arrow_right: [lr_conditioner.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_conditioner.yaml) - пакадж управления через ИК контроллер Broadlink     
+:arrow_right: [lr_heat_left.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_heat_left.yaml) - пакадж управления левой термоголовкой в гостиной, аналогично для правой    
+:arrow_right: [lr_light.yaml](https://github.com/kvazis/hassos/blob/master/includes/Room_LR/lr_light.yaml) - пакадж управления освещением в гостиной, включая автоматический и резервный свет    
+
+#### Интерфейс, в режиме yaml - все страницы приведены в один формат, разделы - управление, мониторинг, телеметрия. Для комнат отдельные страницы климата.    
+
+
 ### Обновление 2024 06 18     
 #### Пакаджи (незначительные изменения - синтаксис, правки - не описываю, только новое)     
 :arrow_right: [blackout.yaml](https://github.com/kvazis/hassos/blob/master/includes/Global/blackout.yaml) - сценарии действий которые система проводит после восстановления питания      

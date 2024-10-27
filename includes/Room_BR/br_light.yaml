@@ -1,0 +1,110 @@
+br_light:
+
+    homeassistant:
+      customize:
+      
+        light.br_philips_62:
+          friendly_name: Спальня люстра
+          icon: phu:ceiling-being
+          
+        switch.0x54ef44100024689c_left:
+          friendly_name: Спальня H1 вход, пустое реле
+        switch.0x54ef44100024689c_right:
+          friendly_name: Спальня H1 вход, питание люстры
+        sensor.0x54ef44100024689c_action:
+          friendly_name: Спальня H1 вход
+        sensor.0x54ef44100024689c_device_temperature:
+          friendly_name: Спальня H1 вход
+
+        sensor.0x00158d0003d50723_action:
+          friendly_name: Спальня беспроводный выключатель
+        sensor.0x00158d0003d50723_battery:
+          friendly_name: Спальня беспроводный выключатель
+          
+    input_boolean:
+    
+    # Переключатель для определения того, что свет включен вручную
+      br_ceiling:
+        name: Спальня ручное включение люстры
+        icon: mdi:lightbulb-off-outline
+          
+    input_button:
+
+      br_ceiling_light:
+        name: Спальная люстра
+
+    automation:
+    
+      - alias: br_ceiling_manual_control
+        id: br_ceiling_manual_control
+        description: Спальня - ручное управление люстрой
+        initial_state: true
+        trigger:
+    # Виртуальная кнопка
+        - platform: state
+          entity_id: input_button.br_ceiling_light
+    # Выключатель на входе
+        - platform: state
+          entity_id: sensor.0x54ef44100024689c_action
+          to: 'single_right'
+    # Выключатель возле кровати
+        - platform: state
+          entity_id: sensor.0x00158d0003d50723_action
+          to: 'left'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: light.br_philips_62
+                    state: 'off'
+                sequence:
+                  - service: input_boolean.turn_on
+                    target:
+                      entity_id: input_boolean.br_ceiling
+                  - service: light.turn_on
+                    entity_id:
+                      - light.br_philips_62
+                    data_template:
+                      brightness_pct: 100
+                      kelvin: 4000
+              - conditions:
+                  - condition: state
+                    entity_id: light.br_philips_62
+                    state: 'on'
+                sequence:
+                  - service: xiaomi_miio.light_set_scene
+                    entity_id: light.br_philips_62
+                    data:
+                      scene: 4 
+                  - delay: 00:00:03
+                  - service: input_boolean.turn_off
+                    target:
+                      entity_id: input_boolean.br_ceiling
+                  - service: light.turn_off
+                    entity_id:
+                      - light.br_philips_62
+                      
+                      
+      - alias: br_ceiling_turn_control
+        id: br_ceiling_turn_control
+        description: Спальня  - контроль включения люстры
+        initial_state: true
+        trigger:
+        - platform: state
+          entity_id: light.br_philips_62
+          to: 'on'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        - condition: state
+          entity_id: input_boolean.br_ceiling
+          state: 'off'
+        action:
+        - service: light.turn_off
+          entity_id:
+            - light.br_philips_62

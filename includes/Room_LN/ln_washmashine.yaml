@@ -49,9 +49,14 @@ ln_washmashine:
           from: 'on'
           to: 'off'
         condition:
+    # Переключатель режима работы сервера
         - condition: state
           entity_id: switch.control_mode
-          state: 'on' 
+          state: 'on'
+    # Отключен ночной режим работы
+        - condition: state
+          entity_id: binary_sensor.night_time
+          state: 'off'
         action:
         - service: telegram_bot.send_message
           data_template:
@@ -63,6 +68,7 @@ ln_washmashine:
           entity_id: 
              - light.kn_wled
              - light.gld_wled
+             - light.br_wled_round
           data:
             effect: Washing Machine
             brightness_pct: 10
@@ -73,11 +79,13 @@ ln_washmashine:
             entity_id: 
              - select.kn_wled_color_palette
              - select.gld_wled_color_palette
+             - select.br_wled_round_color_palette
         - service: number.set_value
           target:
             entity_id: 
              - number.kn_wled_speed
              - number.gld_wled_speed
+             - number.br_wled_round_speed
           data:
             value: 157
         - service: number.set_value
@@ -85,6 +93,7 @@ ln_washmashine:
             entity_id: 
              - number.kn_wled_intensity
              - number.gld_wled_intensity
+             - number.br_wled_round_intensity
           data:
             value: 221
         - delay: 00:00:30
@@ -92,8 +101,10 @@ ln_washmashine:
           entity_id: 
              - light.kn_wled
              - light.gld_wled
+             - light.br_wled_round
         - delay: 00:00:15
         - service: light.turn_off
           entity_id: 
              - light.kn_wled
              - light.gld_wled
+             - light.br_wled_round
