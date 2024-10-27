@@ -255,15 +255,6 @@ cards:
               - entity: sensor.local_ip
                 name: IP адрес
               - type: divider
-              - entity: input_button.git_update
-              - type: divider
-              - entity: input_button.mosquitto_reload
-              - type: divider
-              - entity: input_button.test_test
-              - type: divider
-              - entity: input_button.k7_notification
-              - entity: input_boolean.k7_notification
-              - type: divider
               - entity: sensor.server_telemetry
                 icon: mdi:alert
               - type: divider
@@ -298,6 +289,48 @@ cards:
                   - entity: sensor.size_in_home_assistant
                     name: Сервере
 
+
+################# Ручной запуск ################# 
+        - type: custom:stack-in-card
+          mode: vertical
+          cards:
+      
+            - type: markdown
+              card_mod:
+                style: |
+                   ha-card {
+                     color: #00BFFF;
+                     font-weight: bold;
+                     font-size: 16px;
+                   }          
+              content: >
+                 **Ручной запуск**
+
+            - type: entities
+              card_mod:
+                style: |
+                   ha-card {
+                     color: #00BFFF;
+                     --paper-item-icon-color: #00BFFF;
+                     --paper-item-icon-active-color: #009933;
+                     --switch-unchecked-button-color: red;
+                     --switch-checked-color: green;
+                     --switch-checked-button-color: green;
+                     --switch-checked-track-color: green;
+                     font-weight: bold;
+                     font-size: 14px;
+                   }
+              show_header_toggle: false
+              entities:
+              - entity: input_button.git_update
+              - type: divider
+              - entity: input_button.test_test
+              - type: divider
+              - entity: input_button.k7_notification
+              - entity: input_boolean.k7_notification
+            #   - type: divider
+            #   - entity: input_button.mosquitto_reload
+              
 ################# Обновления #################  
         - type: custom:stack-in-card
           mode: vertical
