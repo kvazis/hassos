@@ -12,22 +12,18 @@ git:
         icon: mdi:git
 
   shell_command:
-    git_config: 'bash ./ha_git.sh'
+    git_config: "bash ./ha_git.sh"
 
   input_button:
-
     sys_git_update:
       name: Git - оновлення конфігурації
 
   automation:
-
     - alias: sys_git_update
       id: sys_git_update
       description: Git - оновлення конфігурації
-      initial_state: true
       trigger:
         - platform: state
           entity_id: input_button.sys_git_update
       action:
-        - service: shell_command.git_config
-          data: {}
+        - action: shell_command.git_config

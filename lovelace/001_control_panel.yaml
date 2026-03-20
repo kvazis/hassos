@@ -290,7 +290,7 @@ sections:
             }
         show_header_toggle: false
         entities:
-          - entity: input_button.git_update
+          - entity: input_button.sys_git_update
           - type: divider
 
       - type: custom:stack-in-card
