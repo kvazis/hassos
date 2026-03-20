@@ -6,10 +6,14 @@ kn_switch:
            - sensor.0xa4c138d571b656c5_power
            - sensor.0xa4c138273b49e4d0_power
            - sensor.0xa4c1385bcf7d00c9_power
-           - sensor.0xa4c138201dcb67f6_power
            - sensor.0xa4c13874f3d1d1c0_power
            - sensor.0x00158d0001fa2934_power
            - sensor.0x00158d000114a1e1_power
+           - sensor.0xa4c138201dcb67f6_power
+           - sensor.kn_fridge_meter
+           - sensor.kn_fridge_max_energy_day
+           - sensor.kn_fridge_max_power_day
+
 
     homeassistant:
       customize:
@@ -32,6 +36,16 @@ kn_switch:
           friendly_name: Аэрогриль, энергия
           icon: mdi:chart-line
 
+        switch.0xa4c138201dcb67f6:
+          friendly_name: Електрогриль
+          icon: mdi:car-battery
+        sensor.0xa4c138201dcb67f6_power:
+          friendly_name: Електрогриль потужність
+          unit_of_measurement: W
+          device_class: power
+        sensor.0xa4c138201dcb67f6_energy:
+          friendly_name: Електрогриль енергія
+          icon: mdi:chart-line
 
         switch.0xa4c138273b49e4d0:
           friendly_name: Микроволновка, питание
@@ -56,21 +70,12 @@ kn_switch:
           friendly_name: Чайник, энергия
           icon: mdi:chart-line
 
-
-        switch.0xa4c138201dcb67f6:
-          friendly_name: Электрогриль, питание
-          icon: mdi:grill
-        sensor.0xa4c138201dcb67f6_power:
-          friendly_name: Электрогриль, мощность
-          unit_of_measurement: Вт
-          device_class: power
-        sensor.0xa4c138201dcb67f6_energy:
-          friendly_name: Электрогриль, энергия
-          icon: mdi:chart-line
-
+        switch.kn_coffee_machine:
+          friendly_name: Кофемашина
+          icon: mdi:coffee-maker
         switch.0xa4c13874f3d1d1c0:
           friendly_name: Кофемашина, питание
-          icon: mdi:coffee-maker
+          icon: mdi:power-socket-eu
         sensor.0xa4c13874f3d1d1c0_power:
           friendly_name: Кофемашина, мощность
           unit_of_measurement: Вт
@@ -78,7 +83,8 @@ kn_switch:
         sensor.0xa4c13874f3d1d1c0_energy:
           friendly_name: Кофемашина, энергия
           icon: mdi:chart-line
-
+        sensor.0xa4c13874f3d1d1c0_voltage:
+          friendly_name: Кофемашина, напряжение
           
         switch.0x00158d0001fa2934:
           friendly_name: Холодильник, питание
@@ -89,12 +95,21 @@ kn_switch:
           device_class: power
         sensor.0x00158d0001fa2934_energy:
           friendly_name: Холодильник, энергия
+          device_class: energy
+          unit_of_measurement: kWh
           icon: mdi:chart-line
+          state_class: total_increasing 
         sensor.0x00158d0001fa2934_device_temperature:
           friendly_name: Холодильник, температура
           icon: mdi:thermometer-check
+        sensor.kn_fridge_meter:
+          friendly_name: Холодильник споживання за годину
+          unit_of_measurement: kWh
+          state_class: total
+          device_class: energy
 
-          
+
+
         switch.0x00158d000114a1e1:
           friendly_name: Кухня, питание шлюза
           icon: phu:aqara-hub-n15-g2
@@ -109,3 +124,44 @@ kn_switch:
           friendly_name: Кухня, питание шлюза, температура
           icon: mdi:thermometer-check
 
+
+    mqtt:
+      switch:
+        - name: kn_coffee_machine
+          unique_id: kn_coffee_machine
+          state_topic: "zigbee2mqtt_3/KN coffee machine"
+          command_topic: "zigbee2mqtt_3/KN coffee machine/set"
+          payload_on: "ON"
+          payload_off: "OFF"
+          state_on: "ON"
+          state_off: "OFF"
+          value_template: "{{ value_json.state }}"
+          json_attributes_topic: "zigbee2mqtt_3/KN coffee machine"
+          qos: 1
+
+
+    utility_meter:
+    
+      kn_fridge_meter:
+        source: sensor.0x00158d0001fa2934_energy
+        unique_id: kn_fridge_meter
+        cycle: hourly
+        
+        
+    sensor:
+
+      - platform: statistics
+        name: kn_fridge_max_energy_day
+        unique_id: kn_fridge_max_energy_day
+        entity_id: sensor.kn_fridge_meter
+        state_characteristic: value_max
+        max_age:
+          hours: 24
+
+      - platform: statistics
+        name: kn_fridge_max_power_day
+        unique_id: kn_fridge_max_power_day
+        entity_id: sensor.0x00158d0001fa2934_power
+        state_characteristic: value_max
+        max_age:
+          hours: 24

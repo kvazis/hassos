@@ -24,8 +24,8 @@ camera_reboot:
           state: 'unavailable'
     # Сенсор электричества
         - condition: state
-          entity_id: binary_sensor.blackout_after
-          state: 'off' 
+          entity_id: binary_sensor.electricity_on_5
+          state: 'on' 
         action:
     # Перезагрузка по питанию
         - service: switch.turn_off
@@ -33,9 +33,9 @@ camera_reboot:
         - delay: 00:00:05
         - service: switch.turn_on
           entity_id: switch.0x00158d0003f46bb6_l2
-        - service: telegram_bot.send_message
-          data_template:
-            target:
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
                 - !secret chat_id_log
             message: | 
                  {{"\U0001F916"}} Антонио - Перезагрузка Reolink 411 {{ states('sensor.time_date') }} 
@@ -60,8 +60,8 @@ camera_reboot:
           state: 'unavailable'
     # Сенсор электричества
         - condition: state
-          entity_id: binary_sensor.blackout_after
-          state: 'off' 
+          entity_id: binary_sensor.electricity_on_5
+          state: 'on' 
         action:
     # Перезагрузка по питанию
         - service: switch.turn_off
@@ -69,9 +69,9 @@ camera_reboot:
         - delay: 00:00:05
         - service: switch.turn_on
           entity_id: switch.0x00158d0003f46bb6_l1
-        - service: telegram_bot.send_message
-          data_template:
-            target:
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
                 - !secret chat_id_log
             message: | 
                  {{"\U0001F916"}} Антонио - Перезагрузка Reolink 410 {{ states('sensor.time_date') }} 

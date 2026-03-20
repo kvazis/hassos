@@ -6,7 +6,7 @@ bt_switch:
            - switch.0x540f57fffe78ba20
            - sensor.0x540f57fffe78ba20_power
            - sensor.0x540f57fffe78ba20_meter
-           
+
     homeassistant:
       customize:
 

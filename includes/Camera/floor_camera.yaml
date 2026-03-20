@@ -83,9 +83,9 @@ floor_camera:
               entity_id: camera.reolink_411_ws_fluent
               filename: "/config/www/cam_captures/reolink411.jpg"
          - delay: 00:00:10
-         - service: telegram_bot.send_photo
-           data_template:
-             target:
+         - action: telegram_bot.send_photo
+           data:
+             chat_id:
               - !secret chat_id_group
              file: "/config/www/cam_captures/reolink411.jpg" 
 
@@ -145,9 +145,9 @@ floor_camera:
               entity_id: camera.reolink_410_rtsp
               filename: "/config/www/cam_captures/reolink410.jpg"
          - delay: 00:00:10
-         - service: telegram_bot.send_photo
-           data_template:
-             target:
+         - action: telegram_bot.send_photo
+           data:
+             chat_id:
               - !secret chat_id_group
              file: "/config/www/cam_captures/reolink410.jpg" 
 
@@ -187,7 +187,7 @@ floor_camera:
       - alias: camera_reolink411_cast_motion
         id: camera_reolink411_cast_motion
         description: Reolink 411 ws - Google Cast, датчик движения
-        initial_state: true
+        initial_state: false
         trigger:
         - platform: state
           entity_id: binary_sensor.cam_reolink411_auto_cast
@@ -243,7 +243,7 @@ floor_camera:
       - alias: camera_reolink411_cast_motion_block
         id: camera_reolink411_cast_motion_block
         description: Reolink 411 ws - Google Cast, блокировка
-        initial_state: true
+        initial_state: false
         trigger:
         - platform: state
           entity_id: media_player.living_room

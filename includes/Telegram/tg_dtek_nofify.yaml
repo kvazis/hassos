@@ -1,0 +1,164 @@
+tg_dtek_nofify:
+
+
+
+    input_boolean:
+    
+     k7_notification_extr:
+        name: Режим екстрених відключень
+        icon: mdi:alert-circle
+
+
+    automation:
+    
+      - alias: k7_notification_dtek_1_3
+        id: k7_notification_dtek_1_3
+        mode: single
+        initial_state: true
+        description: "Щоденне повідомлення графік 1-3"
+    
+        trigger:
+          - platform: time
+            at: "00:10:00"
+        #   - platform: state
+        #     entity_id: input_button.test_test
+    
+        variables:
+          cal_entity: calendar.svitlo_kyiv_5_1_outages_schedule
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Переключатель режима работы уведомлений
+        - condition: state
+          entity_id: input_boolean.k7_notification
+          state: 'on'    
+    # Перемикач екстрених відключень
+        - condition: state
+          entity_id: input_boolean.k7_notification_extr
+          state: 'off'              
+
+        action:
+          # 1) Події за сьогодні
+          - service: calendar.get_events
+            target:
+              entity_id: "{{ cal_entity }}"
+            data:
+              start_date_time: "{{ today_at('00:00').isoformat() }}"
+              end_date_time: "{{ today_at('23:59:59').isoformat() }}"
+            response_variable: cal_resp
+        
+          # 2) Текст без порожніх рядків і з акуратним форматуванням
+          - variables:
+              body: |-
+                {% set r = cal_resp %}
+                {% set k = cal_entity %}
+                {% set events = r[k]['events'] if r is mapping and (k in r) and (r[k] is mapping) and ('events' in r[k]) else [] %}
+                {% set evs = events | sort(attribute='start') %}
+                {% set today = now().strftime('%d.%m.%Y') %}
+        
+                {% if evs | count == 0 %}
+                1️⃣2️⃣3️⃣
+                Планових відключень по групі 5.1 {{ today }} не передбачається
+                {% else %}
+                1️⃣2️⃣3️⃣
+                ⚡ Відключення електроенергії група 5.1 
+                📅 Розклад на сьогодні ({{ today }}):
+        
+                {% for e in evs %}
+                {% set sdt = as_datetime(e.start) if e.start is defined else none -%}
+                {% set edt = as_datetime(e.end)   if e.end   is defined else none -%}
+                {% set s   = sdt.astimezone(now().tzinfo) if sdt else none -%}
+                {% set e2  = edt.astimezone(now().tzinfo) if edt else none -%}
+                🕐 {{ s.strftime('%H:%M') if s else '??:??' }}–{{ e2.strftime('%H:%M') if e2 else '??:??' }}
+                {% endfor %}
+                {% endif %}
+        
+          # 3) Надсилання в чат
+          - action: telegram_bot.send_message
+            data:
+              chat_id:
+                - !secret chat_id_k7
+              message: |
+                {{ body }}
+              disable_web_page_preview: true
+              
+      - alias: k7_notification_dtek_4_7
+        id: k7_notification_dtek_4_7
+        mode: single
+        initial_state: true
+        description: "Щоденне повідомлення графік 4-7"
+    
+        trigger:
+          - platform: time
+            at: "00:10:10"
+        #   - platform: state
+        #     entity_id: input_button.test_test
+    
+        variables:
+          cal_entity: calendar.svitlo_kyiv_9_1_outages_schedule
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Переключатель режима работы уведомлений
+        - condition: state
+          entity_id: input_boolean.k7_notification
+          state: 'on'    
+    # Перемикач екстрених відключень
+        - condition: state
+          entity_id: input_boolean.k7_notification_extr
+          state: 'off'              
+
+        action:
+          # 1) Події за сьогодні
+          - service: calendar.get_events
+            target:
+              entity_id: "{{ cal_entity }}"
+            data:
+              start_date_time: "{{ today_at('00:00').isoformat() }}"
+              end_date_time: "{{ today_at('23:59:59').isoformat() }}"
+            response_variable: cal_resp
+        
+          # 2) Текст без порожніх рядків і з акуратним форматуванням
+          - variables:
+              body: |-
+                {% set r = cal_resp %}
+                {% set k = cal_entity %}
+                {% set events = r[k]['events'] if r is mapping and (k in r) and (r[k] is mapping) and ('events' in r[k]) else [] %}
+                {% set evs = events | sort(attribute='start') %}
+                {% set today = now().strftime('%d.%m.%Y') %}
+        
+                {% if evs | count == 0 %}
+                4️⃣5️⃣6️⃣7️⃣
+                Планових відключень по групі 9.1 {{ today }} не передбачається
+                {% else %}
+                4️⃣5️⃣6️⃣7️⃣
+                ⚡Відключення електроенергії група 9.1 
+                📅 Розклад на сьогодні ({{ today }}):
+        
+                {% for e in evs %}
+                {% set sdt = as_datetime(e.start) if e.start is defined else none -%}
+                {% set edt = as_datetime(e.end)   if e.end   is defined else none -%}
+                {% set s   = sdt.astimezone(now().tzinfo) if sdt else none -%}
+                {% set e2  = edt.astimezone(now().tzinfo) if edt else none -%}
+                🕐 {{ s.strftime('%H:%M') if s else '??:??' }}–{{ e2.strftime('%H:%M') if e2 else '??:??' }}
+                {% endfor %}
+                {% endif %}
+        
+          # 3) Надсилання в чат
+          - action: telegram_bot.send_message
+            data:
+              chat_id:
+                - !secret chat_id_k7
+              message: |
+                {{ body }}
+              disable_web_page_preview: true              
+                
+
+
+                # На даний момент графік групи 9.1 на ({{ today }}) недоступний - 
+                # Діють екстрені віключення, або ще не сформований
+                # або сьогодні  планових відключень світла немає!

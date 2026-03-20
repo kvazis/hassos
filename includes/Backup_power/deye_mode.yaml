@@ -1,0 +1,444 @@
+deye_mode:
+
+  ###################################################################
+  # Перемикач режимів
+  ###################################################################
+
+  input_select:
+    deye_sun15_mode:
+      name: Deye SUN15 режим
+      options:
+        - normal
+        - eco
+        - supereco
+      icon: mdi:car-shift-pattern
+
+  input_boolean:
+    deye_sun15_auto_normal_night:
+      name: Deye SUN15 авто normal на ніч
+      icon: mdi:weather-night
+      
+    deye_sun15_charge_night:
+      name: Deye SUN15 режим нічної зарядки
+      icon: mdi:weather-night
+
+  ###################################################################
+  # Нічний тариф + очікувані стани
+  ###################################################################
+
+  template:
+    - binary_sensor:
+        - name: deye_sun15_night_tariff
+          unique_id: deye_sun15_night_tariff
+          icon: mdi:weather-night
+          state: >-
+            {% set t = now().strftime('%H:%M:%S') %}
+            {{ t >= '23:05:00' or t < '06:55:00' }}
+
+        - name: deye_sun15_expected_grid_charging
+          unique_id: deye_sun15_expected_grid_charging
+          icon: mdi:battery-charging
+          state: >-
+            {% if is_state('binary_sensor.deye_sun15_night_tariff', 'on') %}
+              true
+            {% elif is_state('input_select.deye_sun15_mode', 'eco') %}
+              false
+            {% else %}
+              true
+            {% endif %}
+
+        - name: deye_sun15_grid_charging_mismatch
+          unique_id: deye_sun15_grid_charging_mismatch
+          icon: mdi:alert-circle-outline
+          state: >-
+            {{
+              states('switch.deye_sun15_battery_grid_charging')
+              !=
+              ('on' if is_state('binary_sensor.deye_sun15_expected_grid_charging', 'on') else 'off')
+            }}
+
+        - name: deye_sun15_tou_mismatch
+          unique_id: deye_sun15_tou_mismatch
+          icon: mdi:alert-circle-outline
+          state: >-
+            {{ states('select.deye_sun15_time_of_use') != states('sensor.deye_sun15_expected_tou') }}
+
+        - name: deye_sun15_mode_mismatch
+          unique_id: deye_sun15_mode_mismatch
+          icon: mdi:alert
+          state: >-
+            {{
+              is_state('binary_sensor.deye_sun15_tou_mismatch', 'on')
+              or
+              is_state('binary_sensor.deye_sun15_grid_charging_mismatch', 'on')
+            }}
+
+    - sensor:
+        - name: deye_sun15_expected_tou
+          unique_id: deye_sun15_expected_tou
+          icon: mdi:timer-outline
+          state: >-
+            {% if is_state('binary_sensor.deye_sun15_night_tariff', 'on') %}
+              Disabled
+            {% elif is_state('input_select.deye_sun15_mode', 'supereco') %}
+              Enabled
+            {% else %}
+              Disabled
+            {% endif %}
+
+  ###################################################################
+  # Скрипти 
+  ###################################################################
+
+  script:
+    deye_sun15_apply_night:
+      alias: Deye SUN15 - apply night
+      mode: single
+      sequence:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: select.deye_sun15_time_of_use
+                  state: "Disabled"
+              sequence: []
+          default:
+            - action: select.select_option
+              target:
+                entity_id: select.deye_sun15_time_of_use
+              data:
+                option: "Disabled"
+            - delay:
+                seconds: 2
+
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: switch.deye_sun15_battery_grid_charging
+                  state: "on"
+              sequence: []
+          default:
+            - action: switch.turn_on
+              target:
+                entity_id: switch.deye_sun15_battery_grid_charging
+
+    deye_sun15_apply_normal:
+      alias: Deye SUN15 - apply normal
+      mode: single
+      sequence:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: select.deye_sun15_time_of_use
+                  state: "Disabled"
+              sequence: []
+          default:
+            - action: select.select_option
+              target:
+                entity_id: select.deye_sun15_time_of_use
+              data:
+                option: "Disabled"
+            - delay:
+                seconds: 2
+
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: switch.deye_sun15_battery_grid_charging
+                  state: "on"
+              sequence: []
+          default:
+            - action: switch.turn_on
+              target:
+                entity_id: switch.deye_sun15_battery_grid_charging
+
+    deye_sun15_apply_eco:
+      alias: Deye SUN15 - apply eco
+      mode: single
+      sequence:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: switch.deye_sun15_battery_grid_charging
+                  state: "off"
+              sequence: []
+          default:
+            - action: switch.turn_off
+              target:
+                entity_id: switch.deye_sun15_battery_grid_charging
+            - delay:
+                seconds: 2
+
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: select.deye_sun15_time_of_use
+                  state: "Disabled"
+              sequence: []
+          default:
+            - action: select.select_option
+              target:
+                entity_id: select.deye_sun15_time_of_use
+              data:
+                option: "Disabled"
+
+    deye_sun15_apply_supereco:
+      alias: Deye SUN15 - apply supereco
+      mode: single
+      sequence:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: select.deye_sun15_time_of_use
+                  state: "Enabled"
+              sequence: []
+          default:
+            - action: select.select_option
+              target:
+                entity_id: select.deye_sun15_time_of_use
+              data:
+                option: "Enabled"
+            - delay:
+                seconds: 2
+
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: switch.deye_sun15_battery_grid_charging
+                  state: "on"
+              sequence: []
+          default:
+            - action: switch.turn_on
+              target:
+                entity_id: switch.deye_sun15_battery_grid_charging
+
+  automation:
+
+    ###################################################################
+    # Перемикання режимів вдень
+    ###################################################################
+    - alias: deye_sun15_mode_changed_day
+      id: deye_sun15_mode_changed_day
+      description: Deye SUN15 - реакція на зміну режиму вдень
+      initial_state: true
+      mode: restart
+
+      trigger:
+        - platform: state
+          entity_id: input_select.deye_sun15_mode
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+        - condition: state
+          entity_id: binary_sensor.deye_sun15_night_tariff
+          state: "off"
+
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: input_select.deye_sun15_mode
+                  state: normal
+              sequence:
+                - action: script.deye_sun15_apply_normal
+
+            - conditions:
+                - condition: state
+                  entity_id: input_select.deye_sun15_mode
+                  state: eco
+              sequence:
+                - action: script.deye_sun15_apply_eco
+
+            - conditions:
+                - condition: state
+                  entity_id: input_select.deye_sun15_mode
+                  state: supereco
+              sequence:
+                - action: script.deye_sun15_apply_supereco
+
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_group_tech
+            message: |-
+              🔄 Deye: змінено режим → {{ states('input_select.deye_sun15_mode') }}
+              🔌 Grid charging: {{ states('switch.deye_sun15_battery_grid_charging') }}
+              ⏱ ToU: {{ states('select.deye_sun15_time_of_use') }}
+              🔋 SOC: {{ states('sensor.deye_sun15_battery') }}%
+              🕒 {{ now().strftime('%H:%M') }}
+
+    ###################################################################
+    # Watchdog - тільки якщо є розсинхрон
+    ###################################################################
+    - alias: deye_sun15_mode_watchdog
+      id: deye_sun15_mode_watchdog
+      description: Deye SUN15 - watchdog
+      initial_state: false
+      mode: single
+
+      trigger:
+        - platform: time_pattern
+          minutes: "/30"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+        - condition: state
+          entity_id: binary_sensor.deye_sun15_mode_mismatch
+          state: "on"
+
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.deye_sun15_night_tariff
+                  state: "on"
+                - condition: state
+                  entity_id: input_boolean.deye_sun15_charge_night
+                  state: "on"
+              sequence:
+                - action: script.deye_sun15_apply_night
+
+            - conditions:
+                - condition: state
+                  entity_id: input_select.deye_sun15_mode
+                  state: normal
+              sequence:
+                - action: script.deye_sun15_apply_normal
+
+            - conditions:
+                - condition: state
+                  entity_id: input_select.deye_sun15_mode
+                  state: eco
+              sequence:
+                - action: script.deye_sun15_apply_eco
+
+            - conditions:
+                - condition: state
+                  entity_id: input_select.deye_sun15_mode
+                  state: supereco
+              sequence:
+                - action: script.deye_sun15_apply_supereco
+
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_group_tech
+            message: |-
+              🛠 Deye watchdog: виправлено невідповідність
+              🧩 Режим: {{ states('input_select.deye_sun15_mode') }}
+              🌙 Нічний тариф: {{ states('binary_sensor.deye_sun15_night_tariff') }}
+              🔌 Grid charging: {{ states('switch.deye_sun15_battery_grid_charging') }}
+              ⏱ ToU: {{ states('select.deye_sun15_time_of_use') }}
+              🔋 SOC: {{ states('sensor.deye_sun15_battery') }}%
+              🕒 {{ now().strftime('%Y-%m-%d %H:%M') }}
+
+    ###################################################################
+    # Початок нічного тарифу
+    ###################################################################
+    - alias: deye_sun15_night_charge_on
+      id: deye_sun15_night_charge_on
+      description: Deye SUN15 - початок нічного тарифу
+      initial_state: true
+      mode: single
+
+      trigger:
+        - platform: time
+          at: "23:06:00"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+        - condition: state
+          entity_id: input_boolean.deye_sun15_charge_night
+          state: "on"
+
+
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: input_boolean.deye_sun15_auto_normal_night
+                  state: "on"
+              sequence:
+                - action: input_select.select_option
+                  target:
+                    entity_id: input_select.deye_sun15_mode
+                  data:
+                    option: normal
+
+        - action: script.deye_sun15_apply_night
+
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_group_tech
+            message: |-
+              🌙 Deye: старт нічного тарифу
+              🧩 Режим: {{ states('input_select.deye_sun15_mode') }}
+              🔌 Grid charging: {{ states('switch.deye_sun15_battery_grid_charging') }}
+              ⏱ ToU: {{ states('select.deye_sun15_time_of_use') }}
+              🕒 {{ now().strftime('%Y-%m-%d %H:%M') }}
+
+    ###################################################################
+    # Закінчення нічного тарифу
+    ###################################################################
+    - alias: deye_sun15_night_charge_off
+      id: deye_sun15_night_charge_off
+      description: Deye SUN15 - закінчення нічного тарифу
+      initial_state: true
+      mode: single
+
+      trigger:
+        - platform: time
+          at: "06:56:00"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+        - condition: state
+          entity_id: input_boolean.deye_sun15_charge_night
+          state: "on"
+
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: input_select.deye_sun15_mode
+                  state: normal
+              sequence:
+                - action: script.deye_sun15_apply_normal
+
+            - conditions:
+                - condition: state
+                  entity_id: input_select.deye_sun15_mode
+                  state: eco
+              sequence:
+                - action: script.deye_sun15_apply_eco
+
+            - conditions:
+                - condition: state
+                  entity_id: input_select.deye_sun15_mode
+                  state: supereco
+              sequence:
+                - action: script.deye_sun15_apply_supereco
+
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_group_tech
+            message: |-
+              🌅 Deye: нічний тариф завершено
+              🧩 Режим: {{ states('input_select.deye_sun15_mode') }}
+              🔌 Grid charging: {{ states('switch.deye_sun15_battery_grid_charging') }}
+              ⏱ ToU: {{ states('select.deye_sun15_time_of_use') }}
+              🔋 SOC: {{ states('sensor.deye_sun15_battery') }}%
+              🕒 {{ now().strftime('%H:%M') }}

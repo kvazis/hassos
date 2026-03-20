@@ -67,9 +67,9 @@ mosquitto:
             addon: 8c77aaed_zigbee2mqtt
 
         - delay: 00:01:00
-        - service: telegram_bot.send_message
-          data_template:
-            target:
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
                 - !secret chat_id_log
             message: | 
                  {{"\U0001F916"}} Антонио - перезагуржен москито и z2m {{ states('sensor.time_date') }} 
@@ -102,9 +102,9 @@ mosquitto:
             addon: 8c77aaed_zigbee2mqtt
 
         - delay: 00:01:00
-        - service: telegram_bot.send_message
-          data_template:
-            target:
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
                 - !secret chat_id_log
             message: | 
                  {{"\U0001F916"}} Антонио - перезагуржен вручную москито и z2m {{ states('sensor.time_date') }} 

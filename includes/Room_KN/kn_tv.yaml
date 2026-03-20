@@ -153,15 +153,15 @@ kn_tv:
         description: Кухня - автоматическое отключение шлюза 
         initial_state: true
         trigger:
-        - platform: state
-          entity_id: light.gateway_light_7811dc64f4c8
-          to: 'on'
-          for:
-            minutes: 2          
+        - platform: time_pattern
+          minutes: '/3'         
         condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'          
+          state: 'on'    
+        - condition: state
+          entity_id: light.gateway_light_7811dc64f4c8
+          state: 'on' 
         action:          
         - service: light.turn_off
           entity_id: light.gateway_light_7811dc64f4c8

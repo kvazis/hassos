@@ -51,9 +51,9 @@ cr_reboot:
         - delay: 00:00:05
         - service: switch.turn_on
           entity_id: switch.0x00158d00057305ac_left
-        - service: telegram_bot.send_message
-          data_template:
-            target:
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
                 - !secret chat_id_log
             message: | 
                  {{"\U0001F916"}} Антонио. Коридор -  перезагрузка люстры {{ states('sensor.time_date') }} 

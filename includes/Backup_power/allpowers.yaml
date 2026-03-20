@@ -1,0 +1,176 @@
+allpowers:
+
+    template:
+    
+      - binary_sensor:
+      
+          - name: river_2_pro_power_outage
+            unique_id: river_2_pro_power_outage
+            state: >
+                {{ states('sensor.river_2_pro_ac_in_power')|float < 10 and
+                   states('sensor.river_2_pro_ac_out_power')|float > 10 }}
+            delay_on: 
+                minutes: 1
+            # delay_off: 
+            #     minutes: 1
+
+    input_number:
+      allpowers_on:
+        name: Allpowers attempt
+        initial: 0
+        min: 0
+        max: 3
+        step: 1
+        
+        
+    automation:
+    
+      - alias: river_2_pro_power_outage
+        id: river_2_pro_power_outage
+        description: Ecoflow River 2 Pro, оповіщення про зникнення зовнішнього живлення
+        initial_state: false
+        trigger:
+
+  # Вимкнення електрики
+        - platform: state
+          entity_id: binary_sensor.river_2_pro_power_outage
+          from: 'off'
+          to: 'on'
+
+  # Увімкнення електрики
+        - platform: state
+          entity_id: binary_sensor.river_2_pro_power_outage
+          from: 'on'
+          to: 'off'
+
+    # # Перевірка раз в 60 хвилин
+    #     - platform: time_pattern
+    #       hours: '/1'    
+
+        condition:
+    # Перемикач режиму роботи серверу
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор що визначає недоступність зовнішнього живлення
+        - condition: state
+          entity_id: binary_sensor.river_2_pro_power_outage
+          state: 'on'    
+
+        action:
+
+          - choose:
+
+  # Сповіщення про відключення 
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.river_2_pro_power_outage
+                  state: 'on'
+              sequence:        
+                - service: telegram_bot.send_message
+                  data_template:
+                    chat_id:
+                        - !secret chat_id_group_tech
+                    message: | 
+                         🔴 Виявлено зникнення зовнішнього живлення {{ now().strftime('%Y-%m-%d %H:%M') }}
+                         {{ "\U0001F50C" }} Потужність навантаження - {{ states('sensor.river_2_pro_ac_out_power') }} Ватт
+                         {{ "\U0001F50B" }} Поточний рівень заряду - {{ states('sensor.river_2_pro_main_battery_level') }}  %    
+
+  # Сповіщення про включення 
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.river_2_pro_power_outage
+                  state: 'off'
+              sequence:        
+                - service: telegram_bot.send_message
+                  data_template:
+                    chat_id:
+                        - !secret chat_id_group_tech
+                    message: | 
+                        🟢 Живлення відновлене {{ now().strftime('%Y-%m-%d %H:%M') }}
+                        {{ "\U0001F50C" }} Потужність заряджання - {{ states('sensor.river_2_pro_ac_in_power') }} Ватт
+                        {{ "\U0001F50B" }} Поточний рівень заряду - {{ states('sensor.river_2_pro_main_battery_level') }}  %  
+                         
+                         
+                         
+
+      - alias: river_2_pro_power_on
+        id: river_2_pro_power_on
+        description: Ecoflow River 2 Pro, відновлення зовнішнього живлення
+        initial_state: false
+
+        trigger:
+    # Перевірка раз в 2 хвилини
+        - platform: time_pattern
+          minutes: '/2'
+
+        condition:
+    # Перемикач режиму роботи серверу
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Сенсор що визначає недоступність люстри
+        - condition: state
+          entity_id: binary_sensor.river_2_pro_power_outage
+          state: 'on'
+    # Сенсор електрики
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off' 
+    # Кількість спроб
+        - condition: template
+          value_template: "{{ states('input_number.allpowers_on')|int < 3 }}"
+          
+        action:
+    # Перезавантаження по живленню
+        - action: switch.toggle
+          data: {}
+          target:
+             entity_id: switch.0xa4c138ceae6fe4bf
+        - service: input_number.increment
+          entity_id: input_number.allpowers_on
+        - service: telegram_bot.send_message
+          data_template:
+            chat_id:
+                - !secret chat_id_group_tech
+            message: | 
+                 {{"\U0001F916"}} Запуск живлення Ecoflow River 2 Pro (спроба {{ states('input_number.allpowers_on')|int }} з 3) {{ states('sensor.time_date') }}             
+          
+          
+      - alias: reset_river_2_pro_power_attempts
+        id: reset_river_2_pro_power_attempts
+        description: Ecoflow River 2 Pro — скидання спроб відновлення зовнішнього живлення
+        initial_state: false
+
+        trigger:
+          - platform: state
+            entity_id: binary_sensor.river_2_pro_power_outage
+            from: "on"
+            to: "off"
+
+        condition:
+    # Перемикач режиму роботи серверу
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Ознака спрацювання 1 автоматизації
+        - condition: template
+          value_template: "{{ states('input_number.allpowers_on')|int > 0 }}"          
+
+        action:
+          - service: input_number.set_value
+            entity_id: input_number.allpowers_on
+            data:
+              value: 0
+          - service: telegram_bot.send_message
+            data_template:
+              chat_id:
+                - !secret chat_id_group_tech
+              message: | 
+                🟢 Живлення відновлене {{ now().strftime('%Y-%m-%d %H:%M') }}
+                {{ "\U0001F50C" }} Потужність заряджання - {{ states('sensor.river_2_pro_ac_in_power') }} Ватт
+                {{ "\U0001F50B" }} Поточний рівень заряду - {{ states('sensor.river_2_pro_main_battery_level') }}  %  
+          
+          
+          
+          

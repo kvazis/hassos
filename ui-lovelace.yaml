@@ -3,6 +3,7 @@ views:
   - !include lovelace/001_control_panel.yaml
   - !include lovelace/002_logic.yaml
   - !include lovelace/003_electricity.yaml
+  - !include lovelace/003a_deye.yaml
   - !include lovelace/004_ecoflow.yaml
   - !include lovelace/100_outdoor.yaml
   - !include lovelace/110_en_control.yaml
@@ -16,4 +17,4 @@ views:
   - !include lovelace/171_br_control.yaml
   - !include lovelace/180_da_climate.yaml
   - !include lovelace/181_da_control.yaml
-  - !include lovelace/test.yaml
+  - !include lovelace/200_parser.yaml

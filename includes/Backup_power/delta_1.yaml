@@ -1,0 +1,200 @@
+delta_1:
+
+    input_boolean:
+    
+     delta_1_extr:
+        name: Ecoflow Delta 1, режим екстрених відключень
+        icon: mdi:car-brake-alert
+        
+    automation:
+    
+    
+      - alias: delta_1_ups_control
+        id: delta_1_ups_control
+        description: Відключення ДБЖ телевізора під час екстрених відключень
+        initial_state: false
+        trigger:
+  # Вимкнення електрики
+        - platform: state
+          entity_id: binary_sensor.blackout
+          from: 'off'
+          to: 'on'
+
+  # Увімкнення електрики
+        - platform: state
+          entity_id: binary_sensor.blackout
+          from: 'on'
+          to: 'off'
+
+        condition:
+
+  # Перемикач режиму роботи серверу
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+ 
+  # Перемикач режиму екстрених відключень
+        - condition: state
+          entity_id: input_boolean.delta_1_extr
+          state: 'on'
+          
+        action:
+
+          - choose:
+
+  # Вимкнення - телевізор не працює
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.blackout
+                  state: 'on'
+                - condition: state
+                  entity_id: binary_sensor.kn_tv_work
+                  state: 'off'
+              sequence: 
+              
+                - action: switch.turn_off
+                  target:
+                    entity_id: switch.0xa4c13874f3d1d1c0
+                  data: {}
+
+                - delay: 00:00:10 
+                  
+                - action: switch.turn_off
+                  target:
+                    entity_id: switch.0x00158d0001291d12
+                  data: {}
+
+                - action: telegram_bot.send_message
+                  data:
+                    chat_id:
+                    - !secret chat_id_log
+                    message: | 
+                       {{"\U0001F916"}} Кухня - вимкнення розетки ДБЖ і ТВ на кухні під час екстрених відключень {{ states('sensor.time_date') }}  
+
+
+  # Вимкнення - телевізор працює
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.blackout
+                  state: 'on'
+                - condition: state
+                  entity_id: binary_sensor.kn_tv_work
+                  state: 'on'
+              sequence: 
+
+                - service: remote.send_command
+                  entity_id: remote.kn_ir_base
+                  data:
+                    command:
+                    - raw:Z6WRAN0AAAAfAgAAewIAACUEAAB5BQAALioAAMAMAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATEkJCEkISQhJCQlITEkJCEkISQhJCQlITEkJCEkISQhJCQlITEkJCEkISQhJCQlITEkJCEkISQhJCQlITEkJCEkISQhJCQmIA==
+                    - raw:Z6W/ABwCAAB9AgAAQgMAAE0EAAB6BQAAjjMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMQE==
+                    - raw:Z6W/ABwCAAB9AgAAQgMAAE0EAAB6BQAAjjMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMQE==
+                    - raw:Z6W/ABwCAAB9AgAAQgMAAE0EAAB6BQAAjjMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMVEDMQEhMQEBQQEBMQE==
+                    - raw:Z6WPABgCAACBAgAAPgMAAEkEAABxBQAAJzEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADMQEhMQEBQSEBQVEDMQEhMQEBQSEBQVEDMQEhMQEBQSEBQVEDMQEhMQEBQSEBQVEDMQEhMQEBQSEBQVEDMQEhMQEBQSEBQQE==
+                - service: media_player.turn_off
+                  target:
+                    entity_id: media_player.kn_mi_box 
+
+                - delay: 00:00:30 
+              
+                - action: switch.turn_off
+                  target:
+                    entity_id: switch.0xa4c13874f3d1d1c0
+                  data: {}
+
+                - delay: 00:00:10 
+
+                - action: switch.turn_off
+                  target:
+                    entity_id: switch.0x00158d0001291d12
+                  data: {}
+
+                - action: telegram_bot.send_message
+                  data:
+                    chat_id:
+                    - !secret chat_id_log
+                    message: | 
+                       {{"\U0001F916"}} Кухня - вимкнення розетки ДБЖ і ТВ (IR) на кухні під час екстрених відключень {{ states('sensor.time_date') }}  
+
+                  
+  # Увімкнення 
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.blackout
+                  state: 'off'
+              sequence: 
+              
+                - action: switch.turn_on
+                  target:
+                    entity_id: switch.0xa4c13874f3d1d1c0
+                  data: {}
+                  
+                - delay: 00:00:10  
+                - action: switch.turn_on
+                  target:
+                    entity_id: switch.0x00158d0001291d12
+                  data: {}
+                  
+                - action: telegram_bot.send_message
+                  data:
+                    chat_id:
+                    - !secret chat_id_log
+                    message: | 
+                       {{"\U0001F916"}} Кухня - увімкнення розетки ДБЖ і ТВ на кухні {{ states('sensor.time_date') }}  
+                       
+                       
+
+
+      - alias: delta_1_ups_check
+        id: delta_1_ups_check
+        description: Перевірка розетки ДБЖ
+        initial_state: false
+        trigger:
+    # Перевірка раз в 5 хвилин
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+  # Перемикач режиму роботи серверу
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+  # Сенсор блекауту
+        - condition: state
+          entity_id: binary_sensor.blackout
+          state: 'off'   
+  # Розетка ДБЖ
+        - condition: state
+          entity_id: switch.0xa4c13874f3d1d1c0
+          state: 'off'           
+        action:          
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0xa4c13874f3d1d1c0
+          data: {}          
+          
+      - alias: delta_1_tv_check
+        id: delta_1_tv_check
+        description: Перевірка розетки ТВ
+        initial_state: false
+        trigger:
+    # Перевірка раз в 5 хвилин
+        - platform: time_pattern
+          minutes: '/5'
+        condition:
+  # Перемикач режиму роботи серверу
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+  # Сенсор блекауту
+        - condition: state
+          entity_id: binary_sensor.blackout
+          state: 'off'   
+  # Розетка ДБЖ
+        - condition: state
+          entity_id: switch.0x00158d0001291d12
+          state: 'off'           
+        action:          
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0x00158d0001291d12
+          data: {}           

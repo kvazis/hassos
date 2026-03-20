@@ -1,22 +1,5 @@
 en_light:
 
-    homeassistant:
-      customize:
-      
-        light.0x00158d0003e74c31:
-          friendly_name: Прихожая лампочка
-          icon: phu:bulbs-classic
-          
-        binary_sensor.0x00158d00013f7894_occupancy:
-          friendly_name: Прихожая датчик движения
-        sensor.0x00158d00013f7894_battery:
-          friendly_name: Прихожая датчик движения
-          
-        sensor.0x00158d00010b1963_action:
-          friendly_name: Прихожая кнопка на шкафу
-        sensor.0x00158d00010b1963_battery:
-          friendly_name: Прихожая кнопка на шкафу
-
     template:
      
       - binary_sensor:
@@ -144,7 +127,7 @@ en_light:
                       - light.0x00158d0003e74c31
                     data_template:
                       brightness_pct: 100
-                      kelvin: 4000
+                      color_temp_kelvin: 4000
               - conditions:
                   - condition: state
                     entity_id: light.0x00158d0003e74c31

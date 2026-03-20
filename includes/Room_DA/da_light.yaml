@@ -1,27 +1,5 @@
 da_light:
 
-    homeassistant:
-      customize:
-
-        light.0x00158d000635ded8_right:
-          friendly_name: Детская А люстра
-          icon: phu:ceiling-being
-        
-        light.smart_desk_lamp:
-          friendly_name: Детская А настольная лампа
-          icon: mdi:desk-lamp
-          
-        sensor.0x00158d00010b5c6e_action:
-          friendly_name: Детская А беспроводный выключатель на входе
-        sensor.0x00158d00010b5c6e_battery:
-          friendly_name: Детская А беспроводный выключатель на входе
-          
-        sensor.0x54ef4410004c16d9_action:
-          friendly_name: Детская А беспроводный выключатель на входе
-        sensor.0x54ef4410004c16d9_battery:
-          friendly_name: Детская А беспроводный выключатель на входе
-
-
     automation:
 
       - alias: dа_light_ceiling
@@ -48,7 +26,7 @@ da_light:
       - alias: dа_light_rgb_strip_manual_control
         id: dа_light_rgb_strip_manual_control
         description: Детская A ручное rgb лентой
-        initial_state: true          
+        initial_state: false          
         trigger:
     # Aqara Opple
         - platform: state
@@ -75,15 +53,19 @@ da_light:
         - platform: state
           entity_id: sensor.0x54ef4410004c16d9_action
           to: 'button_1_triple' 
+    # Кнопка на столе
+        - platform: state
+          entity_id: sensor.0xa4c1380eb8e7e537_action
+          to: 'single' 
         condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
         action:
         - service: light.toggle
-          entity_id: light.smart_desk_lamp
-        - delay: 00:00:03
-        - service: homeassistant.reload_config_entry
-          data: {}
-          target:
-            entity_id: light.smart_desk_lamp
+          entity_id: light.yeelight_lamp1_0x32a4ab4
+        # - delay: 00:00:03
+        # - service: homeassistant.reload_config_entry
+        #   data: {}
+        #   target:
+        #     entity_id: light.smart_desk_lamp

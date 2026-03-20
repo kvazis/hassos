@@ -1,306 +1,196 @@
-##################   Floor, enter
-title: Этаж, вход
+################## Поверх, вхід
+title: Поверх, вхід
 icon: phu:rooms-other
-cards:
+sections:
+  - type: grid
+    cards:
 
-############################ Колонка 1 ############################
+      - type: markdown
+        content: >
+           ## Керування
 
+      - type: markdown
+        content: >
+           ### Освітлення
 
-    - type: vertical-stack
-      cards:
-      
-        - type: markdown
-          style: |
-              ha-card {
-                color: #f8ffd8;
-                --paper-item-icon-color: #f8ffd8;
-                --paper-item-icon-active-color: #f8ffd8;
-                font-weight: bold;
-                font-size: 26px;
-              }          
-          content: >
-             **Управление**
-             
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:  
-            - type: markdown
-              style: |
-                   ha-card {
-                     color: #f8ffd8;
-                     --paper-item-icon-color: #f8ffd8;
-                     --paper-item-icon-active-color: #f8ffd8;
-                     font-weight: bold;
-                     font-size: 16px;
-                   } 
-              content: >
-                 **Освещение**
+      - type: horizontal-stack
+        cards:
 
-            - type: light
-              name: Лампочка на входе
-              entity: light.0x00158d0003e74c31
+          - type: light
+            name: Освітлення при вході
+            entity: light.0x00158d0003e74c31
 
-            - type: horizontal-stack
-              cards:
+          # - type: light
+          #   name: Гірлянда
+          #   entity: light.outsmart_rgbic_led
 
-                - type: light
-                  name: Люстра коридор
-                  entity: light.yeelight_ceiling4_0x456e813
+      - type: horizontal-stack
+        cards:
 
-                - type: light
-                  name: Амбилайт
-                  entity: light.yeelight_ceiling4_0x456e813_ambilight
+          - type: light
+            name: Люстра коридор
+            entity: light.yeelight_ceiling4_0x456e813
 
-            # - type: conditional
-            #   conditions:
-            #     - entity: light.yeelight_ceiling4_0x456e813
-            #       state: "on"
-            #   card:
-            #       type: custom:mushroom-light-card
-            #       entity: light.yeelight_ceiling4_0x456e813
-            #       name: Люстра
-            #       use_light_color: true
-            #       show_brightness_control: true
-            #       show_color_temp_control: true
-            #       show_color_control: false
-            #       collapsible_controls: true
+          - type: light
+            name: Амбілайт
+            entity: light.yeelight_ceiling4_0x456e813_ambilight
 
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:  
-            - type: markdown
-              style: |
-                   ha-card {
-                     color: #f8ffd8;
-                     --paper-item-icon-color: #f8ffd8;
-                     --paper-item-icon-active-color: #f8ffd8;
-                     font-weight: bold;
-                     font-size: 14px;
-                   } 
-              content: >
-                 **Лампочка в прихожей**
+      - type: markdown
+        content: >
+           ### Відновлення роботи
 
-            - type: horizontal-stack
-              cards:
+      - type: markdown
+        content: >
+           ### Освітлення при вході
 
-              - type: custom:mushroom-template-card
-                primary: Доступность
-                secondary: |-
-                  {% if is_state("binary_sensor.en_light_unavailable", "off") %}
-                  OK
-                  {% else %}
-                  Не доступна
-                  {% endif %}
-                layout: horizontal
-                entity: binary_sensor.en_light_unavailable
-                icon: |-
-                  {% if is_state("binary_sensor.en_light_unavailable", "off") %}
-                  mdi:check-bold
-                  {% else %}
-                  mdi:alert
-                  {% endif %}
-                multiline_secondary: true
-                icon_color: |-
-                  {% if is_state("binary_sensor.en_light_unavailable", "off") %}
-                  green
-                  {% else %}
-                  red
-                  {% endif %}
-                tap_action:
-                  action: more-info
+      - type: horizontal-stack
+        cards:
 
-              - type: custom:mushroom-template-card
-                primary: Питание
-                secondary: |-
-                  {% if is_state("switch.0x00158d00057305ac_right", "on") %}
-                  Вкл
-                  {% else %}
-                  Выкл
-                  {% endif %}
-                layout: horizontal
-                tap_action:
-                  action: toggle
-                entity: switch.0x00158d00057305ac_right
-                icon: phu:aqara-h1-switch
-                multiline_secondary: true
-                icon_color: |-
-                  {% if is_state("switch.0x00158d00057305ac_right", "on") %}
-                  green
-                  {% else %}
-                  red
-                  {% endif %}
+          - type: custom:mushroom-template-card
+            primary: Доступність
+            secondary: |-
+              {% if is_state("binary_sensor.en_light_unavailable", "off") %}
+              OK
+              {% else %}
+              Недоступно
+              {% endif %}
+            layout: horizontal
+            entity: binary_sensor.en_light_unavailable
+            icon: |-
+              {% if is_state("binary_sensor.en_light_unavailable", "off") %}
+              mdi:check-bold
+              {% else %}
+              mdi:alert
+              {% endif %}
+            multiline_secondary: true
+            icon_color: |-
+              {% if is_state("binary_sensor.en_light_unavailable", "off") %}
+              green
+              {% else %}
+              red
+              {% endif %}
+            tap_action:
+              action: more-info
 
-              - type: custom:mushroom-template-card
-                primary: Ручная перезагрузка
-                layout: horizontal
-                entity: input_button.en_light_reboot
-                icon: mdi:reload
-                multiline_secondary: true
-                icon_color: amber
-                tap_action:
-                  action: call-service
-                  service: input_button.press
-                  target:
-                    entity_id: input_button.en_light_reboot
+          - type: custom:mushroom-template-card
+            primary: Живлення
+            secondary: |-
+              {% if is_state("switch.0x00158d00057305ac_right", "on") %}
+              Увімкнено
+              {% else %}
+              Вимкнено
+              {% endif %}
+            layout: horizontal
+            tap_action:
+              action: toggle
+            entity: switch.0x00158d00057305ac_right
+            icon: phu:aqara-h1-switch
+            multiline_secondary: true
+            icon_color: |-
+              {% if is_state("switch.0x00158d00057305ac_right", "on") %}
+              green
+              {% else %}
+              red
+              {% endif %}
 
-            # - type: custom:mushroom-template-card
-            #   primary: Свет в прихожей
-            #   secondary: |-
-            #     {% if is_state("light.0x00158d0003e74c31", "on")
-            #     and is_state("binary_sensor.0x00158d0003e74c31_on", "off") %}
-            #     Включен менее 5 сек
-            #     {% elif is_state("light.0x00158d0003e74c31", "on") 
-            #     and is_state("binary_sensor.0x00158d0003e74c31_on", "on") %}
-            #     Включен более 5 сек
-            #     {% elif is_state("binary_sensor.en_light_off_3min", "on") 
-            #     and is_state("light.0x00158d0003e74c31", "off") %}
-            #     Выключен менее 3х минут назад
-            #     {% else %}
-            #     Выключен более 3х минут назад
-            #     {% endif %}
-            #   layout: Horizontal
-            #   entity: binary_sensor.0x00158d0003e74c31_on
-            #   icon: |-
-            #     {% if is_state("light.0x00158d0003e74c31", "on")
-            #     and is_state("binary_sensor.0x00158d0003e74c31_on", "off") %}
-            #     mdi:lightbulb-alert
-            #     {% elif is_state("light.0x00158d0003e74c31", "on") 
-            #     and is_state("binary_sensor.0x00158d0003e74c31_on", "on") %}
-            #     mdi:lightbulb-on
-            #     {% elif is_state("binary_sensor.en_light_off_3min", "on") 
-            #     and is_state("light.0x00158d0003e74c31", "off") %}
-            #     mdi:lightbulb-alert
-            #     {% else %}
-            #     mdi:lightbulb-off
-            #     {% endif %}
-            #   multiline_secondary: true
-            #   icon_color: |-
-            #     {% if is_state("light.0x00158d0003e74c31", "on")
-            #     and is_state("binary_sensor.0x00158d0003e74c31_on", "off") %}
-            #     yellow
-            #     {% elif is_state("light.0x00158d0003e74c31", "on") 
-            #     and is_state("binary_sensor.0x00158d0003e74c31_on", "on") %}
-            #     yellow
-            #     {% elif is_state("binary_sensor.en_light_off_3min", "on") 
-            #     and is_state("light.0x00158d0003e74c31", "off") %}
-            #     grey
-            #     {% else %}
-            #     white
-            #     {% endif %} 
-            #   tap_action:
-            #     action: more-info
+          - type: custom:mushroom-template-card
+            primary: Перезавантаження
+            layout: horizontal
+            entity: input_button.en_light_reboot
+            icon: mdi:reload
+            multiline_secondary: true
+            icon_color: amber
+            tap_action:
+              action: call-service
+              service: input_button.press
+              target:
+                entity_id: input_button.en_light_reboot
 
+      - type: markdown
+        content: >
+           ### Люстра в коридорі
 
-            # - type: markdown
-            #   content: >
-            #      ** **
-        # - type: custom:stack-in-card
-        #   mode: vertical
-        #   cards:  
-            - type: markdown
-              style: |
-                   ha-card {
-                     color: #f8ffd8;
-                     --paper-item-icon-color: #f8ffd8;
-                     --paper-item-icon-active-color: #f8ffd8;
-                     font-weight: bold;
-                     font-size: 14px;
-                   } 
-              content: >
-                 **Люстра в коридоре**
-                 
-            - type: horizontal-stack
-              cards:
+      - type: horizontal-stack
+        cards:
 
-              - type: custom:mushroom-template-card
-                primary: Доступность
-                secondary: |-
-                  {% if is_state("light.yeelight_ceiling4_0x456e813", "unavailable") %}
-                  Недоступно
-                  {% else %}
-                  ОК
-                  {% endif %}
-                layout: horizontal
-                entity: binary_sensor.cr_ceiling_unavailable
-                icon: |-
-                  {% if is_state("light.yeelight_ceiling4_0x456e813", "unavailable") %}
-                  mdi:alert
-                  {% else %}
-                  mdi:check-bold
-                  {% endif %}
-                multiline_secondary: true
-                icon_color: |-
-                  {% if is_state("light.yeelight_ceiling4_0x456e813", "unavailable") %}
-                  red
-                  {% else %}
-                  green
-                  {% endif %}
-                tap_action:
-                  action: more-info
+          - type: custom:mushroom-template-card
+            primary: Доступність
+            secondary: |-
+              {% if is_state("light.yeelight_ceiling4_0x456e813", "unavailable") %}
+              Недоступно
+              {% else %}
+              ОК
+              {% endif %}
+            layout: horizontal
+            entity: binary_sensor.cr_ceiling_unavailable
+            icon: |-
+              {% if is_state("light.yeelight_ceiling4_0x456e813", "unavailable") %}
+              mdi:alert
+              {% else %}
+              mdi:check-bold
+              {% endif %}
+            multiline_secondary: true
+            icon_color: |-
+              {% if is_state("light.yeelight_ceiling4_0x456e813", "unavailable") %}
+              red
+              {% else %}
+              green
+              {% endif %}
+            tap_action:
+              action: more-info
 
-              - type: custom:mushroom-template-card
-                primary: Питание
-                secondary: |-
-                  {% if is_state("switch.0x00158d00057305ac_left", "on") %}
-                  Вкл
-                  {% else %}
-                  Выкл
-                  {% endif %}
-                layout: horizontal
-                tap_action:
-                  action: toggle
-                entity: switch.0x00158d00057305ac_left
-                icon: phu:aqara-h1-switch
-                multiline_secondary: true
-                icon_color: |-
-                  {% if is_state("switch.0x00158d00057305ac_left", "on") %}
-                  green
-                  {% else %}
-                  red
-                  {% endif %}
+          - type: custom:mushroom-template-card
+            primary: Живлення
+            secondary: |-
+              {% if is_state("switch.0x00158d00057305ac_left", "on") %}
+              Увімкнено
+              {% else %}
+              Вимкнено
+              {% endif %}
+            layout: horizontal
+            tap_action:
+              action: toggle
+            entity: switch.0x00158d00057305ac_left
+            icon: phu:aqara-h1-switch
+            multiline_secondary: true
+            icon_color: |-
+              {% if is_state("switch.0x00158d00057305ac_left", "on") %}
+              green
+              {% else %}
+              red
+              {% endif %}
 
-              - type: custom:mushroom-template-card
-                primary: Ручная перезагрузка
-                layout: horizontal
-                entity: input_button.cr_ceiling_reboot
-                icon: mdi:reload
-                multiline_secondary: true
-                icon_color: amber
-                tap_action:
-                  action: call-service
-                  service: input_button.press
-                  target:
-                    entity_id: input_button.cr_ceiling_reboot
+          - type: custom:mushroom-template-card
+            primary: Перезавантаження
+            layout: horizontal
+            entity: input_button.cr_ceiling_reboot
+            icon: mdi:reload
+            multiline_secondary: true
+            icon_color: amber
+            tap_action:
+              action: call-service
+              service: input_button.press
+              target:
+                entity_id: input_button.cr_ceiling_reboot
 
+  - type: grid
+    cards:
 
+      - type: markdown
+        content: >
+           ## Моніторинг
 
-############################ Колонка 2 ############################
-     
-    - type: vertical-stack
-      cards:
-      
-        - type: markdown
-          style: |
-              ha-card {
-                color: #f8ffd8;
-                --paper-item-icon-color: #f8ffd8;
-                --paper-item-icon-active-color: #f8ffd8;
-                font-weight: bold;
-                font-size: 26px;
-              }          
-          content: >
-             **Мониторинг**
+      - type: picture-entity
+        entity: camera.mi_2k
+        camera_view: live
+        show_state: false
+        show_name: false
 
-        - type: picture-entity
-          entity: camera.xiaofang
-          camera_view: auto
-          show_state: false
-          show_name: false
+      - type: horizontal-stack
+        cards:
 
-        - type: horizontal-stack
-          cards:
           - type: custom:mushroom-entity-card
-            entity: input_button.xiaofang_photo
+            entity: input_button.mi_2k
             layout: horizontal
             icon_color: blue
             icon: mdi:camera
@@ -311,488 +201,410 @@ cards:
               action: call-service
               service: input_button.press
               target:
-                entity_id: input_button.xiaofang_photo
-
+                entity_id: input_button.mi_2k
 
           - type: custom:mushroom-template-card
-            primary: Камера Xiaofang
+            primary: Живлення
             secondary: |-
-              {% if is_state("camera.xiaofang", "unavailable") %}
-              Перезагрузить
+              {% if is_state("switch.sonoff_1000d036a0_1", "on") %}
+              Увімкнено
               {% else %}
-              ОК
+              Вимкнено
               {% endif %}
             layout: horizontal
-            entity: input_button.xiaofang_reload
-            icon: |-
-              {% if is_state("camera.xiaofang", "unavailable") %}
-              mdi:reload
+            tap_action:
+              action: toggle
+            entity: switch.sonoff_1000d036a0_1
+            icon: phu:aqara-h1-switch
+            multiline_secondary: true
+            icon_color: |-
+              {% if is_state("switch.sonoff_1000d036a0_1", "on") %}
+              green
               {% else %}
-              mdi:check-bold
+              red
+              {% endif %}
+
+          - type: custom:mushroom-template-card
+            primary: Рух
+            secondary: |-
+              {% if is_state("binary_sensor.en_mi_2k_motion", "off") %}
+              Нема руху
+              {% else %}
+              Виявлено
+              {% endif %}
+            layout: horizontal
+            entity: binary_sensor.en_mi_2k_motion
+            icon: |-
+              {% if is_state("binary_sensor.en_mi_2k_motion", "off") %}
+              mdi:motion-sensor-off
+              {% else %}
+              mdi:motion-sensor
               {% endif %}
             multiline_secondary: true
             icon_color: |-
-              {% if is_state("camera.xiaofang", "unavailable") %}
-              red
+              {% if is_state("binary_sensor.en_mi_2k_motion", "off") %}
+              grey
               {% else %}
-              green
+              amber
               {% endif %}
             tap_action:
-              action: call-service
-              service: input_button.press
-              target:
-                entity_id: input_button.xiaofang_reload
+              action: more-info
 
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:  
-            - type: markdown
-              style: |
-                   ha-card {
-                     color: #f8ffd8;
-                     --paper-item-icon-color: #f8ffd8;
-                     --paper-item-icon-active-color: #f8ffd8;
-                     font-weight: bold;
-                     font-size: 14px;
-                   } 
-              content: >
-                 **Датчики и сенсоры прихожая**
+      - type: markdown
+        content: >
+           ### Датчики та сенсори в передпокої
 
-            - type: horizontal-stack
-              cards:
-              - type: custom:mushroom-template-card
-                primary: Дым
-                secondary: |-
-                  {% if is_state("binary_sensor.0x00158d000149d28b_smoke", "off") %}
-                  OK
-                  {% else %}
-                  Задымление
-                  {% endif %}
-                layout: horizontal
-                entity: binary_sensor.0x00158d000149d28b_smoke
-                icon: phu:aqara-smoke-detector
-                multiline_secondary: true
-                icon_color: |-
-                  {% if is_state("binary_sensor.0x00158d000149d28b_smoke", "off") %}
-                  green
-                  {% else %}
-                  red
-                  {% endif %}
-                tap_action:
-                  action: more-info
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Дим
+            secondary: |-
+              {% if is_state("binary_sensor.0x00158d000149d28b_smoke", "off") %}
+              OK
+              {% else %}
+              Задимлення
+              {% endif %}
+            layout: horizontal
+            entity: binary_sensor.0x00158d000149d28b_smoke
+            icon: phu:aqara-smoke-detector
+            multiline_secondary: true
+            icon_color: |-
+              {% if is_state("binary_sensor.0x00158d000149d28b_smoke", "off") %}
+              green
+              {% else %}
+              red
+              {% endif %}
+            tap_action:
+              action: more-info
 
-              - type: custom:mushroom-template-card
-                primary: Движение
-                secondary: |-
-                  {% if is_state("binary_sensor.0x00158d00013f7894_occupancy", "off") %}
-                  Нет
-                  {% else %}
-                  Есть
-                  {% endif %}
-                layout: horizontal
-                entity: binary_sensor.0x00158d00013f7894_occupancy
-                icon: |-
-                  {% if is_state("binary_sensor.0x00158d00013f7894_occupancy", "off") %}
-                  mdi:motion-sensor-off
-                  {% else %}
-                  mdi:motion-sensor
-                  {% endif %}
-                multiline_secondary: true
-                icon_color: |-
-                  {% if is_state("binary_sensor.0x00158d00013f7894_occupancy", "off") %}
-                  grey
-                  {% else %}
-                  amber
-                  {% endif %} 
-                tap_action:
-                  action: more-info
-                  
-              - type: custom:mushroom-template-card
-                primary: Дверь
-                secondary: |-
-                  {% if is_state("binary_sensor.0x00158d000119378d_contact", "off") %}
-                  Закрыта
-                  {% else %}
-                  Открыта
-                  {% endif %}
-                layout: horizontal
-                entity: binary_sensor.0x00158d000119378d_contact
-                icon: |-
-                  {% if is_state("binary_sensor.0x00158d000119378d_contact", "off") %}
-                  phu:panel-frontdoor-close
-                  {% else %}
-                  phu:panel-frontdoor-open
-                  {% endif %}
-                multiline_secondary: true
-                icon_color: |-
-                  {% if is_state("binary_sensor.0x00158d000119378d_contact", "off") %}
-                  grey
-                  {% else %}
-                  amber
-                  {% endif %} 
-                tap_action:
-                  action: more-info
+          - type: custom:mushroom-template-card
+            primary: Рух
+            secondary: |-
+              {% if is_state("binary_sensor.0x00158d00013f7894_occupancy", "off") %}
+              Нема руху
+              {% else %}
+              Виявлено
+              {% endif %}
+            layout: horizontal
+            entity: binary_sensor.0x00158d00013f7894_occupancy
+            icon: |-
+              {% if is_state("binary_sensor.0x00158d00013f7894_occupancy", "off") %}
+              mdi:motion-sensor-off
+              {% else %}
+              mdi:motion-sensor
+              {% endif %}
+            multiline_secondary: true
+            icon_color: |-
+              {% if is_state("binary_sensor.0x00158d00013f7894_occupancy", "off") %}
+              grey
+              {% else %}
+              amber
+              {% endif %}
+            tap_action:
+              action: more-info
 
-            - type: horizontal-stack
-              cards:
+          - type: custom:mushroom-template-card
+            primary: Двері
+            secondary: |-
+              {% if is_state("binary_sensor.0x00158d000119378d_contact", "off") %}
+              Закриті
+              {% else %}
+              Відкриті
+              {% endif %}
+            layout: horizontal
+            entity: binary_sensor.0x00158d000119378d_contact
+            icon: |-
+              {% if is_state("binary_sensor.0x00158d000119378d_contact", "off") %}
+              phu:panel-frontdoor-close
+              {% else %}
+              phu:panel-frontdoor-open
+              {% endif %}
+            multiline_secondary: true
+            icon_color: |-
+              {% if is_state("binary_sensor.0x00158d000119378d_contact", "off") %}
+              grey
+              {% else %}
+              amber
+              {% endif %}
+            tap_action:
+              action: more-info
 
-              - type: custom:mushroom-template-card
-                primary: Температура
-                secondary: |-
-                      {{states ('sensor.0x54ef44100001b68d_temperature')}} С°
-                layout: horizontal
-                entity: sensor.0x54ef44100001b68d_temperature
-                icon_color: |-
-                  {% if states("sensor.0x54ef44100001b68d_temperature")|float <= -10 %}
-                  indigo
-                  {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 0 %}
-                  blue
-                  {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 10 %}
-                  light-blue
-                  {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 20 %}
-                  cyan
-                  {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 25 %}
-                  yellow
-                  {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 30 %}
-                  amber
-                  {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 40 %}
-                  orange
-                  {% endif %}
-                icon: mdi:temperature-celsius
-                tap_action:
-                  action: more-info
+      - type: horizontal-stack
+        cards:
 
-              - type: custom:mushroom-template-card
-                primary: Влажность
-                secondary: |-
-                      {{states ('sensor.0x54ef44100001b68d_humidity')}} %
-                layout: horizontal
-                entity: sensor.0x54ef44100001b68d_humidity
-                icon_color: |-
-                  {% if states("sensor.0x54ef44100001b68d_humidity")|float <= 30 %}
-                  deep-orange
-                  {% elif states("sensor.0x54ef44100001b68d_humidity")|float <= 40 %}
-                  yellow
-                  {% elif states("sensor.0x54ef44100001b68d_humidity")|float <= 50 %}
-                  light-blue
-                  {% elif states("sensor.0x54ef44100001b68d_humidity")|float <= 60 %}
-                  blue
-                  {% elif states("sensor.0x54ef44100001b68d_humidity")|float > 60 %}
-                  indigo
-                  {% endif %}
-                icon: mdi:water-percent
-                tap_action:
-                  action: more-info 
+          - type: custom:mushroom-template-card
+            primary: Температура
+            secondary: |-
+              {{ states('sensor.0x54ef44100001b68d_temperature') }} С°
+            layout: horizontal
+            entity: sensor.0x54ef44100001b68d_temperature
+            icon_color: |-
+              {% if states("sensor.0x54ef44100001b68d_temperature")|float <= -10 %}
+              indigo
+              {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 0 %}
+              blue
+              {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 10 %}
+              light-blue
+              {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 20 %}
+              cyan
+              {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 25 %}
+              yellow
+              {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 30 %}
+              amber
+              {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 40 %}
+              orange
+              {% endif %}
+            icon: mdi:temperature-celsius
+            tap_action:
+              action: more-info
 
-              - type: custom:mushroom-template-card
-                primary: ЛОВ
-                secondary: |-
-                      {{states ('sensor.0x54ef44100001b68d_voc')}} ppb
-                layout: horizontal
-                entity: sensor.0x54ef44100001b68d_voc
-                icon_color: |-
-                  {% if states("sensor.0x54ef44100001b68d_voc")|float <= 65 %}
-                  green
-                  {% elif states("sensor.0x54ef44100001b68d_voc")|float <= 220 %}
-                  light-green
-                  {% elif states("sensor.0x54ef44100001b68d_voc")|float <= 450 %}
-                  lime
-                  {% elif states("sensor.0x54ef44100001b68d_voc")|float <= 660 %}
-                  yellow
-                  {% elif states("sensor.0x54ef44100001b68d_voc")|float <= 1500 %}
-                  orange
-                  {% elif states("sensor.0x54ef44100001b68d_voc")|float > 1500 %}
-                  red
-                  {% endif %}
-                icon: mdi:virus
-                tap_action:
-                  action: more-info 
+          - type: custom:mushroom-template-card
+            primary: Вологість
+            secondary: |-
+              {{ states('sensor.0x54ef44100001b68d_humidity') }} %
+            layout: horizontal
+            entity: sensor.0x54ef44100001b68d_humidity
+            icon_color: |-
+              {% if states("sensor.0x54ef44100001b68d_humidity")|float <= 30 %}
+              deep-orange
+              {% elif states("sensor.0x54ef44100001b68d_humidity")|float <= 40 %}
+              yellow
+              {% elif states("sensor.0x54ef44100001b68d_humidity")|float <= 50 %}
+              light-blue
+              {% elif states("sensor.0x54ef44100001b68d_humidity")|float <= 60 %}
+              blue
+              {% elif states("sensor.0x54ef44100001b68d_humidity")|float > 60 %}
+              indigo
+              {% endif %}
+            icon: mdi:water-percent
+            tap_action:
+              action: more-info
 
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:  
-            - type: markdown
-              style: |
-                   ha-card {
-                     color: #f8ffd8;
-                     --paper-item-icon-color: #f8ffd8;
-                     --paper-item-icon-active-color: #f8ffd8;
-                     font-weight: bold;
-                     font-size: 14px;
-                   } 
-              content: >
-                 **Датчики и сенсоры коридор**
+          - type: custom:mushroom-template-card
+            primary: VOC
+            secondary: |-
+              {{ states('sensor.0x54ef44100001b68d_voc') }} ppb
+            layout: horizontal
+            entity: sensor.0x54ef44100001b68d_voc
+            icon_color: |-
+              {% if states("sensor.0x54ef44100001b68d_voc")|float <= 65 %}
+              green
+              {% elif states("sensor.0x54ef44100001b68d_voc")|float <= 220 %}
+              light-green
+              {% elif states("sensor.0x54ef44100001b68d_voc")|float <= 450 %}
+              lime
+              {% elif states("sensor.0x54ef44100001b68d_voc")|float <= 660 %}
+              yellow
+              {% elif states("sensor.0x54ef44100001b68d_voc")|float <= 1500 %}
+              orange
+              {% elif states("sensor.0x54ef44100001b68d_voc")|float > 1500 %}
+              red
+              {% endif %}
+            icon: mdi:virus
+            tap_action:
+              action: more-info
 
-            - type: horizontal-stack
-              cards:
-                 
-              - type: custom:mushroom-template-card
-                primary: Движение
-                secondary: |-
-                  {% if is_state("binary_sensor.0x00158d00010f8920_occupancy", "off") %}
-                  Нет
-                  {% else %}
-                  Есть
-                  {% endif %}
-                layout: horizontal
-                entity: binary_sensor.0x00158d00010f8920_occupancy
-                icon: |-
-                  {% if is_state("binary_sensor.0x00158d00010f8920_occupancy", "off") %}
-                  mdi:motion-sensor-off
-                  {% else %}
-                  mdi:motion-sensor
-                  {% endif %}
-                multiline_secondary: true
-                icon_color: |-
-                  {% if is_state("binary_sensor.0x00158d00010f8920_occupancy", "off") %}
-                  grey
-                  {% else %}
-                  amber
-                  {% endif %} 
-                tap_action:
-                  action: more-info
-                  
-              - type: custom:mushroom-template-card
-                primary: Вибродатчик
-                secondary: |-
-                  {% if is_state("binary_sensor.0x00158d0002a4f77e_vibration", "off") %}
-                  Не обнаружено
-                  {% else %}
-                  Вибрация
-                  {% endif %}
-                layout: horizontal
-                entity: binary_sensor.0x00158d0002a4f77e_vibration
-                icon: |-
-                  {% if is_state("binary_sensor.0x00158d0002a4f77e_vibration", "off") %}
-                  mdi:vibrate-off
-                  {% else %}
-                  mdi:vibrate
-                  {% endif %}
-                multiline_secondary: true
-                icon_color: |-
-                  {% if is_state("binary_sensor.0x00158d0002a4f77e_vibration", "off") %}
-                  grey
-                  {% else %}
-                  amber
-                  {% endif %} 
-                tap_action:
-                  action: more-info
+      - type: markdown
+        content: >
+           ### Датчики та сенсори в коридорі
 
-            - type: horizontal-stack
-              cards:
+      - type: horizontal-stack
+        cards:
 
-              - type: custom:mushroom-template-card
-                primary: Температура
-                secondary: |-
-                      {{states ('sensor.0x00124b0022659c04_temperature')}} С°
-                layout: horizontal
-                entity: sensor.0x00124b0022659c04_temperature
-                icon_color: |-
-                  {% if states("sensor.0x00124b0022659c04_temperature")|float <= -10 %}
-                  indigo
-                  {% elif states("sensor.0x00124b0022659c04_temperature")|float <= 0 %}
-                  blue
-                  {% elif states("sensor.0x00124b0022659c04_temperature")|float <= 10 %}
-                  light-blue
-                  {% elif states("sensor.0x00124b0022659c04_temperature")|float <= 20 %}
-                  cyan
-                  {% elif states("sensor.0x00124b0022659c04_temperature")|float <= 25 %}
-                  yellow
-                  {% elif states("sensor.0x00124b0022659c04_temperature")|float <= 30 %}
-                  amber
-                  {% elif states("sensor.0x00124b0022659c04_temperature")|float <= 40 %}
-                  orange
-                  {% endif %}
-                icon: mdi:temperature-celsius
-                tap_action:
-                  action: more-info
+          - type: custom:mushroom-template-card
+            primary: Присутність
+            secondary: |-
+              {% if is_state("binary_sensor.0xa4c138dc97e602e5_presence", "off") %}
+              Нема руху
+              {% else %}
+              Виявлено
+              {% endif %}
+            layout: horizontal
+            entity: binary_sensor.0xa4c138dc97e602e5_presence
+            icon: |-
+              {% if is_state("binary_sensor.0xa4c138dc97e602e5_presence", "off") %}
+              mdi:motion-sensor-off
+              {% else %}
+              mdi:motion-sensor
+              {% endif %}
+            multiline_secondary: true
+            icon_color: |-
+              {% if is_state("binary_sensor.0xa4c138dc97e602e5_presence", "off") %}
+              grey
+              {% else %}
+              amber
+              {% endif %}
+            tap_action:
+              action: more-info
 
-              - type: custom:mushroom-template-card
-                primary: Влажность
-                secondary: |-
-                      {{states ('sensor.0x00124b0022659c04_humidity')}} %
-                layout: horizontal
-                entity: sensor.0x00124b0022659c04_humidity
-                icon_color: |-
-                  {% if states("sensor.0x00124b0022659c04_humidity")|float <= 30 %}
-                  deep-orange
-                  {% elif states("sensor.0x00124b0022659c04_humidity")|float <= 40 %}
-                  yellow
-                  {% elif states("sensor.0x00124b0022659c04_humidity")|float <= 50 %}
-                  light-blue
-                  {% elif states("sensor.0x00124b0022659c04_humidity")|float <= 60 %}
-                  blue
-                  {% elif states("sensor.0x00124b0022659c04_humidity")|float > 60 %}
-                  indigo
-                  {% endif %}
-                icon: mdi:water-percent
-                tap_action:
-                  action: more-info 
-                  
-############################ Колонка 3 ############################
-     
-    - type: vertical-stack
-      cards:
-      
-        - type: markdown
-          style: |
-              ha-card {
-                color: #f8ffd8;
-                --paper-item-icon-color: #f8ffd8;
-                --paper-item-icon-active-color: #f8ffd8;
-                font-weight: bold;
-                font-size: 26px;
-              }          
-          content: >
-             **Телеметрия**
-             
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:  
-            - type: markdown
-              style: |
-                   ha-card {
-                     color: #f8ffd8;
-                     --paper-item-icon-color: #f8ffd8;
-                     --paper-item-icon-active-color: #f8ffd8;
-                     font-weight: bold;
-                     font-size: 14px;
-                   } 
-              content: >
-                 **Состояние датчиков прихожая**
+          - type: custom:mushroom-template-card
+            primary: Освітленність
+            secondary: |-
+              {{ states('sensor.0xa4c138dc97e602e5_illuminance') }} lux
+            layout: horizontal
+            entity: sensor.0xa4c138dc97e602e5_illuminance
+            icon_color: |-
+              {% if states("sensor.0xa4c138dc97e602e5_illuminance")|float <= 200 %}
+              blue-grey
+              {% elif states("sensor.0xa4c138dc97e602e5_illuminance")|float <= 400 %}
+              grey
+              {% elif states("sensor.0xa4c138dc97e602e5_illuminance")|float > 400 %}
+              white
+              {% endif %}
+            icon: mdi:brightness-5
+            tap_action:
+              action: more-info
 
-            - type: entities
-              style: |
-                   ha-card {
-                     color: #f8ffd8;
-                     --paper-item-icon-color: #f8ffd8;
-                     --paper-item-icon-active-color: #f8ffd8;
-                     font-weight: bold;
-                     font-size: 14px;
-                   } 
-              show_header_toggle: false
-              entities:
-                - entity: sensor.0x00158d000149d28b_battery
-                  type: custom:multiple-entity-row
-                  icon: phu:aqara-smoke-detector
-                  state_color: true
-                  name: Датчик дыма
-                  secondary_info: last-changed
-                  state_header: Батарейка
-                  entities:
-                  - attribute: linkquality
-                    name: Сигнал
-                - type: divider 
-                - entity: sensor.0x00158d000119378d_battery
-                  type: custom:multiple-entity-row
-                  icon: phu:aqara-contact
-                  state_color: true
-                  name: Датчик открытия, дверь
-                  secondary_info: last-changed
-                  state_header: Батарейка
-                  entities:
-                  - attribute: linkquality
-                    name: Сигнал
-                - type: divider
-                - entity: sensor.0x00158d00013f7894_battery
-                  type: custom:multiple-entity-row
-                  icon: phu:aqara-motion
-                  state_color: true
-                  name: Датчик движения
-                  secondary_info: last-changed
-                  state_header: Батарейка
-                  entities:
-                  - attribute: linkquality
-                    name: Сигнал          
-                - type: divider
-                - entity: sensor.0x54ef44100001b68d_battery
-                  type: custom:multiple-entity-row
-                  icon: phu:aqara-air-quality
-                  state_color: true
-                  name: Датчик климата
-                  secondary_info: last-changed
-                  state_header: Батарейка
-                  entities:
-                  - attribute: linkquality
-                    name: Сигнал
-                - type: divider
-                - entity: sensor.0x00158d00010b1963_battery
-                  type: custom:multiple-entity-row
-                  icon: mdi:gesture-tap-button
-                  state_color: true
-                  name: Кнопка на полке
-                  secondary_info: last-changed
-                  state_header: Батарейка
-                  entities:
-                  - attribute: linkquality
-                    name: Сигнал  
-                    
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:  
-            - type: markdown
-              style: |
-                   ha-card {
-                     color: #f8ffd8;
-                     --paper-item-icon-color: #f8ffd8;
-                     --paper-item-icon-active-color: #f8ffd8;
-                     font-weight: bold;
-                     font-size: 14px;
-                   } 
-              content: >
-                 **Состояние датчиков коридор**
+      - type: horizontal-stack
+        cards:
 
-            - type: entities
-              style: |
-                   ha-card {
-                     color: #f8ffd8;
-                     --paper-item-icon-color: #f8ffd8;
-                     --paper-item-icon-active-color: #f8ffd8;
-                     font-weight: bold;
-                     font-size: 14px;
-                   } 
-              show_header_toggle: false
-              entities:
-                - entity: sensor.0x00124b0022659c04_battery
-                  type: custom:multiple-entity-row
-                  icon: phu:aqara-temperature
-                  state_color: true
-                  name: Датчик климата
-                  secondary_info: last-changed
-                  state_header: Батарейка
-                  entities:
-                  - attribute: linkquality
-                    name: Сигнал
-                - type: divider
-                - entity: sensor.0x00158d00010f8920_battery
-                  type: custom:multiple-entity-row
-                  icon: phu:aqara-motion
-                  state_color: true
-                  name: Датчик движения
-                  secondary_info: last-changed
-                  state_header: Батарейка
-                  entities:
-                  - attribute: linkquality
-                    name: Сигнал   
-                - type: divider
-                - entity: sensor.0x00158d0002a4f77e_battery
-                  type: custom:multiple-entity-row
-                  icon: phu:aqara-vibration
-                  state_color: true
-                  name: Датчик вибрации
-                  secondary_info: last-changed
-                  state_header: Батарейка
-                  entities:
-                  - attribute: linkquality
-                    name: Сигнал   
-                - type: divider
-                - entity: sensor.0x00158d0001f3fefe_battery
-                  type: custom:multiple-entity-row
-                  icon: mdi:gesture-tap-button
-                  state_color: true
-                  name: Кнопка в шкафу
-                  secondary_info: last-changed
-                  state_header: Батарейка
-                  entities:
-                  - attribute: linkquality
-                    name: Сигнал 
+          - type: custom:mushroom-template-card
+            primary: Рух
+            secondary: |-
+              {% if is_state("binary_sensor.0x00158d00010f8920_occupancy", "off") %}
+              Нема руху
+              {% else %}
+              Виявлено
+              {% endif %}
+            layout: horizontal
+            entity: binary_sensor.0x00158d00010f8920_occupancy
+            icon: |-
+              {% if is_state("binary_sensor.0x00158d00010f8920_occupancy", "off") %}
+              mdi:motion-sensor-off
+              {% else %}
+              mdi:motion-sensor
+              {% endif %}
+            multiline_secondary: true
+            icon_color: |-
+              {% if is_state("binary_sensor.0x00158d00010f8920_occupancy", "off") %}
+              grey
+              {% else %}
+              amber
+              {% endif %}
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            primary: Вібрація
+            secondary: |-
+              {% if is_state("binary_sensor.0x00158d0002a4f77e_vibration", "off") %}
+              Спокій
+              {% else %}
+              Вібрація
+              {% endif %}
+            layout: horizontal
+            entity: binary_sensor.0x00158d0002a4f77e_vibration
+            icon: |-
+              {% if is_state("binary_sensor.0x00158d0002a4f77e_vibration", "off") %}
+              mdi:vibrate-off
+              {% else %}
+              mdi:vibrate
+              {% endif %}
+            multiline_secondary: true
+            icon_color: |-
+              {% if is_state("binary_sensor.0x00158d0002a4f77e_vibration", "off") %}
+              grey
+              {% else %}
+              amber
+              {% endif %}
+            tap_action:
+              action: more-info
+
+      - type: horizontal-stack
+        cards:
+
+          - type: custom:mushroom-template-card
+            primary: Температура
+            secondary: |-
+              {{ states('sensor.0x00124b0022659c04_temperature') }} С°
+            layout: horizontal
+            entity: sensor.0x00124b0022659c04_temperature
+            icon_color: |-
+              {% if states("sensor.0x00124b0022659c04_temperature")|float <= -10 %}
+              indigo
+              {% elif states("sensor.0x00124b0022659c04_temperature")|float <= 0 %}
+              blue
+              {% elif states("sensor.0x00124b0022659c04_temperature")|float <= 10 %}
+              light-blue
+              {% elif states("sensor.0x00124b0022659c04_temperature")|float <= 20 %}
+              cyan
+              {% elif states("sensor.0x00124b0022659c04_temperature")|float <= 25 %}
+              yellow
+              {% elif states("sensor.0x00124b0022659c04_temperature")|float <= 30 %}
+              amber
+              {% elif states("sensor.0x00124b0022659c04_temperature")|float <= 40 %}
+              orange
+              {% endif %}
+            icon: mdi:temperature-celsius
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            primary: Вологість
+            secondary: |-
+              {{ states('sensor.0x00124b0022659c04_humidity') }} %
+            layout: horizontal
+            entity: sensor.0x00124b0022659c04_humidity
+            icon_color: |-
+              {% if states("sensor.0x00124b0022659c04_humidity")|float <= 30 %}
+              deep-orange
+              {% elif states("sensor.0x00124b0022659c04_humidity")|float <= 40 %}
+              yellow
+              {% elif states("sensor.0x00124b0022659c04_humidity")|float <= 50 %}
+              light-blue
+              {% elif states("sensor.0x00124b0022659c04_humidity")|float <= 60 %}
+              blue
+              {% elif states("sensor.0x00124b0022659c04_humidity")|float > 60 %}
+              indigo
+              {% endif %}
+            icon: mdi:water-percent
+            tap_action:
+              action: more-info
+
+  - type: grid
+    cards:
+
+      - type: markdown
+        content: >
+           ## Телеметрія
+
+      - type: markdown
+        content: >
+           ### Стан датчиків у передпокої
+
+      - type: custom:battery-state-card
+        entities:
+          - entity: sensor.0x00158d000149d28b_battery
+            name: "Датчик диму"
+            icon: phu:aqara-smoke-detector
+          - entity: sensor.0x00158d000119378d_battery
+            name: "Датчик відкриття дверей"
+            icon: phu:aqara-contact
+          - entity: sensor.0x00158d00013f7894_battery
+            name: "Датчик руху"
+            icon: phu:aqara-motion
+          - entity: sensor.0x54ef44100001b68d_battery
+            name: "Датчик температури, вологості і VOC"
+            icon: phu:aqara-air-quality
+          - entity: sensor.0x00158d00010b1963_battery
+            name: "Кнопка при виході"
+            icon: phu:aqara-wirelessbutton
+
+      - type: markdown
+        content: >
+           ### Стан датчиків у коридорі
+
+      - type: custom:battery-state-card
+        entities:
+          - entity: sensor.0x00158d00010f8920_battery
+            name: "Датчик руху"
+            icon: phu:aqara-motion
+          - entity: sensor.0x00124b0022659c04_battery
+            name: "Датчик температури і вологості"
+            icon: phu:aqara-temperature
+          - entity: sensor.0x00158d0002a4f77e_battery
+            name: "Датчик вібрації"
+            icon: phu:aqara-vibration
+          - entity: sensor.0x00158d0001f3fefe_battery
+            name: "Кнопка в шафі"
+            icon: phu:aqara-wirelessbutton

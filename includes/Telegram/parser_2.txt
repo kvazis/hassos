@@ -1,0 +1,158 @@
+parser_local_2:
+
+
+  recorder:
+      include:
+        entities:
+           - sensor.parser_local_2_last_line
+           - sensor.parser_local_2_state_type
+           - binary_sensor.parser_local_2_is_outage           
+           
+  ########################################
+  # 1. REST: тягнемо стрічку з каналу
+  ########################################
+  rest:
+    - resource_template: "https://r.jina.ai/https://t.me/s/svitlobot_obolon_pr_38?nocache={{ now().timestamp()|int }}"  
+      scan_interval: 20
+      timeout: 30
+      sensor:
+
+        - name: parser_local_2_last_line
+          value_template: >-
+            {% set page = value | default('', true) %}
+            {% set text = page | lower
+                           | replace('’','ʼ') | replace("'",'ʼ') | replace('`','ʼ') %}
+
+            {# позиції всіх варіантів фрази #}
+            {% set pos_gone  = text.rfind('світло зникло') %}
+            {% set pos_back1 = text.rfind('світло зʼявилося') %}
+            {% set pos_back2 = text.rfind('світло зявилося') %}
+
+            {# беремо максимальну позицію #}
+            {% set idx = [pos_gone, pos_back1, pos_back2] | max %}
+
+            {% if idx == -1 %}
+              {{ '' }}
+            {% else %}
+              {# вирізаємо «рядок» навколо цієї позиції #}
+              {% set start = page.rfind('\n', 0, idx) %}
+              {% set end   = page.find('\n', idx) %}
+              {% set start = 0 if start == -1 else start + 1 %}
+              {% set end   = page|length if end == -1 else end %}
+              {{ page[start:end] | trim }}
+            {% endif %}
+
+
+  ########################################
+  # 2. Template-сенсори на основі last_line
+  ########################################
+  template:
+    - sensor:
+        - name: parser_local_2_state_type
+          state: >-
+            {% set l = (states('sensor.parser_local_2_last_line') | lower
+                        | replace('’','ʼ') | replace("'",'ʼ') | replace('`','ʼ')) %}
+            {% if 'світло зникло' in l %} gone
+            {% elif 'світло зʼявилося' in l or 'світло зявилося' in l %} back
+            {% else %} unknown
+            {% endif %}
+
+
+    - binary_sensor:
+        - name: parser_local_2_is_outage
+          state: "{{ states('sensor.parser_local_2_state_type') == 'back' }}"
+
+  input_boolean:
+    
+     parser_local_2_state_lock:
+        name: Блокування повідомлення про повернення світла
+
+  automation:
+
+    - alias: tg_local_noitify_2
+      id: tg_local_noitify_2
+      description: Нотіфікація про майбутнє включення світла
+      initial_state: false
+      mode: single
+
+      trigger:
+
+        - platform: state
+          entity_id: sensor.parser_local_2_state_type
+          to: 'back'
+
+        # - platform: state
+        #   entity_id: binary_sensor.parser_local_2_is_outage
+        #   from: 'off'
+        #   to: 'on'      
+
+      condition:
+
+        - condition: state
+          entity_id: input_boolean.k7_notification
+          state: 'on'
+
+        - condition: state
+          entity_id: input_boolean.parser_local_2_state_lock
+          state: 'off'
+
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'on'
+
+      action:
+      
+        - action: input_boolean.turn_on
+          data: {}
+          target:
+            entity_id: input_boolean.parser_local_2_state_lock
+            
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+              - !secret chat_id_group
+            message: |
+              🟢 Зовсім скоро буде включення електроенергії
+
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+              - !secret chat_id_k7
+            message: |
+              🟢 Зовсім скоро буде включення електроенергії
+
+        # - delay: 00:15:00
+
+
+        
+    - alias: tg_local_noitify_2_reload
+      id: tg_local_noitify_2_reload
+      description: Розблокування нотіфікація про майбутнє включення світла
+      initial_state: false
+      mode: single
+
+      trigger:
+
+        - platform: state
+          entity_id: sensor.parser_local_2_state_type
+          to: 'gone'
+
+        # - platform: state
+        #   entity_id: binary_sensor.parser_local_2_is_outage
+        #   from: 'off'
+        #   to: 'on'      
+
+      condition:
+
+        - condition: state
+          entity_id: input_boolean.parser_local_2_state_lock
+          state: 'on'
+
+      action:
+      
+        - action: input_boolean.turn_off
+          data: {}
+          target:
+            entity_id: input_boolean.parser_local_2_state_lock
+
+

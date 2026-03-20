@@ -17,134 +17,283 @@ br_wled_light:
       br_gradient_wled:
         name: Спальная шнур
 
+    input_boolean:
+
+      br_wled_round:
+        name: Спальня ручне ввімкнення шнура
+        icon: mdi:lightbulb-off-outline
 
     template:
 
       - binary_sensor:
 
-          - name: br_gradient_wled_on
-            unique_id: br_gradient_wled_on
+
+    # Рух без світла, спальня
+          - name: br_moving_in_dark
+            unique_id: br_moving_in_dark
             state: >
-                {{ state_attr('light.br_wled_round', 'effect') == 'Percent' and
-                   state_attr('light.br_wled_round', 'brightness') == 255 and 
-                   states('number.br_wled_round_intensity')|int == 100 }}
+              {{ is_state('binary_sensor.0x00158d0001a66222_occupancy', 'on')
+                 and states('sensor.0xa4c13805b968f3d2_illuminance')|float < 30
+                 and not is_state('light.br_philips_62', 'on')
+                 and is_state('light.br_wled_round', 'off')
+                 and is_state('binary_sensor.night_time', 'off')
+              }}
+
+    # Світло без руху
+          - name: br_light_no_move
+            unique_id: br_light_no_move
+            state: >
+              {{ is_state('light.br_wled_round', 'on')  
+                 and is_state('binary_sensor.0x00158d0001a66222_occupancy', 'off')
+                 and is_state('binary_sensor.night_time', 'off')
+              }}
+            delay_on: 00:02:00
             device_class: light
-          
+            
+    # Затримка включення
+          - name: br_wled_round_off_5m
+            unique_id: br_wled_round_off_5m
+            state: >
+              {{ is_state('light.br_wled_round', 'off') }}
+            delay_on: 00:05:00
+            device_class: light
+
     automation:
 
-      - alias: br_gradient_wled_on
-        id: br_gradient_wled_on
-        description: Спальня градиентное включение адресной ленты
+      - alias: br_wled_control
+        id: br_wled_control
+        description: Спальня керування адресною стрічкою
         initial_state: true
         trigger:
     ## Virtual button
         - platform: state
           entity_id: input_button.br_gradient_wled
-    # Пульт Loratap
+    # Пульт Loratap кнопка 2, 1 клік
         - platform: state
           entity_id: sensor.0x60a423fffe942cf2_action
-          to: '1_single' 
-    # Выключатель на входе
+          to: '2_single'
+    # Вимикач на вході 
         - platform: state
           entity_id: sensor.0x54ef44100024689c_action
           to: 'single_left'
-    # Выключатель возле кровати
-        - platform: state
-          entity_id: sensor.0x00158d0003d50723_action
-          to: 'right'
+    # ВИмикач Aqara Opple - 2 клавіша
+        - domain: mqtt
+          device_id: df1032556f8b28d1f774b454d8525cb4
+          type: action
+          subtype: button_2_single
+          trigger: device
         condition:
-        - condition: state
-          entity_id: binary_sensor.br_gradient_wled_on
-          state: 'off'
+    # Режим роботи серверу
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
         action:
-        - service: light.turn_on
-          entity_id: light.br_wled_round
-          data:
-            effect: Solid
-            rgb_color: [0, 0, 0]
-        - service: light.turn_on
+            - choose:
+              - conditions:
+                - condition: state
+                  entity_id: light.br_wled_round
+                  state: 'off'
+                sequence:
+                - action: input_boolean.turn_on
+                  target:
+                    entity_id: input_boolean.br_wled_round
+                  data: {}
+        
+                - action: light.turn_on
+                  entity_id: light.br_wled_round
+                  data:
+                    effect: Percent
+                    brightness_pct: 100
+                    rgb_color: [255, 255, 255]
+                - action: select.select_option
+                  data:
+                    option: Default
+                  target:
+                    entity_id: select.br_wled_round_color_palette
+                - action: number.set_value
+                  target:
+                    entity_id: number.br_wled_round_intensity
+                  data:
+                    value: 100
+
+              - conditions:
+                - condition: state
+                  entity_id: light.br_wled_round
+                  state: 'on'
+                sequence:
+                - action: input_boolean.turn_off
+                  target:
+                    entity_id: input_boolean.br_wled_round
+                  data: {}        
+                - action: light.turn_off
+                  entity_id: light.br_wled_round
+
+      - alias: br_auto_light_on
+        id: br_auto_light_on
+        description: Спальня - автоматичне ввімкнення підсвітки 
+        initial_state: true
+        trigger:          
+    # Рух в темряві
+        - platform: state
+          entity_id: binary_sensor.br_moving_in_dark
+          to: 'on'
+        condition:
+    # Перемикач режиму робти серверу
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'          
+    # Перемикач ручного ввімкнення
+        - condition: state
+          entity_id: input_boolean.br_wled_round
+          state: 'off'
+    # Лента має бути вимкнута хоча б 5 хвилин
+        - condition: state
+          entity_id: binary_sensor.br_wled_round_off_5m
+          state: 'on'          
+        
+        action:          
+        - action: light.turn_on
           entity_id: light.br_wled_round
           data:
             effect: Percent
             brightness_pct: 100
             rgb_color: [255, 255, 255]
-        - service: select.select_option
+        - action: select.select_option
           data:
             option: Default
           target:
             entity_id: select.br_wled_round_color_palette
-        - service: number.set_value
+        - action: number.set_value
           target:
             entity_id: number.br_wled_round_intensity
           data:
-            value: 5
-        - service: script.turn_on
-          entity_id: script.br_gradient_wled_on
-
-      - alias: br_gradient_wled_off
-        id: br_gradient_wled_off
-        description: Спальня градиентное выключение адресной ленты
+            value: 100
+          
+    # Автоматичне вимкнення підсвітки      
+          
+      - alias: br_auto_light_off
+        id: br_auto_light_off
+        description: Спальня - автоматичне вимкнення підсвітки 
         initial_state: true
-        trigger:
-    ## Virtual button
+        trigger:          
+    # Рух в темряві
         - platform: state
-          entity_id: input_button.br_gradient_wled
-    # Пульт Loratap
-        - platform: state
-          entity_id: sensor.0x60a423fffe942cf2_action
-          to: '1_single' 
-    # Выключатель на входе
-        - platform: state
-          entity_id: sensor.0x54ef44100024689c_action
-          to: 'single_left'
-    # Выключатель возле кровати
-        - platform: state
-          entity_id: sensor.0x00158d0003d50723_action
-          to: 'right'
+          entity_id: binary_sensor.br_light_no_move
+          to: 'on'          
         condition:
+    # Перемикач режиму робти серверу
         - condition: state
-          entity_id: binary_sensor.br_gradient_wled_on
-          state: 'on'
+          entity_id: switch.control_mode
+          state: 'on'          
+    # Перемикач ручного ввімкнення
+        - condition: state
+          entity_id: input_boolean.br_wled_round
+          state: 'off'
+        action:            
+        - action: light.turn_off
+          entity_id: light.br_wled_round
+
+
+      - alias: br_wled_threat_notification
+        id: br_wled_threat_notification
+        description: Спальня WLED - тревога
+        initial_state: true          
+        trigger:
+    # Сенсор тривоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'off'
+          to: 'on'
+        condition:
+    # Режим роботи серверу
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
         action:
-        - service: script.turn_on
-          entity_id: script.br_gradient_wled_off
+            - choose:
+              - conditions:
+                - condition: state
+                  entity_id: light.br_wled_round
+                  state: 'off'
+                sequence:
+                - action: light.turn_on
+                  entity_id: light.br_wled_round
+                  data:
+                    effect: Gravcentric
+                    brightness_pct: 10
+                - action: select.select_option
+                  data:
+                    option: Red Tide
+                  target:
+                    entity_id: select.br_wled_round_color_palette
+                - action: number.set_value
+                  target:
+                    entity_id: number.br_wled_round_speed
+                  data:
+                    value: 218
+                - action: number.set_value
+                  target:
+                    entity_id: number.br_wled_round_intensity
+                  data:
+                    value: 128
+                - delay: 00:00:30
+                - action: light.turn_off
+                  entity_id: light.br_wled_round
 
-      - alias: br_wled_round_effects
-        id: br_wled_round_effects
-        description: Спальня WLED - эффекты адресной ленты
-        initial_state: true          
+              - conditions:
+                - condition: state
+                  entity_id: light.br_wled_round
+                  state: 'on'
+                sequence:
+                - action: light.turn_on
+                  entity_id: light.br_wled_round
+                  data:
+                    effect: Gravcentric
+                    brightness_pct: 50
+                - action: select.select_option
+                  data:
+                    option: Red Tide
+                  target:
+                    entity_id: select.br_wled_round_color_palette
+                - action: number.set_value
+                  target:
+                    entity_id: number.br_wled_round_speed
+                  data:
+                    value: 218
+                - action: number.set_value
+                  target:
+                    entity_id: number.br_wled_round_intensity
+                  data:
+                    value: 128
+                - delay: 00:00:30
+                - action: light.turn_on
+                  entity_id: light.br_wled_round
+                  data:
+                    effect: Percent
+                    brightness_pct: 100
+                    rgb_color: [255, 255, 255]
+                - action: select.select_option
+                  data:
+                    option: Default
+                  target:
+                    entity_id: select.br_wled_round_color_palette
+                - action: number.set_value
+                  target:
+                    entity_id: number.br_wled_round_intensity
+                  data:
+                    value: 100
+
+      - alias: br_wled_round_control
+        id: br_wled_round_control
+        description: Спальня керування круглим світильником на тумбочці
+        initial_state: true
         trigger:
-    # Пульт Loratap кнопка 1, 2 нажатия
-        - platform: state
-          entity_id: sensor.0x60a423fffe942cf2_action
-          to: '1_double'
-          id: lr_loratap_button_1_2
-    # Пульт Loratap кнопка 2, 1 нажатие
-        - platform: state
-          entity_id: sensor.0x60a423fffe942cf2_action
-          to: '2_single'
-          id: lr_loratap_button_2_1
-    # Пульт Loratap кнопка 2, 2 нажатия
-        - platform: state
-          entity_id: sensor.0x60a423fffe942cf2_action
-          to: '2_double'
-          id: lr_loratap_button_2_2
-    # Пульт Loratap кнопка 3, 1 нажатие
-        - platform: state
-          entity_id: sensor.0x60a423fffe942cf2_action
-          to: '3_single'
-          id: lr_loratap_button_3_1
-    # Пульт Loratap кнопка 3, 2 нажатия
-        - platform: state
-          entity_id: sensor.0x60a423fffe942cf2_action
-          to: '3_double'
-          id: lr_loratap_button_3_2
+    # Выключатель возле кровати
+        - domain: mqtt
+          device_id: df1032556f8b28d1f774b454d8525cb4
+          type: action
+          subtype: button_2_double
+          trigger: device
         condition:
         - condition: state
           entity_id: switch.control_mode
@@ -152,139 +301,357 @@ br_wled_light:
         action:
             - choose:
               - conditions:
-                  - condition: trigger
-                    id: lr_loratap_button_1_2
+                - condition: state
+                  entity_id: light.br_tumb_wled
+                  state: 'off'
                 sequence:
-                  - service: light.turn_off
-                    entity_id: light.br_wled_round
+                - action: light.turn_on
+                  target:
+                    entity_id: light.br_tumb_wled
+                  data:
+                    effect: Solid Pattern Tri
+                    brightness_pct: 10
+                    rgb_color:
+                      - 128
+                      - 128
+                      - 255
+                - action: number.set_value
+                  target:
+                    entity_id: number.br_tumb_wled_intensity
+                  data:
+                    value: 45
               - conditions:
-                  - condition: trigger
-                    id: lr_loratap_button_2_1
+                - condition: state
+                  entity_id: light.br_tumb_wled
+                  state: 'on'
                 sequence:
-                  - service: light.turn_on
-                    entity_id: light.br_wled_round
-                    data:
-                      effect: Gravimeter
-                      brightness_pct: 30
-                  - service: select.select_option
-                    data:
-                      option: Tiamat
-                    target:
-                      entity_id: select.br_wled_round_color_palette
-                  - service: number.set_value
-                    target:
-                      entity_id: number.br_wled_round_speed
-                    data:
-                      value: 28
-                  - service: number.set_value
-                    target:
-                      entity_id: number.br_wled_round_intensity
-                    data:
-                      value: 193
-              - conditions:
-                  - condition: trigger
-                    id: lr_loratap_button_2_2
-                sequence:
-                  - service: light.turn_on
-                    entity_id: light.br_wled_round
-                    data:
-                      effect: Scanner Dual
-                      brightness_pct: 30
-                  - service: select.select_option
-                    data:
-                      option: Party
-                    target:
-                      entity_id: select.br_wled_round_color_palette
-                  - service: number.set_value
-                    target:
-                      entity_id: number.br_wled_round_speed
-                    data:
-                      value: 35
-                  - service: number.set_value
-                    target:
-                      entity_id: number.br_wled_round_intensity
-                    data:
-                      value: 65
-              - conditions:
-                  - condition: trigger
-                    id: lr_loratap_button_3_1
-                sequence:
-                  - service: light.turn_on
-                    entity_id: light.br_wled_round
-                    data:
-                      effect: Flow
-                      brightness_pct: 30
-                  - service: select.select_option
-                    data:
-                      option: Magenta
-                    target:
-                      entity_id: select.br_wled_round_color_palette
-                  - service: number.set_value
-                    target:
-                      entity_id: number.br_wled_round_speed
-                    data:
-                      value: 96
-                  - service: number.set_value
-                    target:
-                      entity_id: number.br_wled_round_intensity
-                    data:
-                      value: 0
-              - conditions:
-                  - condition: trigger
-                    id: lr_loratap_button_3_2
-                sequence:
-                  - service: light.turn_on
-                    entity_id: light.br_wled_round
-                    data:
-                      effect: Saw
-                      brightness_pct: 100
-                  - service: select.select_option
-                    data:
-                      option: Hult
-                    target:
-                      entity_id: select.br_wled_round_color_palette
-                  - service: number.set_value
-                    target:
-                      entity_id: number.br_wled_round_speed
-                    data:
-                      value: 50
-                  - service: number.set_value
-                    target:
-                      entity_id: number.br_wled_round_intensity
-                    data:
-                      value: 30 
-                      
-    script:
-    
-      br_gradient_wled_on:
-        alias: br_gradient_wled_on
-        sequence:
-            repeat:
-              count: 19
-              sequence:
-              - service: light.turn_on
-                entity_id: light.br_wled_round
-                data:
-                  brightness_step_pct: 10
-              - service: number.set_value
-                target:
-                  entity_id: number.br_wled_round_intensity
-                data:
-                  value: "{{ states('number.br_wled_round_intensity') |int + 5 }}"
+                - action: light.turn_off
+                  entity_id: light.br_tumb_wled
 
-                  
-      br_gradient_wled_off:
-        alias: br_gradient_wled_off
-        sequence:
-            repeat:
-              count: 20
-              sequence:
-              - service: light.turn_on
-                entity_id: light.br_wled_round
-                data:
-                  brightness_step_pct: -5
-              - service: number.set_value
-                target:
-                  entity_id: number.br_wled_round_intensity
-                data:
-                  value: "{{ states('number.br_wled_round_intensity') |int - 5 }}"
+
+      - alias: br_wled_threat_cancel
+        id: br_wled_threat_cancel
+        description: Спальня WLED - отмена тревоги
+        initial_state: true          
+        trigger:
+    # Сенсор тривоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'on'
+          to: 'off'
+        condition:
+    # Режим роботи серверу
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+            - choose:
+              - conditions:
+                - condition: state
+                  entity_id: light.br_wled_round
+                  state: 'off'
+                sequence:
+                - service: light.turn_on
+                  entity_id: light.br_wled_round
+                  data:
+                    effect: Aurora
+                    brightness_pct: 10
+                - service: select.select_option
+                  data:
+                    option: Aurora
+                  target:
+                    entity_id: select.br_wled_round_color_palette
+                - service: number.set_value
+                  target:
+                    entity_id: number.br_wled_round_speed
+                  data:
+                    value: 200
+                - service: number.set_value
+                  target:
+                    entity_id: number.br_wled_round_intensity
+                  data:
+                    value: 200
+                - delay: 00:00:30
+                - service: light.turn_off
+                  entity_id: light.br_wled_round
+
+              - conditions:
+                - condition: state
+                  entity_id: light.br_wled_round
+                  state: 'on'
+                sequence:
+                - service: light.turn_on
+                  entity_id: light.br_wled_round
+                  data:
+                    effect: Scanner Dual
+                    brightness_pct: 30
+                - service: select.select_option
+                  data:
+                    option: Aurora
+                  target:
+                    entity_id: select.br_wled_round_color_palette
+                - service: number.set_value
+                  target:
+                    entity_id: number.br_wled_round_speed
+                  data:
+                    value: 0
+                - service: number.set_value
+                  target:
+                    entity_id: number.br_wled_round_intensity
+                  data:
+                    value: 11
+                - delay: 00:00:30
+                - service: light.turn_on
+                  entity_id: light.br_wled_round
+                  data:
+                    effect: Percent
+                    brightness_pct: 100
+                    rgb_color: [255, 255, 255]
+                - service: select.select_option
+                  data:
+                    option: Default
+                  target:
+                    entity_id: select.br_wled_round_color_palette
+                - service: number.set_value
+                  target:
+                    entity_id: number.br_wled_round_intensity
+                  data:
+                    value: 100
+
+         
+
+
+                      
+    #   - alias: br_wled_gradient_false
+    #     id: br_wled_gradient_false
+    #     description: Спальня проверка сбоя градиентного включения адресной ленты
+    #     initial_state: true
+    #     trigger:
+    #     - platform: state
+    #       entity_id: binary_sensor.br_gradient_wled_false
+    #       to: 'on' 
+    #     condition:
+    #     - condition: state
+    #       entity_id: switch.control_mode
+    #       state: 'on'
+    #     action:
+    #     - service: light.turn_on
+    #       entity_id: light.br_wled_round
+    #       data:
+    #         effect: Percent
+    #         brightness_pct: 100
+    #         rgb_color: [255, 255, 255]
+    #     - service: select.select_option
+    #       data:
+    #         option: Default
+    #       target:
+    #         entity_id: select.br_wled_round_color_palette
+    #     - service: number.set_value
+    #       target:
+    #         entity_id: number.br_wled_round_intensity
+    #       data:
+    #         value: 100        
+        
+    #   - alias: br_wled_round_effects
+    #     id: br_wled_round_effects
+    #     description: Спальня WLED - эффекты адресной ленты
+    #     initial_state: true          
+    #     trigger:
+    # # Пульт Loratap кнопка 1, 2 нажатия
+    #     - platform: state
+    #       entity_id: sensor.0x60a423fffe942cf2_action
+    #       to: '1_double'
+    #       id: lr_loratap_button_1_2
+    # # Пульт Loratap кнопка 2, 1 нажатие
+    #     - platform: state
+    #       entity_id: sensor.0x60a423fffe942cf2_action
+    #       to: '2_single'
+    #       id: lr_loratap_button_2_1
+    # # Пульт Loratap кнопка 2, 2 нажатия
+    #     - platform: state
+    #       entity_id: sensor.0x60a423fffe942cf2_action
+    #       to: '2_double'
+    #       id: lr_loratap_button_2_2
+    # # Пульт Loratap кнопка 3, 1 нажатие
+    #     - platform: state
+    #       entity_id: sensor.0x60a423fffe942cf2_action
+    #       to: '3_single'
+    #       id: lr_loratap_button_3_1
+    # # Пульт Loratap кнопка 3, 2 нажатия
+    #     - platform: state
+    #       entity_id: sensor.0x60a423fffe942cf2_action
+    #       to: '3_double'
+    #       id: lr_loratap_button_3_2
+    #     condition:
+    #     - condition: state
+    #       entity_id: switch.control_mode
+    #       state: 'on'
+    #     action:
+    #         - choose:
+    #           - conditions:
+    #               - condition: trigger
+    #                 id: lr_loratap_button_1_2
+    #             sequence:
+    #               - service: light.turn_off
+    #                 entity_id: light.br_wled_round
+    #           - conditions:
+    #               - condition: trigger
+    #                 id: lr_loratap_button_2_1
+    #             sequence:
+    #               - service: light.turn_on
+    #                 entity_id: light.br_wled_round
+    #                 data:
+    #                   effect: Gravimeter
+    #                   brightness_pct: 30
+    #               - service: select.select_option
+    #                 data:
+    #                   option: Tiamat
+    #                 target:
+    #                   entity_id: select.br_wled_round_color_palette
+    #               - service: number.set_value
+    #                 target:
+    #                   entity_id: number.br_wled_round_speed
+    #                 data:
+    #                   value: 28
+    #               - service: number.set_value
+    #                 target:
+    #                   entity_id: number.br_wled_round_intensity
+    #                 data:
+    #                   value: 193
+    #           - conditions:
+    #               - condition: trigger
+    #                 id: lr_loratap_button_2_2
+    #             sequence:
+    #               - service: light.turn_on
+    #                 entity_id: light.br_wled_round
+    #                 data:
+    #                   effect: Scanner Dual
+    #                   brightness_pct: 30
+    #               - service: select.select_option
+    #                 data:
+    #                   option: Party
+    #                 target:
+    #                   entity_id: select.br_wled_round_color_palette
+    #               - service: number.set_value
+    #                 target:
+    #                   entity_id: number.br_wled_round_speed
+    #                 data:
+    #                   value: 35
+    #               - service: number.set_value
+    #                 target:
+    #                   entity_id: number.br_wled_round_intensity
+    #                 data:
+    #                   value: 65
+    #           - conditions:
+    #               - condition: trigger
+    #                 id: lr_loratap_button_3_1
+    #             sequence:
+    #               - service: light.turn_on
+    #                 entity_id: light.br_wled_round
+    #                 data:
+    #                   effect: Flow
+    #                   brightness_pct: 30
+    #               - service: select.select_option
+    #                 data:
+    #                   option: Magenta
+    #                 target:
+    #                   entity_id: select.br_wled_round_color_palette
+    #               - service: number.set_value
+    #                 target:
+    #                   entity_id: number.br_wled_round_speed
+    #                 data:
+    #                   value: 96
+    #               - service: number.set_value
+    #                 target:
+    #                   entity_id: number.br_wled_round_intensity
+    #                 data:
+    #                   value: 0
+    #           - conditions:
+    #               - condition: trigger
+    #                 id: lr_loratap_button_3_2
+    #             sequence:
+    #               - service: light.turn_on
+    #                 entity_id: light.br_wled_round
+    #                 data:
+    #                   effect: Saw
+    #                   brightness_pct: 100
+    #               - service: select.select_option
+    #                 data:
+    #                   option: Hult
+    #                 target:
+    #                   entity_id: select.br_wled_round_color_palette
+    #               - service: number.set_value
+    #                 target:
+    #                   entity_id: number.br_wled_round_speed
+    #                 data:
+    #                   value: 50
+    #               - service: number.set_value
+    #                 target:
+    #                   entity_id: number.br_wled_round_intensity
+    #                 data:
+    #                   value: 30 
+    
+    
+
+
+        # - action: light.turn_on
+        #   entity_id: light.br_wled_round
+        #   data:
+        #     effect: Wipe
+        #     brightness_pct: 100
+        #     rgb_color: [255, 255, 255]
+        # - action: select.select_option
+        #   data:
+        #     option: Default
+        #   target:
+        #     entity_id: select.br_wled_round_color_palette
+        # - action: number.set_value
+        #   target:
+        #     entity_id: number.br_wled_round_intensity
+        #   data:
+        #     value: 120
+        # - action: number.set_value
+        #   target:
+        #     entity_id: number.br_wled_round_speed
+        #   data:
+        #     value: 160
+        # - delay: 00:00:07
+        # - action: light.turn_on
+        #   entity_id: light.br_wled_round
+        #   data:
+        #     effect: Percent
+        #     brightness_pct: 100
+        #     rgb_color: [255, 255, 255]
+        # - action: select.select_option
+        #   data:
+        #     option: Default
+        #   target:
+        #     entity_id: select.br_wled_round_color_palette
+        # - action: number.set_value
+        #   target:
+        #     entity_id: number.br_wled_round_intensity
+        #   data:
+        #     value: 100
+
+
+    #   - alias: br_wled_gradient_auto_block_off
+    #     id: br_wled_gradient_auto_block_off
+    #     description: Спальня блокировка автоматического выключение шнура
+    #     initial_state: true
+    #     trigger:
+    # # Выключатель возле кровати
+    #     - domain: mqtt
+    #       device_id: df1032556f8b28d1f774b454d8525cb4
+    #       type: action
+    #       subtype: button_2_double
+    #       trigger: device
+    #     condition:
+    #     - condition: state
+    #       entity_id: switch.control_mode
+    #       state: 'on'
+    #     action:
+
+    #     - action: input_boolean.toggle
+    #       target:
+    #         entity_id: input_boolean.br_wled_round
+    #       data: {}

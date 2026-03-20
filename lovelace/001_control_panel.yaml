@@ -1,1476 +1,1259 @@
-############################ Панель управления ############################
-title: Панель управления
+############################ Панель керування ############################
+title: Панель керування
 icon: mdi:keyboard
-cards:
-
+sections:
 
 ############################ Колонка 1 ############################
-    - type: vertical-stack
-      cards:
+  - type: grid
+    cards:
 
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
-      
-            - type: markdown
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #00BFFF;
-                     font-weight: bold;
-                     font-size: 16px;
-                   }          
-              content: >
-                 **Данные о системе**
+      - type: grid
+        square: false
+        columns: 3
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Температура CPU
+            secondary: |-
+              {{ states('sensor.n100_cpu_temperature') | float | round(1) }} С°
+            layout: vertical
+            entity: sensor.n100_cpu_temperature
+            icon_color: |-
+              {% if states("sensor.n100_cpu_temperature")|float <= 10 %}
+              lime
+              {% elif states("sensor.n100_cpu_temperature")|float <= 20 %}
+              light-green
+              {% elif states("sensor.n100_cpu_temperature")|float <= 30 %}
+              green
+              {% elif states("sensor.n100_cpu_temperature")|float <= 40 %}
+              teal
+              {% elif states("sensor.n100_cpu_temperature")|float <= 50 %}
+              yellow
+              {% elif states("sensor.n100_cpu_temperature")|float <= 60 %}
+              amber
+              {% elif states("sensor.n100_cpu_temperature")|float <= 70 %}
+              orange
+              {% elif states("sensor.n100_cpu_temperature")|float <= 80 %}
+              deep-orange
+              {% elif states("sensor.n100_cpu_temperature")|float <= 90 %}
+              red
+              {% else %}
+              pink
+              {% endif %}
+            icon: mdi:cpu-64-bit
+            tap_action:
+              action: more-info
 
-            - type: horizontal-stack
-              cards:
+          - type: custom:mushroom-template-card
+            primary: Температура чипсета
+            secondary: |-
+              {{ states('sensor.n100_chipset_temperature') | float | round(1) }} С°
+            layout: vertical
+            entity: sensor.n100_chipset_temperature
+            icon_color: |-
+              {% if states("sensor.n100_chipset_temperature")|float <= 10 %}
+              lime
+              {% elif states("sensor.n100_chipset_temperature")|float <= 20 %}
+              light-green
+              {% elif states("sensor.n100_chipset_temperature")|float <= 30 %}
+              green
+              {% elif states("sensor.n100_chipset_temperature")|float <= 40 %}
+              teal
+              {% elif states("sensor.n100_chipset_temperature")|float <= 50 %}
+              yellow
+              {% elif states("sensor.n100_chipset_temperature")|float <= 60 %}
+              amber
+              {% elif states("sensor.n100_chipset_temperature")|float <= 70 %}
+              orange
+              {% elif states("sensor.n100_chipset_temperature")|float <= 80 %}
+              deep-orange
+              {% elif states("sensor.n100_chipset_temperature")|float <= 90 %}
+              red
+              {% else %}
+              pink
+              {% endif %}
+            icon: mdi:chip
+            tap_action:
+              action: more-info
 
-              - type: custom:mushroom-template-card
-                primary: CPU temp
-                secondary: |-
-                      {{states ('sensor.n100_cpu_temperature')}} С°
-                layout: vertical
-                entity: sensor.n100_cpu_temperature
-                icon_color: |-
-                  {% if states("sensor.n100_cpu_temperature")|float <= 10 %}
-                  lime
-                  {% elif states("sensor.n100_cpu_temperature")|float <= 20 %}
-                  light-green
-                  {% elif states("sensor.n100_cpu_temperature")|float <= 30 %}
-                  green
-                  {% elif states("sensor.n100_cpu_temperature")|float <= 40 %}
-                  teal
-                  {% elif states("sensor.n100_cpu_temperature")|float <= 50 %}
-                  yellow
-                  {% elif states("sensor.n100_cpu_temperature")|float <= 60 %}
-                  amber
-                  {% elif states("sensor.n100_cpu_temperature")|float <= 70 %}
-                  orange
-                  {% elif states("sensor.n100_cpu_temperature")|float <= 80 %}
-                  deep-orange
-                  {% elif states("sensor.n100_cpu_temperature")|float <= 90 %}
-                  red
-                  {% elif states("sensor.n100_cpu_temperature")|float > 90 %}
-                  pink
-                  {% endif %}
-                icon: mdi:cpu-64-bit
-                tap_action:
-                  action: more-info
+          - type: custom:mushroom-template-card
+            primary: Температура SSD
+            secondary: |-
+              {{ states('sensor.n100_nvme_temperature') | float | round(1) }} С°
+            layout: vertical
+            entity: sensor.n100_nvme_temperature
+            icon_color: |-
+              {% if states("sensor.n100_nvme_temperature")|float <= 10 %}
+              lime
+              {% elif states("sensor.n100_nvme_temperature")|float <= 20 %}
+              light-green
+              {% elif states("sensor.n100_nvme_temperature")|float <= 30 %}
+              green
+              {% elif states("sensor.n100_nvme_temperature")|float <= 40 %}
+              teal
+              {% elif states("sensor.n100_nvme_temperature")|float <= 50 %}
+              yellow
+              {% elif states("sensor.n100_nvme_temperature")|float <= 60 %}
+              amber
+              {% elif states("sensor.n100_nvme_temperature")|float <= 70 %}
+              orange
+              {% elif states("sensor.n100_nvme_temperature")|float <= 80 %}
+              deep-orange
+              {% elif states("sensor.n100_nvme_temperature")|float <= 90 %}
+              red
+              {% else %}
+              pink
+              {% endif %}
+            icon: phu:seagate-ssd-m2
+            tap_action:
+              action: more-info
 
-              - type: custom:mushroom-template-card
-                primary: Chipset temp
-                secondary: |-
-                      {{states ('sensor.n100_chipset_temperature')}} С°
-                layout: vertical
-                entity: sensor.n100_chipset_temperature
-                icon_color: |-
-                  {% if states("sensor.n100_chipset_temperature")|float <= 10 %}
-                  lime
-                  {% elif states("sensor.n100_chipset_temperature")|float <= 20 %}
-                  light-green
-                  {% elif states("sensor.n100_chipset_temperature")|float <= 30 %}
-                  green
-                  {% elif states("sensor.n100_chipset_temperature")|float <= 40 %}
-                  teal
-                  {% elif states("sensor.n100_chipset_temperature")|float <= 50 %}
-                  yellow
-                  {% elif states("sensor.n100_chipset_temperature")|float <= 60 %}
-                  amber
-                  {% elif states("sensor.n100_chipset_temperature")|float <= 70 %}
-                  orange
-                  {% elif states("sensor.n100_chipset_temperature")|float <= 80 %}
-                  deep-orange
-                  {% elif states("sensor.n100_chipset_temperature")|float <= 90 %}
-                  red
-                  {% elif states("sensor.n100_chipset_temperature")|float > 90 %}
-                  pink
-                  {% endif %}
-                icon: mdi:chip
-                tap_action:
-                  action: more-info
+      - type: grid
+        square: false
+        columns: 3
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Завантаження CPU
+            secondary: |-
+              {{ states('sensor.processor_use') | float | round(0) }} %
+            layout: vertical
+            entity: sensor.processor_use
+            icon_color: |-
+              {% if states("sensor.processor_use")|float <= 10 %}
+              lime
+              {% elif states("sensor.processor_use")|float <= 20 %}
+              light-green
+              {% elif states("sensor.processor_use")|float <= 30 %}
+              green
+              {% elif states("sensor.processor_use")|float <= 40 %}
+              teal
+              {% elif states("sensor.processor_use")|float <= 50 %}
+              yellow
+              {% elif states("sensor.processor_use")|float <= 60 %}
+              amber
+              {% elif states("sensor.processor_use")|float <= 70 %}
+              orange
+              {% elif states("sensor.processor_use")|float <= 80 %}
+              deep-orange
+              {% elif states("sensor.processor_use")|float <= 90 %}
+              red
+              {% else %}
+              pink
+              {% endif %}
+            icon: mdi:cpu-64-bit
+            tap_action:
+              action: more-info
 
-              - type: custom:mushroom-template-card
-                primary: SSD temp
-                secondary: |-
-                      {{states ('sensor.n100_nvme_temperature')}} С°
-                layout: vertical
-                entity: sensor.n100_nvme_temperature
-                icon_color: |-
-                  {% if states("sensor.n100_nvme_temperature")|float <= 10 %}
-                  lime
-                  {% elif states("sensor.n100_nvme_temperature")|float <= 20 %}
-                  light-green
-                  {% elif states("sensor.n100_nvme_temperature")|float <= 30 %}
-                  green
-                  {% elif states("sensor.n100_nvme_temperature")|float <= 40 %}
-                  teal
-                  {% elif states("sensor.n100_nvme_temperature")|float <= 50 %}
-                  yellow
-                  {% elif states("sensor.n100_nvme_temperature")|float <= 60 %}
-                  amber
-                  {% elif states("sensor.n100_nvme_temperature")|float <= 70 %}
-                  orange
-                  {% elif states("sensor.n100_nvme_temperature")|float <= 80 %}
-                  deep-orange
-                  {% elif states("sensor.n100_nvme_temperature")|float <= 90 %}
-                  red
-                  {% elif states("sensor.n100_nvme_temperature")|float > 90 %}
-                  pink
-                  {% endif %}
-                icon: phu:seagate-ssd-m2
-                tap_action:
-                  action: more-info
+          - type: custom:mushroom-template-card
+            primary: Використання RAM
+            secondary: |-
+              {{ states('sensor.memory_use_percent') | float | round(1) }} %
+            layout: vertical
+            entity: sensor.memory_use_percent
+            icon_color: |-
+              {% if states("sensor.memory_use_percent")|float <= 10 %}
+              lime
+              {% elif states("sensor.memory_use_percent")|float <= 20 %}
+              light-green
+              {% elif states("sensor.memory_use_percent")|float <= 30 %}
+              green
+              {% elif states("sensor.memory_use_percent")|float <= 40 %}
+              teal
+              {% elif states("sensor.memory_use_percent")|float <= 50 %}
+              yellow
+              {% elif states("sensor.memory_use_percent")|float <= 60 %}
+              amber
+              {% elif states("sensor.memory_use_percent")|float <= 70 %}
+              orange
+              {% elif states("sensor.memory_use_percent")|float <= 80 %}
+              deep-orange
+              {% elif states("sensor.memory_use_percent")|float <= 90 %}
+              red
+              {% else %}
+              pink
+              {% endif %}
+            icon: mdi:chip
+            tap_action:
+              action: more-info
 
-            - type: horizontal-stack
-              cards:
+          - type: custom:mushroom-template-card
+            primary: Використання диска
+            secondary: |-
+              {{ states('sensor.disk_use_percent') | float | round(1) }} %
+            layout: vertical
+            entity: sensor.disk_use_percent
+            icon_color: |-
+              {% if states("sensor.disk_use_percent")|float <= 10 %}
+              lime
+              {% elif states("sensor.disk_use_percent")|float <= 20 %}
+              light-green
+              {% elif states("sensor.disk_use_percent")|float <= 30 %}
+              green
+              {% elif states("sensor.disk_use_percent")|float <= 40 %}
+              teal
+              {% elif states("sensor.disk_use_percent")|float <= 50 %}
+              yellow
+              {% elif states("sensor.disk_use_percent")|float <= 60 %}
+              amber
+              {% elif states("sensor.disk_use_percent")|float <= 70 %}
+              orange
+              {% elif states("sensor.disk_use_percent")|float <= 80 %}
+              deep-orange
+              {% elif states("sensor.disk_use_percent")|float <= 90 %}
+              red
+              {% else %}
+              pink
+              {% endif %}
+            icon: phu:seagate-ssd-m2
+            tap_action:
+              action: more-info
 
-              - type: custom:mushroom-template-card
-                primary: CPU use
-                secondary: |-
-                      {{states ('sensor.processor_use')}} %
-                layout: vertical
-                entity: sensor.processor_use
-                icon_color: |-
-                  {% if states("sensor.processor_use")|float <= 10 %}
-                  lime
-                  {% elif states("sensor.processor_use")|float <= 20 %}
-                  light-green
-                  {% elif states("sensor.processor_use")|float <= 30 %}
-                  green
-                  {% elif states("sensor.processor_use")|float <= 40 %}
-                  teal
-                  {% elif states("sensor.processor_use")|float <= 50 %}
-                  yellow
-                  {% elif states("sensor.processor_use")|float <= 60 %}
-                  amber
-                  {% elif states("sensor.processor_use")|float <= 70 %}
-                  orange
-                  {% elif states("sensor.processor_use")|float <= 80 %}
-                  deep-orange
-                  {% elif states("sensor.processor_use")|float <= 90 %}
-                  red
-                  {% elif states("sensor.processor_use")|float > 90 %}
-                  pink
-                  {% endif %}
-                icon: mdi:cpu-64-bit
-                tap_action:
-                  action: more-info
-                  
-              - type: custom:mushroom-template-card
-                primary: RAM use
-                secondary: |-
-                      {{states ('sensor.memory_use_percent')}} %
-                layout: vertical
-                entity: sensor.memory_use_percent
-                icon_color: |-
-                  {% if states("sensor.memory_use_percent")|float <= 10 %}
-                  lime
-                  {% elif states("sensor.memory_use_percent")|float <= 20 %}
-                  light-green
-                  {% elif states("sensor.memory_use_percent")|float <= 30 %}
-                  green
-                  {% elif states("sensor.memory_use_percent")|float <= 40 %}
-                  teal
-                  {% elif states("sensor.memory_use_percent")|float <= 50 %}
-                  yellow
-                  {% elif states("sensor.memory_use_percent")|float <= 60 %}
-                  amber
-                  {% elif states("sensor.memory_use_percent")|float <= 70 %}
-                  orange
-                  {% elif states("sensor.memory_use_percent")|float <= 80 %}
-                  deep-orange
-                  {% elif states("sensor.memory_use_percent")|float <= 90 %}
-                  red
-                  {% elif states("sensor.memory_use_percent")|float > 90 %}
-                  pink
-                  {% endif %}
-                icon: mdi:chip
-                tap_action:
-                  action: more-info
+      - type: entities
+        card_mod:
+          style: |
+            ha-card {
+              color: #00BFFF;
+              --paper-item-icon-color: #00BFFF;
+              --paper-item-icon-active-color: #009933;
+              --switch-unchecked-button-color: red;
+              --switch-checked-color: green;
+              --switch-checked-button-color: green;
+              --switch-checked-track-color: green;
+              font-weight: bold;
+              font-size: 14px;
+            }
+        show_header_toggle: false
+        entities:
+          - entity: sensor.last_boot_custom
+            type: custom:multiple-entity-row
+            name: В онлайні -
+            state_header: Сервер
+            entities:
+              - entity: sensor.uptime_custom
+                name: Home Assistant
+          - entity: sensor.disk_free
+            type: custom:multiple-entity-row
+            name: Сховище
+            state_header: Вільно
+            entities:
+              - entity: sensor.mariadb
+                name: База даних
+          - type: divider
+          - entity: sensor.local_ip
+            name: IP-адреса
+          - type: divider
+          - entity: sensor.server_telemetry
+            icon: mdi:alert
+          - type: divider
+          - entity: binary_sensor.zigbee2mqtt_bridge_connection_state_1
+            name: Zigbee2MQTT 1
+          - entity: switch.ps308g0011242300032c4copc_1_switch
+          - entity: binary_sensor.zigbee2mqtt_bridge_connection_state_2
+            name: Zigbee2MQTT 2
+          - entity: switch.ps308g0011242300032c4copc_3_switch
+          - entity: binary_sensor.zigbee2mqtt_bridge_connection_state_3
+            name: Zigbee2MQTT 3
+          - entity: switch.ps308g0011242300032c4copc_2_switch
+          - type: divider
+          - entity: switch.control_mode
+            state_color: true
+            secondary_info: last-changed
+          - type: divider
+          - entity: sensor.last_google_backup
+          - entity: sensor.backups_in_google_drive
+            type: custom:multiple-entity-row
+            name: Резервні копії
+            state_header: Google Drive
+            entities:
+              - entity: sensor.backups_in_home_assistant
+                name: Сервер
+          - entity: sensor.size_in_google_drive
+            type: custom:multiple-entity-row
+            name: Зайнято на
+            state_header: Google Drive
+            entities:
+              - entity: sensor.size_in_home_assistant
+                name: Сервері
 
-              - type: custom:mushroom-template-card
-                primary: Disk use
-                secondary: |-
-                      {{states ('sensor.disk_use_percent')}} %
-                layout: vertical
-                entity: sensor.disk_use_percent
-                icon_color: |-
-                  {% if states("sensor.disk_use_percent")|float <= 10 %}
-                  lime
-                  {% elif states("sensor.disk_use_percent")|float <= 20 %}
-                  light-green
-                  {% elif states("sensor.disk_use_percent")|float <= 30 %}
-                  green
-                  {% elif states("sensor.disk_use_percent")|float <= 40 %}
-                  teal
-                  {% elif states("sensor.disk_use_percent")|float <= 50 %}
-                  yellow
-                  {% elif states("sensor.disk_use_percent")|float <= 60 %}
-                  amber
-                  {% elif states("sensor.disk_use_percent")|float <= 70 %}
-                  orange
-                  {% elif states("sensor.disk_use_percent")|float <= 80 %}
-                  deep-orange
-                  {% elif states("sensor.disk_use_percent")|float <= 90 %}
-                  red
-                  {% elif states("sensor.disk_use_percent")|float > 90 %}
-                  pink
-                  {% endif %}
-                icon: phu:seagate-ssd-m2
-                tap_action:
-                  action: more-info
-                 
-            - type: entities
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #00BFFF;
-                     --paper-item-icon-color: #00BFFF;
-                     --paper-item-icon-active-color: #009933;
-                     --switch-unchecked-button-color: red;
-                     --switch-checked-color: green;
-                     --switch-checked-button-color: green;
-                     --switch-checked-track-color: green;
-                     font-weight: bold;
-                     font-size: 14px;
-                   }
-              show_header_toggle: false
-              entities:
-              - entity: sensor.last_boot_custom
-                type: custom:multiple-entity-row
-                name: В онлайне -
-                state_header: Сервер
-                entities:
-                  - entity: sensor.uptime_custom
-                    name: Home Assistant
-              - entity: sensor.disk_free
-                type: custom:multiple-entity-row
-                name: Хранилище
-                state_header: Свободно
-                entities:
-                  - entity: sensor.mariadb
-                    name: База данных 
-              - type: divider
-              - entity: sensor.local_ip
-                name: IP адрес
-              - type: divider
-              - entity: sensor.server_telemetry
-                icon: mdi:alert
-              - type: divider
-              - entity: binary_sensor.zigbee2mqtt_bridge_connection_state_1
-                name: Zigbee2mqtt 1
-              - entity: switch.cloud_ps308g0011242300032c4copc_1_switch
+      - type: entities
+        card_mod:
+          style: |
+            ha-card {
+              color: #00BFFF;
+              --paper-item-icon-color: #00BFFF;
+              --paper-item-icon-active-color: #009933;
+              --switch-unchecked-button-color: red;
+              --switch-checked-color: green;
+              --switch-checked-button-color: green;
+              --switch-checked-track-color: green;
+              font-weight: bold;
+              font-size: 14px;
+            }
+        show_header_toggle: false
+        entities:
+          - entity: input_button.git_update
+          - type: divider
 
-              - entity: binary_sensor.zigbee2mqtt_bridge_connection_state_2
-                name: Zigbee2mqtt 2 
-              - entity: switch.cloud_ps308g0011242300032c4copc_2_switch
-              
-            #   - entity: binary_sensor.zigbee2mqtt_bridge_connection_state_3
-            #     name: Zigbee2mqtt 3  
-              - type: divider
-              - entity: switch.control_mode
-                state_color: true
-                secondary_info: last-changed
-              - type: divider
-              - entity: sensor.last_google_backup
-              - entity: sensor.backups_in_google_drive
-                type: custom:multiple-entity-row
-                name: Резервные копии
-                state_header: Google Drive
-                entities:
-                  - entity: sensor.backups_in_home_assistant
-                    name: Сервер
-              - entity: sensor.size_in_google_drive
-                type: custom:multiple-entity-row
-                name: Занято на
-                state_header: Google Drive
-                entities:
-                  - entity: sensor.size_in_home_assistant
-                    name: Сервере
-
-
-################# Ручной запуск ################# 
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
-      
-            - type: markdown
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #00BFFF;
-                     font-weight: bold;
-                     font-size: 16px;
-                   }          
-              content: >
-                 **Ручной запуск**
-
-            - type: entities
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #00BFFF;
-                     --paper-item-icon-color: #00BFFF;
-                     --paper-item-icon-active-color: #009933;
-                     --switch-unchecked-button-color: red;
-                     --switch-checked-color: green;
-                     --switch-checked-button-color: green;
-                     --switch-checked-track-color: green;
-                     font-weight: bold;
-                     font-size: 14px;
-                   }
-              show_header_toggle: false
-              entities:
-              - entity: input_button.git_update
-              - type: divider
-              - entity: input_button.test_test
-              - type: divider
-              - entity: input_button.k7_notification
-              - entity: input_boolean.k7_notification
-            #   - type: divider
-            #   - entity: input_button.mosquitto_reload
-              
-################# Обновления #################  
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
-
-            - type: markdown
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #00BFFF;
-                     font-weight: bold;
-                     font-size: 16px;
-                   }          
-              content: >
-                 **Обновления**
-          
-            - type: entities
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #00BFFF;
-                     --paper-item-icon-color: #00BFFF;
-                     --iron-icon-stroke-color: #FFFFE0;
-                     font-weight: bold;
-                     font-size: 14px;
-                   }                 
-              show_header_toggle: false
-              entities:
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: entities
+            card_mod:
+              style: |
+                ha-card {
+                  color: #00BFFF;
+                  --paper-item-icon-color: #00BFFF;
+                  --iron-icon-stroke-color: #FFFFE0;
+                  font-weight: bold;
+                  font-size: 14px;
+                }
+            show_header_toggle: false
+            entities:
               - entity: sensor.count_update
                 type: custom:multiple-entity-row
-                name: Обновления
-                state_header: Всего
+                name: Оновлення
+                state_header: Всього
                 entities:
                   - entity: sensor.count_update_on
-                    name: Доступно обновлений
-                      
+                    name: Доступно
 
-            - type: custom:auto-entities
-              card:
-                type: entities
-                show_header_toggle: false
-              filter:
-                include:
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
                 - domain: update
                   state: 'on'
                   options:
-                     type: custom:multiple-entity-row
-                     show_state: false
-                     secondary_info: last-changed
-                     entities:
+                    type: custom:multiple-entity-row
+                    show_state: false
+                    secondary_info: last-changed
+                    entities:
                       - attribute: installed_version
-                        name: Установлено
+                        name: Встановлено
                       - attribute: latest_version
-                        name: Последняя
-                        
+                        name: Остання
 
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
+      - type: entities
+        card_mod:
+          style: |
+            ha-card {
+              color: #00BFFF;
+              --paper-item-icon-color: #00BFFF;
+              --iron-icon-stroke-color: #FFFFE0;
+              font-weight: bold;
+              font-size: 14px;
+            }
+        show_header_toggle: false
+        entities:
+          - entity: sensor.current_time
+          - entity: binary_sensor.notification_time
+            type: custom:multiple-entity-row
+            name: Режими
+            state_header: Сповіщення
+            entities:
+              - entity: binary_sensor.night_time
+                name: Ніч
 
-            - type: entities
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #00BFFF;
-                     --paper-item-icon-color: #00BFFF;
-                     --iron-icon-stroke-color: #FFFFE0;
-                     font-weight: bold;
-                     font-size: 14px;
-                   }               
-              show_header_toggle: false
-              entities:
-                - entity: sensor.current_time
-                - entity: binary_sensor.notification_time
-                  type: custom:multiple-entity-row
-                  name: Режимы
-                  state_header: Уведомления
-                  entities:
-                   - entity: binary_sensor.night_time
-                     name: Ночь
-                    
-            - type: markdown
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #00BFFF;
-                     font-weight: bold;
-                     font-size: 16px;
-                   }          
-              content: >
-                 **Уведомления**
+      - type: entities
+        card_mod:
+          style: |
+            ha-card {
+              color: #00BFFF;
+              --paper-item-icon-color: #00BFFF;
+              --iron-icon-stroke-color: #FFFFE0;
+              font-weight: bold;
+              font-size: 14px;
+            }
+        show_header_toggle: false
+        entities:
+          - entity: input_datetime.notification_start
+          - entity: input_datetime.notification_stop
 
-            - type: entities
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #00BFFF;
-                     --paper-item-icon-color: #00BFFF;
-                     --iron-icon-stroke-color: #FFFFE0;
-                     font-weight: bold;
-                     font-size: 14px;
-                   }               
-              show_header_toggle: false
-              entities:
-                - entity: input_datetime.notification_start
-                - entity: input_datetime.notification_stop
-
-            - type: markdown
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #00BFFF;
-                     font-weight: bold;
-                     font-size: 16px;
-                   }          
-              content: >
-                 **Ночной режим**
-
-            - type: entities
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #00BFFF;
-                     --paper-item-icon-color: #00BFFF;
-                     --iron-icon-stroke-color: #FFFFE0;
-                     font-weight: bold;
-                     font-size: 14px;
-                   }               
-              show_header_toggle: false
-              entities:
-                - entity: input_datetime.night_start
-                - entity: input_datetime.night_stop
+      - type: entities
+        card_mod:
+          style: |
+            ha-card {
+              color: #00BFFF;
+              --paper-item-icon-color: #00BFFF;
+              --iron-icon-stroke-color: #FFFFE0;
+              font-weight: bold;
+              font-size: 14px;
+            }
+        show_header_toggle: false
+        entities:
+          - entity: input_datetime.night_start
+          - entity: input_datetime.night_stop
 
 ############################ Колонка 2 ############################
-    - type: vertical-stack
-      cards:
+  - type: grid
+    cards:
 
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
-      
-            - type: markdown
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #FA8072;
-                     font-weight: bold;
-                     font-size: 16px;
-                   }          
-              content: >
-                 **Автоматизации и скрипты**
+      - type: entities
+        card_mod:
+          style: |
+            ha-card {
+              color: #FA8072;
+              --paper-item-icon-color: #FA8072;
+              --iron-icon-stroke-color: #FFFFE0;
+              font-weight: bold;
+              font-size: 14px;
+            }
+        show_header_toggle: false
+        entities:
+          - entity: sensor.count_automation
+            type: custom:multiple-entity-row
+            name: Автоматизації
+            state_header: Всього
+            entities:
+              - entity: sensor.count_automation_on
+                name: Активно
+              - entity: sensor.count_automation_off
+                name: Вимкнено
+              - entity: sensor.count_automation_unavailable
+                name: Недоступно
 
-################# Автоматизации #################
+      - type: custom:auto-entities
+        show_empty: false
+        card:
+          type: entities
+          show_header_toggle: false
+          card_mod:
+            style: |
+              ha-card {
+                color: #FA8072;
+                --paper-item-icon-color: #E6E6FA;
+                font-weight: bold;
+                font-size: 14px;
+              }
+        filter:
+          include:
+            - domain: automation
+              state: 'unavailable'
+              options:
+                secondary_info: last-changed
 
-            - type: entities
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #FA8072;
-                     --paper-item-icon-color: #FA8072;
-                     --iron-icon-stroke-color: #FFFFE0;
-                     font-weight: bold;
-                     font-size: 14px;
-                   }                 
-              show_header_toggle: false
-              entities:
-              - entity: sensor.count_automation
-                type: custom:multiple-entity-row
-                name: Автоматизации
-                state_header: Всего
-                entities:
-                  - entity: sensor.count_automation_on
-                    name: Активно
-                  - entity: sensor.count_automation_off
-                    name: Отключено
-                  - entity: sensor.count_automation_unavailable
-                    name: Недоступно
+      - type: entities
+        card_mod:
+          style: |
+            ha-card {
+              color: #FA8072;
+              --paper-item-icon-color: #FA8072;
+              --iron-icon-stroke-color: #FFFFE0;
+              font-weight: bold;
+              font-size: 14px;
+            }
+        show_header_toggle: false
+        entities:
+          - entity: sensor.count_script
+            type: custom:multiple-entity-row
+            name: Скрипти
+            state_header: Всього
+            entities:
+              - entity: sensor.count_script_on
+                name: Активно
+              - entity: sensor.count_script_off
+                name: Вимкнено
+              - entity: sensor.count_script_unavailable
+                name: Недоступно
 
-            - type: custom:auto-entities
-              show_empty: false
-              card:
-                type: entities
-                show_header_toggle: false
-                card_mod:
-                 style: |
-                  ha-card {
-                    color: #FA8072;
-                    --paper-item-icon-color: #E6E6FA;
-                    font-weight: bold;
-                    font-size: 14px;
-                  }
-              filter:
-                include:
-                 - domain: automation
-                   state: 'unavailable'
-                   options:
-                      secondary_info: last-changed
-                      
-################# Скрипты #################
+      - type: custom:auto-entities
+        show_empty: false
+        card:
+          type: entities
+          show_header_toggle: false
+          card_mod:
+            style: |
+              ha-card {
+                color: #FA8072;
+                --paper-item-icon-color: #E6E6FA;
+                font-weight: bold;
+                font-size: 14px;
+              }
+        filter:
+          include:
+            - domain: script
+              state: 'unavailable'
+              options:
+                secondary_info: last-changed
 
-            - type: entities
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #FA8072;
-                     --paper-item-icon-color: #FA8072;
-                     --iron-icon-stroke-color: #FFFFE0;
-                     font-weight: bold;
-                     font-size: 14px;
-                   }                 
-              show_header_toggle: false
-              entities:
-              - entity: sensor.count_script
-                type: custom:multiple-entity-row
-                name: Скрипты
-                state_header: Всего
-                entities:
-                  - entity: sensor.count_script_on
-                    name: Активно
-                  - entity: sensor.count_script_off
-                    name: Отключено
-                  - entity: sensor.count_script_unavailable
-                    name: Недоступно
-
-            - type: custom:auto-entities
-              show_empty: false
-              card:
-                type: entities
-                show_header_toggle: false
-                card_mod:
-                 style: |
-                  ha-card {
-                    color: #FA8072;
-                    --paper-item-icon-color: #E6E6FA;
-                    font-weight: bold;
-                    font-size: 14px;
-                  }
-              filter:
-                include:
-                 - domain: script
-                   state: 'unavailable'
-                   options:
-                      secondary_info: last-changed 
-
-################# Светильники #################
-
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
-      
-            - type: markdown
-              card_mod:
-                style: |
-                  ha-card {
-                    color: #FA8072;
-                    font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **Cветильники**
-                  
-            - type: entities
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #FA8072;
-                     --paper-item-icon-color: #FA8072;
-                     --iron-icon-stroke-color: #FFFFE0;
-                     font-weight: bold;
-                     font-size: 14px;
-                   }               
-              show_header_toggle: false
-              entities:
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: entities
+            card_mod:
+              style: |
+                ha-card {
+                  color: #FA8072;
+                  --paper-item-icon-color: #FA8072;
+                  --iron-icon-stroke-color: #FFFFE0;
+                  font-weight: bold;
+                  font-size: 14px;
+                }
+            show_header_toggle: false
+            entities:
               - entity: sensor.count_light
                 type: custom:multiple-entity-row
-                name: Светильники
-                state_header: Всего
+                name: Світильники
+                state_header: Всього
                 entities:
-                  - entity: sensor.count_light_on
-                    name: Активно
-                  - entity: sensor.count_light_off
-                    name: Отключено
                   - entity: sensor.count_light_unavailable
                     name: Недоступно
-                    
-            - type: custom:auto-entities
-              show_empty: false
-              card:
-                type: entities
-                show_header_toggle: false
-                card_mod:
-                 style: |
-                    ha-card {
-                      color: #FA8072;
-                      --paper-item-icon-color: #E6E6FA;
-                      --iron-icon-stroke-color: #E6E6FA;
-                      font-weight: bold;
-                      font-size: 14px;
-                    }  
-              filter:
-                include:
-                 - domain: light
-                   state: 'unavailable'
-                   options:
-                      secondary_info: last-changed
-                exclude:
-                 - entity_id: light.*virtual*
-################# Реле #################
 
-        - type: custom:stack-in-card
-          mode: vertical
-          cards: 
-      
-            - type: markdown
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+              show_header_toggle: false
               card_mod:
                 style: |
                   ha-card {
                     color: #FA8072;
+                    --paper-item-icon-color: #E6E6FA;
+                    --iron-icon-stroke-color: #E6E6FA;
                     font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **Реле**
-                  
-            - type: entities
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #FA8072;
-                     --paper-item-icon-color: #FA8072;
-                     --iron-icon-stroke-color: #FFFFE0;
-                     font-weight: bold;
-                     font-size: 14px;
-                   }               
-              show_header_toggle: false
-              entities:
+                    font-size: 14px;
+                  }
+            filter:
+              include:
+                - domain: light
+                  state: 'unavailable'
+                  options:
+                    secondary_info: last-changed
+              exclude:
+                - entity_id: light.*virtual*
+
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: entities
+            card_mod:
+              style: |
+                ha-card {
+                  color: #FA8072;
+                  --paper-item-icon-color: #FA8072;
+                  --iron-icon-stroke-color: #FFFFE0;
+                  font-weight: bold;
+                  font-size: 14px;
+                }
+            show_header_toggle: false
+            entities:
               - entity: sensor.count_switch
                 type: custom:multiple-entity-row
                 name: Реле
-                state_header: Всего
+                state_header: Всього
                 entities:
-                  - entity: sensor.count_switch_on
-                    name: Активно
-                  - entity: sensor.count_switch_off
-                    name: Отключено
                   - entity: sensor.count_switch_unavailable
                     name: Недоступно
-                    
-            - type: custom:auto-entities
-              show_empty: false
-              card:
-                type: entities
-                show_header_toggle: false
-                card_mod:
-                 style: |
-                    ha-card {
-                      color: #FA8072;
-                      --paper-item-icon-color: #E6E6FA;
-                      --iron-icon-stroke-color: #E6E6FA;
-                      font-weight: bold;
-                      font-size: 14px;
-                    }  
-              filter:
-                include:
-                 - domain: switch
-                   state: 'unavailable'
-                   options:
-                      secondary_info: last-changed 
 
-################# Термоголовки #################
-
-        - type: custom:stack-in-card
-          mode: vertical
-          cards: 
-          
-            - type: markdown
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+              show_header_toggle: false
               card_mod:
                 style: |
                   ha-card {
                     color: #FA8072;
+                    --paper-item-icon-color: #E6E6FA;
+                    --iron-icon-stroke-color: #E6E6FA;
                     font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **Термоголовки**
-                  
-            - type: entities
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #FA8072;
-                     --paper-item-icon-color: #FA8072;
-                     --iron-icon-stroke-color: #FFFFE0;
-                     font-weight: bold;
-                     font-size: 14px;
-                   }                
-              show_header_toggle: false
-              entities:
+                    font-size: 14px;
+                  }
+            filter:
+              include:
+                - domain: switch
+                  state: 'unavailable'
+                  options:
+                    secondary_info: last-changed
+              exclude:
+                - entity_id: switch.*ps308g0011242300032c4copc*
+
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: entities
+            card_mod:
+              style: |
+                ha-card {
+                  color: #FA8072;
+                  --paper-item-icon-color: #FA8072;
+                  --iron-icon-stroke-color: #FFFFE0;
+                  font-weight: bold;
+                  font-size: 14px;
+                }
+            show_header_toggle: false
+            entities:
               - entity: sensor.count_climate
                 type: custom:multiple-entity-row
                 name: Термоголовки
-                state_header: Всего
+                state_header: Всього
                 entities:
-                  - entity: sensor.count_climate_heat
-                    name: Активно
-                  - entity: sensor.count_climate_off
-                    name: Отключено
                   - entity: sensor.count_climate_unavailable
                     name: Недоступно
-                    
-            - type: custom:auto-entities
-              show_empty: false
-              card:
-                type: entities
-                show_header_toggle: false
-                card_mod:
-                 style: |
-                    ha-card {
-                      color: #FA8072;
-                      --paper-item-icon-color: #E6E6FA;
-                      --iron-icon-stroke-color: #E6E6FA;
-                      font-weight: bold;
-                      font-size: 14px;
-                    }  
-              filter:
-                include:
-                 - domain: climate
-                   state: 'unavailable'
-                   options:
-                      secondary_info: last-changed 
-                      
-################# Сенсоры #################
 
-        - type: custom:stack-in-card
-          mode: vertical
-          cards: 
-            - type: markdown
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+              show_header_toggle: false
               card_mod:
                 style: |
                   ha-card {
                     color: #FA8072;
+                    --paper-item-icon-color: #E6E6FA;
+                    --iron-icon-stroke-color: #E6E6FA;
                     font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **Сенсоры**
-                  
-            - type: entities
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #FA8072;
-                     --paper-item-icon-color: #FA8072;
-                     --iron-icon-stroke-color: #FFFFE0;
-                     font-weight: bold;
-                     font-size: 14px;
-                   }                
-              show_header_toggle: false
-              entities:
+                    font-size: 14px;
+                  }
+            filter:
+              include:
+                - domain: climate
+                  state: 'unavailable'
+                  options:
+                    secondary_info: last-changed
+
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: entities
+            card_mod:
+              style: |
+                ha-card {
+                  color: #FA8072;
+                  --paper-item-icon-color: #FA8072;
+                  --iron-icon-stroke-color: #FFFFE0;
+                  font-weight: bold;
+                  font-size: 14px;
+                }
+            show_header_toggle: false
+            entities:
               - entity: sensor.count_sensor
                 type: custom:multiple-entity-row
-                name: Сенсоры
-                state_header: Всего
+                name: Сенсори
+                state_header: Всього
                 entities:
                   - entity: sensor.count_sensor_unavailable
                     name: Недоступно
-                    
-            - type: custom:auto-entities
-              show_empty: false
-              card:
-                type: entities
-                show_header_toggle: false
-                card_mod:
-                 style: |
-                    ha-card {
-                      color: #FA8072;
-                      --paper-item-icon-color: #E6E6FA;
-                      --iron-icon-stroke-color: #E6E6FA;
-                      font-weight: bold;
-                      font-size: 14px;
-                    }  
-              filter:
-                include:
-                 - domain: sensor
-                   state: 'unavailable'
-                   options:
-                      secondary_info: last-changed 
-                      
-################# Бинарные сенсоры #################
-        - type: custom:stack-in-card
-          mode: vertical
-          cards: 
-          
-            - type: markdown
+
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+              show_header_toggle: false
               card_mod:
                 style: |
                   ha-card {
                     color: #FA8072;
+                    --paper-item-icon-color: #E6E6FA;
+                    --iron-icon-stroke-color: #E6E6FA;
                     font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **Бинарные сенсоры**
-                  
-            - type: entities
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #FA8072;
-                     --paper-item-icon-color: #FA8072;
-                     --iron-icon-stroke-color: #FFFFE0;
-                     font-weight: bold;
-                     font-size: 14px;
-                   }               
-              show_header_toggle: false
-              entities:
+                    font-size: 14px;
+                  }
+            filter:
+              include:
+                - domain: sensor
+                  state: 'unavailable'
+                  options:
+                    secondary_info: last-changed
+              exclude:
+                - entity_id: sensor.*ps308g0011242300032c4copc*
+
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: entities
+            card_mod:
+              style: |
+                ha-card {
+                  color: #FA8072;
+                  --paper-item-icon-color: #FA8072;
+                  --iron-icon-stroke-color: #FFFFE0;
+                  font-weight: bold;
+                  font-size: 14px;
+                }
+            show_header_toggle: false
+            entities:
               - entity: sensor.count_binary_sensor
                 type: custom:multiple-entity-row
-                name: Бинарные сенсоры
-                state_header: Всего
+                name: Бінарні сенсори
+                state_header: Всього
                 entities:
                   - entity: sensor.count_binary_sensor_unavailable
                     name: Недоступно
-                    
-            - type: custom:auto-entities
-              show_empty: false
-              card:
-                type: entities
-                show_header_toggle: false
-                card_mod:
-                 style: |
-                    ha-card {
-                      color: #FA8072;
-                      --paper-item-icon-color: #E6E6FA;
-                      --iron-icon-stroke-color: #E6E6FA;
-                      font-weight: bold;
-                      font-size: 14px;
-                    }  
-              filter:
-                include:
-                 - domain: binary_sensor
-                   state: 'unavailable'
-                   options:
-                      secondary_info: last-changed 
 
-################# Камеры #################
-        - type: custom:stack-in-card
-          mode: vertical
-          cards: 
-          
-            - type: markdown
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+              show_header_toggle: false
               card_mod:
                 style: |
                   ha-card {
                     color: #FA8072;
+                    --paper-item-icon-color: #E6E6FA;
+                    --iron-icon-stroke-color: #E6E6FA;
                     font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **IP Камеры**
-                  
-            - type: entities
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #FA8072;
-                     --paper-item-icon-color: #FA8072;
-                     --iron-icon-stroke-color: #FFFFE0;
-                     font-weight: bold;
-                     font-size: 14px;
-                   }                
-              show_header_toggle: false
-              entities:
+                    font-size: 14px;
+                  }
+            filter:
+              include:
+                - domain: binary_sensor
+                  state: 'unavailable'
+                  options:
+                    secondary_info: last-changed
+
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: entities
+            card_mod:
+              style: |
+                ha-card {
+                  color: #FA8072;
+                  --paper-item-icon-color: #FA8072;
+                  --iron-icon-stroke-color: #FFFFE0;
+                  font-weight: bold;
+                  font-size: 14px;
+                }
+            show_header_toggle: false
+            entities:
               - entity: sensor.count_camera
                 type: custom:multiple-entity-row
-                name: IP камеры
-                state_header: Всего
+                name: IP-камери
+                state_header: Всього
                 entities:
                   - entity: sensor.count_camera_unavailable
                     name: Недоступно
-                    
-            - type: custom:auto-entities
-              show_empty: false
-              card:
-                type: entities
-                show_header_toggle: false
-                card_mod:
-                 style: |
-                    ha-card {
-                      color: #FA8072;
-                      --paper-item-icon-color: #E6E6FA;
-                      --iron-icon-stroke-color: #E6E6FA;
-                      font-weight: bold;
-                      font-size: 14px;
-                    }  
-              filter:
-                include:
-                 - domain: camera
-                   state: 'unavailable'
-                   options:
-                      secondary_info: last-changed 
 
-################# Уровень заряда #################
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
-           
-            - type: markdown
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+              show_header_toggle: false
+              card_mod:
+                style: |
+                  ha-card {
+                    color: #FA8072;
+                    --paper-item-icon-color: #E6E6FA;
+                    --iron-icon-stroke-color: #E6E6FA;
+                    font-weight: bold;
+                    font-size: 14px;
+                  }
+            filter:
+              include:
+                - domain: camera
+                  state: 'unavailable'
+                  options:
+                    secondary_info: last-changed
+
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  color: #FA8072;
+                }
+            content: >
+              #### Батарейки < 30%
+
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: custom:battery-state-card
+              show_header_toggle: false
               card_mod:
                 style: |
                   ha-card {
                     color: #FA8072;
                     font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **Батарейки < 30% заряда**
-            - type: custom:auto-entities
-              show_empty: false
-              card:
-                type: custom:battery-state-card
-                show_header_toggle: false
-                card_mod:
-                 style: |
-                    ha-card {
-                      color: #FA8072;
-                      font-weight: bold;
-                      font-size: 14px;
-                    } 
-              filter:
-                include:
-                 - domain: sensor
-                   attributes:
-                     device_class: 'battery'
-                exclude:
-                 - state: '> 30.0'
-                 - state: 'unknown'
-                 - state: 'unavailable'
+                    font-size: 14px;
+                  }
+            filter:
+              include:
+                - domain: sensor
+                  attributes:
+                    device_class: 'battery'
+              exclude:
+                - state: '> 30.0'
+                - state: 'unknown'
+                - state: 'unavailable'
 
-            - type: markdown
-              card_mod:
-                style: |
-                  ha-card {
-                    color: #FA8072;
-                    font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **Сенсоры разряда**
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  color: #FA8072;
+                }
+            content: >
+              #### Сенсори розряду
 
-            - type: custom:auto-entities
-              card:
-                type: entities
-                show_header_toggle: false
-              filter:
-                include:
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
                 - domain: binary_sensor
                   state: 'on'
                   attributes:
                     device_class: 'battery'
                   options:
-                      secondary_info: last-changed
-                      state_color: true
-        
-############################ Колонка 3 ############################
-    - type: vertical-stack
-      cards:
+                    secondary_info: last-changed
+                    state_color: true
 
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
-      
-            - type: markdown
-              card_mod:
-                style: |
-                  ha-card {
-                    color: #FFA500;
-                    font-weight: bold;
-                    font-size: 16px;
-                  }     
-              content: >
-                 **Электрика вход**
-            - type: entities
-              card_mod:
-                style: |
-                   ha-card {
-                     color: #FFA500;
-                     --paper-item-icon-color: #FFA500;
-                     font-weight: bold;
-                     font-size: 14px;
-                   }             
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  color: #FA8072;
+                }
+            content: >
+              #### Усі недоступні сутності
+
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
               show_header_toggle: false
-              entities:
-
-              - entity: sensor.phase_1_voltage
-                type: custom:multiple-entity-row
-                icon: mdi:meter-electric
-                name: Фаза 1
-                state_header: Напряжение
-                entities:
-                  - entity: sensor.phase_1_power
-                    name: Мощность
-                    unit: 'Вт'
-                  - entity: sensor.phase_1_current
-                    name: Ток
-
-              - entity: sensor.phase_2_voltage
-                type: custom:multiple-entity-row
-                icon: mdi:meter-electric
-                name: Фаза 2
-                state_header: Напряжение
-                entities:
-                  - entity: sensor.phase_2_power
-                    name: Мощность
-                    unit: 'Вт'
-                  - entity: sensor.phase_2_current
-                    name: Ток
-                    
-              - entity: sensor.phase_3_voltage
-                type: custom:multiple-entity-row
-                icon: mdi:meter-electric
-                name: Фаза 1
-                state_header: Напряжение
-                entities:
-                  - entity: sensor.phase_3_power
-                    name: Мощность
-                    unit: 'Вт'
-                  - entity: sensor.phase_3_current
-                    name: Ток
-################# Потребление более 10 Ватт #################
- 
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
-
-            - type: markdown
               card_mod:
                 style: |
                   ha-card {
-                    color: #FFA500;
+                    color: #FA8072;
+                    --paper-item-icon-color: #E6E6FA;
                     font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **Активные розетки > 10 Ватт**
+                    font-size: 14px;
+                  }
+            filter:
+              include:
+                - domain: '*'
+                  state: 'unavailable'
+              exclude:
+                - entity_id: media_player.mi_speaker
+                - entity_id: media_player.mitv
+                - entity_id: media_player.mi_box
+                - entity_id: media_player.kn_mi_box
 
-            - type: custom:auto-entities
-              card:
-                type: entities
-                show_header_toggle: false
-              filter:
-                include:
+############################ Колонка 3 ############################
+  - type: grid
+    cards:
+
+      - type: entities
+        card_mod:
+          style: |
+            ha-card {
+              color: #FFA500;
+              --paper-item-icon-color: #FFA500;
+              font-weight: bold;
+              font-size: 14px;
+            }
+        show_header_toggle: false
+        entities:
+          - entity: sensor.deye_sun15_load_l1_voltage
+            type: custom:multiple-entity-row
+            icon: mdi:meter-electric
+            name: Фаза 1 навантаження
+            state_header: Напруга
+            entities:
+              - entity: sensor.deye_sun15_load_l1_power
+                name: Потужність
+                unit: 'Вт'
+
+          - entity: sensor.deye_sun15_load_l2_voltage
+            type: custom:multiple-entity-row
+            icon: mdi:meter-electric
+            name: Фаза 2 навантаження
+            state_header: Напруга
+            entities:
+              - entity: sensor.deye_sun15_load_l2_power
+                name: Потужність
+                unit: 'Вт'
+
+          - entity: sensor.deye_sun15_load_l3_voltage
+            type: custom:multiple-entity-row
+            icon: mdi:meter-electric
+            name: Фаза 3 навантаження
+            state_header: Напруга
+            entities:
+              - entity: sensor.deye_sun15_load_l3_power
+                name: Потужність
+                unit: 'Вт'
+
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  color: #FFA500;
+                }
+            content: >
+              #### Споживання > 10 Вт
+
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
                 - domain: switch
                   state: 'on'
                   attributes:
                     power: '! none'
                   options:
-                     type: custom:multiple-entity-row
-                     toggle: true
-                    #  show_state: false
-                     secondary_info: last-changed
-                     state_color: true
-                     entities:
+                    type: custom:multiple-entity-row
+                    toggle: true
+                    secondary_info: last-changed
+                    state_color: true
+                    entities:
                       - attribute: power
-                        name: Потребление
-                        unit: 'Ватт'
-                exclude:
+                        name: Споживання
+                        unit: 'Вт'
+              exclude:
                 - domain: switch
                   state: 'on'
                   attributes:
                     power: '< 10'
                 - entity_id: switch.*power_outage*
-                
-            - type: custom:auto-entities
-              card:
-                type: entities
-                show_header_toggle: false
-              filter:
-                include:
-                - domain: switch
-                  state: 'on'
-                  attributes:
-                    load_power: '! none'
-                  options:
-                     type: custom:multiple-entity-row
-                     toggle: true
-                    #  show_state: false
-                     secondary_info: last-changed
-                     state_color: true
-                     entities:
-                      - attribute: load_power
-                        name: Потребление
-                        unit: 'Ватт'
-                exclude:
-                - domain: switch
-                  state: 'on'
-                  attributes:
-                    load_power: '< 10'
 
-################# Включенные светильники #################
-                
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
+                - entity_id: sensor.*_power
+                  state: '> 10.0'
+              exclude:
+                - entity_id: sensor.total_enter_power
+                - entity_id: sensor.phase_1_power
+                - entity_id: sensor.phase_2_power
+                - entity_id: sensor.phase_3_power
+                - entity_id: sensor.0x70ac08fffe99c363_power
+                - entity_id: sensor.0x187a3efffe355cf1_power
+                - entity_id: sensor.0x187a3efffe303832_power
+                - entity_id: sensor.*ac_in*
+                - entity_id: sensor.*ac_out*
+                - entity_id: sensor.*deye*
+                - entity_id: sensor.*delta*
+                - entity_id: sensor.*river*
 
-            - type: markdown
-              card_mod:
-                style: |
-                  ha-card {
-                    color: #FFA500;
-                    font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **Активные светильники**
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  color: #FFA500;
+                  font-weight: bold;
+                  font-size: 16px;
+                }
+            content: >
+              **Активні світильники**
 
-            # - type: custom:auto-entities
-            #   card:
-            #     type: entities
-            #     show_header_toggle: false
-            #   filter:
-            #     include:
-            #     - domain: light
-            #       state: 'on'
-            #       options:
-            #          type: custom:multiple-entity-row
-            #          toggle: true
-            #         #  show_state: false
-            #          secondary_info: last-changed
-            #          entities:
-            #           - attribute: brightness
-            #             name: Яркость
-            #           - attribute: color_temp
-            #             name: Температура
-            #     exclude:
-            #      - entity_id: light.*virtual*
-                 
-                 
-            - type: custom:auto-entities
-              card:
-                type: entities
-                show_header_toggle: false
-              filter:
-                include:
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
                 - domain: light
                   state: 'on'
                   options:
-                      type: custom:mushroom-light-card
-                      use_light_color: true
-                      show_brightness_control: true
-                      show_color_temp_control: false
-                      show_color_control: false
-                      collapsible_controls: true
-                      secondary_info: none
-                exclude:
-                 - entity_id: light.*virtual*
-                 - entity_id: light.awtrix_6c9da0_matrix                
-################# Активные плееры #################
- 
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
+                    type: custom:mushroom-light-card
+                    use_light_color: true
+                    show_brightness_control: true
+                    show_color_temp_control: false
+                    show_color_control: false
+                    collapsible_controls: true
+                    secondary_info: none
+              exclude:
+                - entity_id: light.*virtual*
+                - entity_id: light.awtrix_6c9da0_matrix
+                - entity_id: light.bt_blackout
 
-            - type: markdown
-              card_mod:
-                style: |
-                  ha-card {
-                    color: #FFA500;
-                    font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **Активные плееры**
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  color: #FFA500;
+                  font-weight: bold;
+                  font-size: 16px;
+                }
+            content: >
+              **Активні плеєри**
 
-            - type: custom:auto-entities
-              card:
-                type: entities
-                show_header_toggle: false
-              filter:
-                include:
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
                 - domain: media_player
                   state: 'playing'
                   options:
-                     secondary_info: last-changed
-                     state_color: true
+                    secondary_info: last-changed
+                    state_color: true
 
-                      
-################# Активные термоголовки #################
- 
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  color: #FFA500;
+                  font-weight: bold;
+                  font-size: 16px;
+                }
+            content: >
+              **Активні термоголовки**
 
-            - type: markdown
-              card_mod:
-                style: |
-                  ha-card {
-                    color: #FFA500;
-                    font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **Активные термоголовки**
-
-            - type: custom:auto-entities
-              card:
-                type: entities
-                show_header_toggle: false
-              filter:
-                include:
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
                 - domain: climate
                   state: 'heat'
                   options:
-                      secondary_info: last-changed
+                    secondary_info: last-changed
 
-################# Таймеры #################
-                      
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  color: #FFA500;
+                  font-weight: bold;
+                  font-size: 16px;
+                }
+            content: >
+              **Активні вентилятори**
 
-            - type: markdown
-              card_mod:
-                style: |
-                  ha-card {
-                    color: #FFA500;
-                    font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **Активные таймеры**
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
+                - domain: fan
+                  state: 'on'
+                  options:
+                    secondary_info: last-changed
 
-            - type: custom:auto-entities
-              card:
-                type: entities
-                show_header_toggle: false
-              filter:
-                include:
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  color: #FFA500;
+                  font-weight: bold;
+                  font-size: 16px;
+                }
+            content: >
+              **Активні таймери**
+
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
                 - domain: timer
                   state: 'active'
                   options:
-                      type: custom:timer-bar-card
-                      mushroom:
-                      modifications:
+                    type: custom:timer-bar-card
+                    mushroom:
+                    modifications:
                       - elapsed: 30%
                         bar_foreground: yellow
                       - elapsed: 60%
                         bar_foreground: orange
                       - elapsed: 90%
                         bar_foreground: red
-                      bar_height: 20px
-                      sync_issues: ignore
-                      invert: true
-
-            # - type: custom:auto-entities
-            #   show_empty: false
-            #   card:
-            #     type: entities
-            #     show_header_toggle: false
-            #   filter:
-            #     include:
-            #      - domain: timer
-            #       state: 'active'
-            #       options:
-            #           secondary_info: last-changed
+                    bar_height: 20px
+                    sync_issues: ignore
+                    invert: true
 
 ############################ Колонка 4 ############################
+  - type: grid
+    cards:
 
-    - type: vertical-stack
-      cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  color: #00FA9A;
+                  font-weight: bold;
+                  font-size: 16px;
+                }
+            content: >
+              **Аварійні датчики**
 
-################# Аварийные датчики #################
-      
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
-                                   
-            - type: markdown
-              card_mod:
-                style: |
-                  ha-card {
-                    color: #00FA9A;
-                    font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **Аварийные датчики**
-                      
-            - type: custom:auto-entities
-              card:
-                type: entities
-                show_header_toggle: false
-              filter:
-                include:
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
                 - domain: binary_sensor
                   state: 'on'
                   attributes:
                     device_class: 'moisture'
                   options:
-                      secondary_info: last-changed
-                      state_color: true
+                    secondary_info: last-changed
+                    state_color: true
                 - domain: binary_sensor
                   state: 'on'
                   attributes:
                     device_class: 'smoke'
                   options:
-                      secondary_info: last-changed
-                      state_color: true
-                      
-################# Сенсоры тревоги #################
-      
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
-                                   
-            - type: markdown
-              card_mod:
-                style: |
-                  ha-card {
-                    color: #00FA9A;
-                    font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **Сенсоры тревоги**
-                      
-            - type: custom:auto-entities
-              card:
-                type: entities
-                show_header_toggle: false
-              filter:
-                include:
-                 - entity_id: binary_sensor.*m_kiyiv*
-                   options:
-                      secondary_info: last-changed
-                      state_color: true
-                exclude:
-                 - state: 'off'
-                      
-################# Присутствие и движение #################
+                    secondary_info: last-changed
+                    state_color: true
 
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  color: #00FA9A;
+                  font-weight: bold;
+                  font-size: 16px;
+                }
+            content: >
+              **Сенсори тривоги**
 
-            - type: markdown
-              card_mod:
-                style: |
-                  ha-card {
-                    color: #00FA9A;
-                    font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **Активные датчики движения и присутствия**
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
+                - entity_id: binary_sensor.*m_kiyiv*
+                  options:
+                    secondary_info: last-changed
+                    state_color: true
+              exclude:
+                - state: 'off'
 
-            - type: custom:auto-entities
-              card:
-                type: entities
-                show_header_toggle: false
-              filter:
-                include:
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  color: #00FA9A;
+                  font-weight: bold;
+                  font-size: 16px;
+                }
+            content: >
+              **Активні датчики руху та присутності**
+
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
                 - domain: binary_sensor
                   state: 'on'
                   attributes:
                     device_class: 'motion'
                   options:
-                      secondary_info: last-changed
-                      state_color: true
+                    secondary_info: last-changed
+                    state_color: true
                 - domain: binary_sensor
                   state: 'on'
                   attributes:
                     device_class: 'occupancy'
                   options:
-                      secondary_info: last-changed
-                      state_color: true
+                    secondary_info: last-changed
+                    state_color: true
                 - domain: binary_sensor
                   state: 'on'
                   attributes:
                     device_class: 'presence'
                   options:
-                      secondary_info: last-changed
-                      state_color: true
-                exclude:
-                 - entity_id: binary_sensor.kn_occupancy
-                 - entity_id: binary_sensor.kn_presence
-################# Окна и двери #################
+                    secondary_info: last-changed
+                    state_color: true
+              exclude:
+                - entity_id: binary_sensor.kn_occupancy
+                - entity_id: binary_sensor.kn_presence
+                - entity_id: binary_sensor.tt_presence
 
-        - type: custom:stack-in-card
-          mode: vertical
-          cards:
-                                   
-            - type: markdown
-              card_mod:
-                style: |
-                  ha-card {
-                    color: #00FA9A;
-                    font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **Открытые окна**
-                      
-            - type: custom:auto-entities
-              card:
-                type: entities
-                show_header_toggle: false
-              filter:
-                include:
+      - type: custom:stack-in-card
+        mode: vertical
+        cards:
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  color: #00FA9A;
+                  font-weight: bold;
+                  font-size: 16px;
+                }
+            content: >
+              **Відкриті вікна**
+
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
                 - domain: binary_sensor
                   state: 'on'
                   attributes:
                     device_class: 'window'
                   options:
-                      secondary_info: last-changed
-                      state_color: true
-                exclude:
+                    secondary_info: last-changed
+                    state_color: true
+              exclude:
                 - entity_id: binary_sensor.*aeration*
-                                   
-            - type: markdown
-              card_mod:
-                style: |
-                  ha-card {
-                    color: #00FA9A;
-                    font-weight: bold;
-                    font-size: 16px;
-                  } 
-              content: >
-                  **Открытые двери**
-                      
-            - type: custom:auto-entities
-              card:
-                type: entities
-                show_header_toggle: false
-              filter:
-                include:
+
+          - type: markdown
+            card_mod:
+              style: |
+                ha-card {
+                  color: #00FA9A;
+                  font-weight: bold;
+                  font-size: 16px;
+                }
+            content: >
+              **Відкриті двері**
+
+          - type: custom:auto-entities
+            card:
+              type: entities
+              show_header_toggle: false
+            filter:
+              include:
                 - domain: binary_sensor
                   state: 'on'
                   attributes:
                     device_class: 'door'
                   options:
-                      secondary_info: last-changed
-                      state_color: true
+                    secondary_info: last-changed
+                    state_color: true

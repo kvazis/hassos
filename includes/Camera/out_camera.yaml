@@ -54,8 +54,8 @@ out_camera:
               entity_id: camera.hikvision_1
               filename: "/config/www/cam_captures/hikvision1_photo.jpg"
          - delay: 00:00:10
-         - service: telegram_bot.send_photo
-           data_template:
+         - action: telegram_bot.send_photo
+           data:
              target:
               - !secret chat_id_group
              file: "/config/www/cam_captures/hikvision1_photo.jpg" 
@@ -115,8 +115,8 @@ out_camera:
               entity_id: camera.hikvision_3
               filename: "/config/www/cam_captures/hikvision3_photo.jpg"
          - delay: 00:00:10
-         - service: telegram_bot.send_photo
-           data_template:
+         - action: telegram_bot.send_photo
+           data:
              target:
               - !secret chat_id_group
              file: "/config/www/cam_captures/hikvision3_photo.jpg" 
@@ -172,8 +172,8 @@ out_camera:
               entity_id: camera.hikvision_5
               filename: "/config/www/cam_captures/hikvision5_photo.jpg"
          - delay: 00:00:10
-         - service: telegram_bot.send_photo
-           data_template:
+         - action: telegram_bot.send_photo
+           data:
              target:
               - !secret chat_id_group
              file: "/config/www/cam_captures/hikvision5_photo.jpg" 
@@ -233,8 +233,8 @@ out_camera:
               entity_id: camera.hikvision_7
               filename: "/config/www/cam_captures/hikvision7_photo.jpg"
          - delay: 00:00:10
-         - service: telegram_bot.send_photo
-           data_template:
+         - action: telegram_bot.send_photo
+           data:
              target:
               - !secret chat_id_group
              file: "/config/www/cam_captures/hikvision7_photo.jpg" 

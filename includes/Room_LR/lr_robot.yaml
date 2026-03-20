@@ -1,0 +1,15 @@
+lr_robot:
+
+
+    recorder:
+      include:
+        entities:
+          - sensor.zhimi_xa1_4790_battery_level
+          
+    homeassistant:
+      customize:
+
+        vacuum.zhimi_xa1_4790_robot_cleaner:
+          friendly_name: Lydstro robot
+        sensor.zhimi_xa1_4790_battery_level:
+          friendly_name: Lydstro robot  

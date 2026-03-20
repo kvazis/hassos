@@ -14,11 +14,11 @@ lr_air_quality:
           friendly_name: Гостиная, СО2
           unit_of_measurement: 'ppm'
           icon: mdi:molecule-co2
-          device_class: carbon_monoxide
+          device_class: carbon_dioxide
 
         binary_sensor.lr_poor_air:
           friendly_name: Гостиная, плохой воздух
-          device_class: carbon_monoxide
+          device_class: carbon_dioxide
           
     template:
     
@@ -61,7 +61,7 @@ lr_air_quality:
         action:
          - service: telegram_bot.send_message
            data_template:
-             target:
+             chat_id:
                  - !secret chat_id_group
              message: | 
                   {{"\U0001F637"}} Гостиная {{ states('sensor.time_date') }} - хорошо бы проветрить

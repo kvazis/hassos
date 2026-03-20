@@ -11,6 +11,9 @@ kn_boiler:
     homeassistant:
       customize:
       
+        switch.kn_boiler:
+          friendly_name: Кухня бойлер
+          icon: mdi:water-boiler  
         switch.0xa4c1388ce0ff53a8:
           friendly_name: Кухня бойлер
           icon: mdi:water-boiler
@@ -151,24 +154,154 @@ kn_boiler:
                    is_state('binary_sensor.0xa4c1388ce0ff53a8_period_5_on', 'on')    
                 }}
             device_class: running
-            
-        sensor:
 
-          - name: '0xa4c1388ce0ff53a8_power'
-            unique_id: '0xa4c1388ce0ff53a8_power'
-            state: >
-                {{ states('sensor.0xa4c1388ce0ff53a8_raw_power')|float(0) }}
+      - switch:
 
-          - name: '0xa4c1388ce0ff53a8_energy'
-            unique_id: '0xa4c1388ce0ff53a8_energy'
+          - unique_id: 0xa4c1388ce0ff53a8_mode
+            name: Режим работы Кухня бойлер
+            default_entity_id: switch.0xa4c1388ce0ff53a8_mode
             state: >
-                {{ states('sensor.0xa4c1388ce0ff53a8_raw_energy')|float(0) }}
-                
-          - name: '0xa4c1388ce0ff53a8_voltage'
-            unique_id: '0xa4c1388ce0ff53a8_voltage'
+              {{ is_state('binary_sensor.0xa4c1388ce0ff53a8_mode', 'on') }}    
+            turn_on:
+              - action: mqtt.publish
+                data:
+                  topic: states/0xa4c1388ce0ff53a8/mode
+                  payload: 'ON'
+                  retain: true          
+            turn_off:
+              - action: mqtt.publish
+                data:
+                  topic: states/0xa4c1388ce0ff53a8/mode
+                  payload: 'OFF'
+                  retain: true          
+            icon: >
+              {% if is_state('switch.0xa4c1388ce0ff53a8_mode', 'on') %}
+                mdi:water-boiler
+              {% else %}
+                mdi:water-boiler-off
+              {% endif %}
+
+          - unique_id: 0xa4c1388ce0ff53a8_period_1_mode_switch
+            name: Кухня бойлер - период 1
+            default_entity_id: switch.0xa4c1388ce0ff53a8_period_1_mode
             state: >
-                {{ states('sensor.0xa4c1388ce0ff53a8_raw_voltage')|float(0) }}
-                
+              {{ is_state('binary_sensor.0xa4c1388ce0ff53a8_period_1_mode', 'on') }}
+            turn_on:
+              - action: mqtt.publish
+                data:
+                  topic: states/0xa4c1388ce0ff53a8/period_1_mode
+                  payload: 'ON'
+                  retain: true
+            turn_off:
+              - action: mqtt.publish
+                data:
+                  topic: states/0xa4c1388ce0ff53a8/period_1_mode
+                  payload: 'OFF'
+                  retain: true
+            icon: >
+              {% if is_state('switch.0xa4c1388ce0ff53a8_period_1_mode', 'on') %}
+                mdi:numeric-1-box
+              {% else %}
+                mdi:numeric-1-box-outline
+              {% endif %}
+
+          - unique_id: 0xa4c1388ce0ff53a8_period_2_mode_switch
+            name: Кухня бойлер - период 2
+            default_entity_id: switch.0xa4c1388ce0ff53a8_period_2_mode
+            state: >
+              {{ is_state('binary_sensor.0xa4c1388ce0ff53a8_period_2_mode', 'on') }}
+            turn_on:
+              - action: mqtt.publish
+                data:
+                  topic: states/0xa4c1388ce0ff53a8/period_2_mode
+                  payload: 'ON'
+                  retain: true
+            turn_off:
+              - action: mqtt.publish
+                data:
+                  topic: states/0xa4c1388ce0ff53a8/period_2_mode
+                  payload: 'OFF'
+                  retain: true
+            icon: >
+              {% if is_state('switch.0xa4c1388ce0ff53a8_period_2_mode', 'on') %}
+                mdi:numeric-2-box
+              {% else %}
+                mdi:numeric-2-box-outline
+              {% endif %}
+
+          - unique_id: 0xa4c1388ce0ff53a8_period_3_mode_switch
+            name: Кухня бойлер - период 3
+            default_entity_id: switch.0xa4c1388ce0ff53a8_period_3_mode
+            state: >
+              {{ is_state('binary_sensor.0xa4c1388ce0ff53a8_period_3_mode', 'on') }}
+            turn_on:
+              - action: mqtt.publish
+                data:
+                  topic: states/0xa4c1388ce0ff53a8/period_3_mode
+                  payload: 'ON'
+                  retain: true
+            turn_off:
+              - action: mqtt.publish
+                data:
+                  topic: states/0xa4c1388ce0ff53a8/period_3_mode
+                  payload: 'OFF'
+                  retain: true
+            icon: >
+              {% if is_state('switch.0xa4c1388ce0ff53a8_period_3_mode', 'on') %}
+                mdi:numeric-3-box
+              {% else %}
+                mdi:numeric-3-box-outline
+              {% endif %}
+
+          - unique_id: 0xa4c1388ce0ff53a8_period_4_mode_switch
+            name: Кухня бойлер - период 4
+            default_entity_id: switch.0xa4c1388ce0ff53a8_period_4_mode
+            state: >
+              {{ is_state('binary_sensor.0xa4c1388ce0ff53a8_period_4_mode', 'on') }}
+            turn_on:
+              - action: mqtt.publish
+                data:
+                  topic: states/0xa4c1388ce0ff53a8/period_4_mode
+                  payload: 'ON'
+                  retain: true
+            turn_off:
+              - action: mqtt.publish
+                data:
+                  topic: states/0xa4c1388ce0ff53a8/period_4_mode
+                  payload: 'OFF'
+                  retain: true
+            icon: >
+              {% if is_state('switch.0xa4c1388ce0ff53a8_period_4_mode', 'on') %}
+                mdi:numeric-4-box
+              {% else %}
+                mdi:numeric-4-box-outline
+              {% endif %}  
+              
+          - unique_id: 0xa4c1388ce0ff53a8_period_5_mode_switch
+            name: Кухня бойлер - период 5
+            default_entity_id: switch.0xa4c1388ce0ff53a8_period_5_mode
+            state: >
+              {{ is_state('binary_sensor.0xa4c1388ce0ff53a8_period_5_mode', 'on') }}
+            turn_on:
+              - action: mqtt.publish
+                data:
+                  topic: states/0xa4c1388ce0ff53a8/period_5_mode
+                  payload: 'ON'
+                  retain: true
+            turn_off:
+              - action: mqtt.publish
+                data:
+                  topic: states/0xa4c1388ce0ff53a8/period_5_mode
+                  payload: 'OFF'
+                  retain: true
+            icon: >
+              {% if is_state('switch.0xa4c1388ce0ff53a8_period_5_mode', 'on') %}
+                mdi:numeric-5-box
+              {% else %}
+                mdi:numeric-5-box-outline
+              {% endif %}  
+
+
     mqtt:
 
       binary_sensor:
@@ -241,150 +374,6 @@ kn_boiler:
         - name: '0xa4c1388ce0ff53a8_period_5'
           unique_id: '0xa4c1388ce0ff53a8_period_5'          
           state_topic: "states/0xa4c1388ce0ff53a8/period_5"
-          
-    switch:
-    
-      - platform: template
-        switches:
-
-          0xa4c1388ce0ff53a8_mode:
-            friendly_name: "Режим работы Кухня бойлер"
-            unique_id: '0xa4c1388ce0ff53a8_mode_switch'
-            value_template: "{{ is_state('binary_sensor.0xa4c1388ce0ff53a8_mode', 'on') }}"
-            turn_on:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0xa4c1388ce0ff53a8/mode"
-                payload: 'ON'
-                retain: true 
-            turn_off:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0xa4c1388ce0ff53a8/mode"
-                payload: 'OFF'
-                retain: true 
-            icon_template: >-
-              {% if is_state('switch.0xa4c1388ce0ff53a8_mode', 'on') %}
-                mdi:water-boiler
-              {% else %}
-                mdi:water-boiler-off
-              {% endif %}          
-          
-          0xa4c1388ce0ff53a8_period_1_mode:
-            friendly_name: "Кухня бойлер - период 1"
-            unique_id: '0xa4c1388ce0ff53a8_period_1_mode_switch'
-            value_template: "{{ is_state('binary_sensor.0xa4c1388ce0ff53a8_period_1_mode', 'on') }}"
-            turn_on:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0xa4c1388ce0ff53a8/period_1_mode"
-                payload: 'ON'
-                retain: true 
-            turn_off:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0xa4c1388ce0ff53a8/period_1_mode"
-                payload: 'OFF'
-                retain: true 
-            icon_template: >-
-              {% if is_state('switch.0xa4c1388ce0ff53a8_period_1_mode', 'on') %}
-                mdi:numeric-1-box
-              {% else %}
-                mdi:numeric-1-box-outline
-              {% endif %}            
-          
-          0xa4c1388ce0ff53a8_period_2_mode:
-            friendly_name: "Кухня бойлер - период 2"
-            unique_id: '0xa4c1388ce0ff53a8_period_2_mode_switch'
-            value_template: "{{ is_state('binary_sensor.0xa4c1388ce0ff53a8_period_2_mode', 'on') }}"
-            turn_on:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0xa4c1388ce0ff53a8/period_2_mode"
-                payload: 'ON'
-                retain: true 
-            turn_off:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0xa4c1388ce0ff53a8/period_2_mode"
-                payload: 'OFF'
-                retain: true 
-            icon_template: >-
-              {% if is_state('switch.0xa4c1388ce0ff53a8_period_2_mode', 'on') %}
-                mdi:numeric-2-box
-              {% else %}
-                mdi:numeric-2-box-outline
-              {% endif %}
-              
-          0xa4c1388ce0ff53a8_period_3_mode:
-            friendly_name: "Кухня бойлер - период 3"
-            unique_id: '0xa4c1388ce0ff53a8_period_3_mode_switch'
-            value_template: "{{ is_state('binary_sensor.0xa4c1388ce0ff53a8_period_3_mode', 'on') }}"
-            turn_on:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0xa4c1388ce0ff53a8/period_3_mode"
-                payload: 'ON'
-                retain: true 
-            turn_off:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0xa4c1388ce0ff53a8/period_3_mode"
-                payload: 'OFF'
-                retain: true 
-            icon_template: >-
-              {% if is_state('switch.0xa4c1388ce0ff53a8_period_3_mode', 'on') %}
-                mdi:numeric-3-box
-              {% else %}
-                mdi:numeric-3-box-outline
-              {% endif %}
-              
-          0xa4c1388ce0ff53a8_period_4_mode:
-            friendly_name: "Кухня бойлер - период 4"
-            unique_id: '0xa4c1388ce0ff53a8_period_4_mode_switch'
-            value_template: "{{ is_state('binary_sensor.0xa4c1388ce0ff53a8_period_4_mode', 'on') }}"
-            turn_on:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0xa4c1388ce0ff53a8/period_4_mode"
-                payload: 'ON'
-                retain: true 
-            turn_off:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0xa4c1388ce0ff53a8/period_4_mode"
-                payload: 'OFF'
-                retain: true 
-            icon_template: >-
-              {% if is_state('switch.0xa4c1388ce0ff53a8_period_4_mode', 'on') %}
-                mdi:numeric-4-box
-              {% else %}
-                mdi:numeric-4-box-outline
-              {% endif %}
-              
-          0xa4c1388ce0ff53a8_period_5_mode:
-            friendly_name: "Кухня бойлер - период 5"
-            unique_id: '0xa4c1388ce0ff53a8_period_5_mode_switch'
-            value_template: "{{ is_state('binary_sensor.0xa4c1388ce0ff53a8_period_5_mode', 'on') }}"
-            turn_on:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0xa4c1388ce0ff53a8/period_5_mode"
-                payload: 'ON'
-                retain: true 
-            turn_off:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0xa4c1388ce0ff53a8/period_5_mode"
-                payload: 'OFF'
-                retain: true 
-            icon_template: >-
-              {% if is_state('switch.0xa4c1388ce0ff53a8_period_5_mode', 'on') %}
-                mdi:numeric-5-box
-              {% else %}
-                mdi:numeric-5-box-outline
-              {% endif %}
-
 
     automation:
 
@@ -584,8 +573,8 @@ kn_boiler:
           id: period_5
         condition:
          - condition: state
-           entity_id: binary_sensor.electricity
-           state: 'off'
+           entity_id: switch.control_mode
+           state: 'on'
         action:
             - choose:
               - conditions:
@@ -684,9 +673,9 @@ kn_boiler:
          - condition: state
            entity_id: switch.control_mode
            state: 'on'
-         - condition: state
-           entity_id: binary_sensor.electricity
-           state: 'off'
+        #  - condition: state
+        #   entity_id: binary_sensor.electricity
+        #   state: 'off'
         action:
             - choose:
               - conditions:
@@ -695,7 +684,7 @@ kn_boiler:
                 sequence:
                   - service: telegram_bot.send_message
                     data_template:
-                      target:
+                      chat_id:
                           - !secret chat_id_group_tech
                       message: | 
                            {{"\U0001F916"}} Кухня бойлер - включение период 1 {{ states('sensor.time_date') }} 
@@ -705,7 +694,7 @@ kn_boiler:
                 sequence:
                   - service: telegram_bot.send_message
                     data_template:
-                      target:
+                      chat_id:
                           - !secret chat_id_group_tech
                       message: | 
                            {{"\U0001F916"}} Кухня бойлер - включение период 2 {{ states('sensor.time_date') }} 
@@ -715,7 +704,7 @@ kn_boiler:
                 sequence:
                   - service: telegram_bot.send_message
                     data_template:
-                      target:
+                      chat_id:
                           - !secret chat_id_group_tech
                       message: | 
                            {{"\U0001F916"}} Кухня бойлер - включение период 3 {{ states('sensor.time_date') }} 
@@ -725,7 +714,7 @@ kn_boiler:
                 sequence:
                   - service: telegram_bot.send_message
                     data_template:
-                      target:
+                      chat_id:
                           - !secret chat_id_group_tech
                       message: | 
                            {{"\U0001F916"}} Кухня бойлер - включение период 4 {{ states('sensor.time_date') }} 
@@ -735,7 +724,7 @@ kn_boiler:
                 sequence:
                   - service: telegram_bot.send_message
                     data_template:
-                      target:
+                      chat_id:
                           - !secret chat_id_group_tech
                       message: | 
                            {{"\U0001F916"}} Кухня бойлер - включение период 5 {{ states('sensor.time_date') }} 
@@ -767,7 +756,7 @@ kn_boiler:
                     entity_id: switch.0xa4c1388ce0ff53a8
                   - service: telegram_bot.send_message
                     data_template:
-                      target:
+                      chat_id:
                           - !secret chat_id_group_tech
                       message: | 
                            {{"\U0001F916"}} Кухня бойлер - Включение запрещено {{ states('sensor.time_date') }} 
@@ -784,7 +773,7 @@ kn_boiler:
                                {{strptime(states("sensor.0xa4c1388ce0ff53a8_timer_manual"), "%H:%M:%S").time()}}
                    - service: telegram_bot.send_message
                      data_template:
-                       target:
+                       chat_id:
                           - !secret chat_id_group_tech
                        message: | 
                             {{"\U0001F916"}} Кухня бойлер - ручное включение {{ states('sensor.time_date') }} 
@@ -818,7 +807,7 @@ kn_boiler:
                      {{strptime(states("sensor.0xa4c1388ce0ff53a8_timer_manual"), "%H:%M:%S").time()}}
          - service: telegram_bot.send_message
            data_template:
-             target:
+             chat_id:
                 - !secret chat_id_group_tech
              message: | 
                   {{"\U0001F916"}} Кухня бойлер - включение после блекаута {{ states('sensor.time_date') }} 
@@ -851,7 +840,7 @@ kn_boiler:
                 sequence:
                   - service: telegram_bot.send_message
                     data_template:
-                      target:
+                      chat_id:
                           - !secret chat_id_group_tech
                       message: | 
                            {{"\U0001F916"}} Кухня бойлер - Включение запрещено {{ states('sensor.time_date') }} 
@@ -865,7 +854,7 @@ kn_boiler:
                 sequence:
                   - service: telegram_bot.send_message
                     data_template:
-                      target:
+                      chat_id:
                           - !secret chat_id_group_tech
                       message: | 
                            {{"\U0001F916"}} Кухня бойлер - ручное включение {{ states('sensor.time_date') }} 
@@ -908,7 +897,7 @@ kn_boiler:
         action:
          - service: telegram_bot.send_message
            data_template:
-             target:
+             chat_id:
                  - !secret chat_id_group_tech
              message: | 
                   {{"\U0001F916"}} Кухня бойлер - выключение {{ states('sensor.time_date') }}

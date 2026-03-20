@@ -1,0 +1,141 @@
+rain:
+
+    recorder:
+      include:
+        entities:
+          - binary_sensor.0xa4c138b3771886b0_rain
+          - binary_sensor.rain
+
+    homeassistant:
+      customize:
+
+        binary_sensor.0xa4c138b3771886b0_rain:
+          friendly_name: Сенсор дощу
+          icon: mdi:weather-pouring
+          
+        sensor.0xa4c138b3771886b0_battery:
+          friendly_name: Сенсор дощу
+
+    template:
+
+      - binary_sensor:
+
+          - name: rain
+            unique_id: rain
+            state: >
+              {{ is_state('binary_sensor.0xa4c138b3771886b0_rain', 'on') }}
+            delay_on: 00:01:00
+            delay_off: 00:03:00
+            
+
+          
+    automation:
+
+      - alias: rain_started
+        id: rain_started
+        description: Повідомлення про початок дощу
+        initial_state: true          
+        mode: single
+        trigger:
+        - platform: state
+          entity_id: binary_sensor.rain
+          from: 'off'
+          to: 'on'
+        condition:
+    # Режим роботи серверу
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Night mode operation disabled
+        - condition: state
+          entity_id: binary_sensor.night_time
+          state: 'off'
+        action:
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_group
+            message: | 
+                  {{"\U0001F327"}} Увага - почався дощ в {{ states('sensor.time_date') }}
+        - delay: "00:01:00"
+                  
+      - alias: rain_stopped
+        id: rain_stopped
+        description: Повідомлення про завершення дощу
+        initial_state: true
+        mode: single
+        trigger:
+        - platform: state
+          entity_id: binary_sensor.rain
+          from: 'on'
+          to: 'off'
+        condition:
+    # Режим роботи серверу
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Night mode operation disabled
+        - condition: state
+          entity_id: binary_sensor.night_time
+          state: 'off'
+        action:
+        - action: light.turn_off
+          target:
+            entity_id:
+              - light.awtrix_6c9da0_indicator_3
+          data: {}
+        - service: telegram_bot.send_message
+          data_template:
+            target:
+                - !secret chat_id_group
+            message: | 
+                  {{"\U0001F324"}} Дощ скінчився в {{ states('sensor.time_date') }}
+        - delay: "00:01:00"
+                  
+                  
+      - alias: rain_light_notification
+        id: rain_light_notification
+        description: Світлове сповіщення про дощ
+        initial_state: true                  
+        trigger:
+        - platform: state
+          entity_id: binary_sensor.rain
+        condition:
+    # Режим роботи серверу
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'          
+        action:
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.rain
+                    state: 'on'
+                sequence:
+                  - action: light.turn_on
+                    target:
+                      entity_id:
+                        - light.awtrix_6c9da0_indicator_3
+                    data: {}
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.rain
+                    state: 'off'
+                sequence:
+                  - action: light.turn_off
+                    target:
+                      entity_id:
+                        - light.awtrix_6c9da0_indicator_3
+                    data: {}
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  

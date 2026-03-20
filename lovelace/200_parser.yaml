@@ -1,0 +1,106 @@
+##################  Parser
+title: Parser
+icon: mdi:meter-electric-outline
+sections:
+
+############################ Колонка 1 ############################
+    - type: grid
+      cards:
+
+        - type: markdown
+          content: >
+             ### Режими роботи
+
+        - type: entities
+          show_header_toggle: false
+          entities:
+          - entity: binary_sensor.electricity
+          - entity: input_boolean.k7_notification
+          - entity: input_boolean.k7_notification_extr
+          
+        - type: markdown
+          content: >
+             ### Раннє оповіщення
+
+        - type: entities
+          show_header_toggle: false
+          entities:
+          - entity: sensor.tg_parser_source_1
+          - entity: sensor.tg_parser_source_1_type
+          - type: divider
+          - entity: sensor.tg_parser_source_2
+          - entity: sensor.tg_parser_source_2_type
+          - type: divider
+          - entity: input_boolean.tg_parser_gone_lock
+          - entity: input_boolean.tg_parser_back_lock
+
+
+    - type: grid
+      cards:
+      
+        - type: markdown
+          content: >
+             ### Секції 4-7
+
+        - type: entities
+          show_header_toggle: false
+          entities:
+          - entity: binary_sensor.electricity    
+          - entity: binary_sensor.deye_sun15_grid
+          - type: divider
+          - entity: sensor.electricity_4_7_yesterday
+          - type: divider
+          - entity: input_datetime.electricity_off
+          - entity: input_datetime.electricity_on     
+          - type: divider
+          - entity: binary_sensor.188_190_229_184  
+          - entity: binary_sensor.electricity_second
+          - type: divider
+          - entity: binary_sensor.deye_sun15_grid
+          - entity: input_datetime.deye_sun15_grid_off
+          - entity: input_datetime.deye_sun15_grid_on
+
+
+          
+    - type: grid
+      cards:
+
+        - type: markdown
+          content: >
+             ### Секції 1-3
+
+        - type: entities
+          show_header_toggle: false
+          entities:
+          - entity: binary_sensor.93_127_127_43
+          - entity: binary_sensor.tg_1_3_ping
+          - type: divider
+          - entity: sensor.electricity_1_3_yesterday
+          - type: divider
+          - entity: input_boolean.tg_parser_1_3_gone_lock
+          - entity: input_boolean.tg_parser_1_3_back_lock
+          - type: divider
+          - entity: input_datetime.electricity_off_1_3
+          - entity: input_datetime.electricity_on_1_3
+
+
+        - type: entities
+          show_header_toggle: false
+          entities:
+          - entity: sensor.tg_parser_k7_3_partial_source
+          - entity: sensor.tg_parser_k7_3_partial_type
+          - type: divider
+          - entity: binary_sensor.k7_3_partial_back
+          - entity: binary_sensor.k7_1_3_ping_stable_5m
+          - type: divider
+          - entity: binary_sensor.k7_3_partial_gone
+          - entity: binary_sensor.k7_1_3_ping_unstable_5m
+          - type: divider
+          - entity: input_boolean.tg_parser_3_partial_log
+          - entity: sensor.electricity_3_partial_yesterday
+          - type: divider
+          - entity: input_boolean.tg_parser_3_partial_gone_lock
+          - entity: input_boolean.tg_parser_3_partial_back_lock
+          - type: divider
+          - entity: input_datetime.electricity_off_3_partial
+          - entity: input_datetime.electricity_on_3_partial

@@ -33,7 +33,7 @@ global_sensor:
     
       - binary_sensor:
       
-################# Время уведомлений #################     
+################# Custom time sensor #################     
           - name: notification_time
             unique_id: notification_time
             state: >

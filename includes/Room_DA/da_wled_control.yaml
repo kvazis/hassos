@@ -49,6 +49,21 @@ da_wled_control:
           entity_id: sensor.0x54ef4410004c16d9_action
           to: 'button_3_triple'
           id: da_opple_button_3_3
+    # Aqara Opple кнопка 4, 1 нажатие
+        - platform: state
+          entity_id: sensor.0x54ef4410004c16d9_action
+          to: 'button_4_single'
+          id: da_opple_button_4_1
+    # Aqara Opple кнопка 4, 2 нажатия
+        - platform: state
+          entity_id: sensor.0x54ef4410004c16d9_action
+          to: 'button_4_double'
+          id: da_opple_button_4_2
+    # Aqara Opple кнопка 4, 3 нажатия
+        - platform: state
+          entity_id: sensor.0x54ef4410004c16d9_action
+          to: 'button_4_triple'
+          id: da_opple_button_4_3
         condition:
         - condition: state
           entity_id: switch.control_mode
@@ -65,23 +80,23 @@ da_wled_control:
                   - service: light.turn_on
                     entity_id: light.da_wled
                     data:
-                      effect: Saw
+                      effect: Gravcentric
                       brightness_pct: 50
                   - service: select.select_option
                     data:
-                      option: Orangery
+                      option: Red Tide
                     target:
                       entity_id: select.da_wled_color_palette
                   - service: number.set_value
                     target:
                       entity_id: number.da_wled_speed
                     data:
-                      value: 114
+                      value: 218
                   - service: number.set_value
                     target:
                       entity_id: number.da_wled_intensity
                     data:
-                      value: 76
+                      value: 128
               - conditions:
                   - condition: trigger
                     id: da_opple_button_3_3
@@ -106,4 +121,151 @@ da_wled_control:
                       entity_id: number.da_wled_intensity
                     data:
                       value: 221
+              - conditions:
+                  - condition: trigger
+                    id: da_opple_button_4_1
+                sequence:
+                  - service: light.turn_on
+                    entity_id: light.da_wled
+                    data:
+                      effect: Solid
+                      brightness_pct: 50
+                      rgb_color: [243, 74, 255]
+              - conditions:
+                  - condition: trigger
+                    id: da_opple_button_4_2
+                sequence:
+                  - service: light.turn_on
+                    entity_id: light.da_wled
+                    data:
+                      effect: Bpm
+                      brightness_pct: 50
+                      rgb_color: [0, 0, 255]
+                  - service: select.select_option
+                    data:
+                      option: Default
+                    target:
+                      entity_id: select.da_wled_color_palette
+                  - service: number.set_value
+                    target:
+                      entity_id: number.da_wled_speed
+                    data:
+                      value: 22
+              - conditions:
+                  - condition: trigger
+                    id: da_opple_button_4_3
+                sequence:
+                  - service: light.turn_on
+                    entity_id: light.da_wled
+                    data:
+                      effect: Waterfall
+                      brightness_pct: 50
+                  - service: select.select_option
+                    data:
+                      option: Aurora
+                    target:
+                      entity_id: select.da_wled_color_palette
+                  - service: number.set_value
+                    target:
+                      entity_id: number.da_wled_speed
+                    data:
+                      value: 128
+                  - service: number.set_value
+                    target:
+                      entity_id: number.da_wled_intensity
+                    data:
+                      value: 128
                       
+      - alias: da_light_wled_threat_notification
+        id: da_light_wled_threat_notification
+        description: Детская А WLED - тревога
+        initial_state: true          
+        trigger:
+    # Сборный сенсор тревоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'off'
+          to: 'on'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+    # Отключен ночной режим работы
+        - condition: state
+          entity_id: binary_sensor.night_time
+          state: 'off'
+        action:
+        - service: light.turn_on
+          entity_id: light.da_wled
+          data:
+            effect: Gravcentric
+            brightness_pct: 50
+        - service: select.select_option
+          data:
+            option: Red Tide
+          target:
+            entity_id: select.da_wled_color_palette
+        - service: number.set_value
+          target:
+            entity_id: number.da_wled_speed
+          data:
+            value: 218
+        - service: number.set_value
+          target:
+            entity_id: number.da_wled_intensity
+          data:
+            value: 128
+        - delay: 00:00:30
+        - service: light.turn_off
+          entity_id: light.da_wled
+        - delay: 00:00:15
+        - service: light.turn_off
+          entity_id: light.da_wled
+
+      - alias: da_light_wled_threat_cancel
+        id: da_light_wled_threat_cancel
+        description: Детская А WLED - отмена тревоги
+        initial_state: true          
+        trigger:
+    # Сборный сенсор тревоги
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: 'on'
+          to: 'off'
+        condition:
+    # Отключен ночной режим работы
+        - condition: state
+          entity_id: binary_sensor.night_time
+          state: 'off'
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        action:
+        - service: light.turn_on
+          entity_id: light.da_wled
+          data:
+            effect: Aurora
+            brightness_pct: 50
+        - service: select.select_option
+          data:
+            option: Aurora
+          target:
+            entity_id: select.da_wled_color_palette
+        - service: number.set_value
+          target:
+            entity_id: number.da_wled_speed
+          data:
+            value: 200
+        - service: number.set_value
+          target:
+            entity_id: number.da_wled_intensity
+          data:
+            value: 200
+        - delay: 00:00:30
+        - service: light.turn_off
+          entity_id: light.da_wled
+        - delay: 00:00:15
+        - service: light.turn_off
+          entity_id: light.da_wled

@@ -1,0 +1,189 @@
+lr_humidification:
+
+  ###################################################################
+  # Режим роботи зволожувача у вітальні
+  ###################################################################
+
+  input_boolean:
+    lr_humidification_mode:
+      name: Вітальня режим роботи зволожувача
+      icon: mdi:air-humidifier
+
+  template:
+    - binary_sensor:
+
+  ###################################################################
+  # Дозвіл на роботу зволожувача
+  # Працює тільки вдень і коли немає провітрювання
+  ###################################################################
+
+        - name: lr_humidifier_allowed
+          unique_id: lr_humidifier_allowed
+          state: >-
+            {{
+              is_state('binary_sensor.night_time', 'off')
+              and is_state('binary_sensor.lr_aeration', 'off')
+            }}
+          icon: >-
+            {% if is_state('binary_sensor.lr_humidifier_allowed', 'on') %}
+              mdi:check-circle-outline
+            {% else %}
+              mdi:close-circle-outline
+            {% endif %}
+
+  ###################################################################
+  # Проблема з водою
+  # Або закінчилась вода, або бак не встановлено
+  ###################################################################
+
+        - name: lr_humidifier_water_problem
+          unique_id: lr_humidifier_water_problem
+          state: >-
+            {{
+              is_state('binary_sensor.deerma_jsq2g_34d8_water_shortage_fault', 'on')
+              or is_state('binary_sensor.deerma_jsq2g_34d8_the_tank_filed', 'on')
+            }}
+          delay_on:
+            seconds: 10
+          delay_off:
+            seconds: 10
+          icon: >-
+            {% if is_state('binary_sensor.lr_humidifier_water_problem', 'on') %}
+              mdi:water-off
+            {% else %}
+              mdi:water-check
+            {% endif %}
+
+  automation:
+
+  ###################################################################
+  # Основне керування зволожувачем
+  ###################################################################
+
+    - alias: lr_humidification_control
+      id: lr_humidification_control
+      description: Вітальня керування зволожувачем
+      mode: single
+
+      triggers:
+        - trigger: state
+          entity_id:
+            - input_boolean.lr_humidification_mode
+            - binary_sensor.lr_humidifier_allowed
+            - binary_sensor.lr_humidifier_water_problem
+            - humidifier.deerma_jsq2g_34d8_humidifier
+        - trigger: homeassistant
+          event: start
+
+      conditions:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      actions:
+        - choose:
+
+  ###################################################################
+  # Вимкнення зволожувача:
+  # - якщо вимкнений режим
+  # - або ніч / провітрювання
+  # - або є проблема з водою
+  ###################################################################
+
+            - conditions:
+                - condition: template
+                  value_template: >-
+                    {{
+                      is_state('humidifier.deerma_jsq2g_34d8_humidifier', 'on')
+                      and (
+                        is_state('input_boolean.lr_humidification_mode', 'off')
+                        or is_state('binary_sensor.lr_humidifier_allowed', 'off')
+                        or is_state('binary_sensor.lr_humidifier_water_problem', 'on')
+                      )
+                    }}
+              sequence:
+                - action: humidifier.turn_off
+                  target:
+                    entity_id: humidifier.deerma_jsq2g_34d8_humidifier
+
+  ###################################################################
+  # Увімкнення і приведення до правильних параметрів:
+  # - режим активний
+  # - день
+  # - немає провітрювання
+  # - немає проблеми з водою
+  ###################################################################
+
+            - conditions:
+                - condition: template
+                  value_template: >-
+                    {{
+                      is_state('input_boolean.lr_humidification_mode', 'on')
+                      and is_state('binary_sensor.lr_humidifier_allowed', 'on')
+                      and is_state('binary_sensor.lr_humidifier_water_problem', 'off')
+                    }}
+              sequence:
+                - if:
+                    - condition: state
+                      entity_id: humidifier.deerma_jsq2g_34d8_humidifier
+                      state: "off"
+                  then:
+                    - action: humidifier.turn_on
+                      target:
+                        entity_id: humidifier.deerma_jsq2g_34d8_humidifier
+
+                - if:
+                    - condition: template
+                      value_template: >-
+                        {{
+                          state_attr('humidifier.deerma_jsq2g_34d8_humidifier', 'mode')
+                          != 'Constant Humidity'
+                        }}
+                  then:
+                    - action: humidifier.set_mode
+                      target:
+                        entity_id: humidifier.deerma_jsq2g_34d8_humidifier
+                      data:
+                        mode: "Constant Humidity"
+
+                - if:
+                    - condition: template
+                      value_template: >-
+                        {{
+                          (state_attr('humidifier.deerma_jsq2g_34d8_humidifier', 'humidity') | int(0))
+                          != 50
+                        }}
+                  then:
+                    - action: humidifier.set_humidity
+                      target:
+                        entity_id: humidifier.deerma_jsq2g_34d8_humidifier
+                      data:
+                        humidity: 50
+
+  ###################################################################
+  # Сповіщення про відсутність води / знятий бак
+  ###################################################################
+
+    - alias: lr_humidifier_no_water_notify
+      id: lr_humidifier_no_water_notify
+      description: Вітальня сповіщення про відсутність води в зволожувачі
+      mode: single
+
+      triggers:
+        - trigger: state
+          entity_id: binary_sensor.lr_humidifier_water_problem
+          to: "on"
+
+      conditions:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      actions:
+        - action: telegram_bot.send_message
+          data:
+            target:
+              - !secret chat_id_group_tech
+            message: >-
+              💧 У зволожувачі в вітальні закінчилась вода або не встановлений бак.
+              

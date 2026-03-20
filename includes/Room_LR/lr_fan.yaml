@@ -18,15 +18,18 @@ lr_fan:
           entity_id: switch.control_mode
           state: 'on'
         action:
-        - service: switch.toggle
-          entity_id: switch.0x00124b002a553c9e_l1
-          
+        - action: fan.toggle
+          data: {}
+          target:
+            entity_id: fan.0xa4c138d641b6346f_l1
+
     # Управление охлаждающей подставкой роутера
       - alias: lr_control_fan_router
         id: lr_control_fan_router
         description: Управление охлаждающей подставкой роутера
         initial_state: true
         trigger:
+    # Проверка раз в 5 минут
         - platform: time_pattern
           minutes: '/5'
         condition:
@@ -42,21 +45,26 @@ lr_fan:
             - choose:
               - conditions:
                   - condition: state
-                    entity_id: switch.0x00124b00246ef1a8
+                    entity_id: fan.0x00124b00246ef1a8
                     state: 'on'
                   - condition: state
                     entity_id: binary_sensor.night_time
                     state: 'on'
                 sequence:
-                  - service: switch.turn_off
-                    entity_id: switch.0x00124b00246ef1a8
+                  - action: fan.turn_off
+                    data: {}
+                    target:
+                      entity_id: fan.0x00124b00246ef1a8
+
               - conditions:
                   - condition: state
-                    entity_id: switch.0x00124b00246ef1a8
+                    entity_id: fan.0x00124b00246ef1a8
                     state: 'off'
                   - condition: state
                     entity_id: binary_sensor.night_time
                     state: 'off'
                 sequence:
-                  - service: switch.turn_on
-                    entity_id: switch.0x00124b00246ef1a8
+                  - action: fan.turn_on
+                    data: {}
+                    target:
+                      entity_id: fan.0x00124b00246ef1a8

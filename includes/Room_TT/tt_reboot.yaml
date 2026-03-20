@@ -52,7 +52,7 @@ tt_reboot:
           entity_id: switch.0x00158d00062fbb54_left 
         - service: telegram_bot.send_message
           data_template:
-            target:
+            chat_id:
                 - !secret chat_id_log
             message: | 
                  {{"\U0001F916"}} Туалет -  перезагрузка люстры {{ states('sensor.time_date') }} 
@@ -79,7 +79,7 @@ tt_reboot:
           entity_id: switch.0x00158d00062fbb54_left 
         - service: telegram_bot.send_message
           data_template:
-            target:
+            chat_id:
                 - !secret chat_id_log
             message: | 
                  {{"\U0001F916"}} Туалет -  перезагрузка люстры {{ states('sensor.time_date') }}         

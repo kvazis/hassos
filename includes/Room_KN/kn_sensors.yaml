@@ -7,7 +7,12 @@ kn_sensors:
            - binary_sensor.0x54ef441000118375_occupancy
            - binary_sensor.0x54ef44100042e226_occupancy
            - binary_sensor.kn_presence
-           - sensor.0x04cf8cdf3c772379_illuminance_lux
+           - sensor.0x04cf8cdf3c772379_illuminance
+           - sensor.0x00158d0001581109_temperature
+           - sensor.0x00158d0001581109_humidity
+
+           - sensor.0xa4c1381ff5d0e03f_humidity
+           - sensor.0xa4c1381ff5d0e03f_temperature
 
     homeassistant:
       customize:
@@ -85,17 +90,17 @@ kn_sensors:
         binary_sensor.0xec1bbdfffe302df1_occupancy:
           friendly_name: Кухня, балкон движение
 
-        # sensor.0x00158d000171ffde_humidity:
-        #   friendly_name: Кухня, балкон влажность
-        #   icon: mdi:water-percent
-        # sensor.0x00158d000171ffde_temperature:
-        #   friendly_name: Кухня, балкон температура
-        #   icon: mdi:temperature-celsius
-        # sensor.0x00158d000171ffde_mmhg_pressure:
-        #   friendly_name: Кухня, балкон давление мм рт. ст.
-        # sensor.0x00158d000171ffde_battery:
-        #   friendly_name: Кухня, балкон климат          
-          
+        sensor.0xa4c1381ff5d0e03f_humidity:
+          friendly_name: Кухня, балкон влажность
+          icon: mdi:water-percent
+        sensor.0xa4c1381ff5d0e03f_temperature:
+          friendly_name: Кухня, балкон температура
+          icon: mdi:temperature-celsius
+        sensor.0xa4c1381ff5d0e03f_battery:
+          friendly_name: Кухня, балкон климат          
+
+
+
     template:
 
       - binary_sensor:
@@ -108,6 +113,8 @@ kn_sensors:
                  or is_state('binary_sensor.0x00158d0001a20885_contact', 'on')
               }}
             delay_on: 
+                seconds: 30
+            delay_off: 
                 seconds: 30
             device_class: opening
             icon: >

@@ -1,25 +1,6 @@
 kn_light:
 
 
-    homeassistant:
-      customize:
-
-        light.kn_ceiling_light:
-          friendly_name: Кухня люстра
-          icon: phu:ceiling-being
-          
-        light.0x00158d000420dbab:
-          friendly_name: Кухня лампочка
-          icon: phu:bulbs-classic
-
-        light.gateway_light_7811dc64f4c8:
-          friendly_name: Кухня шлюз
-          icon: phu:aqara-hub-n15-g2
-          
-        light.kn_wled:
-          friendly_name: Кухня WLED светильник
-          icon: phu:daylo-wall
-
     input_button:
 
 
@@ -49,7 +30,7 @@ kn_light:
             state: >
               {{ is_state('binary_sensor.night_time', 'off') and
                  is_state('light.kn_ceiling_light', 'off') and
-                 states('sensor.0x04cf8cdf3c772379_illuminance_lux')|int < 100 }}
+                 states('sensor.0x04cf8cdf3c772379_illuminance')|int < 100 }}
 
     # Выключение днем (авто режим), через 3 минуты после отключения последнего сенсора движения
           - name: kn_mode_auto_light_day_off
@@ -118,50 +99,6 @@ kn_light:
     automation:
 
 
-      - alias: kn_light_wled_control
-        id: kn_light_wled_control
-        description: Кухня - ручное управление WLED
-        initial_state: true
-        trigger:
-    # Виртуальная кнопка для интерфейса
-        - platform: state
-          entity_id: input_button.kn_wled_light
-    # Выключатель на входе в кухню - левая кнопка
-        - platform: state
-          entity_id: sensor.0x54ef4410000f4741_action
-          to: 'single_left'
-    # 6 клавишник на входе дабл клик
-        - platform: state
-          entity_id: sensor.0x04cf8cdf3c794209_action
-          to: 'button_2_double'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: light.kn_wled
-                    state: 'off'
-                sequence:
-                  - service: light.turn_on
-                    entity_id:
-                      - light.kn_wled
-                    data:
-                      effect: Solid
-                      brightness_pct: 100
-                      kelvin: 4000
-              - conditions:
-                  - condition: state
-                    entity_id: light.kn_wled
-                    state: 'on'
-                sequence:
-                 - service: light.turn_off
-                   entity_id:
-                     - light.kn_wled
-
       - alias: kn_ceiling_manual_light_control
         id: kn_ceiling_manual_light_control
         description: Кухня - ручное управление освещением
@@ -191,9 +128,9 @@ kn_light:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-        - condition: state
-          entity_id: binary_sensor.electricity
-          state: 'off'
+        # - condition: state
+        #   entity_id: binary_sensor.electricity
+        #   state: 'off'
         action:
             - choose:
               - conditions:
@@ -206,7 +143,7 @@ kn_light:
                       - light.kn_ceiling_light
                     data_template:
                       brightness_pct: 100
-                      kelvin: 4000
+                      color_temp_kelvin: 4000
                   - service: light.turn_off
                     entity_id:
                      - light.0x00158d000420dbab
@@ -220,7 +157,7 @@ kn_light:
                      - light.kn_ceiling_light
                    data_template:
                      brightness_pct: 1
-                     kelvin: 3500
+                     color_temp_kelvin: 3500
                  - service: light.turn_off
                    entity_id:
                      - light.kn_ceiling_light
@@ -229,7 +166,7 @@ kn_light:
       - alias: kn_light_blackout_manual_control
         id: kn_light_blackout_manual_control
         description: Кухня - ручное управление автономный свет
-        initial_state: true
+        initial_state: false
         trigger:
     # Виртуальная кнопка для интерфейса
         - platform: state
@@ -270,7 +207,7 @@ kn_light:
                       - light.0x00158d000420dbab
                     data_template:
                       brightness_pct: 100
-                      kelvin: 4000
+                      color_temp_kelvin: 4000
               - conditions:
                   - condition: state
                     entity_id: light.0x00158d000420dbab
@@ -279,7 +216,76 @@ kn_light:
                  - service: light.turn_off
                    entity_id:
                      - light.0x00158d000420dbab
-            
+
+      - alias: kn_light_switch_to_backup_light
+        id: kn_light_switch_to_backup_light
+        description: Кухня - переключение света при отключении питания
+        initial_state: false
+        trigger:
+        - platform: state
+          entity_id: binary_sensor.electricity
+          from: 'off'
+          to: 'on'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        - condition: state
+          entity_id: light.kn_ceiling_light
+          state: 'on'
+        action:          
+        - service: light.turn_on
+          entity_id:
+            - light.0x00158d000420dbab
+          data_template:
+            brightness_pct: 100
+            color_temp_kelvin: 4000          
+
+      - alias: kn_light_switch_light
+        id: kn_light_switch_light
+        description: Кухня - переключение света при включении питания
+        initial_state: false
+        trigger:
+    # Восстановление работы люстры
+        - platform: state
+          entity_id: binary_sensor.kn_ceiling_unavailable
+          from: 'on'
+          to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        # - condition: state
+        #   entity_id: binary_sensor.electricity
+        #   state: 'off'
+        action:          
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: light.0x00158d000420dbab
+                    state: 'off'
+                sequence:
+                 - service: light.turn_off
+                   entity_id:
+                     - light.kn_ceiling_light 
+              - conditions:
+                  - condition: state
+                    entity_id: light.0x00158d000420dbab
+                    state: 'on'
+                sequence:
+                  - service: light.turn_on
+                    entity_id:
+                      - light.kn_ceiling_light
+                    data_template:
+                      brightness_pct: 100
+                      color_temp_kelvin: 4000
+                  - service: light.turn_off
+                    entity_id:
+                     - light.0x00158d000420dbab
+
+ 
       - alias: kn_ceiling_auto_light_on
         id: kn_ceiling_auto_light_on
         description: Кухня - автоматическое включение освещения
@@ -312,7 +318,7 @@ kn_light:
                       - light.kn_ceiling_light
                     data_template:
                       brightness_pct: 70
-                      kelvin: 3500
+                      color_temp_kelvin: 3500
     # Включение люстры в ночное время
               - conditions:
                   - condition: state
@@ -327,7 +333,7 @@ kn_light:
                       - light.kn_ceiling_light
                     data_template:
                       brightness_pct: 10
-                      kelvin: 3500
+                      color_temp_kelvin: 3500
             
       - alias: kn_ceiling_auto_light_off
         id: kn_ceiling_auto_light_off
@@ -366,7 +372,7 @@ kn_light:
             - light.kn_ceiling_light
           data_template:
             brightness_pct: 1
-            kelvin: 3500
+            color_temp_kelvin: 3500
         - service: light.turn_off
           entity_id:
             - light.kn_ceiling_light
@@ -396,7 +402,7 @@ kn_light:
             - light.kn_ceiling_light
           data_template:
             brightness_pct: 100
-            kelvin: 4000              
+            color_temp_kelvin: 4000              
               
               
               

@@ -23,9 +23,9 @@ calendar:
             entity_id: switch.control_mode
             state: 'on'
         action:  
-          - service: telegram_bot.send_message
-            data_template:
-              target:
+          - action: telegram_bot.send_message
+            data:
+              chat_id:
                   - !secret chat_id_group_tech
               message: |
                 {{"\U0001F567"}} {{ now().strftime('%H:%M:%S')}}

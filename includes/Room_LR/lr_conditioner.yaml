@@ -1,39 +1,30 @@
 lr_conditioner:
 
-    homeassistant:
-      customize:
-      
-        binary_sensor.0x00158d00054496b0_contact:
-          friendly_name: Гостиная кондиционер
-          device_class: cold
-        sensor.0x00158d00054496b0_battery:
-          friendly_name: Гостиная кондиционер  
-        
     input_button:
 
       lr_conditioner:
-        name: Гостиная кондиционер
+        name: Вітальня кондиціонер
 
     input_datetime:
       lr_conditioner_from:
-        name: Время работы c
+        name: Час роботи з
         has_date: false
         has_time: true
         
       lr_conditioner_to:
-        name: Время работы по
+        name: Час роботи по
         has_date: false
         has_time: true
 
     input_number:
       lr_conditioner_min:
-        name: Температура отключения
+        name: Температура вимкнення
         min: 20
         max: 25
         step: 1
         
       lr_conditioner_max:
-        name: Температура включения
+        name: Температура ввімкнення
         min: 26
         max: 30
         step: 1
@@ -44,34 +35,11 @@ lr_conditioner:
           unique_id: lr_conditioner
           state_topic: "states/lr_conditioner"
         
-    switch:
-    
-      - platform: template
-        switches:
-          lr_conditioner_mode:
-            unique_id: lr_conditioner_mode
-            friendly_name: "Гостиная, режим кондиционирования воздуха"
-            value_template: "{{ is_state('binary_sensor.lr_conditioner', 'on') }}"
-            turn_on:
-              service: mqtt.publish
-              data_template:
-                topic: "states/lr_conditioner"
-                payload: 'ON'
-                retain: true 
-            turn_off:
-              service: mqtt.publish
-              data_template:
-                topic: "states/lr_conditioner"
-                payload: 'OFF'
-                retain: true 
-            icon_template: >-
-                mdi:air-conditioner
-
     template:
     
       - binary_sensor:
 
-################# Время работы кондиционера #################     
+################# Час роботи кондиціонера #################     
           - name: lr_conditioner_time
             unique_id: lr_conditioner_time
             state: >
@@ -95,7 +63,7 @@ lr_conditioner:
             device_class: running
 
 
-    # Автоматическое включение кондиционера
+    # Автоматичне вмикання
           - name: lr_conditioning_on
             unique_id: lr_conditioning_on
             state: >
@@ -107,7 +75,7 @@ lr_conditioner:
               }}
             device_class: cold
             
-    # Условия для выключения кондиционера
+    # Умови длял вимикання
           - name: lr_conditioning_terms
             unique_id: lr_conditioning_terms
             state: >
@@ -118,7 +86,7 @@ lr_conditioner:
               }}
             device_class: cold
             
-    # Автоматическое выключение кондиционера
+    # Автоматичне вимикання
           - name: lr_conditioning_off
             unique_id: lr_conditioning_off
             state: >
@@ -126,15 +94,43 @@ lr_conditioner:
                  and is_state('binary_sensor.0x00158d00054496b0_contact', 'on')
               }}
             device_class: cold
-                
+
+      - switch:
+
+          - unique_id: lr_conditioner_mode
+            name: Вітальня режим кондиціонування повітря
+            default_entity_id: switch.lr_conditioner_mode
+            state: >
+              {{ is_state('binary_sensor.lr_conditioner', 'on') }}    
+            turn_on:
+              - action: mqtt.publish
+                data:
+                  topic: states/lr_conditioner
+                  payload: 'ON'
+                  retain: true          
+            turn_off:
+              - action: mqtt.publish
+                data:
+                  topic: states/lr_conditioner
+                  payload: 'OFF'
+                  retain: true          
+            icon: >
+              {% if is_state('switch.lr_conditioner_mode', 'on') %}
+                mdi:air-conditioner
+              {% else %}
+                mdi:fan-off
+              {% endif %}
+
+
+
     automation:
 
       - alias: lr_conditioner_control
         id: lr_conditioner_control
-        description: Гостиная управление кондиционером
+        description: Вітальня, керування кондиціонером
         initial_state: true
         trigger:
-    ## Виртуальная кнопка
+    ## Віртуальна кнопка
         - platform: state
           entity_id: input_button.lr_conditioner
         - platform: state
@@ -146,15 +142,15 @@ lr_conditioner:
           from: 'off'
           to: 'on'
         condition:
-    # Режим работы сервера
+    # Режим роботи серверу
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Режим работы
+    # Режим роботи
         - condition: state
           entity_id: switch.lr_conditioner_mode
           state: 'on'
-    # Сенсор электричества
+    # Сенсор електрики
         - condition: state
           entity_id: binary_sensor.blackout_after
           state: 'off' 

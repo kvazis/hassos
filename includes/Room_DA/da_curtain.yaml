@@ -46,7 +46,7 @@ da_curtain:
                   entity_id: cover.0x00124b0029dee0c9
               - service: telegram_bot.send_message
                 data_template:
-                  target:
+                  chat_id:
                       - !secret chat_id_log
                   message: | 
                        {{"\U0001F916"}} Детская A - управление шторами {{ states('sensor.time_date') }} 
@@ -65,7 +65,7 @@ da_curtain:
                   entity_id: cover.0x00124b0029dee0c9
               - service: telegram_bot.send_message
                 data_template:
-                  target:
+                  chat_id:
                       - !secret chat_id_log
                   message: | 
                        {{"\U0001F916"}} Детская A - управление шторами {{ states('sensor.time_date') }} 
@@ -83,7 +83,7 @@ da_curtain:
                   entity_id: cover.0x00124b0029dee0c9
               - service: telegram_bot.send_message
                 data_template:
-                  target:
+                  chat_id:
                       - !secret chat_id_log
                   message: | 
                        {{"\U0001F916"}} Детская A - управление шторами {{ states('sensor.time_date') }} 

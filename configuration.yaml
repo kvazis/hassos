@@ -45,43 +45,89 @@ panel_custom:
     require_admin: true
     config:
       ingress: core_configurator
+      
+  - name: zigbee2mqtt_1
+    sidebar_title: 'Z2M 1 07'
+    sidebar_icon: mdi:zigbee
+    js_url: /api/hassio/app/entrypoint.js
+    url_path: 'hassio/ingress/8c77aaed_zigbee2mqtt'
+    embed_iframe: true
+    require_admin: true
+    config:
+      ingress: core_configurator
+      
+  - name: zigbee2mqtt_2
+    sidebar_title: 'Z2M 2 77'
+    sidebar_icon: mdi:zigbee
+    js_url: /api/hassio/app/entrypoint.js
+    url_path: 'hassio/ingress/45df7312_zigbee2mqtt'
+    embed_iframe: true
+    require_admin: true
+    config:
+      ingress: core_configurator 
+      
+  - name: zigbee2mqtt_3
+    sidebar_title: 'Z2M 3 76'
+    sidebar_icon: mdi:zigbee
+    js_url: /api/hassio/app/entrypoint.js
+    url_path: 'hassio/ingress/997a5552_zigbee2mqtt'
+    embed_iframe: true
+    require_admin: true
+    config:
+      ingress: core_configurator 
 
-telegram_bot:
-  - platform: polling
-    api_key: !secret api_key_bot
-    allowed_chat_ids:
-      - !secret chat_id_alex
-      - !secret chat_id_olha
-      - !secret chat_id_dima
-      - !secret chat_id_user
-      - !secret chat_id_group
-      - !secret chat_id_group_tech
-      - !secret chat_id_log
-      - !secret chat_id_k7
+  - name: developer-tools
+    sidebar_title: Dev Tools
+    sidebar_icon: mdi:application-cog-outline
+    js_url: /api/hassio/app/entrypoint.js
+    url_path: developer-tools
+    embed_iframe: true      
+      
+
+# telegram_bot:
+#   - platform: polling
+#     api_key: !secret api_key_bot
+#     allowed_chat_ids:
+#       - !secret chat_id_alex
+#       - !secret chat_id_olha
+#       - !secret chat_id_dima
+#       - !secret chat_id_user
+#       - !secret chat_id_group
+#       - !secret chat_id_group_tech
+#       - !secret chat_id_log
+#       - !secret chat_id_k7
       
 lovelace:
-  mode: yaml
+  resource_mode: yaml
   resources:
-   - url: /hacsfiles/lovelace-multiple-entity-row/multiple-entity-row.js
-     type: module
-   - url: /hacsfiles/stack-in-card/stack-in-card.js
-     type: module
-   - url: /hacsfiles/lovelace-card-mod/card-mod.js
-     type: module
-   - url: /hacsfiles/lovelace-mushroom/mushroom.js
-     type: module
-   - url: /hacsfiles/lovelace-auto-entities/auto-entities.js
-     type: module
-   - url: /hacsfiles/battery-state-card/battery-state-card.js
-     type: module
-   - url: /hacsfiles/timer-bar-card/timer-bar-card.js
-     type: module
-   - url: /hacsfiles/lovelace-plotly-graph-card/plotly-graph-card.js
-     type: module                
-   - url: /hacsfiles/power-flow-card-plus/power-flow-card-plus.js
-     type: module
-   - url: /hacsfiles/ha-sankey-chart/ha-sankey-chart.js
-     type: module      
+    - url: /hacsfiles/lovelace-multiple-entity-row/multiple-entity-row.js
+      type: module
+    - url: /hacsfiles/stack-in-card/stack-in-card.js
+      type: module
+    - url: /hacsfiles/lovelace-card-mod/card-mod.js
+      type: module
+    - url: /hacsfiles/lovelace-mushroom/mushroom.js
+      type: module
+    - url: /hacsfiles/lovelace-auto-entities/auto-entities.js
+      type: module
+    - url: /hacsfiles/battery-state-card/battery-state-card.js
+      type: module
+    - url: /hacsfiles/timer-bar-card/timer-bar-card.js
+      type: module
+    - url: /hacsfiles/lovelace-plotly-graph-card/plotly-graph-card.js
+      type: module
+    - url: /hacsfiles/power-flow-card-plus/power-flow-card-plus.js
+      type: module
+    - url: /hacsfiles/ha-sankey-chart/ha-sankey-chart.js
+      type: module
+
+  dashboards:
+    home-dashboard:
+      mode: yaml
+      filename: ui-lovelace.yaml
+      title: Home Assistant
+      icon: mdi:home-assistant
+      show_in_sidebar: true    
      
      
      

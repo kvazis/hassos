@@ -58,9 +58,9 @@ br_reboot:
         - delay: 00:00:05
         - service: switch.turn_on
           entity_id: switch.0x54ef44100024689c_right
-        - service: telegram_bot.send_message
-          data_template:
-            target:
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
                 - !secret chat_id_log
             message: | 
                  {{"\U0001F916"}} Антонио. Спальня - перезагрузка люстры {{ states('sensor.time_date') }} 
@@ -79,9 +79,41 @@ br_reboot:
         - delay: 00:00:05
         - service: switch.turn_on
           entity_id: switch.0x54ef44100024689c_right
-        - service: telegram_bot.send_message
-          data_template:
-            target:
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
                 - !secret chat_id_log
             message: | 
                  {{"\U0001F916"}} Антонио. Спальня - перезагрузка люстры {{ states('sensor.time_date') }}    
+                 
+                 
+      - alias: br_ceiling_off_after_unavailable
+        id: br_ceiling_off_after_unavailable
+        description: Спальня - отключение люстры с понижением яркости
+        initial_state: true
+        trigger:
+    # Восстановление работы люстры
+        - platform: state
+          entity_id: binary_sensor.br_ceiling_unavailable
+          from: 'on'
+          to: 'off'
+        condition:
+    # Переключатель режима работы сервера
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.electricity
+          state: 'off'
+        action:
+        - service: xiaomi_miio.light_set_scene
+          entity_id: light.br_philips_62
+          data:
+            scene: 4 
+        - delay: 00:00:03
+        - service: input_boolean.turn_off
+          target:
+            entity_id: input_boolean.br_ceiling
+        - service: light.turn_off
+          entity_id:
+            - light.br_philips_62

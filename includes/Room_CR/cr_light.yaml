@@ -1,16 +1,5 @@
 cr_light:
 
-    homeassistant:
-      customize:
-        
-        light.yeelight_ceiling4_0x456e813:
-          friendly_name: Коридор - люстра
-          icon: phu:ceiling-adore-alt-flush
-
-        light.yeelight_ceiling4_0x456e813_ambilight:
-          friendly_name: Коридор - амбилайт
-          icon: phu:recessed-ceiling
-
     template:
      
       - binary_sensor:
@@ -61,6 +50,17 @@ cr_light:
               mdi:radiobox-blank
               {% endif %}
 
+     # Сенсор для для ввімкнення автоматичного підсвічування
+          - name: cr_mode_auto_light_on
+            unique_id: cr_mode_auto_light_on
+            state: >
+              {{ is_state('light.yeelight_ceiling4_0x456e813', 'off') and
+                 is_state('light.yeelight_ceiling4_0x456e813_ambilight', 'off') and                 
+                 is_state('binary_sensor.0xa4c138dc97e602e5_presence', 'on') and
+                 states('sensor.0xa4c138dc97e602e5_illuminance')|int < 200 }}
+
+
+
     automation:
     
       - alias: cr_ceiling_light_manual_control
@@ -104,7 +104,7 @@ cr_light:
                       - light.yeelight_ceiling4_0x456e813
                     data_template:
                       brightness_pct: 75
-                      kelvin: 4000
+                      color_temp_kelvin: 4000
               - conditions:
                   - condition: state
                     entity_id: light.yeelight_ceiling4_0x456e813
@@ -141,7 +141,7 @@ cr_light:
             - light.yeelight_ceiling4_0x456e813
           data_template:
             brightness_pct: 75
-            kelvin: 4000
+            color_temp_kelvin: 4000
         - delay: 00:00:15
         - service: light.turn_off
           entity_id:
@@ -170,7 +170,7 @@ cr_light:
       - alias: cr_ceiling_light_moving
         id: cr_ceiling_light_moving
         description: Коридор - включение по датчику движения ночью
-        initial_state: true
+        initial_state: false
         trigger:
         - platform: state
           entity_id: binary_sensor.0x00158d00010f8920_occupancy
@@ -191,11 +191,125 @@ cr_light:
             - light.yeelight_ceiling4_0x456e813_ambilight
           data_template:
             brightness_pct: 75
-            kelvin: 4000
+            color_temp_kelvin: 4000
         - delay: 00:00:10
         - service: light.turn_off
           entity_id:
             - light.yeelight_ceiling4_0x456e813_ambilight
+            
+      - alias: cr_mode_auto_light_on
+        id: cr_mode_auto_light_on
+        description: Коридор - автоматичне підсвічування
+        initial_state: true
+        trigger:
+        - platform: state
+          entity_id: binary_sensor.cr_mode_auto_light_on
+          to: 'on'
+        - platform: state
+          entity_id: binary_sensor.0xa4c138dc97e602e5_presence
+          to: 'off'
+        condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        # - condition: state
+        #   entity_id: binary_sensor.electricity
+        #   state: 'off'
+        action:
+            - choose:
+
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.cr_mode_auto_light_on
+                    state: 'on'
+                sequence:
+                  - action: light.turn_on
+                    data:
+                      color_temp_kelvin: 4000
+                      brightness_pct: 100
+                    target:
+                      entity_id: light.yeelight_ceiling4_0x456e813_ambilight
+
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.0xa4c138dc97e602e5_presence
+                    state: 'off'
+                sequence:
+                  - action: light.turn_off
+                    target:
+                      entity_id: light.yeelight_ceiling4_0x456e813_ambilight                      
+
+
+    #   - alias: cr_mode_blackout_light_on
+    #     id: cr_mode_blackout_light_on
+    #     description: Коридор - аварійне підсвічування
+    #     initial_state: false
+    #     trigger:
+    #     - platform: state
+    #       entity_id:
+    #         - binary_sensor.0xa4c138dc97e602e5_presence
+    #         - binary_sensor.0x00158d00010f8920_occupancy
+    #     condition:
+    #     - condition: state
+    #       entity_id: switch.control_mode
+    #       state: 'on'
+    #     - condition: state
+    #       entity_id: binary_sensor.electricity
+    #       state: 'on'
+    #     action:
+    #         - choose:
+
+    #           - conditions:
+    #               - condition: or
+    #                 conditions:
+    #                   - condition: state
+    #                     entity_id: binary_sensor.0xa4c138dc97e602e5_presence
+    #                     state: 'on'
+    #                   - condition: state
+    #                     entity_id: binary_sensor.0x00158d00010f8920_occupancy
+    #                     state: 'on'
+    #             sequence:
+    #               - action: light.turn_on
+    #                 data: {}
+    #                 target:
+    #                   entity_id: light.outsmart_rgbic_led
+
+    #           - conditions:
+    #               - condition: and
+    #                 conditions:
+    #                   - condition: state
+    #                     entity_id: binary_sensor.0xa4c138dc97e602e5_presence
+    #                     state: 'off'
+    #                   - condition: state
+    #                     entity_id: binary_sensor.0x00158d00010f8920_occupancy
+    #                     state: 'off'
+    #             sequence:
+    #               - action: light.turn_off
+    #                 target:
+    #                   entity_id: light.outsmart_rgbic_led           
+
+
+    #   - alias: cr_rgbic_led_auto_off
+    #     id: cr_rgbic_led_auto_off
+    #     description: Коридок 
+    #     initial_state: true
+    #     trigger:
+    #     - platform: time_pattern
+    #       minutes: '/3'         
+    #     condition:
+    #     - condition: state
+    #       entity_id: switch.control_mode
+    #       state: 'on'    
+    #     - condition: state
+    #       entity_id: light.gateway_light_7811dc64f4c8
+    #       state: 'on' 
+    #     action:          
+    #     - service: light.turn_off
+    #       entity_id: light.gateway_light_7811dc64f4c8
+
+
+
+
             
       - alias: cr_en_light_control
         id: cr_en_light_control
@@ -226,7 +340,7 @@ cr_light:
                       - light.0x00158d0003e74c31
                     data_template:
                       brightness_pct: 100
-                      kelvin: 4000
+                      color_temp_kelvin: 4000
             # Лампочка включена менее 10 сек, люстра выключена - включается люстра в коридоре
               - conditions:
                   - condition: state
@@ -244,7 +358,7 @@ cr_light:
                       - light.yeelight_ceiling4_0x456e813
                     data_template:
                       brightness_pct: 75
-                      kelvin: 4000
+                      color_temp_kelvin: 4000
             # Оба светильника включены - оба выключается
               - conditions:
                   - condition: state

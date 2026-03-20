@@ -4,7 +4,7 @@ lr_sensors:
       include:
         entities:
            - binary_sensor.0x00158d0005414857_occupancy
-           - sensor.0x04cf8cdf3c7cf19e_illuminance_lux
+           - sensor.0x04cf8cdf3c7cf19e_illuminance
 
            - binary_sensor.0x00158d000449b773_occupancy
            - sensor.0x00158d000449b773_illuminance_lux
@@ -60,7 +60,7 @@ lr_sensors:
           friendly_name: Гостиная окно справа
           device_class: window
         sensor.0x00158d00013ed373_battery:
-          friendly_name: Гостиная окно
+          friendly_name: Гостиная окно справа
 
         binary_sensor.0xec1bbdfffedf6a6a_contact:
           friendly_name: Гостиная окно слева
@@ -84,34 +84,6 @@ lr_sensors:
           unique_id: lr_thermostat
           state_topic: "states/lr_radiator"
         
-    switch:
-
-      - platform: template
-        switches:
-          lr_radiator_mode:
-            unique_id: lr_radiator_mode
-            friendly_name: "Режим отопления Гостиная"
-            value_template: "{{  is_state('binary_sensor.lr_radiator', 'on') }}"
-            turn_on:
-              service: mqtt.publish
-              data_template:
-                topic: "states/lr_radiator"
-                payload: 'ON'
-                retain: true 
-            turn_off:
-              service: mqtt.publish
-              data_template:
-                topic: "states/lr_radiator"
-                payload: 'OFF'
-                retain: true 
-            icon_template: >-
-              {% if is_state('switch.lr_radiator_mode', 'on') %}
-                mdi:radiator
-              {% else %}
-                mdi:radiator-off
-              {% endif %}
-              
-              
     template:
      
       - binary_sensor:
@@ -134,3 +106,32 @@ lr_sensors:
               {% else %}
               mdi:window-closed-variant
               {% endif %}
+
+      - switch:
+
+          - unique_id: lr_radiator_mode
+            name: Режим отопления Гостиная
+            default_entity_id: switch.lr_radiator_mode
+            state: >
+              {{ is_state('binary_sensor.lr_radiator', 'on') }}    
+            turn_on:
+              - action: mqtt.publish
+                data:
+                  topic: states/lr_radiator
+                  payload: 'ON'
+                  retain: true          
+            turn_off:
+              - action: mqtt.publish
+                data:
+                  topic: states/lr_radiator
+                  payload: 'OFF'
+                  retain: true          
+            icon: >
+              {% if is_state('switch.lr_radiator_mode', 'on') %}
+                mdi:radiator
+              {% else %}
+                mdi:radiator
+              {% endif %}              
+        
+              
+              

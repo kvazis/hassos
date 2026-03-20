@@ -1,11 +1,11 @@
 bt_vent:
 
-    homeassistant:
-      customize:
+    # homeassistant:
+    #   customize:
 
-        switch.0x00158d0001117040_left:
-          friendly_name: Ванная, вентилятор
-          icon: mdi:fan
+    #     switch.0x00158d000a8244b4_left:
+    #       friendly_name: Ванная, вентилятор
+    #       icon: mdi:fan
 
     timer:
     
@@ -26,24 +26,24 @@ bt_vent:
         - platform: numeric_state
           entity_id: sensor.0x00158d0001dcd47e_humidity
           above: 70
-      ## Беспроводный выключатель
+    # Выключатель в ванной
         - platform: state
-          entity_id: sensor.0x00158d000238a140_action
+          entity_id: sensor.0x00158d0003d50723_action
           to: 'single_right'
+    ## Aqara Opple на тумбочке в спальне
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1706_action
+          to: 'button_3_double'
         condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'  
         - condition: state
-          entity_id: fan.0x00158d0001117040
-          state: 'off'
-    # Отключен ночной режим работы
-        - condition: state
-          entity_id: binary_sensor.night_time
+          entity_id: fan.0x00158d000a8244b4
           state: 'off'
         action:
         - service: fan.turn_on
-          entity_id: fan.0x00158d0001117040
+          entity_id: fan.0x00158d000a8244b4
 
 
       - alias: bt_vent_off
@@ -56,20 +56,24 @@ bt_vent:
           event_type: timer.finished
           event_data:
             entity_id: timer.bt_vent
-      ## Беспроводный выключатель
+    # Выключатель в ванной
         - platform: state
-          entity_id: sensor.0x00158d000238a140_action
+          entity_id: sensor.0x00158d0003d50723_action
           to: 'single_right'
+    ## Aqara Opple на тумбочке в спальне
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1706_action
+          to: 'button_3_double'
         condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'  
         - condition: state
-          entity_id: fan.0x00158d0001117040
+          entity_id: fan.0x00158d000a8244b4
           state: 'on'
         action:
         - service: fan.turn_off
-          entity_id: fan.0x00158d0001117040
+          entity_id: fan.0x00158d000a8244b4
 
 
       - alias: bt_vent_timer_on
@@ -78,7 +82,7 @@ bt_vent:
         initial_state: true
         trigger:       
         - platform: state
-          entity_id: fan.0x00158d0001117040
+          entity_id: fan.0x00158d000a8244b4
           to: 'on'
         action:
         - service: timer.start
@@ -91,7 +95,7 @@ bt_vent:
         initial_state: true
         trigger:       
         - platform: state
-          entity_id: switch.0x00158d0001117040_left
+          entity_id: fan.0x00158d000a8244b4
           to: 'off'
         action:
         - service: timer.cancel

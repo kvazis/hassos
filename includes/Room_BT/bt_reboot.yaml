@@ -5,7 +5,7 @@ bt_reboot:
 
       - binary_sensor:
       
-    # Сенсор определяющий недоступность люстры
+    # A sensor that detects the inaccessibility of the light
           - name: bt_ceiling_unavailable
             unique_id: bt_ceiling_unavailable
             state: >
@@ -16,113 +16,109 @@ bt_reboot:
             
     automation:
     
-#################### ПЕРЕЗАГРУЗКА ЛЮСТРЫ ####################
+#################### REBOOT CEILING LIGHT ####################
                
       - alias: bt_reboot_ceiling
         id: bt_reboot_ceiling
-        description: Ванная - перезагрузка зависшей люстры
+        description: Bathroom – rebooting a ceiling light
         initial_state: true
         trigger:
-    # Проверка раз в 5 минут
+    # Check every 5 minutes
         - platform: time_pattern
           minutes: '/5'
         condition:
-    # Сенсор определяющий недоступность люстры
+    # A sensor that detects the inaccessibility of the light
         - condition: state
           entity_id: binary_sensor.bt_ceiling_unavailable
           state: 'on'
-    # Режим работы
+    # Operating mode
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Сенсор электричества
+    # Electricity sensor
         - condition: state
           entity_id: binary_sensor.blackout_after
           state: 'off'  
         action: 
-     # Перезагрузка по питанию если люстра недоступна
-        - service: switch.turn_off
-          entity_id: switch.0x00158d0001117040_right
+     # Power reboot if the chandelier is inaccessible
+        - action: switch.turn_off
+          data: {}
+          target:
+            entity_id: switch.0x00158d000a8244b4_right
         - delay: 00:00:05
-        - service: switch.turn_on
-          entity_id: switch.0x00158d0001117040_right
-        - service: telegram_bot.send_message
-          data_template:
-            target:
+        - action: switch.turn_on
+          data: {}
+          target:
+            entity_id: switch.0x00158d000a8244b4_right
+        - action: telegram_bot.send_message
+          data:
+            message: >-
+                 {{"\U0001F916"}} Ванна кімната, перезавантаження люстри {{ states('sensor.time_date') }} 
+            chat_id:
                 - !secret chat_id_log
-            message: | 
-                 {{"\U0001F916"}} Антонио. Ванная - перезагрузка люстры {{ states('sensor.time_date') }} 
-                 
-#################### АВТОВКЛЮЧЕНИЕ ВЫКЛЮЧАТЕЛЯ ЛЮСТРЫ ####################
-
-      - alias: bt_reboot_switch_turn_on
-        id: bt_reboot_switch_turn_on
-        description: Ванная включение выключателя
-        initial_state: true
-        trigger:
-    # Выключение выключателя
-        - platform: state
-          entity_id: switch.0x00158d0001117040_right
-          to: 'off'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-    # Сенсор электричества
-        - condition: state
-          entity_id: binary_sensor.blackout_after
-          state: 'off' 
-        action:
-    # Включение
-        - delay: 00:00:05
-        - service: switch.turn_on
-          entity_id: switch.0x00158d0001117040_right
+                
+                
+#################### AUTOMATIC SWITCH-ON OF THE CEILING LIGHT SWITCH ####################
 
       - alias: bt_reboot_switch_turn_on_check
         id: bt_reboot_switch_on_turn_on_check
-        description: Ванная проверка состояния выключателя
+        description: Bathroom switch status check
         initial_state: true
         trigger:
-    # Проверка раз в 5 минут
+    # Check every 5 minutes
         - platform: time_pattern
-          minutes: '/5'
+          minutes: '/7'
         condition:
-    # Не включен
+    # Not turned on
         - condition: template
-          value_template: "{{ states('switch.0x00158d0001117040_right') != 'on' }}"
-    # Режим работы
+          value_template: "{{ states('switch.0x00158d000a8244b4_right') != 'on' }}"
+    # Operating mode
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Сенсор электричества
+    # Electricity sensor
         - condition: state
           entity_id: binary_sensor.blackout_after
           state: 'off' 
         action:
-        - service: switch.turn_on
-          entity_id: switch.0x00158d0001117040_right
-          
+        - action: telegram_bot.send_message
+          data:
+            message: >-
+              {{"\U0001F916"}} Ванна кімната, вимикач - {{states('switch.0x00158d000a8244b4_right') }} 
+            target:
+                - !secret chat_id_log
+        - delay: 00:00:05
+        - action: switch.turn_on
+          data: {}
+          target:
+            entity_id: switch.0x00158d000a8244b4_right
+        - action: telegram_bot.send_message
+          data:
+            message: >-
+              {{"\U0001F916"}} Ванна кімната, ввімкнення вимикача живлення люстри {{states('sensor.time_date') }} 
+            chat_id:
+                - !secret chat_id_log
+
       - alias: bt_reboot_switch_check
         id: bt_reboot_switch_check
-        description: Ванная проверка статуса выключателя
-        initial_state: true
+        description: Bathroom forced update of switch status
+        initial_state: false
         trigger:
-    # Проверка раз в 15 минут
+    # Check every 15 minutes
         - platform: time_pattern
           minutes: '/15'
         condition:
-    # Переключатель режима работы сервера
+    # Operating mode
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Сенсор электричества
+    # Electricity sensor
         - condition: state
           entity_id: binary_sensor.blackout_after
           state: 'off' 
         action:
-    # Принудительное обновление статуса
-        - service: mqtt.publish
-          data_template:
-            topic: "zigstar_poe/BT wd 2ch enter/get"
-            payload: '{ "state_right": "" }'
+    # Forced update of switch status
+        - action: mqtt.publish
+          data:
+            topic: zigstar_poe/BT wd 2ch enter/get
+            payload: "{ \"state_right\": \"\" }"    

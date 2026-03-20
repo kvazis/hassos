@@ -1,0 +1,450 @@
+k7_3_partial_power:
+
+  ###################################################################
+  # Пишемо історію
+  ###################################################################
+
+  recorder:
+    include:
+      entities:
+        - sensor.tg_parser_k7_3_partial_source
+        - sensor.tg_parser_k7_3_partial_type
+        - sensor.electricity_3_partial_yesterday
+        - input_boolean.tg_parser_3_partial_log
+
+        
+        
+ ###################################################################
+  # REST: тягнемо стрічку з каналу
+  ###################################################################
+
+  rest:
+    - resource_template: "https://r.jina.ai/https://t.me/s/k7outage13s?nocache={{ now().timestamp()|int }}"
+      scan_interval: 20
+      timeout: 30
+      sensor:
+
+        - name: tg_parser_k7_3_partial_source
+          value_template: >-
+            {% set page = value | default('', true) %}
+            {% set text = page | lower
+                           | replace('’','ʼ') | replace("'",'ʼ') | replace('`','ʼ') %}
+
+            {% set pos_gone  = text.rfind('зникнення') %}
+            {% set pos_back  = text.rfind('відновлення') %}
+            {% set idx = [pos_gone, pos_back] | max %}
+
+            {% if idx == -1 %}
+              {{ '' }}
+            {% else %}
+              {% set start = page.rfind('\n', 0, idx) %}
+              {% set end   = page.find('\n', idx) %}
+              {% set start = 0 if start == -1 else start + 1 %}
+              {% set end   = page|length if end == -1 else end %}
+              {{ page[start:end] | trim }}
+            {% endif %}
+
+
+  ###################################################################
+  # Часові мітки
+  ###################################################################
+
+  input_datetime:
+
+    electricity_off_3_partial:
+      name: Живлення вимкнене (частково) секція 3
+      has_date: true
+      has_time: true
+
+    electricity_on_3_partial:
+      name: Живлення відновлене (частково) секція 3
+      has_date: true
+      has_time: true
+
+  sensor:
+      - platform: history_stats
+        name: electricity_3_partial_yesterday
+        entity_id: input_boolean.tg_parser_3_partial_log
+        state: "on"
+        type: time
+        start: "{{ (today_at('00:00:00') - timedelta(days=1)) }}"
+        end: "{{ today_at('00:00:00') }}"
+        
+  ###################################################################
+  # Запобіжники від повторного спрацювання (антидублі)
+  ###################################################################
+
+  input_boolean:
+
+    tg_parser_3_partial_gone_lock:
+      name: Блокування повідомлення про часткове зникнення (секція 3)
+
+    tg_parser_3_partial_back_lock:
+      name: Блокування повідомлення про часткове відновлення (секція 3)
+      
+    tg_parser_3_partial_log:
+      name: Фіксація появи електрики для історії
+      
+
+  ###################################################################
+  # Template-сенсори
+  ###################################################################
+
+  template:
+
+    - sensor:
+        - name: tg_parser_k7_3_partial_type
+          state: >-
+            {% set l = (states('sensor.tg_parser_k7_3_partial_source') | lower
+                        | replace('’','ʼ') | replace("'",'ʼ') | replace('`','ʼ')) %}
+            {% if 'зникнення' in l %} gone
+            {% elif 'відновлення' in l %} back
+            {% else %} unknown
+            {% endif %}
+
+    - binary_sensor:
+
+        - name: k7_3_partial_back
+          unique_id: k7_3_partial_back
+          state: >
+            {{ is_state('sensor.tg_parser_k7_3_partial_type', 'back') }}
+          delay_on:
+            minutes: 2
+          delay_off:
+            seconds: 30
+            
+        - name: k7_1_3_ping_stable_5m
+          unique_id: k7_1_3_ping_stable_5m
+          state: "{{ is_state('binary_sensor.93_127_127_43', 'on') }}"
+          delay_on:
+            minutes: 5
+          delay_off:
+            seconds: 15
+
+        - name: k7_3_partial_gone
+          unique_id: k7_3_partial_gone
+          state: >
+            {{ is_state('sensor.tg_parser_k7_3_partial_type', 'gone') }}
+          delay_on:
+            minutes: 2
+          delay_off:
+            seconds: 30
+            
+        - name: k7_1_3_ping_unstable_5m
+          unique_id: k7_1_3_ping_unstable_5m
+          state: "{{ is_state('binary_sensor.93_127_127_43', 'off') }}"
+          delay_on:
+            minutes: 5
+          delay_off:
+            seconds: 15
+
+  automation:
+
+    ###################################################################
+    # ЗАПИС часу (НЕ залежить від нотифікацій): gone (по TG)
+    ###################################################################
+    - alias: control_electricity__3_partial_off_record
+      id: control_electricity__3_partial_off_record
+      description: Запис часу часткового зникнення (по TG)
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: sensor.tg_parser_k7_3_partial_type
+          from: 'back'
+          to: 'gone'
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+      action:
+        - action: input_datetime.set_datetime
+          target:
+            entity_id: input_datetime.electricity_off_3_partial
+          data:
+            datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+  # Вимикання запису наявності електрики
+        - action: input_boolean.turn_off
+          data: {}
+          target:
+            entity_id: input_boolean.tg_parser_3_partial_log
+
+    - alias: control_electricity__3_partial_on_record
+      id: control_electricity__3_partial_on_record
+      description: Запис часу часткового відновлення (по TG)
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: sensor.tg_parser_k7_3_partial_type
+          from: 'gone'
+          to: 'back'
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+      action:
+        - action: input_datetime.set_datetime
+          target:
+            entity_id: input_datetime.electricity_on_3_partial
+          data:
+            datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+  # Вмикання запису наявності електрики
+        - action: input_boolean.turn_on
+          data: {}
+          target:
+            entity_id: input_boolean.tg_parser_3_partial_log            
+
+
+  ###################################################################
+  # Нотифікація про часткове включення світла в 3
+  ###################################################################
+
+    - alias:  tg_parser_3_partial_back_notification
+      id: tg_parser_3_partial_back_notification
+      description: Нотифікація про часткове включення світла в 3
+      initial_state: true
+
+      trigger:
+
+  # Спрацювання сенсору
+        - platform: state
+          entity_id: binary_sensor.k7_3_partial_back
+          from: 'off' 
+          to: 'on'
+
+      condition:
+  # Перемикач режиму роботи серверу
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+  # Перемикач режиму роботи сповіщень
+        - condition: state
+          entity_id: input_boolean.k7_notification
+          state: 'on'
+  # Нема блокування на сповіщення
+        - condition: state
+          entity_id: input_boolean.tg_parser_3_partial_back_lock
+          state: 'off'
+      action:
+          - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.k7_1_3_ping_stable_5m
+                    state: 'on'
+                sequence:
+          # Встановлення блокування на дублюючі сповіщення
+                  - action: input_boolean.turn_on
+                    data: {}
+                    target:
+                      entity_id: input_boolean.tg_parser_3_partial_back_lock
+
+          # Розблокування на сповіщення про зникнення
+                  - action: input_boolean.turn_off
+                    data: {}
+                    target:
+                      entity_id: input_boolean.tg_parser_3_partial_gone_lock
+                  - action: telegram_bot.send_message
+                    data:
+                      chat_id:
+                          - !secret chat_id_k7
+                      message: | 
+                          {%- set off = as_datetime(states('input_datetime.electricity_on_3_partial')) -%}
+                          {%- set on  = as_datetime(states('input_datetime.electricity_off_3_partial')) -%}
+                          
+                          {%- if off and on -%}
+                            {%- set d = off - on -%}
+                            {%- set days = d.days -%}
+                            {%- set sec = d.seconds -%}
+                            {%- set h = sec // 3600 -%}
+                            {%- set m = (sec % 3600) // 60 -%}
+                            {%- set s = sec % 60 -%}
+                          ✅3️⃣
+                           Часткове відновлення живлення 3 секції в {{ (now()).strftime('%H:%M') }}
+                           ⏳ Електрики не було - {{ (days ~ 'д ' ) if days > 0 else '' }}{{ '%02d:%02d:%02d'|format(h,m,s) }}
+                          {%- else -%}
+                          ✅3️⃣
+                           Часткове відновлення живлення 3 секції в {{ (now()).strftime('%H:%M') }}
+                          ⏳Електрики не було - н/д
+                          {%- endif -%}
+
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.k7_1_3_ping_unstable_5m
+                    state: 'on'
+                sequence:
+          # Встановлення блокування на дублюючі сповіщення
+                  - action: input_boolean.turn_on
+                    data: {}
+                    target:
+                      entity_id: input_boolean.tg_parser_3_partial_back_lock
+
+          # Розблокування на сповіщення про зникнення
+                  - action: input_boolean.turn_off
+                    data: {}
+                    target:
+                      entity_id: input_boolean.tg_parser_3_partial_gone_lock
+                  - action: telegram_bot.send_message
+                    data:
+                      chat_id:
+                          - !secret chat_id_k7
+                      message: | 
+                          {%- set off = as_datetime(states('input_datetime.electricity_on_3_partial')) -%}
+                          {%- set on  = as_datetime(states('input_datetime.electricity_off_3_partial')) -%}
+                          
+                          {%- if off and on -%}
+                            {%- set d = off - on -%}
+                            {%- set days = d.days -%}
+                            {%- set sec = d.seconds -%}
+                            {%- set h = sec // 3600 -%}
+                            {%- set m = (sec % 3600) // 60 -%}
+                            {%- set s = sec % 60 -%}
+                          ✅3️⃣
+                           Часткове відновлення живлення 3 секції в {{ (now()).strftime('%H:%M') }}
+                           ⏳ Електрики не було - {{ (days ~ 'д ' ) if days > 0 else '' }}{{ '%02d:%02d:%02d'|format(h,m,s) }}
+                          {%- else -%}
+                          ✅3️⃣
+                           Часткове відновлення живлення 3 секції в {{ (now()).strftime('%H:%M') }}
+                          ⏳Електрики не було - н/д
+                          {%- endif -%}
+
+            default:
+          # Встановлення блокування на дублюючі сповіщення
+                  - action: input_boolean.turn_on
+                    data: {}
+                    target:
+                      entity_id: input_boolean.tg_parser_3_partial_back_lock
+
+          # Розблокування на сповіщення про зникнення
+                  - action: input_boolean.turn_off
+                    data: {}
+                    target:
+                      entity_id: input_boolean.tg_parser_3_partial_gone_lock
+
+                          
+  ###################################################################
+  # Нотифікація про часткове відключення світла в 3
+  ###################################################################
+
+    - alias:  tg_parser_3_partial_gone_notification
+      id: tg_parser_3_partial_gone_notification
+      description: Нотифікація про часткове відключення світла в 3
+      initial_state: true
+
+      trigger:
+
+  # Спрацювання сенсору
+        - platform: state
+          entity_id: binary_sensor.k7_3_partial_gone
+          from: 'off' 
+          to: 'on'
+
+      condition:
+  # Перемикач режиму роботи серверу
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+  # Перемикач режиму роботи сповіщень
+        - condition: state
+          entity_id: input_boolean.k7_notification
+          state: 'on'
+  # Нема блокування на сповіщення
+        - condition: state
+          entity_id: input_boolean.tg_parser_3_partial_gone_lock
+          state: 'off'
+      action:
+          - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.k7_1_3_ping_unstable_5m
+                    state: 'on'
+                sequence:
+          # Встановлення блокування на дублюючі сповіщення
+                  - action: input_boolean.turn_on
+                    data: {}
+                    target:
+                      entity_id: input_boolean.tg_parser_3_partial_gone_lock
+
+          # Розблокування на сповіщення про зникнення
+                  - action: input_boolean.turn_off
+                    data: {}
+                    target:
+                      entity_id: input_boolean.tg_parser_3_partial_back_lock
+                  - action: telegram_bot.send_message
+                    data:
+                      chat_id:
+                          - !secret chat_id_k7
+                      message: | 
+                          {%- set off = as_datetime(states('input_datetime.electricity_off_3_partial')) -%}
+                          {%- set on  = as_datetime(states('input_datetime.electricity_on_3_partial')) -%}
+                          
+                          {%- if off and on -%}
+                            {%- set d = off - on -%}
+                            {%- set days = d.days -%}
+                            {%- set sec = d.seconds -%}
+                            {%- set h = sec // 3600 -%}
+                            {%- set m = (sec % 3600) // 60 -%}
+                            {%- set s = sec % 60 -%}
+                          ❗3️⃣
+                           Часткове вимкнення живлення 3 секції в {{ (now()).strftime('%H:%M') }}
+                           ⏳Електрика була - {{ (days ~ 'д ' ) if days > 0 else '' }}{{ '%02d:%02d:%02d'|format(h,m,s) }}
+                          {%- else -%}
+                          ❗3️⃣
+                           Часткове вимкнення живлення 3 секції в {{ (now()).strftime('%H:%M') }}
+                           ⏳Електрика була - н/д
+                          {%- endif -%}
+
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.k7_1_3_ping_stable_5m
+                    state: 'on'
+                sequence:
+          # Встановлення блокування на дублюючі сповіщення
+                  - action: input_boolean.turn_on
+                    data: {}
+                    target:
+                      entity_id: input_boolean.tg_parser_3_partial_gone_lock
+
+          # Розблокування на сповіщення про зникнення
+                  - action: input_boolean.turn_off
+                    data: {}
+                    target:
+                      entity_id: input_boolean.tg_parser_3_partial_back_lock
+                  - action: telegram_bot.send_message
+                    data:
+                      chat_id:
+                          - !secret chat_id_k7
+                      message: | 
+                          {%- set off = as_datetime(states('input_datetime.electricity_off_3_partial')) -%}
+                          {%- set on  = as_datetime(states('input_datetime.electricity_on_3_partial')) -%}
+                          
+                          {%- if off and on -%}
+                            {%- set d = off - on -%}
+                            {%- set days = d.days -%}
+                            {%- set sec = d.seconds -%}
+                            {%- set h = sec // 3600 -%}
+                            {%- set m = (sec % 3600) // 60 -%}
+                            {%- set s = sec % 60 -%}
+                          ❗3️⃣
+                           Часткове вимкнення живлення 3 секції в {{ (now()).strftime('%H:%M') }}
+                           ⏳Електрика була - {{ (days ~ 'д ' ) if days > 0 else '' }}{{ '%02d:%02d:%02d'|format(h,m,s) }}
+                          {%- else -%}
+                          ❗3️⃣
+                           Часткове вимкнення живлення 3 секції в {{ (now()).strftime('%H:%M') }}
+                           ⏳Електрика була - н/д
+                          {%- endif -%}
+
+            default:
+
+          # Встановлення блокування на дублюючі сповіщення
+                  - action: input_boolean.turn_on
+                    data: {}
+                    target:
+                      entity_id: input_boolean.tg_parser_3_partial_gone_lock
+
+          # Розблокування на сповіщення про зникнення
+                  - action: input_boolean.turn_off
+                    data: {}
+                    target:
+                      entity_id: input_boolean.tg_parser_3_partial_back_lock
+
+
+

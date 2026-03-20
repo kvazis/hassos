@@ -1,0 +1,364 @@
+k7_1_3_power:
+
+  ###################################################################
+  # Пишемо історію
+  ###################################################################
+
+  recorder:
+      include:
+        entities:
+           - binary_sensor.tg_1_3_ping
+           - sensor.electricity_1_3_yesterday
+           - binary_sensor.93_127_127_43
+
+
+  input_datetime:
+      electricity_off_1_3:
+        name: Живлення вимкнене 1-3
+        has_date: true
+        has_time: true
+        
+      electricity_on_1_3:
+        name: Живлення відновлене 1-3
+        has_date: true
+        has_time: true
+
+
+  ###################################################################
+  # Накопичення
+  ###################################################################
+
+  sensor:
+      - platform: history_stats
+        name: electricity_1_3_yesterday
+        entity_id: binary_sensor.tg_1_3_ping
+        state: "on"
+        type: time
+        start: "{{ (today_at('00:00:00') - timedelta(days=1)) }}"
+        end: "{{ today_at('00:00:00') }}"
+
+
+  ###################################################################
+  # Template-сенсори 
+  ###################################################################
+
+            
+  template:
+
+    - binary_sensor:
+
+          - name: tg_1_3_ping
+            unique_id: tg_1_3_ping
+            state: >
+              {{ is_state('binary_sensor.93_127_127_43', 'on')  
+              }}
+            delay_off: 
+                minutes: 1
+
+
+
+  ###################################################################
+  # Запобіжники від повторного спрацювання
+  ###################################################################
+            
+  input_boolean:
+    
+     tg_parser_1_3_gone_lock:
+        name: Блокування повідомлення про відключення світла в 1-3           
+            
+     tg_parser_1_3_back_lock:
+        name: Блокування повідомлення про включення світла в 1-3                
+            
+  
+  automation:
+
+
+  ###################################################################
+  # Фіксація пропадання і появи електрики 1-3
+  ###################################################################         
+          
+    - alias: control_electricity__1_3_off
+      id: control_electricity__1_3_off
+      description: Фіксація пропадання 1-3
+      initial_state: true
+      trigger:
+
+  # Вимкнення електрики
+        - platform: state
+          entity_id: binary_sensor.tg_1_3_ping
+          from: 'on' 
+          to: 'off'
+
+      condition:
+
+  # Перемикач режиму роботи серверу
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+ 
+  # Перемикач режиму роботи сповіщень
+        - condition: state
+          entity_id: input_boolean.k7_notification
+          state: 'on'
+
+  # Нема блокування на сповіщення
+        - condition: state
+          entity_id: input_boolean.tg_parser_1_3_gone_lock
+          state: 'off'
+
+      action:
+        - action: input_datetime.set_datetime
+          data:
+             datetime: " {{ (now() - timedelta(minutes=1)).strftime('%Y-%m-%d %H:%M:%S') }}"
+          target:
+            entity_id: input_datetime.electricity_off_1_3
+  
+
+
+    - alias: control_electricity__1_3_on
+      id: control_electricity__1_3_on
+      description: Фіксація появи 1-3
+      initial_state: true
+      trigger:
+
+  # Спрацювання сенсору про включення       
+        - platform: state
+          entity_id: binary_sensor.tg_1_3_ping
+          from: 'off' 
+          to: 'on'
+
+      condition:
+
+  # Перемикач режиму роботи серверу
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+ 
+  # Перемикач режиму роботи сповіщень
+        - condition: state
+          entity_id: input_boolean.k7_notification
+          state: 'on'
+
+  # Нема блокування на сповіщення
+        - condition: state
+          entity_id: input_boolean.tg_parser_1_3_back_lock
+          state: 'off'
+
+      action:
+
+        - action: input_datetime.set_datetime
+          data:
+             datetime: " {{ (now()).strftime('%Y-%m-%d %H:%M:%S') }}"
+          target:
+            entity_id: input_datetime.electricity_on_1_3
+
+            
+  ###################################################################
+  # Нотифікація про відключення світла в 1-3
+  ###################################################################
+
+    - alias:  tg_parser_1_3_gone_notification
+      id: tg_parser_1_3_gone_notification
+      description: Нотифікація про відключення світла в 1-3
+      initial_state: true
+
+      trigger:
+
+  # Спрацювання сенсору
+        - platform: state
+          entity_id: binary_sensor.tg_1_3_ping
+          from: 'on' 
+          to: 'off'
+          
+      condition:
+
+  # Перемикач режиму роботи серверу
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+ 
+  # Перемикач режиму роботи сповіщень
+        - condition: state
+          entity_id: input_boolean.k7_notification
+          state: 'on'
+
+  # Нема блокування на сповіщення
+        - condition: state
+          entity_id: input_boolean.tg_parser_1_3_gone_lock
+          state: 'off'
+            
+      action:
+
+        - delay: 00:00:05
+  # Встановлення блокування на дублюючі сповіщення
+        - action: input_boolean.turn_on
+          data: {}
+          target:
+            entity_id: input_boolean.tg_parser_1_3_gone_lock
+
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+                - !secret chat_id_k7
+            message: | 
+                {%- set off = as_datetime(states('input_datetime.electricity_off_1_3')) -%}
+                {%- set on  = as_datetime(states('input_datetime.electricity_on_1_3')) -%}
+                
+                {%- if off and on -%}
+                  {%- set d = off - on -%}
+                  {%- set days = d.days -%}
+                  {%- set sec = d.seconds -%}
+                  {%- set h = sec // 3600 -%}
+                  {%- set m = (sec % 3600) // 60 -%}
+                  {%- set s = sec % 60 -%}
+                
+                🟥 1️⃣2️⃣3️⃣
+                Зникнення живлення по вводу 1-3 секції в {{ (now() - timedelta(minutes=1)).strftime('%H:%M') }}
+                ⏳ Електрика була - {{ (days ~ 'д ' ) if days > 0 else '' }}{{ '%02d:%02d:%02d'|format(h,m,s) }}
+                {%- else -%}
+                🟥 1️⃣2️⃣3️⃣
+                Зникнення живлення по вводу 1-3 секції в {{ (now() - timedelta(minutes=1)).strftime('%H:%M') }}
+                ⏳ Електрика була - н/д
+                {%- endif -%}
+
+  ###################################################################
+  # Розблокування нотифікації про відключення світла в 1-3 
+  ###################################################################
+            
+    - alias: tg_parser_1_3_gone_reload
+      id: tg_parser_1_3_gone_reload
+      description: Розблокування нотифікації про відключення світла в 1-3
+      initial_state: true
+
+      trigger:
+
+  # Спрацювання сенсору про включення       
+        - platform: state
+          entity_id: binary_sensor.tg_1_3_ping
+          from: 'off' 
+          to: 'on'
+      condition:
+
+  # Перевірка що встановлено блокування на дублюючі сповіщення
+        - condition: state
+          entity_id: input_boolean.tg_parser_1_3_gone_lock
+          state: 'on'
+
+      action:
+      
+  # Зняття блокування на дублюючі сповіщення
+        - action: input_boolean.turn_off
+          data: {}
+          target:
+            entity_id: input_boolean.tg_parser_1_3_gone_lock
+            
+  ###################################################################
+  # Нотифікація про включення світла в 1-3
+  ###################################################################
+
+    - alias:  tg_parser_1_3_back_notification
+      id: tg_parser_1_3_back_notification
+      description: Нотифікація про включення світла в 1-3
+      initial_state: true
+
+      trigger:
+
+  # Спрацювання сенсору
+        - platform: state
+          entity_id: binary_sensor.tg_1_3_ping
+          from: 'off' 
+          to: 'on'
+          
+      condition:
+
+  # Перемикач режиму роботи серверу
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+ 
+  # Перемикач режиму роботи сповіщень
+        - condition: state
+          entity_id: input_boolean.k7_notification
+          state: 'on'
+
+  # Нема блокування на сповіщення
+        - condition: state
+          entity_id: input_boolean.tg_parser_1_3_back_lock
+          state: 'off'
+            
+      action:
+
+        - delay: 00:00:05 
+  # Встановлення блокування на дублюючі сповіщення
+        - action: input_boolean.turn_on
+          data: {}
+          target:
+            entity_id: input_boolean.tg_parser_1_3_back_lock
+
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+                - !secret chat_id_k7
+            message: | 
+                {%- set off = as_datetime(states('input_datetime.electricity_on_1_3')) -%}
+                {%- set on  = as_datetime(states('input_datetime.electricity_off_1_3')) -%}
+                
+                {%- if off and on -%}
+                  {%- set d = off - on -%}
+                  {%- set days = d.days -%}
+                  {%- set sec = d.seconds -%}
+                  {%- set h = sec // 3600 -%}
+                  {%- set m = (sec % 3600) // 60 -%}
+                  {%- set s = sec % 60 -%}
+                
+                🟩 1️⃣2️⃣3️⃣
+                 Відновлення живлення по вводу 1-3 секції в {{ (now()).strftime('%H:%M') }}
+                 ⏳ Електрики не було - {{ (days ~ 'д ' ) if days > 0 else '' }}{{ '%02d:%02d:%02d'|format(h,m,s) }}
+                {%- else -%}
+                🟩 1️⃣2️⃣3️⃣
+                 Відновлення живлення по вводу 1-3 секції в  {{ (now()).strftime('%H:%M') }}
+                ⏳Електрики не було - н/д
+                {%- endif -%}
+
+
+            
+  ###################################################################   
+  # Розблокування нотифікації про включення світла в 1-3 
+  ###################################################################
+            
+    - alias: tg_parser_1_3_back_reload
+      id: tg_parser_1_3_back_reload
+      description: Розблокування нотифікації про включення світла в 1-3
+      initial_state: true
+
+      trigger:
+
+
+  # Спрацювання сенсору про включення       
+        - platform: state
+          entity_id: binary_sensor.tg_1_3_ping
+          from: 'on' 
+          to: 'off'
+
+      condition:
+
+  # Перевірка що встановлено блокування на дублюючі сповіщення
+        - condition: state
+          entity_id: input_boolean.tg_parser_1_3_back_lock
+          state: 'on'
+
+      action:
+      
+  # Зняття блокування на дублюючі сповіщення
+        - action: input_boolean.turn_off
+          data: {}
+          target:
+            entity_id: input_boolean.tg_parser_1_3_back_lock
+                       
+            
+            
+            
+            
+            
+            
+            

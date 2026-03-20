@@ -195,8 +195,15 @@ electricity:
           - name: phase_1_voltage
             unique_id: phase_1_voltage
             state: >
-                {{ states('sensor.0x70ac08fffe99c363_voltage')|float(0) }}
-                
+              {% if is_state('binary_sensor.electricity', 'on') %}
+                0
+              {% else %}
+                {{ states('sensor.0x70ac08fffe99c363_voltage') | float(230) }}
+              {% endif %}
+            availability: >
+              {{ is_state('binary_sensor.electricity', 'on')
+                 or (states('sensor.0x70ac08fffe99c363_voltage') | float(0) > 10) }}
+               
           - name: phase_1_current
             unique_id: phase_1_current
             state: >
@@ -218,7 +225,14 @@ electricity:
           - name: phase_2_voltage
             unique_id: phase_2_voltage
             state: >
-                {{ states('sensor.0x187a3efffe355cf1_voltage')|float(0) }}
+              {% if is_state('binary_sensor.electricity', 'on') %}
+                0
+              {% else %}
+                {{ states('sensor.0x187a3efffe355cf1_voltage') | float(230) }}
+              {% endif %}
+            availability: >
+              {{ is_state('binary_sensor.electricity', 'on')
+                 or (states('sensor.0x187a3efffe355cf1_voltage') | float(0) > 10) }}
 
           - name: phase_2_current
             unique_id: phase_2_current
@@ -240,7 +254,14 @@ electricity:
           - name: phase_3_voltage
             unique_id: phase_3_voltage
             state: >
-                {{ states('sensor.0x187a3efffe303832_voltage')|float(0) }}
+              {% if is_state('binary_sensor.electricity', 'on') %}
+                0
+              {% else %}
+                {{ states('sensor.0x187a3efffe303832_voltage') | float(230) }}
+              {% endif %}
+            availability: >
+               {{ is_state('binary_sensor.electricity', 'on')
+                  or (states('sensor.0x187a3efffe303832_voltage') | float(0) > 10) }}
 
           - name: phase_3_current
             unique_id: phase_3_current

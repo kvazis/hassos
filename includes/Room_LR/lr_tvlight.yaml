@@ -4,7 +4,7 @@ lr_tvlight:
 
 
       lr_light_cinema:
-        name: Гостиная кино подсветка
+        name: Вітальня, ТБ підсвітка
 
     mqtt:
 
@@ -13,33 +13,7 @@ lr_tvlight:
           unique_id: 'lr_light_cinema_mode'
           state_topic: "states/lr_light_cinema_mode"
 
-    switch:
-    
-      - platform: template
-        switches:
 
-          lr_light_cinema_mode:
-            friendly_name: "Гостиная кино подсветка"
-            unique_id: 'lr_light_cinema_mode'
-            value_template: "{{ is_state('binary_sensor.lr_light_cinema_mode', 'on') }}"
-            turn_on:
-              service: mqtt.publish
-              data_template:
-                topic: "states/lr_light_cinema_mode"
-                payload: 'ON'
-                retain: true 
-            turn_off:
-              service: mqtt.publish
-              data_template:
-                topic: "states/lr_light_cinema_mode"
-                payload: 'OFF'
-                retain: true 
-            icon_template: >-
-              {% if is_state('switch.lr_light_cinema_mode', 'on') %}
-                mdi:led-strip-variant
-              {% else %}
-                mdi:led-strip-variant-off
-              {% endif %}  
 
 
     template:
@@ -66,6 +40,33 @@ lr_tvlight:
             unique_id: lr_light_tv_cinema
             auto_off: 3
             state: "true"
+
+      - switch:
+
+          - unique_id: lr_light_cinema_mode
+            name: Гостиная кино подсветка
+            default_entity_id: switch.lr_light_cinema_mode
+            state: >
+              {{ is_state('binary_sensor.lr_light_cinema_mode', 'on') }}    
+            turn_on:
+              - action: mqtt.publish
+                data:
+                  topic: states/lr_light_cinema_mode
+                  payload: 'ON'
+                  retain: true          
+            turn_off:
+              - action: mqtt.publish
+                data:
+                  topic: states/lr_light_cinema_mode
+                  payload: 'OFF'
+                  retain: true          
+            icon: >
+              {% if is_state('switch.lr_light_cinema_mode', 'on') %}
+                mdi:led-strip-variant
+              {% else %}
+                mdi:led-strip-variant-off
+              {% endif %}
+
 
     automation:
     
@@ -95,7 +96,7 @@ lr_tvlight:
             sequence:
               - service: light.turn_off
                 entity_id:
-                  - light.yeelight_lamp1_0x32a4ab4
+                  - light.smart_desk_lamp
                   - light.yeelight_ceiling4_0x49c726b
                   - light.yeelight_ceiling4_0x4a1dacd
                   - light.0x54ef4410008e96fd_bottom
@@ -122,19 +123,19 @@ lr_tvlight:
 
                       
                       
-      - alias: lr_light_tv_ambilight
-        id: lr_light_tv_ambilight
-        description: Гостиная, амбилайт для ТВ
-        initial_state: true
-        trigger:
-    ## 6 кнопка Aqara Opple
-        - platform: state
-          entity_id: sensor.0x04cf8cdf3c79360a_action
-          to: 'button_6_double'
-        condition:
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-        action:
-        - service: light.toggle
-          entity_id: light.hdmi_tv_lighting_65
+    #   - alias: lr_light_tv_ambilight
+    #     id: lr_light_tv_ambilight
+    #     description: Гостиная, амбилайт для ТВ
+    #     initial_state: true
+    #     trigger:
+    # ## 6 кнопка Aqara Opple
+    #     - platform: state
+    #       entity_id: sensor.0x04cf8cdf3c79360a_action
+    #       to: 'button_6_double'
+    #     condition:
+    #     - condition: state
+    #       entity_id: switch.control_mode
+    #       state: 'on'
+    #     action:
+    #     - service: light.toggle
+    #       entity_id: light.hdmi_tv_lighting_65

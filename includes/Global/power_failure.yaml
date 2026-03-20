@@ -7,90 +7,121 @@ power_failure:
            - binary_sensor.lr2_electricity
            - binary_sensor.kn_electricity
            - binary_sensor.br_electricity
-           - binary_sensor.electricity
+           - binary_sensor.electricity_internal
 
            
     homeassistant:
       customize:
 
         binary_sensor.lr_electricity:
-          friendly_name: Сенсор электричества гостиная
+          friendly_name: Сенсор живлення вітальня
           icon: mdi:home-lightning-bolt-outline
           
         binary_sensor.lr2_electricity:
-          friendly_name: Сенсор электричества 2 гостиная
+          friendly_name: Сенсор живлення 2 вітальня
           icon: mdi:home-lightning-bolt-outline
 
         binary_sensor.kn_electricity:
-          friendly_name: Сенсор электричества кухня
+          friendly_name: Сенсор живлення кухня
           icon: mdi:home-lightning-bolt-outline
 
         binary_sensor.br_electricity:
-          friendly_name: Сенсор электричества спальня
+          friendly_name: Сенсор живлення спальня
           icon: mdi:home-lightning-bolt-outline
-
-        binary_sensor.electricity:
-          friendly_name: Электропитание
-          icon: mdi:transmission-tower
 
         binary_sensor.0xa4c138bae3526a07_contact:
-          friendly_name: Сенсор определения отключения гостиная
+          friendly_name: Сенсор визначення вимкнення вітальня
           device_class: problem
         sensor.0xa4c138bae3526a07_battery:
-          friendly_name: Сенсор определения отключения гостиная
+          friendly_name: Сенсор визначення вимкнення вітальня
           
         binary_sensor.0xa4c138135e284964_contact:
-          friendly_name: Сенсор определения отключения гостиная 2
+          friendly_name: Сенсор визначення вимкнення вітальня 2
           device_class: problem
         sensor.0xa4c138135e284964_battery:
-          friendly_name: Сенсор определения отключения гостиная 2
+          friendly_name: Сенсор визначення вимкнення вітальня 2
           
         binary_sensor.0xa4c138744bf2fbf0_contact:
-          friendly_name: Сенсор определения отключения кухня
+          friendly_name: Сенсор визначення вимкнення кухня
           device_class: problem
         sensor.0xa4c138744bf2fbf0_battery:
-          friendly_name: Сенсор определения отключения кухня
+          friendly_name: Сенсор визначення вимкнення кухня
 
         binary_sensor.0xa4c138084b9d3356:
-          friendly_name: Сенсор электричества спальня
+          friendly_name: Сенсор живлення спальня
           icon: mdi:home-lightning-bolt-outline
         sensor.0xa4c138084b9d3356_battery:
-          friendly_name: Сенсор электричества спальня
+          friendly_name: Сенсор живлення спальня
 
 
     template:
     
       - binary_sensor:
+ 
+  ###################################################################
+  # Сенсор визначення вимкнення вітальня
+  ###################################################################
 
-    # Сенсор определения отключения гостиная
           - name: lr_electricity
             unique_id: lr_electricity
             state: >
-             {{ is_state('binary_sensor.0xa4c138bae3526a07_contact', 'on') }}
+              {% if is_state('binary_sensor.0xa4c138bae3526a07_contact', 'unavailable') or
+                    is_state('binary_sensor.0xa4c138bae3526a07_contact', 'unknown') %}
+                {{ states('binary_sensor.lr_electricity') }}
+              {% else %}
+                {{ is_state('binary_sensor.0xa4c138bae3526a07_contact', 'on') }}
+              {% endif %}
             device_class: problem
 
-    # Сенсор определения отключения гостиная 2
+  ###################################################################
+  # Сенсор визначення вимкнення вітальня 2
+  ###################################################################
+    
           - name: lr2_electricity
             unique_id: lr2_electricity
             state: >
-             {{ is_state('binary_sensor.0xa4c138135e284964_contact', 'on') }}
+              {% if is_state('binary_sensor.0xa4c138135e284964_contact', 'unavailable') or
+                    is_state('binary_sensor.0xa4c138135e284964_contact', 'unknown') %}
+                {{ states('binary_sensor.lr2_electricity') }}
+              {% else %}
+                {{ is_state('binary_sensor.0xa4c138135e284964_contact', 'on') }}
+              {% endif %}
             device_class: problem
 
-    # Сенсор определения отключения кухня
+  ###################################################################
+  # Сенсор визначення вимкнення кухня
+  ###################################################################
+
           - name: kn_electricity
             unique_id: kn_electricity
             state: >
-             {{ is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on') }}
+              {% if is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'unavailable') or
+                    is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'unknown') %}
+                {{ states('binary_sensor.kn_electricity') }}
+              {% else %}
+                {{ is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on') }}
+              {% endif %}
             device_class: problem
-            
-    # Сенсор определения отключения спальня
+
+  ###################################################################            
+  # Сенсор визначення вимкнення спальня
+  ###################################################################
+
           - name: br_electricity
             unique_id: br_electricity
             state: >
-             {{ is_state('binary_sensor.0xa4c138084b9d3356', 'off') }}
+              {% if is_state('binary_sensor.0xa4c138084b9d3356', 'unavailable') or
+                    is_state('binary_sensor.0xa4c138084b9d3356', 'unknown') %}
+                {{ states('binary_sensor.br_electricity') }}
+              {% else %}
+                {{ is_state('binary_sensor.0xa4c138084b9d3356', 'off') }}
+              {% endif %}
             device_class: problem
 
-    # Сенсор залипание сенсора отключения гостиная
+  ###################################################################
+  # Сенсор визначення залипання вітальня
+  ###################################################################
+
           - name: lr_electricity_reset
             unique_id: lr_electricity_reset
             state: >
@@ -99,18 +130,24 @@ power_failure:
             delay_on: 
                 minutes: 1
             device_class: problem
-            
-    # Сенсор залипание сенсора отключения гостиная 2
+
+  ###################################################################            
+  # Сенсор визначення залипання вітальня 2
+  ###################################################################
+
           - name: lr_electricity_reset_2
             unique_id: lr_electricity_reset_2
             state: >
              {{ is_state('binary_sensor.0xa4c138135e284964_contact', 'on') and
                  is_state('switch.smart_power_strip_44eu_w_socket_3', 'on')  }}
             delay_on: 
-                minutes: 3
+                minutes: 1
             device_class: problem
-            
-    # Сенсор залипание сенсора отключения кухня
+
+  ###################################################################            
+  # Сенсор визначення залипання кухня
+  ###################################################################
+
           - name: kn_electricity_reset
             unique_id: kn_electricity_reset
             state: >
@@ -119,8 +156,11 @@ power_failure:
             delay_on: 
                 minutes: 1
             device_class: problem
-            
-    # Сенсор залипание сенсора отключения спальня
+
+  ###################################################################            
+  # Сенсор визначення залипання спальня
+  ###################################################################
+
           - name: br_electricity_reset
             unique_id: br_electricity_reset
             state: >
@@ -130,19 +170,12 @@ power_failure:
                 minutes: 1
             device_class: problem
 
-    # Сенсор определения отключения электрики
-        #   - name: electricity
-        #     unique_id: electricity
-        #     state: >
-        #      {{ is_state('binary_sensor.lr_electricity', 'on') 
-        #         and is_state('binary_sensor.kn_electricity', 'on')
-        #      }}
-        #     device_class: problem
+  ###################################################################
+  # Сенсори відстеження внутрішнього живлення
+  ###################################################################
 
-    # Сенсор определения отключения электрики 
-
-          - name: electricity
-            unique_id: electricity
+          - name: electricity_internal
+            unique_id: electricity_internal
             state: >
                 {% if is_state('binary_sensor.lr_electricity', 'on') and is_state('binary_sensor.lr2_electricity', 'on') %}
                 True
@@ -159,39 +192,90 @@ power_failure:
                 {% endif %}    
             device_class: problem
 
-    # Сенсор определения отключения электрики 3
 
-        #   - name: power_loss
-        #     unique_id: power_loss
-        #     state: >
-        #         {% if (states('sensor.phase_1_power')|float(0) + states('sensor.phase_2_power')|float(0) + states('sensor.phase_3_power')|float(0)) < 5 %}
-        #         True
-        #         {% else %}
-        #         False
-        #         {% endif %}                
-        #     delay_on: 
-        #         seconds: 15
-        #     delay_off: 
-        #         seconds: 15
-        #     device_class: problem
+  ###################################################################
+  # Збереження часу вимкнення і включення
+  ###################################################################
 
     input_datetime:
-      electricity_off:
-        name: Электропитание отключено
+      electricity_internal_off:
+        name: Внутрішнє живлення вимкнене
         has_date: true
         has_time: true
         
-      electricity_on:
-        name: Электропитание возобновлено
+      electricity_internal_on:
+        name: Внутрішнє живлення відновлене
         has_date: true
         has_time: true
 
+  ###################################################################
+  # Накопичення
+  ###################################################################
+
+
     automation:           
-#################### ПЕРЕЗАГРУЗКА СЕНСОРОВ ЭЛЕКТРИКИ ####################
+
+  ###################################################################
+  # Фіксація пропадання і появи електрики
+  ###################################################################         
+          
+      - alias: control_electricity_internal_shotdown_log
+        id: control_electricity_internal_shotdown_log
+        description: Фіксація пропадання і появи внутрішнього живлення
+        initial_state: true
+        trigger:
+
+    # Вимкнення електрики
+        - platform: state
+          entity_id: binary_sensor.electricity_internal
+          from: 'off'
+          to: 'on'
+
+    # Увімкнення електрики
+        - platform: state
+          entity_id: binary_sensor.electricity_internal
+          from: 'on'
+          to: 'off'
+        action:
+
+    # Вимкнення електрики
+            - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.electricity_internal
+                    state: 'on'
+                sequence:        
+                  - service: input_datetime.set_datetime
+                    target:
+                      entity_id: input_datetime.electricity_internal_off
+                    data:
+                      datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}" 
+  
+    # Увімкнення електрики
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.electricity_internal
+                    state: 'off'
+                sequence:        
+                  - service: input_datetime.set_datetime
+                    target:
+                      entity_id: input_datetime.electricity_internal_on
+                    data:
+                      datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}" 
+
+
+
+  ###################################################################
+  # ПЕРЕЗАВАНТАЖЕННЯ СЕНСОРІВ ЖИВЛЕННЯ
+  ###################################################################
+
+  ###################################################################
+  # Перезавантаження сенсору у вітальні 1
+  ###################################################################
               
       - alias: electricity_reboot_lr_sensor
         id: electricity_reboot_lr_sensor
-        description: Электрика - перезагрузка сенсора в гостиной
+        description: Живлення скидання сенсора у вітальні 1
         initial_state: true
         trigger:
     # Проверка раз в минуту, перезагрузка если сенсор залип
@@ -213,10 +297,14 @@ power_failure:
         - delay: 00:00:05
         - service: switch.turn_on
           entity_id: switch.0xa4c138cd1b6a0a9a
+
+  ###################################################################
+  # Перезавантаження сенсору у вітальні 2
+  ###################################################################
           
       - alias: electricity_reboot_lr_sensor_2
         id: electricity_reboot_lr_sensor_2
-        description: Электрика - перезагрузка сенсора 2 в гостиной
+        description: Живлення скидання сенсора у вітальні 2
         initial_state: true
         trigger:
     # Проверка раз в минуту, перезагрузка если сенсор залип
@@ -239,9 +327,13 @@ power_failure:
         - service: switch.turn_on
           entity_id: switch.smart_power_strip_44eu_w_socket_3
 
+  ###################################################################
+  # Перезавантаження сенсору у кухні
+  ###################################################################
+
       - alias: electricity_reboot_kn_sensor
         id: electricity_reboot_kn_sensor
-        description: Электрика - перезагрузка сенсора в кухне
+        description: Живлення скидання сенсора у кухні
         initial_state: true
         trigger:
     # Проверка раз в минуту, перезагрузка если сенсор залип
@@ -264,9 +356,13 @@ power_failure:
         - service: switch.turn_on
           entity_id: switch.0xa4c138235d1e6877
 
+  ###################################################################
+  # Перезавантаження сенсору у спальні
+  ###################################################################
+
       - alias: electricity_reboot_br_sensor
         id: electricity_reboot_br_sensor
-        description: Электрика - перезагрузка сенсора в спальне
+        description: Живлення скидання сенсора у спальні
         initial_state: true
         trigger:
     # Проверка раз в минуту, перезагрузка если сенсор залип
@@ -289,183 +385,5 @@ power_failure:
         - service: switch.turn_on
           entity_id: switch.0xa4c1382dc9fecb3e
           
-#################### ФИКСАЦИЯ И УВЕДОМЛЕНИЯ ####################          
-          
-      - alias: control_electricity_shotdown_log
-        id: control_electricity_shotdown_log
-        description: Фиксирование отключений электрики
-        initial_state: true
-        trigger:
-    # Сработка сенсора электрики
-        - platform: state
-          entity_id: binary_sensor.electricity
-          from: 'off'
-          to: 'on'
-        - platform: state
-          entity_id: binary_sensor.electricity
-          from: 'on'
-          to: 'off'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.electricity
-                    state: 'on'
-                sequence:        
-                  - service: input_datetime.set_datetime
-                    target:
-                      entity_id: input_datetime.electricity_off
-                    data:
-                      datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}" 
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.electricity
-                    state: 'off'
-                sequence:        
-                  - service: input_datetime.set_datetime
-                    target:
-                      entity_id: input_datetime.electricity_on
-                    data:
-                      datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}" 
-                      
-      - alias: control_electricity_notification
-        id: control_electricity_notification
-        description: Уведомление о пропадании и появлении электрики
-        initial_state: true
-        trigger:
-    # Сработка сенсора электрики
-        - platform: state
-          entity_id: binary_sensor.electricity
-          from: 'off'
-          to: 'on'
-        - platform: state
-          entity_id: binary_sensor.electricity
-          from: 'on'
-          to: 'off'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-    # Переключатель режима работы уведомлений
-        - condition: state
-          entity_id: input_boolean.k7_notification
-          state: 'on'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.electricity
-                    state: 'on'
-                sequence:        
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
-                          - !secret chat_id_group
-                      message: | 
-                           {{"\U000026A1"}} Электрика отключена 
-                           {{"\U0001F559"}} В {{ states('sensor.time_date') }} 
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.electricity
-                    state: 'off'
-                sequence:
-                  - delay: 00:00:02
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
-                          - !secret chat_id_group
-                      message: | 
-                           {{"\U000026A1"}} Электрика восстановлена 
-                           {{"\U0001F559"}} В {{ states('sensor.time_date') }} 
-                           {% set s = (strptime(states("input_datetime.electricity_on"), "%Y-%m-%d %H:%M:%S").timestamp() | int - strptime(states("input_datetime.electricity_off"), "%Y-%m-%d %H:%M:%S").timestamp() | int) %}
-                           {{"\U0000231B"}} {{ 'Длительность - {:02d}:{:02d}:{:02d}'.format ( s % 86400 // 3600, s % 3600 // 60, s % 60) }}
 
-      - alias: control_ecoflow_battery
-        id: control_ecoflow_battery
-        description: Уведомление о уровне заряда аккумуляторов Ecoflow
-        initial_state: true
-        trigger:
-    # Сработка сенсора электрики
-        - platform: state
-          entity_id: binary_sensor.electricity
-          from: 'on'
-          to: 'off'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-        action:
-        - service: telegram_bot.send_message
-          data_template:
-            target:
-              - !secret chat_id_log
-            message: | 
-               {{"\U0001F559"}} Отчет за - {{ states('sensor.time_date') }} 
-               {{"\U000026A1"}} Кухня
-               {{"\U0001F50B"}} Ecoflow Delta 2 1024 Wh - {{ states('sensor.delta_2_battery_level') }} %
-               {{"\U0001F50B"}} Ecoflow 2 Max 512 Wh - {{ states('sensor.river_2_max_battery_level') }} %
-               {{"\U000026A1"}} Гостиная
-               {{"\U0001F50B"}} Ecoflow 2 Pro 768 Wh - {{ states('sensor.river_2_pro_battery_level') }} %
-               {{"\U0001F50B"}} Ecoflow 2 256 Wh - {{ states('sensor.river_2_battery_level') }} %
-               {% set s = (strptime(states("input_datetime.electricity_on"), "%Y-%m-%d %H:%M:%S").timestamp() | int - strptime(states("input_datetime.electricity_off"), "%Y-%m-%d %H:%M:%S").timestamp() | int) %}
-               {{"\U0000231B"}} {{ 'Длительность - {:02d}:{:02d}:{:02d}'.format ( s % 86400 // 3600, s % 3600 // 60, s % 60) }}
-               
-      - alias: control_electricity_state
-        id: control_electricity_state
-        description: Уведомление о статусе сенсоров электрики
-        initial_state: true
-        trigger:
-    # Сработка сенсора электрики
-        - platform: state
-          entity_id: binary_sensor.electricity
-          from: 'off'
-          to: 'on'
-        - platform: state
-          entity_id: binary_sensor.electricity
-          from: 'on'
-          to: 'off'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-    # Переключатель режима работы уведомлений
-        - condition: state
-          entity_id: input_boolean.k7_notification
-          state: 'on'
-        action:
-            - delay: 00:00:10
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.electricity
-                    state: 'on'
-                sequence: 
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
-                        - !secret chat_id_log
-                      message: |
-                         {{"\U000026A1"}} Электрика отключена в {{ states('sensor.time_date') }} 
-                         {{"\U0001F50C"}} Гостиная сенсор 1 - {{ states('binary_sensor.lr_electricity') }} 
-                         {{"\U0001F50C"}} Гостиная сенсор 2 - {{ states('binary_sensor.lr2_electricity') }} 
-                         {{"\U0001F50C"}} Кухня сенсор - {{ states('binary_sensor.kn_electricity') }} 
-                         {{"\U0001F50C"}} Ванная сенсор - {{ states('binary_sensor.br_electricity') }} 
-                         
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.electricity
-                    state: 'off'
-                sequence: 
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
-                        - !secret chat_id_log
-                      message: |
-                         {{"\U000026A1"}} Электрика включена в {{ states('sensor.time_date') }} 
-                         {{"\U0001F50C"}} Гостиная сенсор 1 - {{ states('binary_sensor.lr_electricity') }} 
-                         {{"\U0001F50C"}} Гостиная сенсор 2 - {{ states('binary_sensor.lr2_electricity') }} 
-                         {{"\U0001F50C"}} Кухня сенсор - {{ states('binary_sensor.kn_electricity') }} 
-                         {{"\U0001F50C"}} Ванная сенсор - {{ states('binary_sensor.br_electricity') }}
+

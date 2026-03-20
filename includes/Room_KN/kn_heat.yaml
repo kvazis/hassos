@@ -11,10 +11,6 @@ kn_heat:
         
         climate.0x2c1165fffeb3e531:
           friendly_name: Кухня TRV
-        sensor.0x2c1165fffeb3e531_boost_heating_countdown:
-          friendly_name: Кухня TRV boost таймер
-        sensor.0x2c1165fffeb3e531_battery:
-          friendly_name: Кухня TRV
         switch.0x2c1165fffeb3e531_heating_stop:
           friendly_name: Кухня TRV стоп нагрев
         number.0x2c1165fffeb3e531_local_temperature_calibration:
@@ -45,33 +41,6 @@ kn_heat:
           unique_id: kn_thermostat
           state_topic: "states/kn_thermostat"
 
-    switch:
-
-      - platform: template
-        switches:
-          kn_thermostat_mode:
-            unique_id: kn_thermostat_mode
-            friendly_name: "Режим отопления Кухня"
-            value_template: "{{  is_state('binary_sensor.kn_thermostat', 'on') }}"
-            turn_on:
-              service: mqtt.publish
-              data_template:
-                topic: "states/kn_thermostat"
-                payload: 'ON'
-                retain: true 
-            turn_off:
-              service: mqtt.publish
-              data_template:
-                topic: "states/kn_thermostat"
-                payload: 'OFF'
-                retain: true 
-            icon_template: >-
-              {% if is_state('switch.kn_thermostat_mode', 'on') %}
-                mdi:radiator
-              {% else %}
-                mdi:radiator-off
-              {% endif %}
-              
     template:
     
       - binary_sensor:
@@ -79,44 +48,55 @@ kn_heat:
           - name: kn_thermostat_need_for_calibration
             unique_id: kn_thermostat_need_for_calibration
             state: >
-                    {{((states('sensor.0x00158d0001581109_temperature') | float - state_attr('climate.0x2c1165fffeb3e531', 'local_temperature') | float))|round(1) > 1
-                     or ((states('sensor.0x00158d0001581109_temperature') | float - state_attr('climate.0x2c1165fffeb3e531', 'local_temperature') | float))|round(1) < -1}}
+                    {{((states('sensor.0x00158d0001581109_temperature') | float - state_attr('climate.0x2c1165fffeb3e531', 'current_temperature') | float))|round(1) > 1
+                     or ((states('sensor.0x00158d0001581109_temperature') | float - state_attr('climate.0x2c1165fffeb3e531', 'current_temperature') | float))|round(1) < -1}}
 
-      - sensor:
 
-          - name: kn_thermostat_current_heating_setpoint
-            unique_id: kn_thermostat_current_heating_setpoint
-            state: "{{state_attr('climate.0x2c1165fffeb3e531', 'current_heating_setpoint') | float|round(1) }}"
-            unit_of_measurement: °C
-            icon: mdi:temperature-celsius
+      - switch:
 
-          - name: kn_thermostat_local_temperature
-            unique_id: kn_thermostat_local_temperature
-            state: "{{state_attr('climate.0x2c1165fffeb3e531', 'local_temperature') | float|round(1) }}"
-            unit_of_measurement: °C
-            icon: mdi:temperature-celsius
+          - unique_id: kn_thermostat_mode
+            name: Режим отопления Кухня
+            default_entity_id: switch.kn_thermostat_mode
+            state: >
+              {{ is_state('binary_sensor.kn_thermostat', 'on') }}    
+            turn_on:
+              - action: mqtt.publish
+                data:
+                  topic: states/kn_thermostat
+                  payload: 'ON'
+                  retain: true          
+            turn_off:
+              - action: mqtt.publish
+                data:
+                  topic: states/kn_thermostat
+                  payload: 'OFF'
+                  retain: true          
+            icon: >
+              {% if is_state('switch.kn_thermostat_mode', 'on') %}
+                mdi:radiator
+              {% else %}
+                mdi:radiator
+              {% endif %}
 
-          - name: kn_thermostat_local_temperature_calibration
-            unique_id: kn_thermostat_local_temperature_calibration
-            state: "{{state_attr('climate.0x2c1165fffeb3e531', 'local_temperature_calibration') | float|round(1) }}"
-            unit_of_measurement: °C
-            icon: mdi:temperature-celsius                     
-                     
+
     script:
     
         kn_thermostat_calibration:
           alias: Кухня калибровка термостата
           sequence:
-          - service: mqtt.publish
-            data_template:   
-               topic: zigstar/KN thermostat/set/local_temperature_calibration
-               payload: "0.0"
+          - action: number.set_value
+            data:
+              value: "0.0"
+            target:
+              entity_id: number.0x2c1165fffeb3e531_local_temperature_calibration  
           - delay: 00:00:10
-          - service: mqtt.publish
-            data_template:
-               topic: zigstar/KN thermostat/set/local_temperature_calibration
-               payload: "{{((states('sensor.0x00158d0001581109_temperature') | float - state_attr('climate.0x2c1165fffeb3e531', 'local_temperature') | float))|round(1) }}" 
-               
+          - action: number.set_value
+            data:
+              value: "{{((states('sensor.0x00158d0001581109_temperature') | float - state_attr('climate.0x2c1165fffeb3e531', 'current_temperature') | float))|round(1) }}"
+            target:
+              entity_id: number.0x2c1165fffeb3e531_local_temperature_calibration    
+          
+
     automation:
 
 
@@ -140,12 +120,7 @@ kn_heat:
         action:
          - service: script.turn_on
            entity_id: script.kn_thermostat_calibration
-         - service: telegram_bot.send_message
-           data_template:
-             target:
-                - !secret chat_id_group_tech
-             message: | 
-                 {{"\U0001F916"}} Кухня калибровка термостата на {{ states('number.0x2c1165fffeb3e531_local_temperature_calibration') }} С          
+
                  
       - alias: kn_heat_mode_toggle
         id: kn_heat_mode_toggle
@@ -200,61 +175,11 @@ kn_heat:
 
       - alias: kn_heat_temperature_set
         id: kn_heat_temperature_set
-        description: Кухня TRV - установка температуры проветривания
-        initial_state: true
+        description: Кухня TRV - проветривание и ночной режим
         trigger:
         - platform: state
           entity_id:
             - binary_sensor.kn_aeration
-        condition:
-          - condition: state
-            entity_id: switch.control_mode
-            state: 'on'
-          - condition: state
-            entity_id: binary_sensor.kn_thermostat
-            state: 'on' 
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.kn_aeration
-                    state: 'on'
-                sequence:
-                  - service: climate.set_temperature
-                    data:
-                      entity_id: climate.0x2c1165fffeb3e531
-                      temperature: "{{ states('number.0x2c1165fffeb3e531_open_window_temperature')}}"
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.kn_aeration
-                    state: 'off'
-                  - condition: state
-                    entity_id: binary_sensor.night_time
-                    state: 'off'
-                sequence:
-                  - service: climate.set_temperature
-                    data:
-                      entity_id: climate.0x2c1165fffeb3e531
-                      temperature: "{{ states('number.0x2c1165fffeb3e531_comfort_temperature')}}"
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.kn_aeration
-                    state: 'off'
-                  - condition: state
-                    entity_id: binary_sensor.night_time
-                    state: 'on'
-                sequence:
-                  - service: climate.set_temperature
-                    data:
-                      entity_id: climate.0x2c1165fffeb3e531
-                      temperature: "{{ states('number.0x2c1165fffeb3e531_eco_temperature')}}"
-                      
-                      
-      - alias: kn_heat_night_mode
-        id: kn_heat_night_mode
-        description: Кухня TRV - ночной режим
-        initial_state: true
-        trigger:
         - platform: state
           entity_id:
             - binary_sensor.night_time
@@ -269,19 +194,10 @@ kn_heat:
             - choose:
               - conditions:
                   - condition: state
-                    entity_id: binary_sensor.night_time
-                    state: 'on'
-                sequence:
-                  - service: climate.set_temperature
-                    data:
-                      entity_id: climate.0x2c1165fffeb3e531
-                      temperature: "{{ states('number.0x2c1165fffeb3e531_eco_temperature')}}"
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.night_time
-                    state: 'off'
-                  - condition: state
                     entity_id: binary_sensor.kn_aeration
+                    state: 'on'
+                  - condition: state
+                    entity_id: binary_sensor.night_time
                     state: 'on'
                 sequence:
                   - service: climate.set_temperature
@@ -290,33 +206,39 @@ kn_heat:
                       temperature: "{{ states('number.0x2c1165fffeb3e531_open_window_temperature')}}"
               - conditions:
                   - condition: state
-                    entity_id: binary_sensor.night_time
+                    entity_id: binary_sensor.kn_aeration
                     state: 'off'
                   - condition: state
-                    entity_id: binary_sensor.kn_aeration
+                    entity_id: binary_sensor.night_time
                     state: 'off'
                 sequence:
                   - service: climate.set_temperature
                     data:
                       entity_id: climate.0x2c1165fffeb3e531
                       temperature: "{{ states('number.0x2c1165fffeb3e531_comfort_temperature')}}"
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.kn_aeration
+                    state: 'on'
+                  - condition: state
+                    entity_id: binary_sensor.night_time
+                    state: 'off'
+                sequence:
+                  - service: climate.set_temperature
+                    data:
+                      entity_id: climate.0x2c1165fffeb3e531
+                      temperature: "{{ states('number.0x2c1165fffeb3e531_open_window_temperature')}}"
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.kn_aeration
+                    state: 'off'
+                  - condition: state
+                    entity_id: binary_sensor.night_time
+                    state: 'on'
+                sequence:
+                  - service: climate.set_temperature
+                    data:
+                      entity_id: climate.0x2c1165fffeb3e531
+                      temperature: "{{ states('number.0x2c1165fffeb3e531_eco_temperature')}}"
+                      
 
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     
-                     

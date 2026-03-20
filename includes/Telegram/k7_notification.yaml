@@ -1,53 +1,37 @@
 k7_notification:
 
-    input_boolean:
-    
-      k7_notification:
-        name: Уведомления К7
-        icon: mdi:toggle-switch-outline
-
     input_button:
 
       k7_notification:
-        name: Уведомления К7
-
-    # template:
-
-    #     sensor:
-
-    #       - name: k7_notification_dw
-    #         unique_id: k7_notification_dw
-    #         state: >
-    #             {{ now().weekday() }}
-
+        name: Сповіщення К7
 
     automation:
     
     
-      - alias: k7_notification_4_section
-        id: k7_notification_4_section
-        description: Уведомления К7 4 секция
-        initial_state: true
+      - alias: k7_notification
+        id: k7_notification
+        description: Сповіщення К7
+        initial_state: false
         trigger:
     ## Virtual button
         - platform: state
           entity_id: input_button.k7_notification
-    # Выключение электрики
+    # Вимкнення електрики
         - platform: state
           entity_id: binary_sensor.electricity
           from: 'off'
           to: 'on'
-    # Включение электрики
+    # Увімкнення електрики
         - platform: state
           entity_id: binary_sensor.electricity
           from: 'on'
           to: 'off'
         condition:
-    # Переключатель режима работы сервера
+    # Перемикач режиму роботи серверу
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Переключатель режима работы уведомлений
+    # Перемикач режиму роботи сповіщень
         - condition: state
           entity_id: input_boolean.k7_notification
           state: 'on'
@@ -58,13 +42,15 @@ k7_notification:
                     entity_id: binary_sensor.electricity
                     state: 'on'
                 sequence:        
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
+                  - delay: 00:00:05
+                  - action: telegram_bot.send_message
+                    data:
+                      chat_id:
                           - !secret chat_id_k7
                       message: | 
                            {{"\U0001F534"}} Електрика {{"\U000026A1"}} вимкнена в {{ states('sensor.time') }}
-                           {{"\U0001F3E2"}} Секції {{"\U00000034"}} {{"\U00000035"}} {{"\U00000036"}} {{"\U00000037"}}
+                           {% set s = (strptime(states("input_datetime.electricity_off"), "%Y-%m-%d %H:%M:%S").timestamp() | int - strptime(states("input_datetime.electricity_on"), "%Y-%m-%d %H:%M:%S").timestamp() | int) %}
+                           {{"\U0000231B"}} {{ 'Електрика була - {:02d}:{:02d}:{:02d}'.format ( s % 86400 // 3600, s % 3600 // 60, s % 60) }} 
 
               - conditions:
                   - condition: state
@@ -72,372 +58,16 @@ k7_notification:
                     state: 'off'
                 sequence:
                   - delay: 00:00:05
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
+                  - action: telegram_bot.send_message
+                    data:
+                      chat_id:
                           - !secret chat_id_k7
                       message: | 
                            {{"\U00002705"}} Електрика {{"\U000026A1"}} відновлена в {{ states('sensor.time') }}
-                           {{"\U0001F3E2"}} Секції {{"\U00000034"}} {{"\U00000035"}} {{"\U00000036"}} {{"\U00000037"}}
                            {% set s = (strptime(states("input_datetime.electricity_on"), "%Y-%m-%d %H:%M:%S").timestamp() | int - strptime(states("input_datetime.electricity_off"), "%Y-%m-%d %H:%M:%S").timestamp() | int) %}
-                           {{"\U0000231B"}} {{ 'Тривалість - {:02d}:{:02d}:{:02d}'.format ( s % 86400 // 3600, s % 3600 // 60, s % 60) }} 
-                           
-                           
-
-      - alias: k7_notification_grafik
-        id: k7_notification_grafik
-        description: График К7 
-        initial_state: false
-        trigger:
-    # ## Virtual button
-    #     - platform: state
-    #       entity_id: input_button.test_test 
-    ## New day
-        - platform: time
-          at: '22:00:00'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-    # Переключатель режима работы уведомлений
-        - condition: state
-          entity_id: input_boolean.k7_notification
-          state: 'on' 
-        action:
-            - choose:
-              - conditions:
-                  - condition: time
-                    weekday:
-                      - mon
-                sequence: 
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
-                        - !secret chat_id_k7
-                      message: |
-                         {{"\U000026A1"}} Оновлений графік відключень на завтра, вівторок: 
-                         {{"\U0001F550"}} 00:00 - 02:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F551"}} 02:00 - 04:00 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F552"}} 04:00 - 08:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F553"}} 08:00 - 11:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F554"}} 11:00 - 13:00 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F555"}} 13:00 - 17:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F556"}} 17:00 - 20:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F557"}} 20:00 - 222:00 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F558"}} 22:00 - 00:00 - Відключення {{"\U000026D4"}}
-
-              - conditions:
-                  - condition: time
-                    weekday:
-                      - tue
-                sequence: 
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
-                        - !secret chat_id_k7
-                      message: |
-                         {{"\U000026A1"}} Оновлений графік відключень на завтра, середу: 
-                         {{"\U0001F550"}} 00:00 - 02:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F551"}} 02:00 - 05:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F552"}} 05:00 - 07:00 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F553"}} 07:00 - 11:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F554"}} 11:00 - 14:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F555"}} 14:00 - 16:00 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F556"}} 16:00 - 20:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F557"}} 20:00 - 23:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F558"}} 23:00 - 00:00 - Електрика є {{"\U00002705"}}
-
-              - conditions:
-                  - condition: time
-                    weekday:
-                      - wed
-                sequence: 
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
-                        - !secret chat_id_k7
-                      message: |
-                         {{"\U000026A1"}} Оновлений графік відключень на завтра, четвер: 
-                         {{"\U0001F558"}} 00:00 - 00:01 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F550"}} 01:00 - 05:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F551"}} 05:00 - 08:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F552"}} 08:00 - 10:00 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F553"}} 10:00 - 14:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F554"}} 14:00 - 17:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F555"}} 17:00 - 19:00 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F556"}} 19:00 - 23:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F557"}} 23:00 - 00:00 - Сіра зона {{"\U00002753"}}
+                           {{"\U0000231B"}} {{ 'Тривалість відключення - {:02d}:{:02d}:{:02d}'.format ( s % 86400 // 3600, s % 3600 // 60, s % 60) }} 
 
 
-              - conditions:
-                  - condition: time
-                    weekday:
-                      - thu
-                sequence: 
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
-                        - !secret chat_id_k7
-                      message: |
-                         {{"\U000026A1"}} Оновлений графік відключень на завтра, п'ятницю: 
-                         {{"\U0001F550"}} 00:00 - 02:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F551"}} 02:00 - 04:00 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F552"}} 04:00 - 08:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F553"}} 08:00 - 11:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F554"}} 11:00 - 13:00 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F555"}} 13:00 - 17:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F556"}} 17:00 - 20:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F557"}} 20:00 - 222:00 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F558"}} 22:00 - 00:00 - Відключення {{"\U000026D4"}}
-
-              - conditions:
-                  - condition: time
-                    weekday:
-                      - fri
-                sequence: 
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
-                        - !secret chat_id_k7
-                      message: |
-                         {{"\U000026A1"}} Оновлений графік відключень на завтра, суботу: 
-                         {{"\U0001F550"}} 00:00 - 02:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F551"}} 02:00 - 05:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F552"}} 05:00 - 07:00 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F553"}} 07:00 - 11:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F554"}} 11:00 - 14:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F555"}} 14:00 - 16:00 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F556"}} 16:00 - 20:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F557"}} 20:00 - 23:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F558"}} 23:00 - 00:00 - Електрика є {{"\U00002705"}}
-                         
-              - conditions:
-                  - condition: time
-                    weekday:
-                      - sat
-                sequence: 
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
-                        - !secret chat_id_k7
-                      message: |
-                         {{"\U000026A1"}} Оновлений графік відключень на завтра, неділю: 
-                         {{"\U0001F558"}} 00:00 - 00:01 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F550"}} 01:00 - 04:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F551"}} 04:00 - 05:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F552"}} 05:00 - 07:00 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F553"}} 07:00 - 11:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F554"}} 11:00 - 14:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F555"}} 14:00 - 16:00 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F556"}} 16:00 - 20:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F557"}} 20:00 - 23:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F558"}} 23:00 - 00:00 - Електрика є {{"\U00002705"}}
-
-                         
-              - conditions:
-                  - condition: time
-                    weekday:
-                      - sun
-                sequence: 
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
-                        - !secret chat_id_k7
-                      message: |
-                         {{"\U000026A1"}} Оновлений графік відключень на завтра, понеділок: 
-                         {{"\U0001F558"}} 00:00 - 00:01 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F550"}} 01:00 - 05:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F551"}} 05:00 - 08:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F552"}} 08:00 - 10:00 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F553"}} 10:00 - 14:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F554"}} 14:00 - 17:00 - Сіра зона {{"\U00002753"}}
-                         {{"\U0001F555"}} 17:00 - 19:00 - Електрика є {{"\U00002705"}}
-                         {{"\U0001F556"}} 19:00 - 23:00 - Відключення {{"\U000026D4"}}
-                         {{"\U0001F557"}} 23:00 - 00:00 - Сіра зона {{"\U00002753"}}
-                         ____________________________________________________________
-                         {{"\U0000261D"}}[Зареєструватись в системі ДАХ](http://dah.page.link/gVSo)	
-                         
-                         
-                         
-                         
-      - alias: k7_notification_warning_1
-        id: k7_notification_warning_1
-        description: Предупреждения К7 1
-        initial_state: false
-        trigger:
-    ## Time 1
-        - platform: time
-          at: '01:00:00'
-    ## Time 2
-        - platform: time
-          at: '10:00:00'
-    ## Time 3
-        - platform: time
-          at: '19:00:00'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-    # Переключатель режима работы уведомлений
-        - condition: state
-          entity_id: input_boolean.k7_notification
-          state: 'on'                          
-    # Дни недели
-        - condition: time
-          weekday:
-            - mon 
-            - thu
-        action:
-        - service: telegram_bot.send_message
-          data_template:
-            target:
-                - !secret chat_id_k7
-            message: | 
-                 {{"\U000026A0"}} Увага! {{ states('sensor.time') }} - початок зони відключення за оновленим графіком {{"\U0001F4A1"}}
-                 {{"\U0001F6B6"}} Буде краще не користуватись ліфтом
-
-      - alias: k7_notification_warning_2
-        id: k7_notification_warning_2
-        description: Предупреждения К7 2
-        initial_state: false
-        trigger:
-    ## Time 1
-        - platform: time
-          at: '04:00:00'
-    ## Time 2
-        - platform: time
-          at: '13:00:00'
-    ## Time 3
-        - platform: time
-          at: '22:00:00'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-    # Переключатель режима работы уведомлений
-        - condition: state
-          entity_id: input_boolean.k7_notification
-          state: 'on'                          
-    # Дни недели
-        - condition: time
-          weekday:
-            - tue
-            - fri
-        action:
-        - service: telegram_bot.send_message
-          data_template:
-            target:
-                - !secret chat_id_k7
-            message: | 
-                 {{"\U000026A0"}} Увага! {{ states('sensor.time') }} - початок зони відключення за оновленим графіком {{"\U0001F4A1"}}
-                 {{"\U0001F6B6"}} Буде краще не користуватись ліфтом 
-                 
-                 
-      - alias: k7_notification_warning_3
-        id: k7_notification_warning_3
-        description: Предупреждения К7 3
-        initial_state: false
-        trigger:
-    ## Time 1
-        - platform: time
-          at: '07:00:00'
-    ## Time 2
-        - platform: time
-          at: '16:00:00'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-    # Переключатель режима работы уведомлений
-        - condition: state
-          entity_id: input_boolean.k7_notification
-          state: 'on'                          
-    # Дни недели
-        - condition: time
-          weekday:
-            - wed
-            - sat
-        action:
-        - service: telegram_bot.send_message
-          data_template:
-            target:
-                - !secret chat_id_k7
-            message: | 
-                 {{"\U000026A0"}} Увага! {{ states('sensor.time') }} - початок зони відключення за оновленим графіком {{"\U0001F4A1"}}
-                 {{"\U0001F6B6"}} Буде краще не користуватись ліфтом 
-                         
-      - alias: k7_notification_warning_4
-        id: k7_notification_warning_4
-        description: Предупреждения К7 3
-        initial_state: false
-        trigger:
-    ## Time 1
-        - platform: time
-          at: '01:00:00'
-    ## Time 2
-        - platform: time
-          at: '07:00:00'
-    ## Time 2
-        - platform: time
-          at: '16:00:00'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-    # Переключатель режима работы уведомлений
-        - condition: state
-          entity_id: input_boolean.k7_notification
-          state: 'on'                          
-    # Дни недели
-        - condition: time
-          weekday:
-            - sun
-        action:
-        - service: telegram_bot.send_message
-          data_template:
-            target:
-                - !secret chat_id_k7
-            message: | 
-                 {{"\U000026A0"}} Увага! {{ states('sensor.time') }} - початок зони відключення за оновленим графіком {{"\U0001F4A1"}}
-                 {{"\U0001F6B6"}} Буде краще не користуватись ліфтом 
-                         
-                                                  
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
-                         
                          
                          
                          

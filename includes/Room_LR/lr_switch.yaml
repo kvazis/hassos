@@ -9,25 +9,52 @@ lr_switch:
           
         switch.0xa4c138716822e6a7:
           friendly_name: DC UPS, вход
+        sensor.0xa4c138716822e6a7_power:
+          friendly_name: DC UPS, вход
+          unit_of_measurement: Вт
+          device_class: power
+
 
         switch.0xa4c138ee9e1e5451:
           friendly_name: Гостиная UPS
-
+        sensor.0xa4c138ee9e1e5451_power:
+          friendly_name: Гостиная UPS
+          unit_of_measurement: Вт
+          device_class: power
+          
+          
         switch.0xa4c1382600c57620:
           friendly_name: Гостиная удлинитель на стойке ТВ
+        sensor.0xa4c1382600c57620_power:
+          friendly_name: Гостиная удлинитель на стойке ТВ
+          unit_of_measurement: Вт
+          device_class: power
 
         switch.0xa4c1384452a34172:
           friendly_name: Гостиная телевизор
+        sensor.0xa4c1384452a34172_power:
+          friendly_name: Гостиная телевизор
+          unit_of_measurement: Вт
+          device_class: power
+
 
         switch.0xa4c1387c6584d955:
           friendly_name: Шлюз Mi
+        sensor.0xa4c1387c6584d955_power:
+          friendly_name: Шлюз Mi
+          unit_of_measurement: Вт
+          device_class: power
+
 
         switch.0xa4c138f41459f92a:
           friendly_name: Ноутбук Asus
+        sensor.0xa4c138f41459f92a_power:
+          friendly_name: Ноутбук Asus
+          unit_of_measurement: Вт
+          device_class: power
 
-        switch.0xa4c1388c89a46970:
-          friendly_name: Ноутбук Acer
 
+          
           
         # switch.0xa4c1382dc9fecb3e:
         #   friendly_name: Гостиная UPS 1 in

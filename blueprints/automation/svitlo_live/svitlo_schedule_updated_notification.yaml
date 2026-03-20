@@ -1,0 +1,478 @@
+blueprint:
+  name: "Svitlo Live: Розумні сповіщення"
+  description: "Надсилає push та Telegram повідомлення про оновлення графіків АБО введення екстрених відключень."
+  domain: automation
+  source_url: https://github.com/chaichuk/svitlo_live
+
+  input:
+    schedule_calendar:
+      name: Календар Svitlo Live
+      selector:
+        entity:
+          domain: calendar
+          integration: svitlo_live
+
+    schedule_updated_sensor:
+      name: Сенсор оновлення розкладу
+      selector:
+        entity:
+          domain: sensor
+          integration: svitlo_live
+
+    emergency_sensor:
+      name: Сенсор аварійних відключень
+      default: {}
+      selector:
+        entity:
+          domain: binary_sensor
+          integration: svitlo_live
+
+    mobile_targets:
+      name: Мобільні пристрої (HA App)
+      default: []
+      selector:
+        device:
+          integration: mobile_app
+          multiple: true
+
+    telegram_chat_id:
+      name: Telegram Chat ID
+      default: ""
+      selector:
+        text:
+
+    telegram_config_entry_id:
+      name: Telegram Bot Config Entry ID
+      description: "Для нових unified ботів (опціонально)"
+      default: ""
+      selector:
+        text:
+
+    telegram_message_thread_id:
+      name: Telegram Message Thread ID
+      description: "ID гілки (теми) в Telegram групі. Залиште порожнім для надсилання в General."
+      default: ""
+      selector:
+        text:
+
+    title_text:
+      name: Заголовок (стандартний)
+      default: "⚠️ Оновлено графіки відключень!"
+      selector:
+        text:
+
+    location_name:
+      name: Локація
+      default: "Дім"
+      selector:
+        text:
+
+    show_location:
+      name: Показувати локацію в повідомленнях
+      default: true
+      selector:
+        boolean:
+
+    storage_helper:
+      name: Helper для збереження
+      description: "Text helper для збереження стану (обов'язково!)"
+      selector:
+        entity:
+          domain: input_text
+
+    text_output:
+      name: Helper для тексту розкладу (необов'язково)
+      default: {}
+      selector:
+        entity:
+          domain: input_text
+
+    send_persistent_notification:
+      name: Створювати persistent_notification в HA
+      default: true
+      selector:
+        boolean:
+
+    send_on_first_run:
+      name: Надсилати сповіщення при першому запуску
+      default: true
+      selector:
+        boolean:
+
+    notify_emergency_changes:
+      name: Сповіщати про Екстрені відключення
+      default: true
+      selector:
+        boolean:
+
+    quiet_mode:
+      name: Тихий режим вночі (23:00 - 05:00)
+      default: false
+      selector:
+        boolean:
+
+mode: restart
+
+variables:
+  cal_entity: !input schedule_calendar
+  emergency_entity: !input emergency_sensor
+  mobile_targets: !input mobile_targets
+  telegram_chat_id: !input telegram_chat_id
+  telegram_config_entry_id: !input telegram_config_entry_id
+  telegram_message_thread_id: !input telegram_message_thread_id
+  base_title: !input title_text
+  location_name: !input location_name
+  storage_helper: !input storage_helper
+  text_output: !input text_output
+  send_persistent_notification: !input send_persistent_notification
+  send_on_first_run: !input send_on_first_run
+  notify_emergency_changes: !input notify_emergency_changes
+  quiet_mode: !input quiet_mode
+  show_location: !input show_location
+
+  # Поточний статус аварії
+  is_emergency: >-
+    {% if emergency_entity is string and emergency_entity != '' %}
+      {{ is_state(emergency_entity, 'on') }}
+    {% else %}
+      {{ false }}
+    {% endif %}
+
+  triggered_by_emergency: >-
+    {{ trigger.entity_id is defined and emergency_entity is string and emergency_entity != '' and trigger.entity_id == emergency_entity }}
+
+trigger:
+  - platform: state
+    entity_id: !input schedule_updated_sensor
+  - platform: state
+    entity_id: !input emergency_sensor
+
+condition:
+  - condition: template
+    value_template: "{{ trigger.from_state.state not in ['unknown', 'unavailable'] }}"
+
+  # Тихий режим
+  - condition: template
+    value_template: >-
+      {% if quiet_mode %}
+        {% set current_hour = now().hour %}
+        {{ not (current_hour >= 23 or current_hour < 5) }}
+      {% else %}
+        true
+      {% endif %}
+
+  # Блокуємо виконання о 00:00-01:00 (технічна зміна дати)
+  # ОКРІМ випадків екстрених відключень
+  - condition: template
+    value_template: >-
+      {% set current_hour = now().hour %}
+      {% if current_hour == 0 %}
+        {{ trigger.entity_id is defined and emergency_entity is string and emergency_entity != '' and trigger.entity_id == emergency_entity }}
+      {% else %}
+        true
+      {% endif %}
+
+action:
+  # Затримка на вимкнення аварії (4 години)
+  - if:
+      - condition: template
+        value_template: "{{ triggered_by_emergency and not is_emergency }}"
+    then:
+      - delay: "04:00:00"
+
+  # Отримуємо дані календаря
+  - service: calendar.get_events
+    target:
+      entity_id: !input schedule_calendar
+    data:
+      start_date_time: "{{ today_at('00:00').isoformat() }}"
+      end_date_time: "{{ (today_at('00:00') + timedelta(days=2) - timedelta(seconds=1)).isoformat() }}"
+    response_variable: cal_resp
+
+  - variables:
+      raw_events: >-
+        {% set r = cal_resp %}{% set k = cal_entity %}
+        {% if r is mapping and (k in r) and (r[k] is mapping) and ('events' in r[k]) %}
+          {{ r[k]['events'] | sort(attribute='start') }}
+        {% else %}[]{% endif %}
+
+      events_for_signature: >-
+        {%- set today = now().astimezone(now().tzinfo).date() -%}
+        {%- set tomorrow = (now().astimezone(now().tzinfo) + timedelta(days=1)).date() -%}
+        {%- set ns = namespace(events=[]) -%}
+        {%- for e in raw_events -%}
+          {%- set e_start = as_datetime(e.start).astimezone(now().tzinfo) -%}
+          {%- set e_date = e_start.date() -%}
+          {%- if e_date == today or e_date == tomorrow -%}
+            {%- set ns.events = ns.events + [e] -%}
+          {%- endif -%}
+        {%- endfor -%}
+        {{ ns.events }}
+
+      schedule_signature: >-
+        {%- set date_prefix = now().strftime('%Y%m%d') -%}
+        {%- set ns = namespace(sig='') -%}
+        {%- for e in events_for_signature -%}
+          {%- set s = as_datetime(e.start).strftime('%y%m%d%H%M') -%}
+          {%- set t = as_datetime(e.end).strftime('%y%m%d%H%M') -%}
+          {%- set ns.sig = ns.sig ~ s ~ t -%}
+        {%- endfor -%}
+        {{ date_prefix ~ "|c=" ~ (events_for_signature|count|string) ~ ";" ~ ns.sig }}
+
+      stored_data: "{{ states(storage_helper) | default('') }}"
+      last_was_emergency: "{{ '!E!' in stored_data[:3] }}"
+      old_signature: "{{ stored_data | replace('!E!', '') }}"
+
+      current_date: "{{ now().strftime('%Y%m%d') }}"
+      old_date: >-
+        {%- if old_signature|length >= 2 and old_signature[:2] == 'c=' -%}
+          {{ current_date }}
+        {%- elif old_signature|length >= 8 -%}
+          {{ old_signature[:8] }}
+        {%- else -%}
+          {{ current_date }}
+        {%- endif -%}
+      is_first_run_after_midnight: "{{ old_signature|length >= 8 and (old_signature|length < 2 or old_signature[:2] != 'c=') and (old_date|int(0)) < (current_date|int(0)) }}"
+
+      emergency_status_changed: "{{ is_emergency != last_was_emergency }}"
+
+      clean_old_signature: >-
+        {%- if '|' in old_signature -%}
+          {{ old_signature.split('|')[1] }}
+        {%- else -%}
+          {{ old_signature }}
+        {%- endif -%}
+      clean_new_signature: >-
+        {%- if '|' in schedule_signature -%}
+          {{ schedule_signature.split('|')[1] }}
+        {%- else -%}
+          {{ schedule_signature }}
+        {%- endif -%}
+      schedule_has_changed: >-
+        {{ not is_first_run_after_midnight and 
+           ((send_on_first_run and stored_data == '') or 
+            clean_new_signature[-250:] != clean_old_signature[-250:]) }}
+
+      should_notify: >-
+        {{ (emergency_status_changed and notify_emergency_changes) or schedule_has_changed }}
+
+  - if:
+      - condition: template
+        value_template: "{{ should_notify }}"
+    then:
+      - variables:
+          events_today: >-
+            {% set today = now().astimezone(now().tzinfo).date() %}
+            {% set current_time = now().astimezone(now().tzinfo) %}
+            {% set ns = namespace(events=[]) %}
+            {% for e in raw_events %}
+              {% set e_start = as_datetime(e.start).astimezone(now().tzinfo) %}
+              {% set e_end = as_datetime(e.end).astimezone(now().tzinfo) %}
+              {% if e_start.date() == today and e_end > current_time %}
+                {% set ns.events = ns.events + [e] %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.events }}
+
+          events_tomorrow: >-
+            {% set tomorrow = (now().astimezone(now().tzinfo) + timedelta(days=1)).date() %}
+            {% set ns = namespace(events=[]) %}
+            {% for e in raw_events %}
+              {% if as_datetime(e.start).astimezone(now().tzinfo).date() == tomorrow %}
+                {% set ns.events = ns.events + [e] %}
+              {% endif %}
+            {% endfor %}
+            {{ ns.events }}
+
+          final_title: >-
+            {% if emergency_status_changed and notify_emergency_changes %}
+              {% if is_emergency %}
+                🚨 ЕКСТРЕНІ ВІДКЛЮЧЕННЯ!
+              {% else %}
+                ✅ Екстрені відключення завершено
+              {% endif %}
+            {% else %}
+              {{ base_title }}
+            {% endif %}
+
+          body: |-
+            {%- if show_location and location_name %}
+            📍 {{ location_name }}
+
+            {%- endif %}
+            {%- if is_emergency and notify_emergency_changes %}
+            ⛔️ УВАГА! Діють екстрені відключення.
+
+            {%- endif %}
+
+            {%- if events_today | length > 0 %}
+            📅 СЬОГОДНІ ({{ now().strftime('%d.%m') }})
+            {%- for e in events_today %}
+            {%- set s = as_datetime(e.start).astimezone(now().tzinfo) %}
+            {%- set end = as_datetime(e.end).astimezone(now().tzinfo) %}
+            ❌ {{ s.strftime('%H:%M') }} ━ {{ end.strftime('%H:%M') }}
+            {%- endfor %}
+            {%- else %}
+            📅 СЬОГОДНІ: ⚡ далі без відключень
+            {%- endif %}
+
+            {%- if events_tomorrow | length > 0 %}
+            📅 ЗАВТРА ({{ (now() + timedelta(days=1)).strftime('%d.%m') }})
+            {%- for e in events_tomorrow %}
+            {%- set s2 = as_datetime(e.start).astimezone(now().tzinfo) %}
+            {%- set e2 = as_datetime(e.end).astimezone(now().tzinfo) %}
+            ❌ {{ s2.strftime('%H:%M') }} ━ {{ e2.strftime('%H:%M') }}
+            {%- endfor %}
+            {%- endif %}
+
+          body_text: |-
+            {%- if show_location and location_name %}
+            📍 {{ location_name }}
+
+            {%- endif %}
+            {%- if is_emergency and notify_emergency_changes %}
+            🚨 <b>УВАГА! Введено екстрені відключення!</b>
+            Графіки можуть не діяти.
+
+            {%- endif %}
+
+            {%- if events_today | length > 0 %}
+            📅 СЬОГОДНІ ({{ now().strftime('%d.%m.%Y') }})
+            {%- for e in events_today %}
+            {%- set s = as_datetime(e.start).astimezone(now().tzinfo) %}
+            {%- set end = as_datetime(e.end).astimezone(now().tzinfo) %}
+            ❌ {{ s.strftime('%H:%M') }} ━ {{ end.strftime('%H:%M') }}
+            {%- endfor %}
+            {%- else %}
+            📅 СЬОГОДНІ: ⚡ далі без відключень
+            {%- endif %}
+
+            {%- if events_tomorrow | length > 0 %}
+            📅 ЗАВТРА ({{ (now() + timedelta(days=1)).strftime('%d.%m.%Y') }})
+            {%- for e in events_tomorrow %}
+            {%- set s2 = as_datetime(e.start).astimezone(now().tzinfo) %}
+            {%- set e2 = as_datetime(e.end).astimezone(now().tzinfo) %}
+            ❌ {{ s2.strftime('%H:%M') }} ━ {{ e2.strftime('%H:%M') }}
+            {%- endfor %}
+            {%- endif %}
+
+      # 2.1) Mobile App
+      - repeat:
+          for_each: !input mobile_targets
+          sequence:
+            - variables:
+                svc: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+            - service: "{{ svc }}"
+              data:
+                title: "{{ final_title }}"
+                message: "{{ body }}"
+                data:
+                  priority: "high"
+                  tag: svitlo_changed
+                  channel: "{{ 'Emergency' if is_emergency else 'General' }}"
+                  notification_icon: "{{ 'mdi:alert-octagon' if is_emergency else 'mdi:calendar-check' }}"
+                  color: "{{ '#FF0000' if is_emergency else '' }}"
+
+      # 2.2) Telegram
+      - if:
+          - condition: template
+            value_template: "{{ telegram_chat_id != '' }}"
+        then:
+          - choose:
+              # Новий unified bot З гілкою
+              - conditions:
+                  - condition: template
+                    value_template: "{{ telegram_config_entry_id != '' and telegram_message_thread_id != '' }}"
+                sequence:
+                  - service: telegram_bot.send_message
+                    data:
+                      config_entry_id: "{{ telegram_config_entry_id }}"
+                      chat_id: >-
+                        {% if telegram_chat_id is string %}
+                          {{ telegram_chat_id.split(',') | map('trim') | list }}
+                        {% else %}
+                          {{ telegram_chat_id }}
+                        {% endif %}
+                      title: "{{ final_title }}"
+                      message: "{{ body_text }}"
+                      parse_mode: html
+                      message_thread_id: "{{ telegram_message_thread_id | int }}"
+
+              # Новий unified bot БЕЗ гілки
+              - conditions:
+                  - condition: template
+                    value_template: "{{ telegram_config_entry_id != '' and telegram_message_thread_id == '' }}"
+                sequence:
+                  - service: telegram_bot.send_message
+                    data:
+                      config_entry_id: "{{ telegram_config_entry_id }}"
+                      chat_id: >-
+                        {% if telegram_chat_id is string %}
+                          {{ telegram_chat_id.split(',') | map('trim') | list }}
+                        {% else %}
+                          {{ telegram_chat_id }}
+                        {% endif %}
+                      title: "{{ final_title }}"
+                      message: "{{ body_text }}"
+                      parse_mode: html
+
+              # Старий bot З гілкою
+              - conditions:
+                  - condition: template
+                    value_template: "{{ telegram_config_entry_id == '' and telegram_message_thread_id != '' }}"
+                sequence:
+                  - service: telegram_bot.send_message
+                    data:
+                      chat_id: >-
+                        {% if telegram_chat_id is string %}
+                          {{ telegram_chat_id.split(',') | map('trim') | list }}
+                        {% else %}
+                          {{ telegram_chat_id }}
+                        {% endif %}
+                      title: "{{ final_title }}"
+                      message: "{{ body_text }}"
+                      parse_mode: html
+                      message_thread_id: "{{ telegram_message_thread_id | int }}"
+
+            # Старий bot БЕЗ гілки (default)
+            default:
+              - service: telegram_bot.send_message
+                data:
+                  chat_id: >-
+                    {% if telegram_chat_id is string %}
+                      {{ telegram_chat_id.split(',') | map('trim') | list }}
+                    {% else %}
+                      {{ telegram_chat_id }}
+                    {% endif %}
+                  title: "{{ final_title }}"
+                  message: "{{ body_text }}"
+                  parse_mode: html
+
+      # 2.3) Persistent Notification
+      - if:
+          - condition: template
+            value_template: "{{ send_persistent_notification }}"
+        then:
+          - service: persistent_notification.create
+            data:
+              title: "{{ final_title }}"
+              message: "{{ body }}"
+              notification_id: svitlo_changed
+
+      # 2.4) Helper write (Text Output)
+      - if:
+          - condition: template
+            value_template: "{{ text_output != {} }}"
+        then:
+          - service: input_text.set_value
+            target:
+              entity_id: !input text_output
+            data:
+              value: "{{ body_text[:255] }}"
+
+  # 4) ЗБЕРІГАЄМО СТАН (Аварія + Графік)
+  - service: input_text.set_value
+    target:
+      entity_id: !input storage_helper
+    data:
+      value: "{% set sig = schedule_signature[-250:] %}{% if is_emergency %}!E!{{ sig }}{% else %}{{ sig }}{% endif %}"

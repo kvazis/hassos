@@ -1,0 +1,25 @@
+homekit_config:
+
+    homekit:
+      - name: HASS Bridge
+        filter:
+          include_entities:
+            - light.yeelight_lamp1_0x32a4ab4
+            - light.yeelight_ceiling4_0x49c726b
+            - light.yeelight_ceiling4_0x4a1dacd
+            - light.lr_bedside_lamp
+            
+
+
+            - sensor.0x00158d00015aebb6_temperature
+            - sensor.0x00158d00015aebb6_humidity
+
+            - sensor.lr_air_co2
+
+        entity_config:
+          sensor.0x00158d00015aebb6_temperature:
+              linked_battery_sensor: sensor.0x00158d00015aebb6_battery
+          sensor.0x00158d00015aebb6_humidity:
+              linked_battery_sensor: sensor.0x00158d00015aebb6_battery
+          sensor.lr_air_co2:
+              co2_threshold: 1300

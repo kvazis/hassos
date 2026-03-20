@@ -52,7 +52,7 @@ lr_tv_control:
                     entity_id: binary_sensor.lr_tv_work
                     state: 'off'
                 sequence:
-                  - service: remote.send_command
+                  - action: remote.send_command
                     data:
                       entity_id: remote.lr_broadlin_ir
                       command:
@@ -70,7 +70,7 @@ lr_tv_control:
                     entity_id: binary_sensor.lr_tv_work
                     state: 'on'
                 sequence:
-                  - service: remote.send_command
+                  - action: remote.send_command
                     data:
                       entity_id: remote.lr_broadlin_ir
                       command:

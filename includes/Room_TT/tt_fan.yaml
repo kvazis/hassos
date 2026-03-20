@@ -63,6 +63,8 @@ tt_fan:
           entity_id: switch.control_mode
           state: 'on'
         action:
-        - service: fan.toggle
-          entity_id: fan.0x00158d00062fbb54_right
+        - action: fan.toggle
+          data: {}
+          target:
+            entity_id: fan.0x00158d00062fbb54_right
 

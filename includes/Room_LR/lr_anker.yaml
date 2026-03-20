@@ -31,34 +31,6 @@ lr_anker:
           unique_id: 'lr_anker_mode'
           state_topic: "states/lr_anker/mode"
 
-    switch:
-    
-      - platform: template
-        switches:
-
-          lr_anker_mode:
-            friendly_name: "Включение инвертера Anker"
-            unique_id: 'lr_anker_mode_switch'
-            value_template: "{{ is_state('binary_sensor.lr_anker_mode', 'on') }}"
-            turn_on:
-              service: mqtt.publish
-              data_template:
-                topic: "states/lr_anker/mode"
-                payload_template: 'ON'
-                retain: true 
-            turn_off:
-              service: mqtt.publish
-              data_template:
-                topic: "states/lr_anker/mode"
-                payload_template: 'OFF'
-                retain: true 
-            icon_template: >-
-              {% if is_state('switch.lr_anker_mode', 'on') %}
-                mdi:power-plug
-              {% else %}
-                mdi:power-plug-off
-              {% endif %}
-
     template:
 
     
@@ -125,7 +97,35 @@ lr_anker:
                 is_state('binary_sensor.electricity', 'off')  and
                 is_state('binary_sensor.0xa4c138084b9d3356', 'on')  }}
             delay_on: 00:00:10    
-            
+ 
+      - switch:
+
+          - unique_id: lr_anker_mode_switch
+            name: Включение инвертера Anker
+            default_entity_id: switch.lr_anker_mode
+            state: >
+              {{ is_state('binary_sensor.lr_anker_mode', 'on') }}    
+            turn_on:
+              - action: mqtt.publish
+                data:
+                  topic: states/lr_anker/mode
+                  payload: 'ON'
+                  retain: true          
+            turn_off:
+              - action: mqtt.publish
+                data:
+                  topic: states/lr_anker/mode
+                  payload: 'OFF'
+                  retain: true          
+            icon: >
+              {% if is_state('switch.lr_anker_mode', 'on') %}
+                mdi:power-plug
+              {% else %}
+                mdi:power-plug-off
+              {% endif %}  
+
+
+
     automation:
 
       - alias: lr_power_anker_attempt_reload
@@ -271,7 +271,7 @@ lr_anker:
                 sequence:        
                   - service: telegram_bot.send_message
                     data_template:
-                      target:
+                      chat_id:
                         - !secret chat_id_log
                       message: | 
                          {{"\U0001F916"}} Антонио. Инвертер Anker включен в {{ states('sensor.time_date') }}, Количество попыток - {{ (states('input_number.lr_anker')|int) }}
@@ -283,7 +283,7 @@ lr_anker:
                 sequence:        
                   - service: telegram_bot.send_message
                     data_template:
-                      target:
+                      chat_id:
                         - !secret chat_id_log
                       message: | 
                          {{"\U0001F916"}} Антонио. Инвертер Anker выключен в {{ states('sensor.time_date') }}, Количество попыток - {{ (states('input_number.lr_anker')|int) }}  
@@ -295,7 +295,7 @@ lr_anker:
                 sequence:        
                   - service: telegram_bot.send_message
                     data_template:
-                      target:
+                      chat_id:
                         - !secret chat_id_log
                       message: | 
                          {{"\U0001F916"}} Антонио. Инвертер Anker НЕ ВКЛЮЧЕН, время события - {{ states('sensor.time_date') }}, Количество попыток - {{ (states('input_number.lr_anker')|int) }}        
@@ -307,7 +307,7 @@ lr_anker:
                 sequence:        
                   - service: telegram_bot.send_message
                     data_template:
-                      target:
+                      chat_id:
                         - !secret chat_id_log
                       message: | 
                          {{"\U0001F916"}} Антонио. Инвертер Anker НЕ ВЫКЛЮЧЕН, время события - {{ states('sensor.time_date') }}, Количество попыток - {{ (states('input_number.lr_anker')|int) }}             

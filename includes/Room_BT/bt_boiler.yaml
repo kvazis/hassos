@@ -151,24 +151,156 @@ bt_boiler:
                    is_state('binary_sensor.0x00158d0003584401_period_5_on', 'on')    
                 }}
             device_class: running
-            
-        sensor:
 
-          - name: '0x00158d0003584401_power'
-            unique_id: '0x00158d0003584401_power'
-            state: >
-                {{ states('sensor.0x00158d0003584401_raw_power')|float(0) }}
 
-          - name: '0x00158d0003584401_energy'
-            unique_id: '0x00158d0003584401_energy'
+
+      - switch:
+
+          - unique_id: 0x00158d0003584401_mode
+            name: Режим работы Ванная бойлер
+            default_entity_id: switch.0x00158d0003584401_mode 
             state: >
-                {{ states('sensor.0x00158d0003584401_raw_energy')|float(0) }}
-                
-          - name: '0x00158d0003584401_voltage'
-            unique_id: '0x00158d0003584401_voltage'
+              {{ is_state('binary_sensor.0x00158d0003584401_mode', 'on') }}    
+            turn_on:
+              - action: mqtt.publish
+                data:
+                  topic: states/0x00158d0003584401/mode
+                  payload: 'ON'
+                  retain: true          
+            turn_off:
+              - action: mqtt.publish
+                data:
+                  topic: states/0x00158d0003584401/mode
+                  payload: 'OFF'
+                  retain: true          
+            icon: >
+              {% if is_state('switch.0x00158d0003584401_mode', 'on') %}
+                mdi:water-boiler
+              {% else %}
+                mdi:water-boiler-off
+              {% endif %}
+
+          - unique_id: 0x00158d0003584401_period_1_mode_switch
+            name: Ванная бойлер - период 1
+            default_entity_id: switch.0x00158d0003584401_period_1_mode
             state: >
-                {{ states('sensor.0x00158d0003584401_raw_voltage')|float(0) }}
-                
+              {{ is_state('binary_sensor.0x00158d0003584401_period_1_mode', 'on') }}
+            turn_on:
+              - action: mqtt.publish
+                data:
+                  topic: states/0x00158d0003584401/period_1_mode
+                  payload: 'ON'
+                  retain: true
+            turn_off:
+              - action: mqtt.publish
+                data:
+                  topic: states/0x00158d0003584401/period_1_mode
+                  payload: 'OFF'
+                  retain: true
+            icon: >
+              {% if is_state('switch.0x00158d0003584401_period_1_mode', 'on') %}
+                mdi:numeric-1-box
+              {% else %}
+                mdi:numeric-1-box-outline
+              {% endif %}
+
+          - unique_id: 0x00158d0003584401_period_2_mode_switch
+            name: Ванная бойлер - период 2
+            default_entity_id: switch.0x00158d0003584401_period_2_mode
+            state: >
+              {{ is_state('binary_sensor.0x00158d0003584401_period_2_mode', 'on') }}
+            turn_on:
+              - action: mqtt.publish
+                data:
+                  topic: states/0x00158d0003584401/period_2_mode
+                  payload: 'ON'
+                  retain: true
+            turn_off:
+              - action: mqtt.publish
+                data:
+                  topic: states/0x00158d0003584401/period_2_mode
+                  payload: 'OFF'
+                  retain: true
+            icon: >
+              {% if is_state('switch.0x00158d0003584401_period_2_mode', 'on') %}
+                mdi:numeric-2-box
+              {% else %}
+                mdi:numeric-2-box-outline
+              {% endif %}
+
+          - unique_id: 0x00158d0003584401_period_3_mode_switch
+            name: Ванная бойлер - период 3
+            default_entity_id: switch.0x00158d0003584401_period_3_mode
+            state: >
+              {{ is_state('binary_sensor.0x00158d0003584401_period_3_mode', 'on') }}
+            turn_on:
+              - action: mqtt.publish
+                data:
+                  topic: states/0x00158d0003584401/period_3_mode
+                  payload: 'ON'
+                  retain: true
+            turn_off:
+              - action: mqtt.publish
+                data:
+                  topic: states/0x00158d0003584401/period_3_mode
+                  payload: 'OFF'
+                  retain: true
+            icon: >
+              {% if is_state('switch.0x00158d0003584401_period_3_mode', 'on') %}
+                mdi:numeric-3-box
+              {% else %}
+                mdi:numeric-3-box-outline
+              {% endif %}
+
+          - unique_id: 0x00158d0003584401_period_4_mode_switch
+            name: Ванная бойлер - период 4
+            default_entity_id: switch.0x00158d0003584401_period_4_mode
+            state: >
+              {{ is_state('binary_sensor.0x00158d0003584401_period_4_mode', 'on') }}
+            turn_on:
+              - action: mqtt.publish
+                data:
+                  topic: states/0x00158d0003584401/period_4_mode
+                  payload: 'ON'
+                  retain: true
+            turn_off:
+              - action: mqtt.publish
+                data:
+                  topic: states/0x00158d0003584401/period_4_mode
+                  payload: 'OFF'
+                  retain: true
+            icon: >
+              {% if is_state('switch.0x00158d0003584401_period_4_mode', 'on') %}
+                mdi:numeric-4-box
+              {% else %}
+                mdi:numeric-4-box-outline
+              {% endif %}  
+              
+          - unique_id: 0x00158d0003584401_period_5_mode_switch
+            name: Ванная бойлер - период 5
+            default_entity_id: switch.0x00158d0003584401_period_5_mode
+            state: >
+              {{ is_state('binary_sensor.0x00158d0003584401_period_5_mode', 'on') }}
+            turn_on:
+              - action: mqtt.publish
+                data:
+                  topic: states/0x00158d0003584401/period_5_mode
+                  payload: 'ON'
+                  retain: true
+            turn_off:
+              - action: mqtt.publish
+                data:
+                  topic: states/0x00158d0003584401/period_5_mode
+                  payload: 'OFF'
+                  retain: true
+            icon: >
+              {% if is_state('switch.0x00158d0003584401_period_5_mode', 'on') %}
+                mdi:numeric-5-box
+              {% else %}
+                mdi:numeric-5-box-outline
+              {% endif %} 
+
+
     mqtt:
 
       binary_sensor:
@@ -242,150 +374,6 @@ bt_boiler:
           unique_id: '0x00158d0003584401_period_5'          
           state_topic: "states/0x00158d0003584401/period_5"
           
-    switch:
-    
-      - platform: template
-        switches:
-
-          0x00158d0003584401_mode:
-            friendly_name: "Режим работы Ванная бойлер"
-            unique_id: '0x00158d0003584401_mode_switch'
-            value_template: "{{ is_state('binary_sensor.0x00158d0003584401_mode', 'on') }}"
-            turn_on:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0x00158d0003584401/mode"
-                payload: 'ON'
-                retain: true 
-            turn_off:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0x00158d0003584401/mode"
-                payload: 'OFF'
-                retain: true 
-            icon_template: >-
-              {% if is_state('switch.0x00158d0003584401_mode', 'on') %}
-                mdi:water-boiler
-              {% else %}
-                mdi:water-boiler-off
-              {% endif %}          
-          
-          0x00158d0003584401_period_1_mode:
-            friendly_name: "Ванная бойлер - период 1"
-            unique_id: '0x00158d0003584401_period_1_mode_switch'
-            value_template: "{{ is_state('binary_sensor.0x00158d0003584401_period_1_mode', 'on') }}"
-            turn_on:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0x00158d0003584401/period_1_mode"
-                payload: 'ON'
-                retain: true 
-            turn_off:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0x00158d0003584401/period_1_mode"
-                payload: 'OFF'
-                retain: true 
-            icon_template: >-
-              {% if is_state('switch.0x00158d0003584401_period_1_mode', 'on') %}
-                mdi:numeric-1-box
-              {% else %}
-                mdi:numeric-1-box-outline
-              {% endif %}            
-          
-          0x00158d0003584401_period_2_mode:
-            friendly_name: "Ванная бойлер - период 2"
-            unique_id: '0x00158d0003584401_period_2_mode_switch'
-            value_template: "{{ is_state('binary_sensor.0x00158d0003584401_period_2_mode', 'on') }}"
-            turn_on:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0x00158d0003584401/period_2_mode"
-                payload: 'ON'
-                retain: true 
-            turn_off:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0x00158d0003584401/period_2_mode"
-                payload: 'OFF'
-                retain: true 
-            icon_template: >-
-              {% if is_state('switch.0x00158d0003584401_period_2_mode', 'on') %}
-                mdi:numeric-2-box
-              {% else %}
-                mdi:numeric-2-box-outline
-              {% endif %}
-              
-          0x00158d0003584401_period_3_mode:
-            friendly_name: "Ванная бойлер - период 3"
-            unique_id: '0x00158d0003584401_period_3_mode_switch'
-            value_template: "{{ is_state('binary_sensor.0x00158d0003584401_period_3_mode', 'on') }}"
-            turn_on:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0x00158d0003584401/period_3_mode"
-                payload: 'ON'
-                retain: true 
-            turn_off:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0x00158d0003584401/period_3_mode"
-                payload: 'OFF'
-                retain: true 
-            icon_template: >-
-              {% if is_state('switch.0x00158d0003584401_period_3_mode', 'on') %}
-                mdi:numeric-3-box
-              {% else %}
-                mdi:numeric-3-box-outline
-              {% endif %}
-              
-          0x00158d0003584401_period_4_mode:
-            friendly_name: "Ванная бойлер - период 4"
-            unique_id: '0x00158d0003584401_period_4_mode_switch'
-            value_template: "{{ is_state('binary_sensor.0x00158d0003584401_period_4_mode', 'on') }}"
-            turn_on:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0x00158d0003584401/period_4_mode"
-                payload: 'ON'
-                retain: true 
-            turn_off:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0x00158d0003584401/period_4_mode"
-                payload: 'OFF'
-                retain: true 
-            icon_template: >-
-              {% if is_state('switch.0x00158d0003584401_period_4_mode', 'on') %}
-                mdi:numeric-4-box
-              {% else %}
-                mdi:numeric-4-box-outline
-              {% endif %}
-              
-          0x00158d0003584401_period_5_mode:
-            friendly_name: "Ванная бойлер - период 5"
-            unique_id: '0x00158d0003584401_period_5_mode_switch'
-            value_template: "{{ is_state('binary_sensor.0x00158d0003584401_period_5_mode', 'on') }}"
-            turn_on:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0x00158d0003584401/period_5_mode"
-                payload: 'ON'
-                retain: true 
-            turn_off:
-              service: mqtt.publish
-              data_template:
-                topic: "states/0x00158d0003584401/period_5_mode"
-                payload: 'OFF'
-                retain: true 
-            icon_template: >-
-              {% if is_state('switch.0x00158d0003584401_period_5_mode', 'on') %}
-                mdi:numeric-5-box
-              {% else %}
-                mdi:numeric-5-box-outline
-              {% endif %}
-
-
     automation:
 
       - alias: 0x00158d0003584401_period
@@ -584,8 +572,11 @@ bt_boiler:
           id: period_5
         condition:
          - condition: state
-           entity_id: binary_sensor.electricity
-           state: 'off'
+           entity_id: switch.control_mode
+           state: 'on'        
+        #  - condition: state
+        #   entity_id: binary_sensor.electricity
+        #   state: 'off'
         action:
             - choose:
               - conditions:
@@ -684,18 +675,18 @@ bt_boiler:
          - condition: state
            entity_id: switch.control_mode
            state: 'on'
-         - condition: state
-           entity_id: binary_sensor.electricity
-           state: 'off'
+        #  - condition: state
+        #   entity_id: binary_sensor.electricity
+        #   state: 'off'
         action:
             - choose:
               - conditions:
                   - condition: trigger
                     id: period_1
                 sequence:
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
+                  - action: telegram_bot.send_message
+                    data:
+                      chat_id:
                           - !secret chat_id_group_tech
                       message: | 
                            {{"\U0001F916"}} Ванная бойлер - включение период 1 {{ states('sensor.time_date') }} 
@@ -703,9 +694,9 @@ bt_boiler:
                   - condition: trigger
                     id: period_2
                 sequence:
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
+                  - action: telegram_bot.send_message
+                    data:
+                      chat_id:
                           - !secret chat_id_group_tech
                       message: | 
                            {{"\U0001F916"}} Ванная бойлер - включение период 2 {{ states('sensor.time_date') }} 
@@ -713,9 +704,9 @@ bt_boiler:
                   - condition: trigger
                     id: period_3
                 sequence:
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
+                  - action: telegram_bot.send_message
+                    data:
+                      chat_id:
                           - !secret chat_id_group_tech
                       message: | 
                            {{"\U0001F916"}} Ванная бойлер - включение период 3 {{ states('sensor.time_date') }} 
@@ -723,9 +714,9 @@ bt_boiler:
                   - condition: trigger
                     id: period_4
                 sequence:
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
+                  - action: telegram_bot.send_message
+                    data:
+                      chat_id:
                           - !secret chat_id_group_tech
                       message: | 
                            {{"\U0001F916"}} Ванная бойлер - включение период 4 {{ states('sensor.time_date') }} 
@@ -733,9 +724,9 @@ bt_boiler:
                   - condition: trigger
                     id: period_5
                 sequence:
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
+                  - action: telegram_bot.send_message
+                    data:
+                      chat_id:
                           - !secret chat_id_group_tech
                       message: | 
                            {{"\U0001F916"}} Ванная бойлер - включение период 5 {{ states('sensor.time_date') }} 
@@ -765,9 +756,9 @@ bt_boiler:
                 sequence:
                   - service: switch.turn_off
                     entity_id: switch.0x00158d0003584401
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
+                  - action: telegram_bot.send_message
+                    data:
+                      chat_id:
                           - !secret chat_id_group_tech
                       message: | 
                            {{"\U0001F916"}} Ванная бойлер - Включение запрещено {{ states('sensor.time_date') }} 
@@ -782,9 +773,9 @@ bt_boiler:
                      data_template: 
                          duration: >
                                {{strptime(states("sensor.0x00158d0003584401_timer_manual"), "%H:%M:%S").time()}}
-                   - service: telegram_bot.send_message
-                     data_template:
-                       target:
+                   - action: telegram_bot.send_message
+                     data:
+                       chat_id:
                           - !secret chat_id_group_tech
                        message: | 
                             {{"\U0001F916"}} Ванная бойлер - ручное включение {{ states('sensor.time_date') }} 
@@ -816,9 +807,9 @@ bt_boiler:
            data_template: 
                duration: >
                      {{strptime(states("sensor.0x00158d0003584401_timer_manual"), "%H:%M:%S").time()}}
-         - service: telegram_bot.send_message
-           data_template:
-             target:
+         - action: telegram_bot.send_message
+           data:
+             chat_id:
                 - !secret chat_id_group_tech
              message: | 
                   {{"\U0001F916"}} Ванная бойлер - включение после блекаута {{ states('sensor.time_date') }} 
@@ -849,9 +840,9 @@ bt_boiler:
                     entity_id: switch.0x00158d0003584401_mode
                     state: 'off'
                 sequence:
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
+                  - action: telegram_bot.send_message
+                    data:
+                      chat_id:
                           - !secret chat_id_group_tech
                       message: | 
                            {{"\U0001F916"}} Ванная бойлер - Включение запрещено {{ states('sensor.time_date') }} 
@@ -860,9 +851,9 @@ bt_boiler:
                     entity_id: switch.0x00158d0003584401_mode
                     state: 'on'
                 sequence:
-                  - service: telegram_bot.send_message
-                    data_template:
-                      target:
+                  - action: telegram_bot.send_message
+                    data:
+                      chat_id:
                           - !secret chat_id_group_tech
                       message: | 
                            {{"\U0001F916"}} Ванная бойлер - ручное включение {{ states('sensor.time_date') }} 
@@ -903,9 +894,9 @@ bt_boiler:
            entity_id: switch.control_mode
            state: 'on'
         action:
-         - service: telegram_bot.send_message
-           data_template:
-             target:
+         - action: telegram_bot.send_message
+           data:
+             chat_id:
                  - !secret chat_id_group_tech
              message: | 
                   {{"\U0001F916"}} Ванная бойлер - выключение {{ states('sensor.time_date') }}

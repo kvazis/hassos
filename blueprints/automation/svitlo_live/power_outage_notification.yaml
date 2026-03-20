@@ -1,0 +1,114 @@
+blueprint:
+  name: "Сповіщення про відключення світла"
+  description: "Надсилає push-повідомлення з розкладом відключень світла на сьогодні"
+  domain: automation
+  input:
+    schedule_calendar:
+      name: Календар відключень
+      description: Виберіть календар з розкладом відключень світла
+      selector:
+        entity:
+          domain: calendar
+    
+    run_time:
+      name: Час сповіщення
+      description: Час коли надсилати повідомлення щодня
+      default: "07:00:00"
+      selector:
+        time:
+    
+    mobile_targets:
+      name: Мобільні пристрої
+      description: Виберіть один або кілька телефонів для надсилання повідомлень
+      default: []
+      selector:
+        device:
+          integration: mobile_app
+          multiple: true
+    
+    title_text:
+      name: Заголовок повідомлення
+      default: "⚡Відключення електроенергії"
+      selector:
+        text:
+
+mode: single
+
+trigger:
+  - platform: time
+    at: !input run_time
+
+variables:
+  cal_entity: !input schedule_calendar
+  mobile_targets: !input mobile_targets
+  title_text: !input title_text
+
+action:
+  # 1) Отримуємо події за сьогодні
+  - service: calendar.get_events
+    target:
+      entity_id: !input schedule_calendar
+    data:
+      start_date_time: "{{ today_at('00:00').isoformat() }}"
+      end_date_time: "{{ today_at('23:59:59').isoformat() }}"
+    response_variable: cal_resp
+
+  # 2) Готуємо текст повідомлення
+  - variables:
+      # Отримуємо події з відповіді
+      raw_events: >-
+        {% set r = cal_resp %}
+        {% set k = cal_entity %}
+        {% if r is mapping and (k in r) and (r[k] is mapping) and ('events' in r[k]) %}
+          {{ r[k]['events'] }}
+        {% else %}
+          {{ [] }}
+        {% endif %}
+      
+      # Сортуємо події за часом початку
+      evs_sorted: "{{ raw_events | sort(attribute='start') }}"
+      
+      today_str: "{{ now().strftime('%d.%m.%Y') }}"
+      
+      # Формуємо текст повідомлення
+      body: >-
+        {% if evs_sorted | count == 0 -%}
+        ✅ Сьогодні ({{ today_str }}) планових відключень світла немає!
+        {%- else -%}
+        📅 Розклад на сьогодні ({{ today_str }}):
+
+        {% for e in evs_sorted -%}
+        {%- set title = e.summary | default(e.title, true) | default('Відключення світла') -%}
+        {%- set sdt = (as_datetime(e.start) if e.start is defined else none) -%}
+        {%- set edt = (as_datetime(e.end) if e.end is defined else none) -%}
+        {%- set s_loc = sdt.astimezone(now().tzinfo) if sdt else none -%}
+        {%- set e_loc = edt.astimezone(now().tzinfo) if edt else none -%}
+        🕐  {% if s_loc and e_loc %}{{ s_loc.strftime('%H:%M') }} - {{ e_loc.strftime('%H:%M') }}{% elif s_loc %}з {{ s_loc.strftime('%H:%M') }}{% else %}час не вказано{% endif %}{% if title != 'Відключення світла' %} ({{ title }}){% endif %}
+
+        {% endfor -%}
+        {%- endif -%}
+
+  # 3) Відправлення на вибрані пристрої
+  - choose:
+      # Якщо вибрані мобільні пристрої
+      - conditions: "{{ mobile_targets | length > 0 }}"
+        sequence:
+          - repeat:
+              for_each: !input mobile_targets
+              sequence:
+                - variables:
+                    dev_name: "{{ device_attr(repeat.item, 'name') | default('unknown') }}"
+                    svc_name: "{{ 'notify.mobile_app_' ~ (dev_name | lower | replace(' ', '_') | replace('-', '_')) }}"
+                - service: "{{ svc_name }}"
+                  data:
+                    title: "{{ title_text }}"
+                    message: "{{ body }}"
+                    data:
+                      notification_icon: "mdi:power-plug-off"
+                      priority: high
+    # Якщо не вибрано жодного пристрою
+    default:
+      - service: persistent_notification.create
+        data:
+          title: "{{ title_text }}"
+          message: "{{ body }}"
