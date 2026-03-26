@@ -1,389 +1,386 @@
-power_failure:
+##################################################
+## Актуалізовано: 2026-03-24
+##################################################
 
-    recorder:
-      include:
-        entities:
-           - binary_sensor.lr_electricity
-           - binary_sensor.lr2_electricity
-           - binary_sensor.kn_electricity
-           - binary_sensor.br_electricity
-           - binary_sensor.electricity_internal
+sys_power_failure:
 
-           
-    homeassistant:
-      customize:
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-        binary_sensor.lr_electricity:
-          friendly_name: Сенсор живлення вітальня
-          icon: mdi:home-lightning-bolt-outline
-          
-        binary_sensor.lr2_electricity:
-          friendly_name: Сенсор живлення 2 вітальня
-          icon: mdi:home-lightning-bolt-outline
+  homeassistant:
+    customize:
 
-        binary_sensor.kn_electricity:
-          friendly_name: Сенсор живлення кухня
-          icon: mdi:home-lightning-bolt-outline
+      binary_sensor.lr_electricity:
+        friendly_name: Вітальня - живлення
+        icon: mdi:home-lightning-bolt-outline
 
-        binary_sensor.br_electricity:
-          friendly_name: Сенсор живлення спальня
-          icon: mdi:home-lightning-bolt-outline
+      binary_sensor.lr2_electricity:
+        friendly_name: Вітальня 2 - живлення
+        icon: mdi:home-lightning-bolt-outline
 
-        binary_sensor.0xa4c138bae3526a07_contact:
-          friendly_name: Сенсор визначення вимкнення вітальня
+      binary_sensor.kn_electricity:
+        friendly_name: Кухня - живлення
+        icon: mdi:home-lightning-bolt-outline
+
+      binary_sensor.br_electricity:
+        friendly_name: Спальня - живлення
+        icon: mdi:home-lightning-bolt-outline
+
+      binary_sensor.lr_electricity_reset:
+        friendly_name: Вітальня - залипання сенсора
+
+      binary_sensor.lr_electricity_reset_2:
+        friendly_name: Вітальня 2 - залипання сенсора
+
+      binary_sensor.kn_electricity_reset:
+        friendly_name: Кухня - залипання сенсора
+
+      binary_sensor.br_electricity_reset:
+        friendly_name: Спальня - залипання сенсора
+
+      binary_sensor.electricity_internal:
+        friendly_name: Будинок - внутрішнє живлення
+
+      input_datetime.electricity_internal_off:
+        friendly_name: Живлення - вимкнено
+
+      input_datetime.electricity_internal_on:
+        friendly_name: Живлення - відновлено
+
+      automation.sys_power_internal_state_log:
+        friendly_name: Живлення - лог стану
+
+      automation.lr_power_sensor_reboot:
+        friendly_name: Вітальня - перезавантаження сенсора
+
+      automation.lr2_power_sensor_reboot:
+        friendly_name: Вітальня 2 - перезавантаження сенсора
+
+      automation.kn_power_sensor_reboot:
+        friendly_name: Кухня - перезавантаження сенсора
+
+      automation.br_power_sensor_reboot:
+        friendly_name: Спальня - перезавантаження сенсора
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - binary_sensor.lr_electricity
+        - binary_sensor.lr2_electricity
+        - binary_sensor.kn_electricity
+        - binary_sensor.br_electricity
+        - binary_sensor.electricity_internal
+
+  ##################################################
+  ## INPUT_DATETIME
+  ##################################################
+
+  input_datetime:
+
+    electricity_internal_off:
+      name: electricity_internal_off
+      has_date: true
+      has_time: true
+
+    electricity_internal_on:
+      name: electricity_internal_on
+      has_date: true
+      has_time: true
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    - binary_sensor:
+
+      ##################################################
+      ## ВІТАЛЬНЯ
+      ##################################################
+
+        - name: lr_electricity
+          unique_id: lr_electricity
+          state: >
+            {% if is_state('binary_sensor.0xa4c138bae3526a07_contact', 'unavailable')
+               or is_state('binary_sensor.0xa4c138bae3526a07_contact', 'unknown') %}
+              {{ states('binary_sensor.lr_electricity') }}
+            {% else %}
+              {{ is_state('binary_sensor.0xa4c138bae3526a07_contact', 'on') }}
+            {% endif %}
           device_class: problem
-        sensor.0xa4c138bae3526a07_battery:
-          friendly_name: Сенсор визначення вимкнення вітальня
-          
-        binary_sensor.0xa4c138135e284964_contact:
-          friendly_name: Сенсор визначення вимкнення вітальня 2
+
+      ##################################################
+      ## ВІТАЛЬНЯ 2
+      ##################################################
+
+        - name: lr2_electricity
+          unique_id: lr2_electricity
+          state: >
+            {% if is_state('binary_sensor.0xa4c138135e284964_contact', 'unavailable')
+               or is_state('binary_sensor.0xa4c138135e284964_contact', 'unknown') %}
+              {{ states('binary_sensor.lr2_electricity') }}
+            {% else %}
+              {{ is_state('binary_sensor.0xa4c138135e284964_contact', 'on') }}
+            {% endif %}
           device_class: problem
-        sensor.0xa4c138135e284964_battery:
-          friendly_name: Сенсор визначення вимкнення вітальня 2
-          
-        binary_sensor.0xa4c138744bf2fbf0_contact:
-          friendly_name: Сенсор визначення вимкнення кухня
+
+      ##################################################
+      ## КУХНЯ
+      ##################################################
+
+        - name: kn_electricity
+          unique_id: kn_electricity
+          state: >
+            {% if is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'unavailable')
+               or is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'unknown') %}
+              {{ states('binary_sensor.kn_electricity') }}
+            {% else %}
+              {{ is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on') }}
+            {% endif %}
           device_class: problem
-        sensor.0xa4c138744bf2fbf0_battery:
-          friendly_name: Сенсор визначення вимкнення кухня
 
-        binary_sensor.0xa4c138084b9d3356:
-          friendly_name: Сенсор живлення спальня
-          icon: mdi:home-lightning-bolt-outline
-        sensor.0xa4c138084b9d3356_battery:
-          friendly_name: Сенсор живлення спальня
+      ##################################################
+      ## СПАЛЬНЯ
+      ##################################################
 
+        - name: br_electricity
+          unique_id: br_electricity
+          state: >
+            {% if is_state('binary_sensor.0xa4c138084b9d3356', 'unavailable')
+               or is_state('binary_sensor.0xa4c138084b9d3356', 'unknown') %}
+              {{ states('binary_sensor.br_electricity') }}
+            {% else %}
+              {{ is_state('binary_sensor.0xa4c138084b9d3356', 'off') }}
+            {% endif %}
+          device_class: problem
 
-    template:
-    
-      - binary_sensor:
- 
-  ###################################################################
-  # Сенсор визначення вимкнення вітальня
-  ###################################################################
+      ##################################################
+      ## ЗАЛИПАННЯ
+      ##################################################
 
-          - name: lr_electricity
-            unique_id: lr_electricity
-            state: >
-              {% if is_state('binary_sensor.0xa4c138bae3526a07_contact', 'unavailable') or
-                    is_state('binary_sensor.0xa4c138bae3526a07_contact', 'unknown') %}
-                {{ states('binary_sensor.lr_electricity') }}
-              {% else %}
-                {{ is_state('binary_sensor.0xa4c138bae3526a07_contact', 'on') }}
-              {% endif %}
-            device_class: problem
+        - name: lr_electricity_reset
+          unique_id: lr_electricity_reset
+          state: >
+            {{ is_state('binary_sensor.0xa4c138bae3526a07_contact', 'on')
+               and is_state('switch.0xa4c138cd1b6a0a9a', 'on') }}
+          delay_on:
+            minutes: 1
+          device_class: problem
 
-  ###################################################################
-  # Сенсор визначення вимкнення вітальня 2
-  ###################################################################
-    
-          - name: lr2_electricity
-            unique_id: lr2_electricity
-            state: >
-              {% if is_state('binary_sensor.0xa4c138135e284964_contact', 'unavailable') or
-                    is_state('binary_sensor.0xa4c138135e284964_contact', 'unknown') %}
-                {{ states('binary_sensor.lr2_electricity') }}
-              {% else %}
-                {{ is_state('binary_sensor.0xa4c138135e284964_contact', 'on') }}
-              {% endif %}
-            device_class: problem
+        - name: lr_electricity_reset_2
+          unique_id: lr_electricity_reset_2
+          state: >
+            {{ is_state('binary_sensor.0xa4c138135e284964_contact', 'on')
+               and is_state('switch.smart_power_strip_44eu_w_socket_3', 'on') }}
+          delay_on:
+            minutes: 1
+          device_class: problem
 
-  ###################################################################
-  # Сенсор визначення вимкнення кухня
-  ###################################################################
+        - name: kn_electricity_reset
+          unique_id: kn_electricity_reset
+          state: >
+            {{ is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on')
+               and is_state('switch.0xa4c138235d1e6877', 'on') }}
+          delay_on:
+            minutes: 1
+          device_class: problem
 
-          - name: kn_electricity
-            unique_id: kn_electricity
-            state: >
-              {% if is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'unavailable') or
-                    is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'unknown') %}
-                {{ states('binary_sensor.kn_electricity') }}
-              {% else %}
-                {{ is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on') }}
-              {% endif %}
-            device_class: problem
+        - name: br_electricity_reset
+          unique_id: br_electricity_reset
+          state: >
+            {{ is_state('binary_sensor.0xa4c138084b9d3356', 'off')
+               and is_state('switch.0xa4c1382dc9fecb3e', 'on') }}
+          delay_on:
+            minutes: 1
+          device_class: problem
 
-  ###################################################################            
-  # Сенсор визначення вимкнення спальня
-  ###################################################################
+      ##################################################
+      ## ВНУТРІШНЄ ЖИВЛЕННЯ
+      ##################################################
 
-          - name: br_electricity
-            unique_id: br_electricity
-            state: >
-              {% if is_state('binary_sensor.0xa4c138084b9d3356', 'unavailable') or
-                    is_state('binary_sensor.0xa4c138084b9d3356', 'unknown') %}
-                {{ states('binary_sensor.br_electricity') }}
-              {% else %}
-                {{ is_state('binary_sensor.0xa4c138084b9d3356', 'off') }}
-              {% endif %}
-            device_class: problem
+        - name: electricity_internal
+          unique_id: electricity_internal
+          state: >
+            {{ [
+              states('binary_sensor.lr_electricity'),
+              states('binary_sensor.lr2_electricity'),
+              states('binary_sensor.kn_electricity'),
+              states('binary_sensor.br_electricity')
+            ] | select('eq', 'on') | list | count >= 2 }}
+          device_class: problem
 
-  ###################################################################
-  # Сенсор визначення залипання вітальня
-  ###################################################################
+  ##################################################
+  ## AUTOMATION
+  ##################################################
 
-          - name: lr_electricity_reset
-            unique_id: lr_electricity_reset
-            state: >
-             {{ is_state('binary_sensor.0xa4c138bae3526a07_contact', 'on') and
-                 is_state('switch.0xa4c138cd1b6a0a9a', 'on')  }}
-            delay_on: 
-                minutes: 1
-            device_class: problem
+  automation:
 
-  ###################################################################            
-  # Сенсор визначення залипання вітальня 2
-  ###################################################################
+    ##################################################
+    ## ЛОГ ЖИВЛЕННЯ
+    ##################################################
 
-          - name: lr_electricity_reset_2
-            unique_id: lr_electricity_reset_2
-            state: >
-             {{ is_state('binary_sensor.0xa4c138135e284964_contact', 'on') and
-                 is_state('switch.smart_power_strip_44eu_w_socket_3', 'on')  }}
-            delay_on: 
-                minutes: 1
-            device_class: problem
+    - alias: sys_power_internal_state_log
+      id: sys_power_internal_state_log
+      description: Фіксація стану живлення
+      initial_state: true
 
-  ###################################################################            
-  # Сенсор визначення залипання кухня
-  ###################################################################
-
-          - name: kn_electricity_reset
-            unique_id: kn_electricity_reset
-            state: >
-             {{ is_state('binary_sensor.0xa4c138744bf2fbf0_contact', 'on') and
-                 is_state('switch.0xa4c138235d1e6877', 'on')  }}
-            delay_on: 
-                minutes: 1
-            device_class: problem
-
-  ###################################################################            
-  # Сенсор визначення залипання спальня
-  ###################################################################
-
-          - name: br_electricity_reset
-            unique_id: br_electricity_reset
-            state: >
-             {{ is_state('binary_sensor.0xa4c138084b9d3356', 'off') and
-                 is_state('switch.0xa4c1382dc9fecb3e', 'on')  }}
-            delay_on: 
-                minutes: 1
-            device_class: problem
-
-  ###################################################################
-  # Сенсори відстеження внутрішнього живлення
-  ###################################################################
-
-          - name: electricity_internal
-            unique_id: electricity_internal
-            state: >
-                {% if is_state('binary_sensor.lr_electricity', 'on') and is_state('binary_sensor.lr2_electricity', 'on') %}
-                True
-                {% elif is_state('binary_sensor.lr_electricity', 'on') and is_state('binary_sensor.kn_electricity', 'on') %}
-                True
-                {% elif is_state('binary_sensor.lr_electricity', 'on') and is_state('binary_sensor.br_electricity', 'on') %}
-                True
-                {% elif is_state('binary_sensor.lr2_electricity', 'on') and is_state('binary_sensor.kn_electricity', 'on') %}
-                True
-                {% elif is_state('binary_sensor.lr2_electricity', 'on') and is_state('binary_sensor.br_electricity', 'on') %}
-                True
-                {% elif is_state('binary_sensor.kn_electricity', 'on') and is_state('binary_sensor.br_electricity', 'on') %}
-                True
-                {% endif %}    
-            device_class: problem
-
-
-  ###################################################################
-  # Збереження часу вимкнення і включення
-  ###################################################################
-
-    input_datetime:
-      electricity_internal_off:
-        name: Внутрішнє живлення вимкнене
-        has_date: true
-        has_time: true
-        
-      electricity_internal_on:
-        name: Внутрішнє живлення відновлене
-        has_date: true
-        has_time: true
-
-  ###################################################################
-  # Накопичення
-  ###################################################################
-
-
-    automation:           
-
-  ###################################################################
-  # Фіксація пропадання і появи електрики
-  ###################################################################         
-          
-      - alias: control_electricity_internal_shotdown_log
-        id: control_electricity_internal_shotdown_log
-        description: Фіксація пропадання і появи внутрішнього живлення
-        initial_state: true
-        trigger:
-
-    # Вимкнення електрики
+      trigger:
         - platform: state
           entity_id: binary_sensor.electricity_internal
-          from: 'off'
-          to: 'on'
+          from: "off"
+          to: "on"
 
-    # Увімкнення електрики
         - platform: state
           entity_id: binary_sensor.electricity_internal
-          from: 'on'
-          to: 'off'
-        action:
+          from: "on"
+          to: "off"
 
-    # Вимкнення електрики
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.electricity_internal
-                    state: 'on'
-                sequence:        
-                  - service: input_datetime.set_datetime
-                    target:
-                      entity_id: input_datetime.electricity_internal_off
-                    data:
-                      datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}" 
-  
-    # Увімкнення електрики
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.electricity_internal
-                    state: 'off'
-                sequence:        
-                  - service: input_datetime.set_datetime
-                    target:
-                      entity_id: input_datetime.electricity_internal_on
-                    data:
-                      datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}" 
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.electricity_internal
+                  state: "on"
+              sequence:
+                - action: input_datetime.set_datetime
+                  target:
+                    entity_id: input_datetime.electricity_internal_off
+                  data:
+                    datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
 
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.electricity_internal
+                  state: "off"
+              sequence:
+                - action: input_datetime.set_datetime
+                  target:
+                    entity_id: input_datetime.electricity_internal_on
+                  data:
+                    datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
 
+    ##################################################
+    ## ПЕРЕЗАВАНТАЖЕННЯ СЕНСОРІВ
+    ##################################################
 
-  ###################################################################
-  # ПЕРЕЗАВАНТАЖЕННЯ СЕНСОРІВ ЖИВЛЕННЯ
-  ###################################################################
+    - alias: lr_power_sensor_reboot
+      id: lr_power_sensor_reboot
+      description: Перезапуск сенсора
+      initial_state: true
 
-  ###################################################################
-  # Перезавантаження сенсору у вітальні 1
-  ###################################################################
-              
-      - alias: electricity_reboot_lr_sensor
-        id: electricity_reboot_lr_sensor
-        description: Живлення скидання сенсора у вітальні 1
-        initial_state: true
-        trigger:
-    # Проверка раз в минуту, перезагрузка если сенсор залип
+      trigger:
         - platform: time_pattern
-          minutes: '/1'
-        condition:
-    # Переключатель режима работы сервера
+          minutes: "/1"
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Розетка включена а сенсор нет
+          state: "on"
+
         - condition: state
           entity_id: binary_sensor.lr_electricity_reset
-          state: 'on'
-        action:
-    # Перезагрузка по питанию
-        - service: switch.turn_off
-          entity_id: switch.0xa4c138cd1b6a0a9a
-        - delay: 00:00:05
-        - service: switch.turn_on
-          entity_id: switch.0xa4c138cd1b6a0a9a
+          state: "on"
 
-  ###################################################################
-  # Перезавантаження сенсору у вітальні 2
-  ###################################################################
-          
-      - alias: electricity_reboot_lr_sensor_2
-        id: electricity_reboot_lr_sensor_2
-        description: Живлення скидання сенсора у вітальні 2
-        initial_state: true
-        trigger:
-    # Проверка раз в минуту, перезагрузка если сенсор залип
+      action:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.0xa4c138cd1b6a0a9a
+
+        - delay: "00:00:05"
+
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0xa4c138cd1b6a0a9a
+
+    - alias: lr2_power_sensor_reboot
+      id: lr2_power_sensor_reboot
+      description: Перезапуск сенсора
+      initial_state: true
+
+      trigger:
         - platform: time_pattern
-          minutes: '/5'
-        condition:
-    # Переключатель режима работы сервера
+          minutes: "/5"
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Розетка включена а сенсор нет
+          state: "on"
+
         - condition: state
           entity_id: binary_sensor.lr_electricity_reset_2
-          state: 'on'
-        action:
-    # Перезагрузка по питанию
-        - service: switch.turn_off
-          entity_id: switch.smart_power_strip_44eu_w_socket_3
-        - delay: 00:00:05
-        - service: switch.turn_on
-          entity_id: switch.smart_power_strip_44eu_w_socket_3
+          state: "on"
 
-  ###################################################################
-  # Перезавантаження сенсору у кухні
-  ###################################################################
+      action:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.smart_power_strip_44eu_w_socket_3
 
-      - alias: electricity_reboot_kn_sensor
-        id: electricity_reboot_kn_sensor
-        description: Живлення скидання сенсора у кухні
-        initial_state: true
-        trigger:
-    # Проверка раз в минуту, перезагрузка если сенсор залип
+        - delay: "00:00:05"
+
+        - action: switch.turn_on
+          target:
+            entity_id: switch.smart_power_strip_44eu_w_socket_3
+
+    - alias: kn_power_sensor_reboot
+      id: kn_power_sensor_reboot
+      description: Перезапуск сенсора
+      initial_state: true
+
+      trigger:
         - platform: time_pattern
-          minutes: '/1'
-        condition:
-    # Переключатель режима работы сервера
+          minutes: "/1"
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Розетка включена а сенсор нет
+          state: "on"
+
         - condition: state
           entity_id: binary_sensor.kn_electricity_reset
-          state: 'on'
-        action:
-    # Перезагрузка по питанию
-        - service: switch.turn_off
-          entity_id: switch.0xa4c138235d1e6877
-        - delay: 00:00:05
-        - service: switch.turn_on
-          entity_id: switch.0xa4c138235d1e6877
+          state: "on"
 
-  ###################################################################
-  # Перезавантаження сенсору у спальні
-  ###################################################################
+      action:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.0xa4c138235d1e6877
 
-      - alias: electricity_reboot_br_sensor
-        id: electricity_reboot_br_sensor
-        description: Живлення скидання сенсора у спальні
-        initial_state: true
-        trigger:
-    # Проверка раз в минуту, перезагрузка если сенсор залип
+        - delay: "00:00:05"
+
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0xa4c138235d1e6877
+
+    - alias: br_power_sensor_reboot
+      id: br_power_sensor_reboot
+      description: Перезапуск сенсора
+      initial_state: true
+
+      trigger:
         - platform: time_pattern
-          minutes: '/1'
-        condition:
-    # Переключатель режима работы сервера
+          minutes: "/1"
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Розетка включена а сенсор нет
+          state: "on"
+
         - condition: state
           entity_id: binary_sensor.br_electricity_reset
-          state: 'on'
-        action:
-    # Перезагрузка по питанию
-        - service: switch.turn_off
-          entity_id: switch.0xa4c1382dc9fecb3e
-        - delay: 00:00:05
-        - service: switch.turn_on
-          entity_id: switch.0xa4c1382dc9fecb3e
-          
+          state: "on"
 
+      action:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.0xa4c1382dc9fecb3e
 
+        - delay: "00:00:05"
+
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0xa4c1382dc9fecb3e

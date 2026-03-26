@@ -1,81 +1,104 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 lr_tv_control:
 
-    template:
-     
-      - binary_sensor:
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-          - name: lr_tv_work
-            unique_id: lr_tv_work
-            state: >
-              {{ states('sensor.0xa4c1384452a34172_power')|int > 50 }}
-            icon: >
-              {% if is_state("binary_sensor.lr_tv_work", "on") %}
-              mdi:television
-              {% else %}
-              mdi:television-off
-              {% endif %}
-              
-              
-    input_button:
+  homeassistant:
+    customize:
 
+      binary_sensor.lr_tv_work:
+        friendly_name: Вітальня - телевізор працює
+        icon: mdi:television
 
-    # Кнопка для использования в интерфейсе для имитации нажатия на кнопку выключателя
-      lr_tv_control:
-        name: Гостиная, управление телевизором
-        
-    automation:
-    
-      - alias: lr_tv_control
-        id: lr_tv_control
-        description: Гостиная управление ТВ
-        initial_state: true
-        trigger:
-    ## 5 кнопка Aqara Opple
+      input_button.lr_tv_control:
+        friendly_name: Вітальня - керування телевізором
+        icon: mdi:remote-tv
+
+      automation.lr_tv_control:
+        friendly_name: Вітальня - керування телевізором
+        icon: mdi:television-remote
+
+  ##################################################
+  ## INPUT_BUTTON
+  ##################################################
+
+  input_button:
+
+    lr_tv_control:
+      name: lr_tv_control
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    - binary_sensor:
+
+        - name: lr_tv_work
+          unique_id: lr_tv_work
+          state: >
+            {{ states('sensor.0xa4c1384452a34172_power')|int > 50 }}
+          icon: >
+            {% if is_state("binary_sensor.lr_tv_work", "on") %}
+            mdi:television
+            {% else %}
+            mdi:television-off
+            {% endif %}
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    - alias: lr_tv_control
+      id: lr_tv_control
+      description: Вітальня - керування телевізором
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: sensor.0x04cf8cdf3c79360a_action
-          to: 'button_5_single' 
-    ## Aqara Opple на столе
+          to: 'button_5_single'
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
           to: 'button_6_double'
-    ## Виртуальная кнопка
         - platform: state
           entity_id: input_button.lr_tv_control
-        condition:
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.lr_tv_work
-                    state: 'off'
-                sequence:
-                  - action: remote.send_command
-                    data:
-                      entity_id: remote.lr_broadlin_ir
-                      command:
-                        - b64:JgBoACQRFhAWLRYtFhEWLBYRFi0WERUtFi0WAAFhJBEWERYtFS0WERYtFhEVLRYRFi0WLRYAAWEjEhURFi0WLRYQFi0WERYtFREWLRYtFgABYSQRFhAWLRYtFhEWLBYRFi0WERUtFi0WAA0F==
-                  - delay: 00:00:15
-                #   - service: homeassistant.reload_config_entry
-                #     data: {}
-                #     target:
-                #       entity_id: remote.mitv
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.lr_tv_work
+                  state: 'off'
+              sequence:
+                - action: remote.send_command
+                  data:
+                    entity_id: remote.lr_broadlin_ir
+                    command:
+                      - b64:JgBoACQRFhAWLRYtFhEWLBYRFi0WERUtFi0WAAFhJBEWERYtFS0WERYtFhEVLRYRFi0WLRYAAWEjEhURFi0WLRYQFi0WERYtFREWLRYtFgABYSQRFhAWLRYtFhEWLBYRFi0WERUtFi0WAA0F==
+                - delay: 00:00:15
 
-
-
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.lr_tv_work
-                    state: 'on'
-                sequence:
-                  - action: remote.send_command
-                    data:
-                      entity_id: remote.lr_broadlin_ir
-                      command:
-                        - b64:JgCCACQRFiQWEBYbFSQWERURFhoWLRYkFhoWAAGcJBEWJBYQFhsVJBYRFhAWGxUtFiQWGhYAAZwkERYkFhEVGxYjFhEWEBYbFS0WJBYaFgABnCUQFiQWERUbFiMWERYQFhsWLBYkFhoWAAGdJBEVJBYRFhoWIxYRFhEVGxYtFiMWGhYADQUAAAAAAAA==
-                        - b64:JgCCACQRFiQWEBYbFSQWERURFhoWLRYkFhoWAAGcJBEWJBYQFhsVJBYRFhAWGxUtFiQWGhYAAZwkERYkFhEVGxYjFhEWEBYbFS0WJBYaFgABnCUQFiQWERUbFiMWERYQFhsWLBYkFhoWAAGdJBEVJBYRFhoWIxYRFhEVGxYtFiMWGhYADQUAAAAAAAA==
-                        - b64:JgCCACQRFiQWEBYbFSQWERURFhoWLRYkFhoWAAGcJBEWJBYQFhsVJBYRFhAWGxUtFiQWGhYAAZwkERYkFhEVGxYjFhEWEBYbFS0WJBYaFgABnCUQFiQWERUbFiMWERYQFhsWLBYkFhoWAAGdJBEVJBYRFhoWIxYRFhEVGxYtFiMWGhYADQUAAAAAAAA==
-                        - b64:JgCCACQRFiQWEBYbFSQWERURFhoWLRYkFhoWAAGcJBEWJBYQFhsVJBYRFhAWGxUtFiQWGhYAAZwkERYkFhEVGxYjFhEWEBYbFS0WJBYaFgABnCUQFiQWERUbFiMWERYQFhsWLBYkFhoWAAGdJBEVJBYRFhoWIxYRFhEVGxYtFiMWGhYADQUAAAAAAAA==
-                        - b64:JgBoACQRFhAWLRYtFhEWLBYRFi0WERUtFi0WAAFhJBEWERYtFS0WERYtFhEVLRYRFi0WLRYAAWEjEhURFi0WLRYQFi0WERYtFREWLRYtFgABYSQRFhAWLRYtFhEWLBYRFi0WERUtFi0WAA0F==
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.lr_tv_work
+                  state: 'on'
+              sequence:
+                - action: remote.send_command
+                  data:
+                    entity_id: remote.lr_broadlin_ir
+                    command:
+                      - b64:JgCCACQRFiQWEBYbFSQWERURFhoWLRYkFhoWAAGcJBEWJBYQFhsVJBYRFhAWGxUtFiQWGhYAAZwkERYkFhEVGxYjFhEWEBYbFS0WJBYaFgABnCUQFiQWERUbFiMWERYQFhsWLBYkFhoWAAGdJBEVJBYRFhoWIxYRFhEVGxYtFiMWGhYADQUAAAAAAAA==
+                      - b64:JgCCACQRFiQWEBYbFSQWERURFhoWLRYkFhoWAAGcJBEWJBYQFhsVJBYRFhAWGxUtFiQWGhYAAZwkERYkFhEVGxYjFhEWEBYbFS0WJBYaFgABnCUQFiQWERUbFiMWERYQFhsWLBYkFhoWAAGdJBEVJBYRFhoWIxYRFhEVGxYtFiMWGhYADQUAAAAAAAA==
+                      - b64:JgCCACQRFiQWEBYbFSQWERURFhoWLRYkFhoWAAGcJBEWJBYQFhsVJBYRFhAWGxUtFiQWGhYAAZwkERYkFhEVGxYjFhEWEBYbFS0WJBYaFgABnCUQFiQWERUbFiMWERYQFhsWLBYkFhoWAAGdJBEVJBYRFhoWIxYRFhEVGxYtFiMWGhYADQUAAAAAAAA==
+                      - b64:JgCCACQRFiQWEBYbFSQWERURFhoWLRYkFhoWAAGcJBEWJBYQFhsVJBYRFhAWGxUtFiQWGhYAAZwkERYkFhEVGxYjFhEWEBYbFS0WJBYaFgABnCUQFiQWERUbFiMWERYQFhsWLBYkFhoWAAGdJBEVJBYRFhoWIxYRFhEVGxYtFiMWGhYADQUAAAAAAAA==
+                      - b64:JgBoACQRFhAWLRYtFhEWLBYRFi0WERUtFi0WAAFhJBEWERYtFS0WERYtFhEVLRYRFi0WLRYAAWEjEhURFi0WLRYQFi0WERYtFREWLRYtFgABYSQRFhAWLRYtFhEWLBYRFi0WERUtFi0WAA0F==

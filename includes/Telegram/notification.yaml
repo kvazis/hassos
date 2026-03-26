@@ -1,41 +1,54 @@
+##################################################
+## Актуаллено: 2026-03-25
+##################################################
+
 notification:
 
-    homeassistant:
-      customize:
-        
-        automation.telegram_start_notification:
-          friendly_name: Уведомление о запуске сервера
-          icon: phu:telegram
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
+  homeassistant:
+    customize:
+      automation.telegram_start_notification:
+        friendly_name: Сервер - сповіщення про запуск
+        icon: mdi:message-badge
 
-    automation:
+  ##################################################
+  ## AUTOMATION
+  ##################################################
 
-      - alias: telegram_start_notification
-        id: telegram_start_notification
-        description: Уведомление о запуске сервера
-        initial_state: true
-        trigger:
-          - platform: homeassistant
-            event: start
-        action:  
-          - action: telegram_bot.send_message
-            data:
-              chat_id:
-                - !secret chat_id_group_tech
-              message: |
-                {{ "\U0001F4AC" }} Intel N100 HA OS Server
-                {{ "\U0001F567" }} Запущен в {{ states('sensor.time_date') }}
-                {{ "\U0001F4C3" }} Отчет о состоянии будет через 1 минуту
-          - delay: 00:01:05
-          - action: telegram_bot.send_message
-            data:
-              chat_id:
-                - !secret chat_id_group_tech
-              message: |
-                  {{"\U0001F4AC"}} Intel N100 HA OS Server
-                  {{"\U0001F567"}} Отчет за {{ states('sensor.time_date') }}
-                  {{"\U0001F4A1"}} Светильников недоступно - {{ states('sensor.count_light_unavailable') }} 
-                  {{"\U0001F50C"}} Реле недоступно - {{ states('sensor.count_switch_unavailable') }} 
-                  {{"\U00002668"}} Термоголовок недоступно - {{ states('sensor.count_climate_unavailable') }} 
-                  {{"\U0001F321"}} Сенсоров недоступно - {{ states('sensor.count_sensor_unavailable') }} 
-                  {{"\U0001F51F"}} Бинарных сенсоров недоступно - {{ states('sensor.count_binary_sensor_unavailable') }}
+  automation:
+    - alias: telegram_start_notification
+      id: telegram_start_notification
+      description: Сповіщення про запуск сервера
+      initial_state: true
+      trigger:
+        - platform: homeassistant
+          event: start
+
+      action:
+
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_group_tech
+            message: |
+              {{ "\U0001F4AC" }} Intel N100 HA OS Server
+              {{ "\U0001F567" }} Запущено о {{ states('sensor.time_date') }}
+              {{ "\U0001F4C3" }} Звіт про стан буде через 1 хвилину
+
+        - delay: 00:01:05
+
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_group_tech
+            message: |
+              {{"\U0001F4AC"}} Intel N100 HA OS Server
+              {{"\U0001F567"}} Звіт за {{ states('sensor.time_date') }}
+              {{"\U0001F4A1"}} Недоступних світильників - {{ states('sensor.count_light_unavailable') }}
+              {{"\U0001F50C"}} Недоступних реле - {{ states('sensor.count_switch_unavailable') }}
+              {{"\U00002668"}} Недоступних термоголовок - {{ states('sensor.count_climate_unavailable') }}
+              {{"\U0001F321"}} Недоступних сенсорів - {{ states('sensor.count_sensor_unavailable') }}
+              {{"\U0001F51F"}} Недоступних бінарних сенсорів - {{ states('sensor.count_binary_sensor_unavailable') }}

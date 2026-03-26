@@ -1,750 +1,680 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 lr_light:
 
-    input_boolean:
-    
-      lr_night_light:
-        name: Нічне підсвічування
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
+
+  homeassistant:
+    customize:
+
+      input_boolean.lr_night_light:
+        friendly_name: Вітальня - нічне підсвічування
         icon: mdi:toggle-switch-outline
 
-    # Перемикач для визначення, що світло ввімкнено вручну
-      lr_ceiling_1:
-        name: Вітальня ручне ввімкнення люстри 1
+      input_boolean.lr_ceiling_1:
+        friendly_name: Вітальня - ручне ввімкнення люстри 1
         icon: mdi:lightbulb-off-outline
 
-      lr_ceiling_2:
-        name: Вітальня ручне ввімкнення люстри 2
+      input_boolean.lr_ceiling_2:
+        friendly_name: Вітальня - ручне ввімкнення люстри 2
         icon: mdi:lightbulb-off-outline
-          
-    template:
 
-      - binary_sensor:
+      binary_sensor.lr_mode_auto_light_day_on:
+        friendly_name: Вітальня - умови автопідсвічування вдень
+        icon: mdi:brightness-6
 
-     # Сенсор для для ввімкнення автоматичного підсвічування
-          - name: lr_mode_auto_light_day_on
-            unique_id: lr_mode_auto_light_day_on
-            state: >
-              {{ is_state('light.smart_desk_lamp', 'off') and
-                 is_state('light.yeelight_ceiling4_0x49c726b', 'off') and                 
-                 is_state('light.yeelight_ceiling4_0x49c726b_ambilight', 'off') and
-                 is_state('light.yeelight_ceiling4_0x4a1dacd', 'off') and
-                 is_state('light.yeelight_ceiling4_0x4a1dacd_ambilight', 'off') and
-                 is_state('light.0x54ef4410008e96fd_bottom', 'off') and
-                 is_state('light.0xa4c13826d6a56255', 'off') and
-                 is_state('light.lr_bedside_lamp', 'off') and
-                 is_state('light.0xa4c138da30166b8f', 'off') and
-                 is_state('binary_sensor.lr_tv_work', 'off') and
-                 states('sensor.0x04cf8cdf3c7cf19e_illuminance')|int < 30 }}
+      binary_sensor.lr_lights_no_ambi:
+        friendly_name: Вітальня - усе світло без ambilight вимкнене
+        icon: mdi:lightbulb-group-off
 
-     # Усі світильники без ambilight
-          - name: lr_lights_no_ambi
-            unique_id: lr_lights_no_ambi
-            state: >
-              {{ is_state('light.smart_desk_lamp', 'off') and
-                 is_state('light.yeelight_ceiling4_0x49c726b', 'off') and
-                 is_state('light.yeelight_ceiling4_0x4a1dacd', 'off') and
-                 is_state('light.0x54ef4410008e96fd_bottom', 'off') and
-                 is_state('light.0xa4c13826d6a56255', 'off') and
-                 is_state('light.lr_bedside_lamp', 'off') and
-                 is_state('binary_sensor.lr_light_tv_cinema', 'off') }}
+      binary_sensor.lr_balcony_moving_in_dark:
+        friendly_name: Балкон - рух у темряві
+        icon: mdi:motion-sensor
 
-    # Рух без світла на балконі
-          - name: lr_balcony_moving_in_dark
-            unique_id: lr_balcony_moving_in_dark
-            state: >
-              {{ is_state('binary_sensor.0x00158d000449b773_occupancy', 'on')
-                 and states('sensor.0x00158d000449b773_illuminance')|float < 100 
-              }}
+      binary_sensor.lr_balcony_light_no_move:
+        friendly_name: Балкон - світло без руху
+        icon: mdi:lightbulb-auto
 
-    # Світло без руху
-          - name: lr_balcony_light_no_move
-            unique_id: lr_balcony_light_no_move
-            state: >
-              {{ is_state('light.0xa4c13812b94c8365', 'on')  
-                 and is_state('binary_sensor.0x00158d000449b773_occupancy', 'off')
-              }}
-            delay_on: 00:02:00
-            device_class: light
+      automation.lr_ceiling_1_manual_control:
+        friendly_name: Вітальня - ручне керування люстрою 1
+        icon: mdi:ceiling-light
 
+      automation.lr_ceiling_1_turn_control:
+        friendly_name: Вітальня - контроль увімкнення люстри 1
+        icon: mdi:lightbulb-check
 
-    automation:
+      automation.lr_ceiling_1_block_control:
+        friendly_name: Вітальня - зняття блокування люстри 1
+        icon: mdi:lightbulb-off
 
-#################### ОСНОВНЕ ОСВІТЛЕННЯ ####################          
+      automation.lr_ceiling_2_manual_control:
+        friendly_name: Вітальня - ручне керування люстрою 2
+        icon: mdi:ceiling-light-multiple
 
-      - alias: lr_ceiling_1_manual_control
-        id: lr_ceiling_1_manual_control
-        description: Вітальня — ручне керування люстрою 1
-        initial_state: true
-        trigger:
-    ## Aqara Opple на столі
-          - platform: state
-            entity_id: sensor.0x54ef4410004c1707_action
-            to: 'button_1_double'
-    # Вимикач на стіні всередині при вході
-          - platform: state
-            entity_id: sensor.0x54ef4410008e96fd_action
-            to: 'single_top'
-    ## Кнопка Sonoff
-          - platform: state
-            entity_id: sensor.0x84ba20fffed2331e_action
-            to: "long"
-    # Вимикач на стіні ззовні при вході
-          - platform: state
-            entity_id: sensor.0x00158d00013fc3bc_action
-            to: 'single_left'          
-    ## 3 кнопка Aqara Opple
-          - platform: state
-            entity_id: sensor.0x04cf8cdf3c79360a_action
-            to: 'button_3_single'
-        condition:
-    # Режим роботи серверу
-          - condition: state
-            entity_id: switch.control_mode
-            state: 'on'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: light.yeelight_ceiling4_0x49c726b
-                    state: 'off'
-                sequence:
-                  - action: input_boolean.turn_on
-                    data: {}
-                    target:
-                      entity_id: input_boolean.lr_ceiling_1
-                  - action: light.turn_on
-                    data:
-                      transition: 1
-                      color_temp_kelvin: 4000
-                      brightness_pct: 60
-                    target:
-                      entity_id: light.yeelight_ceiling4_0x49c726b
+      automation.lr_ceiling_2_turn_control:
+        friendly_name: Вітальня - контроль увімкнення люстри 2
+        icon: mdi:lightbulb-check
 
-              - conditions:
-                  - condition: state
-                    entity_id: light.yeelight_ceiling4_0x49c726b
-                    state: 'on'
-                sequence:
-                  - action: light.turn_off
-                    data: {}
-                    target:
-                      entity_id: light.yeelight_ceiling4_0x49c726b
-                      
-    # Контроль того, що люстра ввімкнута вручну             
-      - alias: lr_ceiling_1_turn_control
-        id: lr_ceiling_1_turn_control
-        description:  Вітальня - контроль вмикання люстри 1
-        initial_state: true
-        trigger:
-          - platform: state
-            entity_id: light.yeelight_ceiling4_0x49c726b
-            to: 'on'
-        condition:
-          - condition: state
-            entity_id: switch.control_mode
-            state: 'on'
-          - condition: state
-            entity_id: input_boolean.lr_ceiling_1
-            state: 'off'
-        action:
-          - action: light.turn_off
-            data: {}
-            target:
-              entity_id: light.yeelight_ceiling4_0x49c726b                
+      automation.lr_ceiling_2_block_control:
+        friendly_name: Вітальня - зняття блокування люстри 2
+        icon: mdi:lightbulb-off
 
-    # Контроль вимикання блокування      
-      - alias: lr_ceiling_1_block_control
-        id: lr_ceiling_1_block_control
-        description:  Вітальня - контроль блокування вмикання люстри 1
-        initial_state: true
-        trigger:
-          - platform: state
-            entity_id: light.yeelight_ceiling4_0x49c726b
-            to: 'off'
-        condition:
-          - condition: state
-            entity_id: switch.control_mode
-            state: 'on'
-          - condition: state
-            entity_id: input_boolean.lr_ceiling_1
-            state: 'on'
-        action:
-          - action: input_boolean.turn_off
-            data: {}
-            target:
-              entity_id: input_boolean.lr_ceiling_1
+      automation.lr_ceiling_max_light:
+        friendly_name: Вітальня - максимальне освітлення
+        icon: mdi:brightness-7
 
-                      
-                      
-      - alias: lr_ceiling_2_manual_control
-        id: lr_ceiling_2_manual_control
-        description: Вітальня — ручне керування люстрою 2
-        initial_state: true
-        trigger:
-    ## Aqara Opple на столі
-          - platform: state
-            entity_id: sensor.0x54ef4410004c1707_action
-            to: 'button_2_double'
-    ## 4 кнопка Aqara Opple
-          - platform: state
-            entity_id: sensor.0x04cf8cdf3c79360a_action
-            to: 'button_4_single'
-        condition:
-    # Режим роботи серверу
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: light.yeelight_ceiling4_0x4a1dacd
-                    state: 'off'
-                sequence:
-                  - action: input_boolean.turn_on
-                    data: {}
-                    target:
-                      entity_id: input_boolean.lr_ceiling_2
-                  - action: light.turn_on
-                    data:
-                      transition: 1
-                      color_temp_kelvin: 4000
-                      brightness_pct: 60
-                    target:
-                      entity_id: light.yeelight_ceiling4_0x4a1dacd
-              - conditions:
-                  - condition: state
-                    entity_id: light.yeelight_ceiling4_0x4a1dacd
-                    state: 'on'
-                sequence:
-                  - action: light.turn_off
-                    data: {}
-                    target:
-                      entity_id: light.yeelight_ceiling4_0x4a1dacd
+      automation.lr_light_wall_toggle:
+        friendly_name: Вітальня - керування настінним світильником
+        icon: mdi:wall-sconce
 
-    # Контроль того, що люстра ввімкнута вручну             
-      - alias: lr_ceiling_2_turn_control
-        id: lr_ceiling_2_turn_control
-        description:  Вітальня - контроль вмикання люстри 2
-        initial_state: true
-        trigger:
-          - platform: state
-            entity_id: light.yeelight_ceiling4_0x4a1dacd
-            to: 'on'
-        condition:
-          - condition: state
-            entity_id: switch.control_mode
-            state: 'on'
-          - condition: state
-            entity_id: input_boolean.lr_ceiling_2
-            state: 'off'
-        action:
-          - action: light.turn_off
-            data: {}
-            target:
-              entity_id: light.yeelight_ceiling4_0x4a1dacd               
+      automation.lr_light_blackout_manual_control:
+        friendly_name: Вітальня - керування автономним світлом
+        icon: mdi:lightbulb-battery
 
-    # Контроль вимикання блокування      
-      - alias: lr_ceiling_2_block_control
-        id: lr_ceiling_2_block_control
-        description:  Вітальня - контроль блокування вмикання люстри 2
-        initial_state: true
-        trigger:
-          - platform: state
-            entity_id: light.yeelight_ceiling4_0x4a1dacd
-            to: 'off'
-        condition:
-          - condition: state
-            entity_id: switch.control_mode
-            state: 'on'
-          - condition: state
-            entity_id: input_boolean.lr_ceiling_2
-            state: 'on'
-        action:
-          - action: input_boolean.turn_off
-            data: {}
-            target:
-              entity_id: input_boolean.lr_ceiling_2
+      automation.lr_light_switching:
+        friendly_name: Вітальня - перемикання основного й аварійного світла
+        icon: mdi:swap-horizontal
 
+      automation.lr_light_table_lamp_toggle:
+        friendly_name: Вітальня - керування настільною лампою
+        icon: mdi:desk-lamp
 
-      - alias: lr_ceiling_max_light
-        id: lr_ceiling_max_light
-        description: Вітальня — максимальне освітлення
-        initial_state: true
-        trigger:
-    ## Aqara Opple на столі
-          - platform: state
-            entity_id: sensor.0x54ef4410004c1707_action
-            to: 'button_1_triple'
-        condition:
-    # Режим роботи серверу
-          - condition: state
-            entity_id: switch.control_mode
-            state: 'on'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: light.yeelight_ceiling4_0x49c726b
-                    state: 'off'
-                  - condition: state
-                    entity_id: light.yeelight_ceiling4_0x4a1dacd
-                    state: 'off'
-                sequence:
-                  - action: input_boolean.turn_on
-                    data: {}
-                    target:
-                      entity_id:
-                        - input_boolean.lr_ceiling_1
-                        - input_boolean.lr_ceiling_2
-                  - action: light.turn_on
-                    data:
-                      transition: 1
-                      color_temp_kelvin: 5000
-                      brightness_pct: 100
-                    target:
-                      entity_id:
-                        - light.yeelight_ceiling4_0x49c726b
-                        - light.yeelight_ceiling4_0x4a1dacd
-              - conditions:
-                  - condition: state
-                    entity_id: light.yeelight_ceiling4_0x49c726b
-                    state: 'on'
-                  - condition: state
-                    entity_id: light.yeelight_ceiling4_0x4a1dacd
-                    state: 'on'
-                sequence:
-                  - action: light.turn_off
-                    data: {}
-                    target:
-                      entity_id:
-                        - light.yeelight_ceiling4_0x49c726b
-                        - light.yeelight_ceiling4_0x4a1dacd
+      automation.lr_ceiling_auto_light_on:
+        friendly_name: Вітальня - автоматичне ввімкнення освітлення
+        icon: mdi:auto-fix
 
+      automation.lr_ceiling_auto_light_off:
+        friendly_name: Вітальня - автоматичне вимкнення освітлення
+        icon: mdi:auto-fix-off
 
-      - alias: lr_light_wall_toggle
-        id: lr_light_wall_toggle
-        description: Вітальня — ручне керування світильником на стіні
-        initial_state: true
-        trigger:
-    ## Aqara Opple на столі
-          - platform: state
-            entity_id: sensor.0x54ef4410004c1707_action
-            to: 'button_2_single'
-    # Вимикач на стіні ззовні при вході
-          - platform: state
-            entity_id: sensor.0x00158d00013fc3bc_action
-            to: 'single_right' 
-    ## Кнопка Sonoff
-          - platform: state
-            entity_id: sensor.0x84ba20fffed2331e_action
-            to: "single"
-    ## 2 кнопка Aqara Opple
-          - platform: state
-            entity_id: sensor.0x04cf8cdf3c79360a_action
-            to: 'button_2_single' 
-        condition:
-    # Режим роботи серверу
-          - condition: state
-            entity_id: switch.control_mode
-            state: 'on'
-        action:
-          - action: light.toggle
-            data: {}
-            target:
-              entity_id: light.0x54ef4410008e96fd_bottom
+      automation.lr_light_philips_on_off:
+        friendly_name: Вітальня - керування приліжковим світильником
+        icon: mdi:lamp
 
+      automation.lr_light_philips_temp_on_and_off:
+        friendly_name: Вітальня - тимчасове підсвічування і вимкнення світла
+        icon: mdi:timer-outline
 
-      - alias: lr_light_blackout_manual_control
-        id: lr_light_blackout_manual_control
-        description: Вітальня — ручне керування автономним світлом
-        initial_state: false
-        trigger:
-    ## Aqara Opple на столі
+      automation.lr_light_balcony_turn_on:
+        friendly_name: Балкон - увімкнення люстри
+        icon: mdi:balcony
+
+      automation.lr_light_balcony_turn_off:
+        friendly_name: Балкон - вимкнення люстри
+        icon: mdi:balcony
+
+      automation.lr_control_usb_3_relay:
+        friendly_name: Вітальня - керування USB 3 реле
+        icon: mdi:usb-port
+
+  ##################################################
+  ## INPUT_BOOLEAN
+  ##################################################
+
+  input_boolean:
+
+    lr_night_light:
+      name: lr_night_light
+
+    lr_ceiling_1:
+      name: lr_ceiling_1
+
+    lr_ceiling_2:
+      name: lr_ceiling_2
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    - binary_sensor:
+
+        - name: lr_mode_auto_light_day_on
+          unique_id: lr_mode_auto_light_day_on
+          state: >
+            {{ is_state('light.smart_desk_lamp', 'off') and
+               is_state('light.yeelight_ceiling4_0x49c726b', 'off') and
+               is_state('light.yeelight_ceiling4_0x49c726b_ambilight', 'off') and
+               is_state('light.yeelight_ceiling4_0x4a1dacd', 'off') and
+               is_state('light.yeelight_ceiling4_0x4a1dacd_ambilight', 'off') and
+               is_state('light.0x54ef4410008e96fd_bottom', 'off') and
+               is_state('light.0xa4c13826d6a56255', 'off') and
+               is_state('light.lr_bedside_lamp', 'off') and
+               is_state('light.0xa4c138da30166b8f', 'off') and
+               is_state('binary_sensor.lr_tv_work', 'off') and
+               states('sensor.0x04cf8cdf3c7cf19e_illuminance') | int(0) < 30 }}
+
+        - name: lr_lights_no_ambi
+          unique_id: lr_lights_no_ambi
+          state: >
+            {{ is_state('light.smart_desk_lamp', 'off') and
+               is_state('light.yeelight_ceiling4_0x49c726b', 'off') and
+               is_state('light.yeelight_ceiling4_0x4a1dacd', 'off') and
+               is_state('light.0x54ef4410008e96fd_bottom', 'off') and
+               is_state('light.0xa4c13826d6a56255', 'off') and
+               is_state('light.lr_bedside_lamp', 'off') and
+               is_state('binary_sensor.lr_light_tv_cinema', 'off') }}
+
+        - name: lr_balcony_moving_in_dark
+          unique_id: lr_balcony_moving_in_dark
+          state: >
+            {{ is_state('binary_sensor.0x00158d000449b773_occupancy', 'on')
+               and states('sensor.0x00158d000449b773_illuminance') | float(0) < 100 }}
+
+        - name: lr_balcony_light_no_move
+          unique_id: lr_balcony_light_no_move
+          state: >
+            {{ is_state('light.0xa4c13812b94c8365', 'on')
+               and is_state('binary_sensor.0x00158d000449b773_occupancy', 'off') }}
+          delay_on: "00:02:00"
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    - alias: lr_ceiling_1_manual_control
+      id: lr_ceiling_1_manual_control
+      description: Ручне керування люстрою 1 у вітальні
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
-          to: 'button_2_single'
-    # Вимикач на стіні ззовні при вході
+          to: "button_1_double"
+        - platform: state
+          entity_id: sensor.0x54ef4410008e96fd_action
+          to: "single_top"
+        - platform: state
+          entity_id: sensor.0x84ba20fffed2331e_action
+          to: "long"
         - platform: state
           entity_id: sensor.0x00158d00013fc3bc_action
-          to: 'single_right' 
-    ## Кнопка Sonoff
+          to: "single_left"
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c79360a_action
+          to: "button_3_single"
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: light.yeelight_ceiling4_0x49c726b
+                  state: "off"
+              sequence:
+                - action: input_boolean.turn_on
+                  target:
+                    entity_id: input_boolean.lr_ceiling_1
+                - action: light.turn_on
+                  target:
+                    entity_id: light.yeelight_ceiling4_0x49c726b
+                  data:
+                    transition: 1
+                    color_temp_kelvin: 4000
+                    brightness_pct: 60
+            - conditions:
+                - condition: state
+                  entity_id: light.yeelight_ceiling4_0x49c726b
+                  state: "on"
+              sequence:
+                - action: light.turn_off
+                  target:
+                    entity_id: light.yeelight_ceiling4_0x49c726b
+
+    - alias: lr_ceiling_1_turn_control
+      id: lr_ceiling_1_turn_control
+      description: Контроль ручного ввімкнення люстри 1 у вітальні
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: light.yeelight_ceiling4_0x49c726b
+          to: "on"
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+        - condition: state
+          entity_id: input_boolean.lr_ceiling_1
+          state: "off"
+      action:
+        - action: light.turn_off
+          target:
+            entity_id: light.yeelight_ceiling4_0x49c726b
+
+    - alias: lr_ceiling_1_block_control
+      id: lr_ceiling_1_block_control
+      description: Зняття блокування ручного ввімкнення люстри 1
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: light.yeelight_ceiling4_0x49c726b
+          to: "off"
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+        - condition: state
+          entity_id: input_boolean.lr_ceiling_1
+          state: "on"
+      action:
+        - action: input_boolean.turn_off
+          target:
+            entity_id: input_boolean.lr_ceiling_1
+
+    - alias: lr_ceiling_2_manual_control
+      id: lr_ceiling_2_manual_control
+      description: Ручне керування люстрою 2 у вітальні
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: "button_2_double"
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c79360a_action
+          to: "button_4_single"
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: light.yeelight_ceiling4_0x4a1dacd
+                  state: "off"
+              sequence:
+                - action: input_boolean.turn_on
+                  target:
+                    entity_id: input_boolean.lr_ceiling_2
+                - action: light.turn_on
+                  target:
+                    entity_id: light.yeelight_ceiling4_0x4a1dacd
+                  data:
+                    transition: 1
+                    color_temp_kelvin: 4000
+                    brightness_pct: 60
+            - conditions:
+                - condition: state
+                  entity_id: light.yeelight_ceiling4_0x4a1dacd
+                  state: "on"
+              sequence:
+                - action: light.turn_off
+                  target:
+                    entity_id: light.yeelight_ceiling4_0x4a1dacd
+
+    - alias: lr_ceiling_2_turn_control
+      id: lr_ceiling_2_turn_control
+      description: Контроль ручного ввімкнення люстри 2 у вітальні
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: light.yeelight_ceiling4_0x4a1dacd
+          to: "on"
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+        - condition: state
+          entity_id: input_boolean.lr_ceiling_2
+          state: "off"
+      action:
+        - action: light.turn_off
+          target:
+            entity_id: light.yeelight_ceiling4_0x4a1dacd
+
+    - alias: lr_ceiling_2_block_control
+      id: lr_ceiling_2_block_control
+      description: Зняття блокування ручного ввімкнення люстри 2
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: light.yeelight_ceiling4_0x4a1dacd
+          to: "off"
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+        - condition: state
+          entity_id: input_boolean.lr_ceiling_2
+          state: "on"
+      action:
+        - action: input_boolean.turn_off
+          target:
+            entity_id: input_boolean.lr_ceiling_2
+
+    - alias: lr_ceiling_max_light
+      id: lr_ceiling_max_light
+      description: Увімкнення максимального освітлення у вітальні
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: "button_1_triple"
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: light.yeelight_ceiling4_0x49c726b
+                  state: "off"
+                - condition: state
+                  entity_id: light.yeelight_ceiling4_0x4a1dacd
+                  state: "off"
+              sequence:
+                - action: input_boolean.turn_on
+                  target:
+                    entity_id:
+                      - input_boolean.lr_ceiling_1
+                      - input_boolean.lr_ceiling_2
+                - action: light.turn_on
+                  target:
+                    entity_id:
+                      - light.yeelight_ceiling4_0x49c726b
+                      - light.yeelight_ceiling4_0x4a1dacd
+                  data:
+                    transition: 1
+                    color_temp_kelvin: 5000
+                    brightness_pct: 100
+            - conditions:
+                - condition: state
+                  entity_id: light.yeelight_ceiling4_0x49c726b
+                  state: "on"
+                - condition: state
+                  entity_id: light.yeelight_ceiling4_0x4a1dacd
+                  state: "on"
+              sequence:
+                - action: light.turn_off
+                  target:
+                    entity_id:
+                      - light.yeelight_ceiling4_0x49c726b
+                      - light.yeelight_ceiling4_0x4a1dacd
+
+    - alias: lr_light_wall_toggle
+      id: lr_light_wall_toggle
+      description: Ручне керування настінним світильником у вітальні
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1707_action
+          to: "button_2_single"
+        - platform: state
+          entity_id: sensor.0x00158d00013fc3bc_action
+          to: "single_right"
         - platform: state
           entity_id: sensor.0x84ba20fffed2331e_action
           to: "single"
-    ## 2 кнопка Aqara Opple
         - platform: state
           entity_id: sensor.0x04cf8cdf3c79360a_action
-          to: 'button_2_single' 
-        condition:
-    # Режим роботи серверу
+          to: "button_2_single"
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Нема електрики
-        - condition: state
-          entity_id: binary_sensor.electricity
-          state: 'on'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: light.0xa4c138da30166b8f
-                    state: 'off'
-                sequence:
-                  - service: light.turn_on
-                    entity_id:
-                      - light.0xa4c138da30166b8f
-                    data_template:
-                      brightness_pct: 60
-              - conditions:
-                  - condition: state
-                    entity_id: light.0xa4c138da30166b8f
-                    state: 'on'
-                sequence:
-                  - service: light.turn_off
-                    entity_id:
-                      - light.0xa4c138da30166b8f
+          state: "on"
+      action:
+        - action: light.toggle
+          target:
+            entity_id: light.0x54ef4410008e96fd_bottom
 
-      - alias: lr_light_switching
-        id: lr_light_switching
-        description: Вітальня — перемикання основного та аварійного освітлення
-        initial_state: false
-        trigger:
-    # Вимкнення електрики
-        - platform: state
-          entity_id: binary_sensor.electricity
-          from: 'off'
-          to: 'on'
-    # Увімкнення електрики
-        - platform: state
-          entity_id: binary_sensor.electricity
-          from: 'on'
-          to: 'off'
-        condition:
-    # Режим роботи серверу
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-        action:
-            - choose:
-    # Вимкнули електрику, при увімненому світильнку на стіні
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.electricity
-                    state: 'on'
-                  - condition: state
-                    entity_id: light.0x54ef4410008e96fd_bottom
-                    state: 'on' 
-                sequence:
-                  - service: light.turn_off
-                    entity_id: light.0x54ef4410008e96fd_bottom
-                  - service: light.turn_on
-                    entity_id:
-                      - light.0xa4c138da30166b8f
-                    data_template:
-                      brightness_pct: 60
-    # З'явилиась електрика при увікненому аварійному освітленні
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.electricity
-                    state: 'off'
-                  - condition: state
-                    entity_id: light.0xa4c138da30166b8f
-                    state: 'on' 
-                sequence:
-                  - service: light.turn_off
-                    entity_id: light.0xa4c138da30166b8f
-                  - service: light.turn_on
-                    entity_id: light.0x54ef4410008e96fd_bottom
-
-      - alias: lr_light_table_lamp_toggle
-        id: lr_light_table_lamp_toggle
-        description: Вітальня — ручне керування настільною лампою
-        initial_state: true
-        trigger:
-    ## 1 кнопка Aqara Opple
+    - alias: lr_light_table_lamp_toggle
+      id: lr_light_table_lamp_toggle
+      description: Ручне керування настільною лампою у вітальні
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: sensor.0x04cf8cdf3c79360a_action
-          to: 'button_1_single' 
-    ## Aqara Opple на столі
+          to: "button_1_single"
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
-          to: 'button_1_single'
-        condition:
-    # Режим роботи серверу
+          to: "button_1_single"
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
+          state: "on"
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: light.smart_desk_lamp
+                  state: "off"
+              sequence:
+                - action: light.turn_on
+                  target:
                     entity_id: light.smart_desk_lamp
-                    state: 'off'
-                sequence:
-                  - service: light.turn_on
-                    entity_id:
-                      - light.smart_desk_lamp
-                    data_template:
-                      brightness_pct: 100
-                      color_temp_kelvin: 4000
-              - conditions:
-                  - condition: state
+                  data:
+                    brightness_pct: 100
+                    color_temp_kelvin: 4000
+            - conditions:
+                - condition: state
+                  entity_id: light.smart_desk_lamp
+                  state: "on"
+              sequence:
+                - action: light.turn_off
+                  target:
                     entity_id: light.smart_desk_lamp
-                    state: 'on'
-                sequence:
-                  - service: light.turn_off
-                    entity_id:
-                      - light.smart_desk_lamp
 
-#################### АВТОМАТИЧНЕ ОСВІТЛЕННЯ ####################
-    
-      - alias: lr_ceiling_auto_light_on
-        id: lr_ceiling_auto_light_on
-        description: Вітальня — автоматичне вмикання освітлення
-        initial_state: true
-        trigger:
-    # Спрацювання датчика руху
+    - alias: lr_ceiling_auto_light_on
+      id: lr_ceiling_auto_light_on
+      description: Автоматичне ввімкнення освітлення у вітальні
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: binary_sensor.0x00158d0005414857_occupancy
-          from: 'off'
-          to: 'on'
-        condition:
-    # Перемикач нічного освітлення
+          from: "off"
+          to: "on"
+      condition:
         - condition: state
           entity_id: input_boolean.lr_night_light
-          state: 'on'
-    # Режим роботи серверу
+          state: "on"
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Денний режим
+          state: "on"
         - condition: state
           entity_id: binary_sensor.lr_mode_auto_light_day_on
-          state: 'on' 
-        action:
-        - service: light.turn_on
-          entity_id:
-            - light.yeelight_ceiling4_0x49c726b_ambilight
-            - light.yeelight_ceiling4_0x4a1dacd_ambilight
-          data_template:
+          state: "on"
+      action:
+        - action: light.turn_on
+          target:
+            entity_id:
+              - light.yeelight_ceiling4_0x49c726b_ambilight
+              - light.yeelight_ceiling4_0x4a1dacd_ambilight
+          data:
             brightness_pct: 75
             color_temp_kelvin: 4000
 
-      - alias: lr_ceiling_auto_light_off
-        id: lr_ceiling_auto_light_off
-        description: Вітальня — автоматичне вимикання освітлення
-        initial_state: true
-        trigger:
-    # Вимкнення датчика руху
+    - alias: lr_ceiling_auto_light_off
+      id: lr_ceiling_auto_light_off
+      description: Автоматичне вимкнення освітлення у вітальні
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: binary_sensor.0x00158d0005414857_occupancy
-          from: 'on'
-          to: 'off'
-    # Увімкнення будь-якого зі світильників, окрім ambilight
+          from: "on"
+          to: "off"
         - platform: state
           entity_id: binary_sensor.lr_lights_no_ambi
-          from: 'on'
-          to: 'off'
-        condition:
-    # Перемикач нічного освітлення
+          from: "on"
+          to: "off"
+      condition:
         - condition: state
           entity_id: input_boolean.lr_night_light
-          state: 'on'
-    # Режим роботи серверу
+          state: "on"
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Телевізор
+          state: "on"
         - condition: state
           entity_id: binary_sensor.lr_tv_work
-          state: 'off'
-    # Стрічка за телевізором
+          state: "off"
         - condition: state
           entity_id: light.0xa4c13826d6a56255
-          state: 'off'          
-        action:
-        - service: light.turn_off
-          entity_id:
-            - light.yeelight_ceiling4_0x49c726b_ambilight
-            - light.yeelight_ceiling4_0x4a1dacd_ambilight
+          state: "off"
+      action:
+        - action: light.turn_off
+          target:
+            entity_id:
+              - light.yeelight_ceiling4_0x49c726b_ambilight
+              - light.yeelight_ceiling4_0x4a1dacd_ambilight
 
-
-#################### ДОПОМІЖНЕ ОСВІТЛЕННЯ ####################
-
-      - alias: lr_light_philips_on_off
-        id: lr_light_philips_on_off
-        description: Вітальня — керування прикроватним світильником
-        initial_state: true
-        trigger:
-    ## 5 кнопка Aqara Opple
+    - alias: lr_light_philips_on_off
+      id: lr_light_philips_on_off
+      description: Керування приліжковим світильником у вітальні
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: sensor.0x04cf8cdf3c79360a_action
-          to: 'button_5_double'
-    ## Aqara Opple на столі
+          to: "button_5_double"
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
-          to: 'button_2_triple'
-        condition:
-    # Режим роботи серверу
+          to: "button_2_triple"
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: light.lr_bedside_lamp
-                    state: 'off'
-                sequence:
-                  - service: light.turn_off
+          state: "on"
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: light.lr_bedside_lamp
+                  state: "off"
+              sequence:
+                - action: light.turn_off
+                  target:
                     entity_id:
                       - light.smart_desk_lamp
                       - light.yeelight_ceiling4_0x49c726b
                       - light.yeelight_ceiling4_0x4a1dacd
                       - light.0x54ef4410008e96fd_bottom
-                  - service: light.turn_on
-                    entity_id:
-                      - light.lr_bedside_lamp
-                    data_template:
-                      brightness_pct: 100
-                      color_temp_kelvin: 4000
-              - conditions:
-                  - condition: state
+                - action: light.turn_on
+                  target:
                     entity_id: light.lr_bedside_lamp
-                    state: 'on'
-                sequence:
-                  - service: light.turn_on
-                    entity_id:
-                      - light.lr_bedside_lamp
-                    data_template:
-                      brightness_pct: 50
-                      color_temp_kelvin: 3000            
-                  - delay: 00:00:15
-                  - service: light.turn_off
-                    entity_id:
-                      - light.lr_bedside_lamp
-                      
-      - alias: lr_light_philips_temp_on_and_off
-        id: lr_light_philips_temp_on_and_off
-        description: Вітальня — вимкнення всього освітлення з тимчасовим підсвічуванням
-        initial_state: true
-        trigger:
-    ## Aqara Opple на столі
+                  data:
+                    brightness_pct: 100
+                    color_temp_kelvin: 4000
+            - conditions:
+                - condition: state
+                  entity_id: light.lr_bedside_lamp
+                  state: "on"
+              sequence:
+                - action: light.turn_on
+                  target:
+                    entity_id: light.lr_bedside_lamp
+                  data:
+                    brightness_pct: 50
+                    color_temp_kelvin: 3000
+                - delay: "00:00:15"
+                - action: light.turn_off
+                  target:
+                    entity_id: light.lr_bedside_lamp
+
+    - alias: lr_light_philips_temp_on_and_off
+      id: lr_light_philips_temp_on_and_off
+      description: Вимкнення всього світла з тимчасовим підсвічуванням
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
-          to: 'button_6_triple'
-        condition:
-    # Режим роботи серверу
+          to: "button_6_triple"
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-        action:
-        - service: light.turn_off
-          entity_id:
-            - light.smart_desk_lamp
-            - light.yeelight_ceiling4_0x49c726b
-            - light.yeelight_ceiling4_0x4a1dacd
-            - light.0x54ef4410008e96fd_bottom
-        - service: light.turn_on
-          entity_id:
-            - light.lr_bedside_lamp
-          data_template:
+          state: "on"
+      action:
+        - action: light.turn_off
+          target:
+            entity_id:
+              - light.smart_desk_lamp
+              - light.yeelight_ceiling4_0x49c726b
+              - light.yeelight_ceiling4_0x4a1dacd
+              - light.0x54ef4410008e96fd_bottom
+        - action: light.turn_on
+          target:
+            entity_id: light.lr_bedside_lamp
+          data:
             brightness_pct: 100
             color_temp_kelvin: 4000
-        - delay: 00:00:15
-        - service: light.turn_off
-          entity_id:
-            - light.lr_bedside_lamp
-          
-#################### ВІТАЛЬНЯ БАЛКОН ####################          
-          
-      - alias: lr_light_balcony_turn_on
-        id: lr_light_balcony_turn_on
-        description: Вітальня — вмикання люстри на балконі
-        initial_state: true
-        trigger:
-    # Вимикач на вході
+        - delay: "00:00:15"
+        - action: light.turn_off
+          target:
+            entity_id: light.lr_bedside_lamp
+
+    - alias: lr_light_balcony_turn_on
+      id: lr_light_balcony_turn_on
+      description: Увімкнення люстри на балконі у вітальні
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: sensor.0x54ef441000681a6f_action
-          to: 'single_right'
-    # Кнопка на балконі
+          to: "single_right"
         - platform: state
           entity_id: sensor.0x00158d0001b86d2e_action
-          to: 'single'
-    # Рух в темряві
+          to: "single"
         - platform: state
           entity_id: binary_sensor.lr_balcony_moving_in_dark
-          to: 'on'
-        condition:
-    # Режим роботи серверу
+          to: "on"
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Люстра вимкнена
+          state: "on"
         - condition: state
           entity_id: light.0xa4c13812b94c8365
-          state: 'off'
-        action:
-        - service: light.turn_on
-          entity_id:
-            - light.0xa4c13812b94c8365
-          data_template:
+          state: "off"
+      action:
+        - action: light.turn_on
+          target:
+            entity_id: light.0xa4c13812b94c8365
+          data:
             brightness_pct: 100
-            color_temp_kelvin: 4000          
-          
-      - alias: lr_light_balcony_turn_off
-        id: lr_light_balcony_turn_off
-        description: Вітальня — вимкнення люстри на балконі
-        initial_state: true
-        trigger:
-    # Вимикач на вході
+            color_temp_kelvin: 4000
+
+    - alias: lr_light_balcony_turn_off
+      id: lr_light_balcony_turn_off
+      description: Вимкнення люстри на балконі у вітальні
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: sensor.0x54ef441000681a6f_action
-          to: 'single_right'
-    # Кнопка на балконі
+          to: "single_right"
         - platform: state
           entity_id: sensor.0x00158d0001b86d2e_action
-          to: 'single'
-    # Світло без руху
+          to: "single"
         - platform: state
           entity_id: binary_sensor.lr_balcony_light_no_move
-          to: 'on'
-        condition:
-    # Режим роботи серверу
+          to: "on"
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Люстра увімкнена
+          state: "on"
         - condition: state
           entity_id: light.0xa4c13812b94c8365
-          state: 'on'
-        action:
-        - service: light.turn_off
-          entity_id:
-           - light.0xa4c13812b94c8365          
+          state: "on"
+      action:
+        - action: light.turn_off
+          target:
+            entity_id: light.0xa4c13812b94c8365
 
-          
-    # Управление третьим USB портом реле
-      - alias: lr_control_usb_3_relay
-        id: lr_control_usb_3_relay
-        description: Управление третьим USB портом реле
-        initial_state: true
-        trigger:
-    # Выключатель на столе, удерживание 2 кнопки
+    - alias: lr_control_usb_3_relay
+      id: lr_control_usb_3_relay
+      description: Керування третім USB-портом реле у вітальні
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
-          to: 'button_2_hold'
-        condition:
-    # Переключатель режима работы сервера
+          to: "button_2_hold"
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-        action:
+          state: "on"
+      action:
         - action: switch.toggle
-          data: {}
           target:
-            entity_id: switch.0xa4c138d641b6346f_l3    
-            
-            
-            
+            entity_id: switch.0xa4c138d641b6346f_l3

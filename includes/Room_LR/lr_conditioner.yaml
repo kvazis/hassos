@@ -1,178 +1,253 @@
+##################################################
+## Актуалізовано: 2026-03-21
+##################################################
+
 lr_conditioner:
 
-    input_button:
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-      lr_conditioner:
-        name: Вітальня кондиціонер
+  homeassistant:
+    customize:
 
-    input_datetime:
-      lr_conditioner_from:
-        name: Час роботи з
-        has_date: false
-        has_time: true
-        
-      lr_conditioner_to:
-        name: Час роботи по
-        has_date: false
-        has_time: true
+      ############################
+      ## Автоматизації
+      ############################
 
-    input_number:
-      lr_conditioner_min:
-        name: Температура вимкнення
-        min: 20
-        max: 25
-        step: 1
-        
-      lr_conditioner_max:
-        name: Температура ввімкнення
-        min: 26
-        max: 30
-        step: 1
+      automation.lr_conditioner_control:
+        friendly_name: Вітальня кондиціонер - керування
+        icon: mdi:air-conditioner
 
-    mqtt:
-      binary_sensor:
-        - name: lr_conditioner
-          unique_id: lr_conditioner
-          state_topic: "states/lr_conditioner"
-        
-    template:
-    
-      - binary_sensor:
+      ############################
+      ## Кондиціонер - датчик кришки
+      ############################
 
-################# Час роботи кондиціонера #################     
-          - name: lr_conditioner_time
-            unique_id: lr_conditioner_time
-            state: >
-                {% set t = now().strftime('%H:%M:%S') %}
-                {% set begin = states("input_datetime.lr_conditioner_from") %}
-                {% set end = states("input_datetime.lr_conditioner_to") %}
-                {% set midnight = now().replace(hour=0, minute=0, second=0).strftime('%H:%M:%S') %}
-                {% if begin <= end %} 
-                {{ (begin <= t < end) }}
-                {% elif midnight == end %} 
-                {{ (begin <= t > end) }}
-                {% elif begin >= end %} 
-                        {%  if begin <= t >= midnight %}                       
-                        {{ (begin <= t > end) }}
-                        {%  elif midnight <= t <= end %}                       
-                        {{ (midnight <= t < end) }}
-                        {%  elif end <= t <= begin %}                       
-                        off
-                        {% endif %}
-                {% endif %}
-            device_class: running
+      binary_sensor.0x00158d00054496b0_contact:
+        friendly_name: Вітальня кондиціонер - кришка
+        device_class: opening
 
+      sensor.0x00158d00054496b0_battery:
+        friendly_name: Вітальня кондиціонер - батарея датчика
+        device_class: battery
+        unit_of_measurement: "%"
 
-    # Автоматичне вмикання
-          - name: lr_conditioning_on
-            unique_id: lr_conditioning_on
-            state: >
-              {{ is_state('binary_sensor.lr_aeration', 'off')  
-                 and is_state('binary_sensor.lr_conditioner', 'on')
-                 and is_state('binary_sensor.0x00158d00054496b0_contact', 'off')
-                 and is_state('binary_sensor.lr_conditioner_time', 'on')
-                 and (states('sensor.0x00158d00015aebb6_temperature') | float >= (states('input_number.lr_conditioner_max') | float))
-              }}
-            device_class: cold
-            
-    # Умови длял вимикання
-          - name: lr_conditioning_terms
-            unique_id: lr_conditioning_terms
-            state: >
-              {{ is_state('binary_sensor.lr_aeration', 'on')  
-                 or is_state('binary_sensor.lr_conditioner', 'off')
-                 or is_state('binary_sensor.lr_conditioner_time', 'off')
-                 or (states('sensor.0x00158d00015aebb6_temperature') | float <= (states('input_number.lr_conditioner_min') | float))
-              }}
-            device_class: cold
-            
-    # Автоматичне вимикання
-          - name: lr_conditioning_off
-            unique_id: lr_conditioning_off
-            state: >
-              {{ is_state('binary_sensor.lr_conditioning_terms', 'on')  
-                 and is_state('binary_sensor.0x00158d00054496b0_contact', 'on')
-              }}
-            device_class: cold
+      ############################
+      ## Сутності пакета
+      ############################
 
-      - switch:
+      input_button.lr_conditioner:
+        friendly_name: Вітальня кондиціонер - ручний запуск
+        icon: mdi:gesture-tap-button
 
-          - unique_id: lr_conditioner_mode
-            name: Вітальня режим кондиціонування повітря
-            default_entity_id: switch.lr_conditioner_mode
-            state: >
-              {{ is_state('binary_sensor.lr_conditioner', 'on') }}    
-            turn_on:
-              - action: mqtt.publish
-                data:
-                  topic: states/lr_conditioner
-                  payload: 'ON'
-                  retain: true          
-            turn_off:
-              - action: mqtt.publish
-                data:
-                  topic: states/lr_conditioner
-                  payload: 'OFF'
-                  retain: true          
-            icon: >
-              {% if is_state('switch.lr_conditioner_mode', 'on') %}
-                mdi:air-conditioner
-              {% else %}
-                mdi:fan-off
-              {% endif %}
+      input_datetime.lr_conditioner_from:
+        friendly_name: Вітальня кондиціонер - час роботи з
+        icon: mdi:clock-start
+
+      input_datetime.lr_conditioner_to:
+        friendly_name: Вітальня кондиціонер - час роботи до
+        icon: mdi:clock-end
+
+      input_number.lr_conditioner_min:
+        friendly_name: Вітальня кондиціонер - температура вимкнення
+        icon: mdi:thermometer-low
+        unit_of_measurement: "°C"
+
+      input_number.lr_conditioner_max:
+        friendly_name: Вітальня кондиціонер - температура ввімкнення
+        icon: mdi:thermometer-high
+        unit_of_measurement: "°C"
+
+      switch.lr_conditioner_enabled:
+        friendly_name: Вітальня кондиціонер - автоматичний режим
+        icon: mdi:air-conditioner
+
+      binary_sensor.lr_conditioner_time:
+        friendly_name: Вітальня кондиціонер - дозволений час
+        icon: mdi:clock-check-outline
+
+      binary_sensor.lr_conditioner_on_conditions:
+        friendly_name: Вітальня кондиціонер - умови ввімкнення
+        icon: mdi:play-circle-outline
+
+      binary_sensor.lr_conditioner_off_conditions:
+        friendly_name: Вітальня кондиціонер - умови вимкнення
+        icon: mdi:stop-circle-outline
 
 
+  ##################################################
+  ## INPUTS
+  ##################################################
 
-    automation:
+  input_button:
+    lr_conditioner:
+      name: lr_conditioner
 
-      - alias: lr_conditioner_control
-        id: lr_conditioner_control
-        description: Вітальня, керування кондиціонером
-        initial_state: true
-        trigger:
-    ## Віртуальна кнопка
+  input_datetime:
+    lr_conditioner_from:
+      name: lr_conditioner_from
+      has_date: false
+      has_time: true
+
+    lr_conditioner_to:
+      name: lr_conditioner_to
+      has_date: false
+      has_time: true
+
+  input_number:
+    lr_conditioner_min:
+      name: lr_conditioner_min
+      min: 20
+      max: 25
+      step: 1
+
+    lr_conditioner_max:
+      name: lr_conditioner_max
+      min: 26
+      max: 30
+      step: 1
+
+
+  ##################################################
+  ## MQTT
+  ##################################################
+
+  mqtt:
+    switch:
+      - name: lr_conditioner_enabled
+        unique_id: lr_conditioner_enabled
+        state_topic: "states/lr_conditioner"
+        command_topic: "states/lr_conditioner"
+        payload_on: "ON"
+        payload_off: "OFF"
+        state_on: "ON"
+        state_off: "OFF"
+        retain: true
+        icon: mdi:air-conditioner
+
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+    - binary_sensor:
+
+        ############################
+        ## Дозволений час роботи
+        ############################
+
+        - name: lr_conditioner_time
+          unique_id: lr_conditioner_time
+          state: >
+            {% set t = now().strftime('%H:%M:%S') %}
+            {% set begin = states('input_datetime.lr_conditioner_from') %}
+            {% set end = states('input_datetime.lr_conditioner_to') %}
+
+            {% if begin < end %}
+              {{ begin <= t < end }}
+            {% elif begin > end %}
+              {{ t >= begin or t < end }}
+            {% else %}
+              false
+            {% endif %}
+          device_class: running
+
+        ############################
+        ## Умови ввімкнення
+        ############################
+
+        - name: lr_conditioner_on_conditions
+          unique_id: lr_conditioner_on_conditions
+          state: >
+            {{
+              is_state('binary_sensor.lr_aeration', 'off')
+              and is_state('switch.lr_conditioner_enabled', 'on')
+              and is_state('binary_sensor.0x00158d00054496b0_contact', 'off')
+              and is_state('binary_sensor.lr_conditioner_time', 'on')
+              and (
+                states('sensor.0x00158d00015aebb6_temperature') | float(0)
+                >= states('input_number.lr_conditioner_max') | float(0)
+              )
+            }}
+          device_class: cold
+
+        ############################
+        ## Умови вимкнення
+        ############################
+
+        - name: lr_conditioner_off_conditions
+          unique_id: lr_conditioner_off_conditions
+          state: >
+            {{
+              (
+                is_state('binary_sensor.lr_aeration', 'on')
+                or is_state('switch.lr_conditioner_enabled', 'off')
+                or is_state('binary_sensor.lr_conditioner_time', 'off')
+                or (
+                  states('sensor.0x00158d00015aebb6_temperature') | float(0)
+                  <= states('input_number.lr_conditioner_min') | float(0)
+                )
+              )
+              and is_state('binary_sensor.0x00158d00054496b0_contact', 'on')
+            }}
+          device_class: cold
+
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+    - alias: lr_conditioner_control
+      id: lr_conditioner_control
+      description: Вітальня кондиціонер - керування
+      initial_state: true
+
+      trigger:
         - platform: state
           entity_id: input_button.lr_conditioner
+
         - platform: state
-          entity_id: binary_sensor.lr_conditioning_on
-          from: 'off'
-          to: 'on'
+          entity_id: binary_sensor.lr_conditioner_on_conditions
+          from: "off"
+          to: "on"
+
         - platform: state
-          entity_id: binary_sensor.lr_conditioning_off
-          from: 'off'
-          to: 'on'
-        condition:
-    # Режим роботи серверу
+          entity_id: binary_sensor.lr_conditioner_off_conditions
+          from: "off"
+          to: "on"
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Режим роботи
+          state: "on"
+
         - condition: state
-          entity_id: switch.lr_conditioner_mode
-          state: 'on'
-    # Сенсор електрики
+          entity_id: switch.lr_conditioner_enabled
+          state: "on"
+
         - condition: state
-          entity_id: binary_sensor.blackout_after
-          state: 'off' 
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.0x00158d00054496b0_contact
-                    state: 'off'
-                sequence:
-                  - service: remote.send_command
-                    data:
-                      entity_id: remote.lr_broadlin_ir
-                      command:
-                        - b64:JgCSAAABJpMVNhUSFRMUNxU2FTYVNxQTFRIVExUSFTYVExQTFRIVExQTFRMUExQTFRMUExUSFRMUExUSFRMUExU2FRMUNxQTFRMVNhQTFQACjhUTFBMVEhUTFDcVEhUTFBMVEhUTFBMVEhUTFDcVEhUTFBMVEhUTFRIVExQTFRIVExQTFRIVExQTFRIVNxQ3FDcVAA0FAAAAAAAA
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.0x00158d00054496b0_contact
-                    state: 'on'
-                sequence:
-                  - service: remote.send_command
-                    data:
-                      entity_id: remote.lr_broadlin_ir
-                      command:
-                        - b64:JgCSAAABJpMUNxQTFRMUExU2FTYWNhQTFRIVExQTFTYWEhQTFRIVExUSFRIWEhQTFRIVExQTFRMUExUSFRMUExU2FhIUNxQTFhEWNhUSFQACjhUTFBMVEhUTFDcUExUTFBMVEhUTFRIVEhUTFDcVEhUTFBMVEhYSFBMVEhUTFRIVExQTFRIVExUSFRIVNhY2FBMVAA0FAAAAAAAA
+          entity_id: binary_sensor.electricity_internal
+          state: "off"
+
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.0x00158d00054496b0_contact
+                  state: "off"
+              sequence:
+                - action: remote.send_command
+                  target:
+                    entity_id: remote.lr_broadlin_ir
+                  data:
+                    command:
+                      - b64:JgCSAAABJpMVNhUSFRMUNxU2FTYVNxQTFRIVExUSFTYVExQTFRIVExQTFRMUExQTFRMUExUSFRMUExUSFRMUExU2FRMUNxQTFRMVNhQTFQACjhUTFBMVEhUTFDcVEhUTFBMVEhUTFBMVEhUTFDcVEhUTFBMVEhUTFRIVExQTFRIVExQTFRIVExQTFRIVNxQ3FDcVAA0FAAAAAAAA
+          default:
+            - action: remote.send_command
+              target:
+                entity_id: remote.lr_broadlin_ir
+              data:
+                command:
+                  - b64:JgCSAAABJpMUNxQTFRMUExU2FTYWNhQTFRIVExQTFTYWEhQTFRIVExUSFRIWEhQTFRIVExQTFRMUExUSFRMUExU2FhIUNxQTFhEWNhUSFQACjhUTFBMVEhUTFDcUExUTFBMVEhUTFRIVEhUTFDcVEhUTFBMVEhYSFBMVEhUTFRIVExQTFRIVExUSFRIVNhY2FBMVAA0FAAAAAAAA

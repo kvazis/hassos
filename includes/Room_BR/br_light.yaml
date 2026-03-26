@@ -1,163 +1,211 @@
+##################################################
+## Актуалізовано: 2026-03-24
+##################################################
+
 br_light:
 
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-    #################################################################
-    ## Керування люстрою
-    #################################################################
+  homeassistant:
+    customize:
 
-
-    input_boolean:
-    
-
-    # Перемикач для визначення, що світло ввімкнено вручну
-      br_ceiling:
-        name: Спальня ручне ввімкнення люстри
+      input_boolean.br_ceiling:
+        friendly_name: Спальня - ручне ввімкнення люстри
         icon: mdi:lightbulb-off-outline
-        
 
-          
-    input_button:
+      input_button.br_ceiling_light:
+        friendly_name: Спальня - люстра
+        icon: mdi:ceiling-light
 
-      br_ceiling_light:
-        name: Спальная люстра
+      automation.br_ceiling_manual_control:
+        friendly_name: Спальня - ручне керування люстрою
+        icon: mdi:light-switch
 
+      automation.br_ceiling_turn_control:
+        friendly_name: Спальня - контроль вмикання люстри
+        icon: mdi:lightbulb-alert
 
-    automation:
-    
-      - alias: br_ceiling_manual_control
-        id: br_ceiling_manual_control
-        description: Спальня - ручне керування люстрою
-        initial_state: true
-        trigger:
-    # Віртуальна кнопка
+      automation.br_light_switching:
+        friendly_name: Спальня - резервне освітлення
+        icon: mdi:lightbulb-night
+
+  ##################################################
+  ## INPUT_BOOLEAN
+  ##################################################
+
+  input_boolean:
+
+    br_ceiling:
+      name: br_ceiling
+
+  ##################################################
+  ## INPUT_BUTTON
+  ##################################################
+
+  input_button:
+
+    br_ceiling_light:
+      name: br_ceiling_light
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    ##################################################
+    ## РУЧНЕ КЕРУВАННЯ ЛЮСТРОЮ
+    ##################################################
+
+    - alias: br_ceiling_manual_control
+      id: br_ceiling_manual_control
+      description: Ручне керування люстрою
+      initial_state: true
+
+      trigger:
         - platform: state
           entity_id: input_button.br_ceiling_light
-    # Вимикач на вході
+
         - platform: state
           entity_id: sensor.0x54ef44100024689c_action
-          to: 'single_right'
-    # Пульт Loratap кнопка 1, 1 клік
+          to: "single_right"
+
         - platform: state
           entity_id: sensor.0x60a423fffe942cf2_action
-          to: '1_single'
-    # Вимикач біля ліжка
+          to: "1_single"
+
         - domain: mqtt
           device_id: df1032556f8b28d1f774b454d8525cb4
           type: action
           subtype: button_1_single
           trigger: device
-        condition:
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
+          state: "on"
+
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: light.br_philips_62
+                  state: "off"
+              sequence:
+                - action: input_boolean.turn_on
+                  target:
+                    entity_id: input_boolean.br_ceiling
+
+                - action: light.turn_on
+                  target:
                     entity_id: light.br_philips_62
-                    state: 'off'
-                sequence:
-                  - service: input_boolean.turn_on
-                    target:
-                      entity_id: input_boolean.br_ceiling
-                  - service: light.turn_on
-                    entity_id:
-                      - light.br_philips_62
-                    data_template:
-                      brightness_pct: 100
-                      color_temp_kelvin: 4000
-              - conditions:
-                  - condition: state
+                  data:
+                    brightness_pct: 100
+                    color_temp_kelvin: 4000
+
+            - conditions:
+                - condition: state
+                  entity_id: light.br_philips_62
+                  state: "on"
+              sequence:
+                - action: xiaomi_miio.light_set_scene
+                  target:
                     entity_id: light.br_philips_62
-                    state: 'on'
-                sequence:
-                  - service: xiaomi_miio.light_set_scene
+                  data:
+                    scene: 4
+
+                - delay: "00:00:03"
+
+                - action: input_boolean.turn_off
+                  target:
+                    entity_id: input_boolean.br_ceiling
+
+                - action: light.turn_off
+                  target:
                     entity_id: light.br_philips_62
-                    data:
-                      scene: 4 
-                  - delay: 00:00:03
-                  - service: input_boolean.turn_off
-                    target:
-                      entity_id: input_boolean.br_ceiling
-                  - service: light.turn_off
-                    entity_id:
-                      - light.br_philips_62
-                      
-    # Контроль того, що люстра ввімкнута вручну             
-      - alias: br_ceiling_turn_control
-        id: br_ceiling_turn_control
-        description: Спальня - контроль вмикання люстри
-        initial_state: true
-        trigger:
+
+    ##################################################
+    ## КОНТРОЛЬ ВМИКАННЯ ЛЮСТРИ
+    ##################################################
+
+    - alias: br_ceiling_turn_control
+      id: br_ceiling_turn_control
+      description: Контроль вмикання люстри
+      initial_state: true
+
+      trigger:
         - platform: state
           entity_id: light.br_philips_62
-          to: 'on'
-        condition:
+          to: "on"
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
+          state: "on"
+
         - condition: state
           entity_id: input_boolean.br_ceiling
-          state: 'off'
-        action:
-        - service: light.turn_off
-          entity_id:
-            - light.br_philips_62
-            
-    # Перемикання на резервне освітлення
-      - alias: br_light_switching
-        id: br_light_switching
-        description: Спальня - перемикання на резервне освітлення
-        initial_state: false
-        trigger:
-    # Спрацювання сенсора електрики
+          state: "off"
+
+      action:
+        - action: light.turn_off
+          target:
+            entity_id: light.br_philips_62
+
+    ##################################################
+    ## РЕЗЕРВНЕ ОСВІТЛЕННЯ
+    ##################################################
+
+    - alias: br_light_switching
+      id: br_light_switching
+      description: Перемикання на резервне освітлення
+      initial_state: true
+
+      trigger:
         - platform: state
-          entity_id: binary_sensor.electricity
-          from: 'off'
-          to: 'on'
-        condition:
-    # Перемикач режиму робти серверу
+          entity_id: binary_sensor.electricity_internal
+          from: "off"
+          to: "on"
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Було ввімкнено люстру
+          state: "on"
+
         - condition: state
           entity_id: light.br_philips_62
-          state: 'on'
-        action:
-        - service: light.turn_on
-          entity_id: light.br_wled_round
+          state: "on"
+
+      action:
+        - action: light.turn_on
+          target:
+            entity_id: light.br_wled_round
           data:
             effect: Solid
             rgb_color: [0, 0, 0]
-        - service: light.turn_on
-          entity_id: light.br_wled_round
+
+        - action: light.turn_on
+          target:
+            entity_id: light.br_wled_round
           data:
             effect: Percent
             brightness_pct: 100
             rgb_color: [255, 255, 255]
-        - service: select.select_option
-          data:
-            option: Default
+
+        - action: select.select_option
           target:
             entity_id: select.br_wled_round_color_palette
-        - service: number.set_value
+          data:
+            option: Default
+
+        - action: number.set_value
           target:
             entity_id: number.br_wled_round_intensity
           data:
             value: 5
-        - service: script.turn_on
-          entity_id: script.br_gradient_wled_on
 
-
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
+        - action: script.turn_on
+          target:
+            entity_id: script.br_gradient_wled_on

@@ -1,174 +1,165 @@
+##################################################
+## Актуалізовано: 2026-03-21
+##################################################
+
 en_light:
 
-    template:
-     
-      - binary_sensor:
+  homeassistant:
+    customize:
+      binary_sensor.en_light_day:
+        friendly_name: Передпокій - світло без руху вдень
+        icon: mdi:timer
+      binary_sensor.en_light_night:
+        friendly_name: Передпокій - світло без руху вночі
+        icon: mdi:timer-night
+      binary_sensor.en_light_off_3min:
+        friendly_name: Передпокій - світло вимкнене менше 3 хвилин
+        icon: mdi:lightbulb
+      binary_sensor.en_door_open:
+        friendly_name: Передпокій - відкриття дверей після тривалої паузи
+        icon: mdi:lightbulb-spot
+      automation.en_light_control:
+        friendly_name: Передпокій - керування світлом
+        icon: mdi:lightbulb-auto
 
-    # Свет без движения в прихожей днем
-          - name: en_light_day
-            unique_id: en_light_day
-            state: >
-              {{ is_state('light.0x00158d0003e74c31', 'on')  
-                 and is_state('binary_sensor.0x00158d00013f7894_occupancy', 'off')
-                 and is_state('binary_sensor.night_time', 'off')
-              }}
-            delay_on: 00:03:00
-            icon: >
-              {% if is_state("binary_sensor.en_light_day", "on") %}
-              mdi:timer
-              {% else %}
-              mdi:timer-off
-              {% endif %}
-              
-              {{ is_state('light.0x00158d0003e74c31', 'on')  
-                 and is_state('binary_sensor.0x00158d00013f7894_occupancy', 'off')
-                 and is_state('binary_sensor.night_time', 'off')
-              }}              
-              
-    # Свет без движения в прихожей ночью
-          - name: en_light_night
-            unique_id: en_light_night
-            state: >
-              {{ is_state('light.0x00158d0003e74c31', 'on')  
-                 and is_state('binary_sensor.0x00158d00013f7894_occupancy', 'off')
-                 and is_state('binary_sensor.night_time', 'on')
-              }}
-            delay_on: 00:03:00
-            icon: >
-              {% if is_state("binary_sensor.en_light_night", "on") %}
-              mdi:timer
-              {% else %}
-              mdi:timer-off
-              {% endif %}
+  template:
 
-    # Лампочка выключена менее 3х минут назад
-          - name: en_light_off_3min
-            unique_id: en_light_off_3min
-            state: >
-              {{ is_state('light.0x00158d0003e74c31', 'on')  
-              }}
-            delay_off: 
-                minutes: 3
-            device_class: light
-            icon: >
-              {% if is_state("binary_sensor.en_light_off_3min", "on") %}
-              mdi:lightbulb-on
-              {% else %}
-              mdi:lightbulb
-              {% endif %}
-              
-    # Открытие двери, лампочка выключена более 3 минут
-          - name: en_door_open
-            unique_id: en_door_open
-            state: >
-              {{ is_state('binary_sensor.0x00158d000119378d_contact', 'on')
-                 and is_state('binary_sensor.en_light_off_3min', 'off')
-              }}
-            device_class: light
-            icon: >
-              {% if is_state("binary_sensor.en_door_open", "on") %}
-              mdi:lightbulb-spot
-              {% else %}
-              mdi:lightbulb-spot-off
-              {% endif %}
-              
-    automation:
+    ##################################################
+    ## СВІТЛО БЕЗ РУХУ В ПЕРЕДПОКОЇ ВДЕНЬ
+    ##################################################
 
-      - alias: en_light_control
-        id: en_light_control
-        description: Прихожая управление лампочкой
-        initial_state: true
-        trigger:
-    # Выключение света без движения днем
+    - binary_sensor:
+        - unique_id: en_light_day
+          state: >
+            {{ is_state('light.0x00158d0003e74c31', 'on')
+               and is_state('binary_sensor.0x00158d00013f7894_occupancy', 'off')
+               and is_state('binary_sensor.night_time', 'off') }}
+          delay_on: "00:03:00"
+
+        ##################################################
+        ## СВІТЛО БЕЗ РУХУ В ПЕРЕДПОКОЇ ВНОЧІ
+        ##################################################
+
+        - unique_id: en_light_night
+          state: >
+            {{ is_state('light.0x00158d0003e74c31', 'on')
+               and is_state('binary_sensor.0x00158d00013f7894_occupancy', 'off')
+               and is_state('binary_sensor.night_time', 'on') }}
+          delay_on: "00:03:00"
+
+        ##################################################
+        ## ЛАМПА ВИМКНЕНА МЕНШЕ 3 ХВИЛИН ТОМУ
+        ##################################################
+
+        - unique_id: en_light_off_3min
+          state: >
+            {{ is_state('light.0x00158d0003e74c31', 'on') }}
+          delay_off:
+            minutes: 3
+
+        ##################################################
+        ## ВІДКРИТТЯ ДВЕРЕЙ, КОЛИ СВІТЛО БУЛО ВИМКНЕНЕ ПОНАД 3 ХВИЛИНИ
+        ##################################################
+
+        - unique_id: en_door_open
+          state: >
+            {{ is_state('binary_sensor.0x00158d000119378d_contact', 'on')
+               and is_state('binary_sensor.en_light_off_3min', 'off') }}
+
+  automation:
+
+    ##################################################
+    ## КЕРУВАННЯ СВІТЛОМ У ПЕРЕДПОКОЇ
+    ##################################################
+
+    - alias: en_light_control
+      id: en_light_control
+      description: Керування освітленням у передпокої
+      initial_state: true
+
+      trigger:
+        ##################################################
+        ## ВИМКНЕННЯ СВІТЛА БЕЗ РУХУ ВДЕНЬ
+        ##################################################
         - platform: state
           entity_id: binary_sensor.en_light_day
-          to: 'on'
-    # Выключение света без движения ночью
+          to: "on"
+
+        ##################################################
+        ## ВИМКНЕННЯ СВІТЛА БЕЗ РУХУ ВНОЧІ
+        ##################################################
         - platform: state
           entity_id: binary_sensor.en_light_night
-          to: 'on'
-    # Включение света при открытии двери
+          to: "on"
+
+        ##################################################
+        ## УВІМКНЕННЯ СВІТЛА ПРИ ВІДКРИТТІ ДВЕРЕЙ
+        ##################################################
         - platform: state
           entity_id: binary_sensor.en_door_open
-          to: 'on'
-    # Выключатель на стене у входа
+          to: "on"
+
+        ##################################################
+        ## ВИМИКАЧ НА СТІНІ БІЛЯ ВХОДУ
+        ##################################################
         - platform: state
           entity_id: sensor.0x00158d00057305ac_action
-          to: 'single_right'
-    # Круглая кнопка в шкафу
+          to: "single_right"
+
+        ##################################################
+        ## КРУГЛА КНОПКА У ШАФІ
+        ##################################################
         - platform: state
           entity_id: sensor.0x00158d0001f3fefe_action
-          to: 'double' 
-    # 6 клавишник на входе в кухню
+          to: "double"
+
+        ##################################################
+        ## 6-КЛАВІШНИК НА ВХОДІ ДО КУХНІ
+        ##################################################
         - platform: state
           entity_id: sensor.0x04cf8cdf3c794209_action
-          to: 'button_4_single'
-    # 4 клавишник на комоде
+          to: "button_4_single"
+
+        ##################################################
+        ## 4-КЛАВІШНИК НА КОМОДІ
+        ##################################################
         - platform: state
           entity_id: sensor.0x04cf8cdf3c7942ca_action
-          to: 'button_1_single' 
-    ## Aqara Opple на столе
+          to: "button_1_single"
+
+        ##################################################
+        ## AQARA OPPLE НА СТОЛІ
+        ##################################################
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
-          to: 'button_3_single'
-        condition:
+          to: "button_3_single"
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: light.0x00158d0003e74c31
-                    state: 'off'
-                sequence:
-                  - service: light.turn_on
+          state: "on"
+
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: light.0x00158d0003e74c31
+                  state: "off"
+              sequence:
+                - action: light.turn_on
+                  target:
                     entity_id:
                       - light.0x00158d0003e74c31
-                    data_template:
-                      brightness_pct: 100
-                      color_temp_kelvin: 4000
-              - conditions:
-                  - condition: state
-                    entity_id: light.0x00158d0003e74c31
-                    state: 'on'
-                sequence:
-                  - service: light.turn_off
+                  data:
+                    brightness_pct: 100
+                    color_temp_kelvin: 4000
+
+            - conditions:
+                - condition: state
+                  entity_id: light.0x00158d0003e74c31
+                  state: "on"
+              sequence:
+                - action: light.turn_off
+                  target:
                     entity_id:
-                      - light.0x00158d0003e74c31              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
+                      - light.0x00158d0003e74c31

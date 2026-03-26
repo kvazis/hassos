@@ -1,456 +1,592 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 deye:
 
-    recorder:
-      include:
-        entities:
-          - binary_sensor.deye_sun15_grid
-          - sensor.deye_sun15_grid_power
-          - sensor.deye_sun15_grid_l1_power
-          - sensor.deye_sun15_grid_l2_power
-          - sensor.deye_sun15_grid_l3_power
-          - sensor.deye_sun15_grid_l1_voltage
-          - sensor.deye_sun15_grid_l2_voltage
-          - sensor.deye_sun15_grid_l3_voltage
-          - sensor.deye_sun15_load_power
-          - sensor.deye_sun15_load_l1_power
-          - sensor.deye_sun15_load_l2_power
-          - sensor.deye_sun15_load_l3_power
-          - sensor.deye_sun15_load_l1_voltage
-          - sensor.deye_sun15_load_l2_voltage
-          - sensor.deye_sun15_load_l3_voltage
-          - sensor.deye_sun15_battery
-          - sensor.deye_sun15_battery_voltage
-          - sensor.deye_sun15_battery_current
-          - sensor.deye_sun15_battery_power
-          - sensor.deye_sun15_battery_state
-          - sensor.deye_sun15_battery_temperature
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
+  homeassistant:
+    customize:
 
-  ###################################################################
-  # Режим вимкнення потужних навантажень
-  ###################################################################
+      ##################################################
+      ## АВТОМАТИЗАЦІЇ
+      ##################################################
 
-    input_boolean:
-      deye_sun15_auto_power_off:
-        name: Deye SUN15 вимкнення потужних навантажень
-        icon: mdi:power-plug-off-outline          
+      automation.deye_sun15_grid_off_record:
+        friendly_name: Deye SUN15 - фіксація вимкнення зовнішнього живлення
+        icon: mdi:transmission-tower-off
 
-  ###################################################################
-  # Зберігання часу ввімкненя і вимкнення
-  ###################################################################
+      automation.deye_sun15_grid_on_record:
+        friendly_name: Deye SUN15 - фіксація відновлення зовнішнього живлення
+        icon: mdi:transmission-tower
 
-    input_datetime:
+      automation.deye_sun15_grid_status_notify:
+        friendly_name: Deye SUN15 - сповіщення про стан зовнішнього живлення
+        icon: mdi:message-alert-outline
 
-      deye_sun15_grid_off:
-        name: Deye зовнішнє живлення вимкнено в
-        has_date: true
-        has_time: true
+      automation.deye_sun15_grid_summary_notify:
+        friendly_name: Deye SUN15 - щоденний звіт про електрику
+        icon: mdi:file-chart-outline
 
-      deye_sun15_grid_on:
-        name: Deye зовнішнє живлення увімкнено в
-        has_date: true
-        has_time: true
-        
-  ###################################################################
-  # Накопичення
-  ###################################################################
+      automation.deye_sun15_battery_low_loads_power_off:
+        friendly_name: Deye SUN15 - вимкнення потужних навантажень при низькому заряді
+        icon: mdi:power-plug-off-outline
 
-    sensor:
-      - platform: history_stats
-        name: deye_sun15_grid_on_yesterday
-        entity_id: binary_sensor.deye_sun15_grid
-        state: "on"
-        type: time
-        start: "{{ (today_at('00:00:00') - timedelta(days=1)) }}"
-        end: "{{ today_at('00:00:00') }}"
+      automation.deye_sun15_loads_block:
+        friendly_name: Deye SUN15 - блокування потужних навантажень без мережі
+        icon: mdi:block-helper
 
+      automation.deye_sun15_loads_restore:
+        friendly_name: Deye SUN15 - відновлення потужних навантажень після появи мережі
+        icon: mdi:power-plug-outline
 
-  ###################################################################
-  # Сенсор блокування ввімкнення потужних навантажень
-  ###################################################################
+      automation.deye_sun15_battery_discharge_level:
+        friendly_name: Deye SUN15 - сповіщення про рівень батареї при розряді
+        icon: mdi:battery-arrow-down-outline
 
+      automation.deye_sun15_battery_level:
+        friendly_name: Deye SUN15 - поточний рівень батареї
+        icon: mdi:battery-outline
 
-    template:
+      ##################################################
+      ## КЕРУВАННЯ
+      ##################################################
 
-      - binary_sensor:
-      
-          - name: deye_sun15_40_grid_off
-            unique_id: deye_sun15_40_grid_off
-            state: >
-                {{ states('sensor.deye_sun15_battery')|float < 40 and
-                   is_state('binary_sensor.deye_sun15_grid', 'off') and
-                   is_state('input_boolean.deye_sun15_auto_power_off', 'on') }}
+      input_boolean.deye_sun15_auto_power_off:
+        friendly_name: Deye SUN15 - автоматичне вимкнення потужних навантажень
+        icon: mdi:power-plug-off-outline
 
-  ###################################################################
-  # Сенсори для анімації в інтерфейсі
-  ###################################################################
+      input_datetime.deye_sun15_grid_off:
+        friendly_name: Deye SUN15 - час вимкнення зовнішнього живлення
+        icon: mdi:calendar-arrow-left
 
+      input_datetime.deye_sun15_grid_on:
+        friendly_name: Deye SUN15 - час відновлення зовнішнього живлення
+        icon: mdi:calendar-arrow-right
 
-      - sensor:
-          - name: deye_sun15_battery_power_consumption
-            unique_id: deye_sun15_battery_power_consumption
-            unit_of_measurement: W
-            device_class: power
-            state_class: measurement
-            state: >-
-              {% set p = states('sensor.deye_sun15_battery_power') | float(0) %}
-              {% set st = states('sensor.deye_sun15_battery_state') %}
-              {% if st == 'discharging' %}
-                {{ p | abs }}
-              {% else %}
-                0
-              {% endif %}
-    
-          - name: deye_sun15_battery_power_production
-            unique_id: deye_sun15_battery_power_production
-            unit_of_measurement: W
-            device_class: power
-            state_class: measurement
-            state: >-
-              {% set p = states('sensor.deye_sun15_battery_power') | float(0) %}
-              {% set st = states('sensor.deye_sun15_battery_state') %}
-              {% if st == 'charging' %}
-                {{ p | abs }}
-              {% else %}
-                0
-              {% endif %}
-        
-        
-    automation:
+      ##################################################
+      ## СЕНСОРИ ПАКЕТА
+      ##################################################
 
-###################################################################
-# ЗАПИС часу зникнення і відновдення зовнішнього живлення
-###################################################################
-        - alias: deye_sun15_grid_off_record
-          id: deye_sun15_grid_off_record
-          description: Запис часу зникнення зовнішнього живлення Deye 
-          initial_state: true
-          trigger:
-            - platform: state
-              entity_id: binary_sensor.deye_sun15_grid
-              from: 'on'
-              to: 'off'
-          condition:
+      sensor.deye_sun15_grid_on_yesterday:
+        friendly_name: Deye SUN15 - час наявності мережі за вчора
+        icon: mdi:timer-outline
+
+      binary_sensor.deye_sun15_loads_block_required:
+        friendly_name: Deye SUN15 - потрібне блокування потужних навантажень
+        icon: mdi:lock-alert-outline
+
+      sensor.deye_sun15_battery_power_consumption:
+        friendly_name: Deye SUN15 - споживання з батареї
+        icon: mdi:battery-minus-outline
+
+      sensor.deye_sun15_battery_power_production:
+        friendly_name: Deye SUN15 - заряд батареї
+        icon: mdi:battery-plus-outline
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - binary_sensor.deye_sun15_grid
+        - sensor.deye_sun15_grid_power
+        - sensor.deye_sun15_grid_l1_power
+        - sensor.deye_sun15_grid_l2_power
+        - sensor.deye_sun15_grid_l3_power
+        - sensor.deye_sun15_grid_l1_voltage
+        - sensor.deye_sun15_grid_l2_voltage
+        - sensor.deye_sun15_grid_l3_voltage
+        - sensor.deye_sun15_load_power
+        - sensor.deye_sun15_load_l1_power
+        - sensor.deye_sun15_load_l2_power
+        - sensor.deye_sun15_load_l3_power
+        - sensor.deye_sun15_load_l1_voltage
+        - sensor.deye_sun15_load_l2_voltage
+        - sensor.deye_sun15_load_l3_voltage
+        - sensor.deye_sun15_battery
+        - sensor.deye_sun15_battery_voltage
+        - sensor.deye_sun15_battery_current
+        - sensor.deye_sun15_battery_power
+        - sensor.deye_sun15_battery_state
+        - sensor.deye_sun15_battery_temperature
+
+  ##################################################
+  ## INPUT_BOOLEAN
+  ##################################################
+
+  input_boolean:
+    deye_sun15_auto_power_off:
+      name: deye_sun15_auto_power_off
+
+  ##################################################
+  ## INPUT_DATETIME
+  ##################################################
+
+  input_datetime:
+    deye_sun15_grid_off:
+      name: deye_sun15_grid_off
+      has_date: true
+      has_time: true
+
+    deye_sun15_grid_on:
+      name: deye_sun15_grid_on
+      has_date: true
+      has_time: true
+
+  ##################################################
+  ## SENSOR
+  ##################################################
+
+  sensor:
+    - platform: history_stats
+      name: deye_sun15_grid_on_yesterday
+      entity_id: binary_sensor.deye_sun15_grid
+      state: "on"
+      type: time
+      start: "{{ today_at('00:00:00') - timedelta(days=1) }}"
+      end: "{{ today_at('00:00:00') }}"
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    - binary_sensor:
+        - name: deye_sun15_loads_block_required
+          unique_id: deye_sun15_loads_block_required
+          state: >
+            {{
+              states('sensor.deye_sun15_battery') | float(0) < 40
+              and is_state('binary_sensor.deye_sun15_grid', 'off')
+              and is_state('input_boolean.deye_sun15_auto_power_off', 'on')
+            }}
+
+    - sensor:
+        - name: deye_sun15_battery_power_consumption
+          unique_id: deye_sun15_battery_power_consumption
+          unit_of_measurement: "W"
+          device_class: power
+          state_class: measurement
+          state: >
+            {% set p = states('sensor.deye_sun15_battery_power') | float(0) %}
+            {% set st = states('sensor.deye_sun15_battery_state') %}
+            {% if st == 'discharging' %}
+              {{ p | abs }}
+            {% else %}
+              0
+            {% endif %}
+
+        - name: deye_sun15_battery_power_production
+          unique_id: deye_sun15_battery_power_production
+          unit_of_measurement: "W"
+          device_class: power
+          state_class: measurement
+          state: >
+            {% set p = states('sensor.deye_sun15_battery_power') | float(0) %}
+            {% set st = states('sensor.deye_sun15_battery_state') %}
+            {% if st == 'charging' %}
+              {{ p | abs }}
+            {% else %}
+              0
+            {% endif %}
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    ##################################################
+    ## ФІКСАЦІЯ ЧАСУ ВИМКНЕННЯ ЗОВНІШНЬОГО ЖИВЛЕННЯ
+    ##################################################
+
+    - alias: deye_sun15_grid_off_record
+      id: deye_sun15_grid_off_record
+      description: Deye SUN15 - фіксація вимкнення зовнішнього живлення
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.deye_sun15_grid
+          from: "on"
+          to: "off"
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+      action:
+        - action: input_datetime.set_datetime
+          target:
+            entity_id: input_datetime.deye_sun15_grid_off
+          data:
+            datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+    ##################################################
+    ## ФІКСАЦІЯ ЧАСУ ВІДНОВЛЕННЯ ЗОВНІШНЬОГО ЖИВЛЕННЯ
+    ##################################################
+
+    - alias: deye_sun15_grid_on_record
+      id: deye_sun15_grid_on_record
+      description: Deye SUN15 - фіксація відновлення зовнішнього живлення
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.deye_sun15_grid
+          from: "off"
+          to: "on"
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+      action:
+        - action: input_datetime.set_datetime
+          target:
+            entity_id: input_datetime.deye_sun15_grid_on
+          data:
+            datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+    ##################################################
+    ## СПОВІЩЕННЯ ПРО СТАН ЗОВНІШНЬОГО ЖИВЛЕННЯ
+    ##################################################
+
+    - alias: deye_sun15_grid_status_notify
+      id: deye_sun15_grid_status_notify
+      description: Deye SUN15 - сповіщення про стан зовнішнього живлення
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.deye_sun15_grid
+          from: "on"
+          to: "off"
+
+        - platform: state
+          entity_id: binary_sensor.deye_sun15_grid
+          from: "off"
+          to: "on"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - choose:
+
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.deye_sun15_grid
+                  state: "off"
+              sequence:
+                - delay: "00:00:05"
+                - action: telegram_bot.send_message
+                  data:
+                    chat_id:
+                      - !secret chat_id_group
+                    message: |
+                      {%- set off = as_datetime(states('input_datetime.deye_sun15_grid_off')) -%}
+                      {%- set on  = as_datetime(states('input_datetime.deye_sun15_grid_on')) -%}
+
+                      {%- if off and on -%}
+                        {%- set d = off - on -%}
+                        {%- set days = d.days -%}
+                        {%- set sec = d.seconds -%}
+                        {%- set h = sec // 3600 -%}
+                        {%- set m = (sec % 3600) // 60 -%}
+                        {%- set s = sec % 60 -%}
+
+                      🔴 Deye:
+                      Зовнішнє живлення вимкнено в {{ states('sensor.time') }}
+                      ⏳ Електрика була - {{ (days ~ 'д ') if days > 0 else '' }}{{ '%02d:%02d:%02d' | format(h, m, s) }}
+                      🔋 SOC: {{ states('sensor.deye_sun15_battery') }}%
+                      {%- else -%}
+                      🔴 Deye:
+                      Зовнішнє живлення вимкнено в {{ states('sensor.time') }}
+                      ⏳ Електрика була - н/д
+                      🔋 SOC: {{ states('sensor.deye_sun15_battery') }}%
+                      {%- endif -%}
+
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.deye_sun15_grid
+                  state: "on"
+              sequence:
+                - delay: "00:00:05"
+                - action: telegram_bot.send_message
+                  data:
+                    chat_id:
+                      - !secret chat_id_group
+                    message: |
+                      {%- set on  = as_datetime(states('input_datetime.deye_sun15_grid_on')) -%}
+                      {%- set off = as_datetime(states('input_datetime.deye_sun15_grid_off')) -%}
+
+                      {%- if on and off -%}
+                        {%- set d = on - off -%}
+                        {%- set days = d.days -%}
+                        {%- set sec = d.seconds -%}
+                        {%- set h = sec // 3600 -%}
+                        {%- set m = (sec % 3600) // 60 -%}
+                        {%- set s = sec % 60 -%}
+
+                      🟢 Deye:
+                      Зовнішнє живлення відновлене в {{ states('sensor.time') }}
+                      ⏳ Не було електрики - {{ (days ~ 'д ') if days > 0 else '' }}{{ '%02d:%02d:%02d' | format(h, m, s) }}
+                      🔋 SOC: {{ states('sensor.deye_sun15_battery') }}%
+                      ⚡ Напруга - Фаза 1 {{ states('sensor.deye_sun15_grid_l1_voltage') }} В, Фаза 2 {{ states('sensor.deye_sun15_grid_l2_voltage') }} В, Фаза 3 {{ states('sensor.deye_sun15_grid_l3_voltage') }} В
+                      {%- else -%}
+                      🟢 Deye:
+                      Зовнішнє живлення відновлене в {{ states('sensor.time') }}
+                      ⏳ Не було електрики - н/д
+                      🔋 SOC: {{ states('sensor.deye_sun15_battery') }}%
+                      ⚡ Напруга - Фаза 1 {{ states('sensor.deye_sun15_grid_l1_voltage') }} В, Фаза 2 {{ states('sensor.deye_sun15_grid_l2_voltage') }} В, Фаза 3 {{ states('sensor.deye_sun15_grid_l3_voltage') }} В
+                      {%- endif -%}
+
+    ##################################################
+    ## ЩОДЕННИЙ ЗВІТ ПРО ЕЛЕКТРИКУ
+    ##################################################
+
+    - alias: deye_sun15_grid_summary_notify
+      id: deye_sun15_grid_summary_notify
+      description: Deye SUN15 - щоденний звіт про електрику
+      initial_state: true
+      trigger:
+        - platform: time
+          at: "07:00:00"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_group
+            message: |
+              {% set total = 24 * 60 %}
+
+              {% set m = (states('sensor.deye_sun15_grid_on_yesterday') | float(0) * 60) | round(0) | int %}
+              {% set m = [0, [m, total] | min] | max %}
+              {% set on_h = m // 60 %}
+              {% set on_mm = m % 60 %}
+              {% set off = total - m %}
+              {% set off_h = off // 60 %}
+              {% set off_mm = off % 60 %}
+
+              ⚡ Звіт за {{ (now() - timedelta(days=1)).strftime('%d.%m.%Y') }}:
+
+              ✅ Електрика була: {{ on_h }}г {{ '%02d' | format(on_mm) }}хв
+              ❌ Без електрики: {{ off_h }}г {{ '%02d' | format(off_mm) }}хв
+
+    ##################################################
+    ## НИЗЬКИЙ ЗАРЯД - ВИМКНЕННЯ ПОТУЖНИХ НАВАНТАЖЕНЬ
+    ##################################################
+
+    - alias: deye_sun15_battery_low_loads_power_off
+      id: deye_sun15_battery_low_loads_power_off
+      description: Deye SUN15 - вимкнення потужних навантажень при низькому заряді
+      initial_state: true
+      trigger:
+        - platform: numeric_state
+          entity_id: sensor.deye_sun15_battery
+          below: 40
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+        - condition: state
+          entity_id: binary_sensor.deye_sun15_grid
+          state: "off"
+
+        - condition: state
+          entity_id: input_boolean.deye_sun15_auto_power_off
+          state: "on"
+
+      action:
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_group_tech
+            message: |
+              ⚠️ Deye:
+              🔋 SOC впав до {{ states('sensor.deye_sun15_battery') }}% в {{ now().strftime('%Y-%m-%d %H:%M') }}
+              ❌ Вимикаю потужні необов'язкові навантаження до відновлення живлення.
+
+        - action: switch.turn_off
+          target:
+            entity_id:
+              - switch.0x00158d0003584401
+              - switch.0xa4c1388ce0ff53a8
+
+    ##################################################
+    ## БЛОКУВАННЯ УВІМКНЕННЯ ПОТУЖНИХ НАВАНТАЖЕНЬ БЕЗ МЕРЕЖІ
+    ##################################################
+
+    - alias: deye_sun15_loads_block
+      id: deye_sun15_loads_block
+      description: Deye SUN15 - блокування потужних навантажень без мережі
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id:
+            - switch.0x00158d0003584401
+            - switch.0xa4c1388ce0ff53a8
+          to: "on"
+
+      condition:
+        - condition: state
+          entity_id: binary_sensor.deye_sun15_loads_block_required
+          state: "on"
+
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - action: switch.turn_off
+          target:
+            entity_id: "{{ trigger.entity_id }}"
+
+    ##################################################
+    ## ВІДНОВЛЕННЯ ПОТУЖНИХ НАВАНТАЖЕНЬ ПІСЛЯ ПОЯВИ МЕРЕЖІ
+    ##################################################
+
+    - alias: deye_sun15_loads_restore
+      id: deye_sun15_loads_restore
+      description: Deye SUN15 - відновлення потужних навантажень після появи мережі
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.deye_sun15_grid
+          to: "on"
+          for:
+            seconds: 30
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+        - condition: state
+          entity_id: input_boolean.deye_sun15_auto_power_off
+          state: "on"
+
+      action:
+        - if:
             - condition: state
-              entity_id: switch.control_mode
-              state: 'on'
-          action:
-            - action: input_datetime.set_datetime
-              target:
-                entity_id: input_datetime.deye_sun15_grid_off
-              data:
-                datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
-    
-    
-        - alias: deye_sun15_grid_on_record
-          id: deye_sun15_grid_on_record
-          description: Запис часу відновлення зовнішнього живлення Deye 
-          initial_state: true
-          trigger:
-            - platform: state
-              entity_id: binary_sensor.deye_sun15_grid
-              from: 'off'
-              to: 'on'
-          condition:
-            - condition: state
-              entity_id: switch.control_mode
-              state: 'on'
-          action:
-            - action: input_datetime.set_datetime
-              target:
-                entity_id: input_datetime.deye_sun15_grid_on
-              data:
-                datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}" 
-
-###################################################################
-# Оповіщення про стан живлення
-###################################################################
-
-        - alias: deye_sun15_grid_status
-          id: deye_sun15_grid_status
-          description: Оповіщення про стан завнішнього живлення Deye
-          initial_state: true
-          trigger:
-    
-      # Вимкнення електрики
-            - platform: state
-              entity_id: binary_sensor.deye_sun15_grid
-              from: 'on'
-              to: 'off'
-    
-      # Увімкнення електрики
-
-            - platform: state
-              entity_id: binary_sensor.deye_sun15_grid
-              from: 'off'
-              to: 'on'
-    
-          condition:
-    
-      # Перемикач режиму роботи серверу
-            - condition: state
-              entity_id: switch.control_mode
-              state: 'on'
-     
-          action:
-    
-              - choose:
-    
-      # Сповіщення про відключення 
-                - conditions:
-                    - condition: state
-                      entity_id: binary_sensor.deye_sun15_grid
-                      state: 'off'
-                  sequence:        
-                    - delay: 00:00:05
-                    - action: telegram_bot.send_message
-                      data:
-                        chat_id:
-                            - !secret chat_id_group
-                        message: | 
-                            {%- set off = as_datetime(states('input_datetime.deye_sun15_grid_off')) -%}
-                            {%- set on  = as_datetime(states('input_datetime.deye_sun15_grid_on')) -%}
-                            
-                            {%- if off and on -%}
-                              {%- set d = off - on -%}
-                              {%- set days = d.days -%}
-                              {%- set sec = d.seconds -%}
-                              {%- set h = sec // 3600 -%}
-                              {%- set m = (sec % 3600) // 60 -%}
-                              {%- set s = sec % 60 -%}
-                            
-                            🔴 Deye: 
-                            Зовнішнє живлення вимкнено в {{ states('sensor.time') }}
-                            ⏳ Електрика була - {{ (days ~ 'д ' ) if days > 0 else '' }}{{ '%02d:%02d:%02d'|format(h,m,s) }}
-                            🔋 SOC: {{ states('sensor.deye_sun15_battery') }}%                            
-                            {%- else -%}
-                            🔴 Deye: 
-                            Зовнішнє живлення вимкнено в {{ states('sensor.time') }}
-                            ⏳ Електрика була - н/д
-                            🔋 SOC: {{ states('sensor.deye_sun15_battery') }}%   
-                            {%- endif -%}
-    
-      # Сповіщення про включення 
-                - conditions:
-                    - condition: state
-                      entity_id: binary_sensor.deye_sun15_grid
-                      state: 'on'
-                  sequence:
-                    - delay: 00:00:05
-                    - action: telegram_bot.send_message
-                      data:
-                        chat_id:
-                            - !secret chat_id_group
-                        message: | 
-                            {%- set on  = as_datetime(states('input_datetime.deye_sun15_grid_on')) -%}
-                            {%- set off = as_datetime(states('input_datetime.deye_sun15_grid_off')) -%}
-                            
-                            {%- if on and off -%}
-                              {%- set d = on - off -%}
-                              {%- set days = d.days -%}
-                              {%- set sec = d.seconds -%}
-                              {%- set h = sec // 3600 -%}
-                              {%- set m = (sec % 3600) // 60 -%}
-                              {%- set s = sec % 60 -%}
-                            
-                            🟢 Deye:
-                            Зовнішнє живлення відновлене в {{ states('sensor.time') }}
-                            ⏳ Не було електрики - {{ (days ~ 'д ' ) if days > 0 else '' }}{{ '%02d:%02d:%02d'|format(h,m,s) }}
-                            🔋 SOC: {{ states('sensor.deye_sun15_battery') }}% 
-                            ⚡Напруга - Фаза 1 {{ states('sensor.deye_sun15_grid_l1_voltage') }} В, Фаза 2 {{ states('sensor.deye_sun15_grid_l2_voltage') }} В, Фаза 3 {{ states('sensor.deye_sun15_grid_l3_voltage') }} В
-                            {%- else -%}
-                            🟢 Deye:
-                            Зовнішнє живлення відновлене в {{ states('sensor.time') }}
-                            ⏳ Не було електрики - н/д
-                            🔋 SOC: {{ states('sensor.deye_sun15_battery') }}% 
-                            ⚡Напруга - Фаза 1 {{ states('sensor.deye_sun15_grid_l1_voltage') }} В, Фаза 2 {{ states('sensor.deye_sun15_grid_l2_voltage') }} В, Фаза 3 {{ states('sensor.deye_sun15_grid_l3_voltage') }} В
-                            {%- endif -%}  
-
-###################################################################
-# Оповіщення про стан живлення
-###################################################################
-
-        - alias: deye_sun15_grid_summary
-          id: deye_sun15_grid_summary
-          initial_state: true
-          description: "Щоденний звіт по електриці"
-        
-          trigger:
-              - platform: time
-                at: "07:00:00"
-                     
-          condition:
-    
-      # Перемикач режиму роботи серверу
-            - condition: state
-              entity_id: switch.control_mode
-              state: 'on'
-
-          action:
-            - action: telegram_bot.send_message
-              data:
-                chat_id:
-                    - !secret chat_id_group
-                message: |
-    
-                    {% set total = 24 * 60 %}
-                
-                    {% set m  = (states('sensor.deye_sun15_grid_on_yesterday')|float * 60) | round(0) | int %}
-                    {% set m  = [0, [m, total] | min] | max %}
-                    {% set on_h  = (m // 60) %}
-                    {% set on_mm = (m % 60) %}
-                    {% set off   = total - m %}
-                    {% set off_h  = (off // 60) %}
-                    {% set off_mm = (off % 60) %}
-                
-                    ⚡ Звіт за {{ (now() - timedelta(days=1)).strftime('%d.%m.%Y') }}:
-                
-                    ✅ Електрика була: {{ on_h }}г {{ '%02d'|format(on_mm) }}хв
-                    ❌ Без електрики: {{ off_h }}г {{ '%02d'|format(off_mm) }}хв
-                
-                 
-
-###################################################################
-# Оповіщення при низкому заряді, вимкнення потужних навантажень
-###################################################################
-
-        - alias: deye_sun15_40_grid_off
-          id: deye_sun15_40_grid_off
-          description: Deye SUN 15 оповіщення про низький заряд
-          initial_state: true    
-          trigger:
-    # Спрацювання сенсора
-            - platform: numeric_state
-              entity_id: sensor.deye_sun15_battery
-              below: 40
-          condition:
-      # Перемикач режиму роботи серверу
-            - condition: state
-              entity_id: switch.control_mode
-              state: 'on'
-      # Зовнішне живлення
-            - condition: state
-              entity_id: binary_sensor.deye_sun15_grid
-              state: 'off'
-      # Перемикач режиму потужних навантажень
-            - condition: state
-              entity_id: input_boolean.deye_sun15_auto_power_off
-              state: 'on'
-
-          action:
-      ## Telegram notification
-            - action: telegram_bot.send_message
-              data:
-                chat_id:
-                    - !secret chat_id_group_tech
-                message: | 
-                    ⚠️ Deye: 
-                    🔋 SOC впав до {{ states('sensor.deye_sun15_battery') }}% в {{ now().strftime('%Y-%m-%d %H:%M') }} 
-                    ❌ Вимикаю потужні необов'язкові навантаження до відновлення живлення.
-                   
-            - action: switch.turn_off
-              data: {}
-              target:
-                entity_id:
-                  - switch.0x00158d0003584401
-                  - switch.0xa4c1388ce0ff53a8
-
-###################################################################
-# Блокування увімкнення потужних навантажень при відсутності електрики
-###################################################################
-
-
-        - alias: deye_sun15_40_grid_block
-          id: deye_sun15_40_grid_block
-          description: Deye SUN 15 блокування увімкнення потужних навантажень
-          initial_state: true    
-          trigger:
-        
-            - platform: state
-              entity_id:
-                - switch.0x00158d0003584401
-                - switch.0xa4c1388ce0ff53a8
-              to: "on"
-        
-          condition:
-            - condition: state
-              entity_id: binary_sensor.deye_sun15_40_grid_off
+              entity_id: switch.0x00158d0003584401_mode
               state: "on"
-      # Перемикач режиму роботи серверу
-            - condition: state
-              entity_id: switch.control_mode
-              state: 'on'
-        
-          action:
-            - action: switch.turn_off
+          then:
+            - action: switch.turn_on
               target:
-                entity_id: "{{ trigger.entity_id }}" 
-              
-###################################################################
-# Увімкнення бойлерів після появи мережі
-###################################################################
+                entity_id: switch.0x00158d0003584401
 
+        - delay:
+            seconds: 20
 
-        - alias: deye_sun15_40_grid_on
-          id: deye_sun15_40_grid_on
-          description: Deye SUN 15 увімкнення бойлерів після появи мережі
-          initial_state: true    
-          trigger:
-
-    # Спрацювання сенсора
-
-            - platform: state
-              entity_id: binary_sensor.deye_sun15_grid
-              to: 'on'        
-              for:
-                seconds: 30        
-
-          condition:
-      # Перемикач режиму роботи серверу
+        - if:
             - condition: state
-              entity_id: switch.control_mode
-              state: 'on'
-      # Перемикач режиму потужних навантажень
-            - condition: state
-              entity_id: input_boolean.deye_sun15_auto_power_off
-              state: 'on'        
-          action: 
-      
-          # Бойлер 1: ввімкнути, якщо ввімкнений режим нагріву
-            - if:
-                - condition: state
-                  entity_id: switch.0x00158d0003584401_mode
-                  state: "on"
-              then:
-                - action: switch.turn_on
-                  target:
-                    entity_id: switch.0x00158d0003584401
-        
-            - delay:
-                seconds: 20
-        
-          # Бойлер 2: ввімкнути, якщо ввімкнений режим нагріву
-            - if:
-                - condition: state
-                  entity_id: switch.0xa4c1388ce0ff53a8_mode
-                  state: "on"
-              then:
-                - action: switch.turn_on
-                  target:
-                    entity_id: switch.0xa4c1388ce0ff53a8
+              entity_id: switch.0xa4c1388ce0ff53a8_mode
+              state: "on"
+          then:
+            - action: switch.turn_on
+              target:
+                entity_id: switch.0xa4c1388ce0ff53a8
 
+    ##################################################
+    ## РІВЕНЬ БАТАРЕЇ DEYE ПРИ РОЗРЯДІ
+    ##################################################
 
-     
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+    - alias: deye_sun15_battery_discharge_level
+      id: deye_sun15_battery_discharge_level
+      description: Вітальня AWTRIX - сповіщення про рівень батареї Deye при розряді
+      initial_state: true
+
+      trigger:
+        - platform: state
+          entity_id: sensor.deye_sun15_battery
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+        - condition: state
+          entity_id: sensor.deye_sun15_battery_state
+          state: "discharging"
+
+        - condition: template
+          value_template: >
+            {{ trigger.to_state is not none
+               and trigger.from_state is not none
+               and trigger.to_state.state not in ['unknown', 'unavailable', 'none', '']
+               and trigger.from_state.state not in ['unknown', 'unavailable', 'none', '']
+               and (trigger.to_state.state | int(0)) < (trigger.from_state.state | int(0))
+               and (trigger.to_state.state | int(0)) <= 90
+               and (trigger.to_state.state | int(0)) >= 10
+               and (trigger.to_state.state | int(0)) % 10 == 0 }}
+
+      action:
+        - action: mqtt.publish
+          data:
+            topic: "awtrix_6c9da0/notify"
+            payload: >
+              {% set battery = states('sensor.deye_sun15_battery') | int(0) %}
+              {% if battery >= 90 %}
+                {% set icon = 6363 %}
+              {% elif battery >= 70 %}
+                {% set icon = 6362 %}
+              {% elif battery >= 50 %}
+                {% set icon = 6361 %}
+              {% elif battery >= 30 %}
+                {% set icon = 6360 %}
+              {% else %}
+                {% set icon = 6359 %}
+              {% endif %}
+              { "icon": {{ icon }}, "text": "{{ battery }}%", "progress": {{ battery }}, "progressC": "#7CFC00", "duration": 15, "color": "#FFD966", "noScroll": true }
+
+    ##################################################
+    ## ПОТОЧНИЙ РІВЕНЬ БАТАРЕЇ DEYE
+    ##################################################
+
+    - alias: deye_sun15_battery_level
+      id: deye_sun15_battery_level
+      description: Вітальня AWTRIX - поточний рівень батареї Deye
+      initial_state: true
+
+      trigger:
+        - platform: state
+          entity_id: sensor.0x04cf8cdf3c79360a_action
+          to: "button_4_double"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - action: mqtt.publish
+          data:
+            topic: "awtrix_6c9da0/notify"
+            payload: >
+              {% set battery = states('sensor.deye_sun15_battery') | int(0) %}
+              {% if battery >= 90 %}
+                {% set icon = 6363 %}
+              {% elif battery >= 70 %}
+                {% set icon = 6362 %}
+              {% elif battery >= 50 %}
+                {% set icon = 6361 %}
+              {% elif battery >= 30 %}
+                {% set icon = 6360 %}
+              {% else %}
+                {% set icon = 6359 %}
+              {% endif %}
+              { "icon": {{ icon }}, "text": "{{ battery }}%", "progress": {{ battery }}, "progressC": "#7CFC00", "duration": 15, "color": "#FFD966", "noScroll": true }

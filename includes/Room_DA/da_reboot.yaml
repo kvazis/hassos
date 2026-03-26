@@ -1,61 +1,70 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 da_reboot:
 
-    template:
+  ##################################################
+  ## HOMEASSISTANT
+  ##################################################
 
-      - binary_sensor:
-      
-    # Сенсор определяющий недоступность WLED ленты
-          - name: da_wled_unavailable
-            unique_id: da_wled_unavailable
-            state: >
-              {{ is_state('light.da_wled', 'unavailable') }}
-            delay_on: 
-                minutes: 5
-            device_class: problem    
-            
-    automation:
-    
-#################### ПЕРЕЗАГРУЗКА WLED ЛЕНТЫ ####################
-               
-      - alias: da_reboot_wled
-        id: da_reboot_wled
-        description: Детская А - перезагрузка зависшей WLED ленты
-        initial_state: true
-        trigger:
-    # Проверка раз в 5 минут
+  homeassistant:
+    customize:
+      binary_sensor.da_wled_unavailable:
+        friendly_name: Дитяча - недоступність WLED стрічки
+        icon: mdi:led-strip-variant
+
+      automation.da_reboot_wled:
+        friendly_name: Дитяча - перезавантаження WLED стрічки
+        icon: mdi:restart
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+    - binary_sensor:
+        - name: da_wled_unavailable
+          unique_id: da_wled_unavailable
+          state: >
+            {{ is_state('light.da_wled', 'unavailable') }}
+          delay_on:
+            minutes: 5
+          device_class: problem
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+    - alias: da_reboot_wled
+      id: da_reboot_wled
+      description: Дитяча - перезавантаження завислої WLED стрічки
+      initial_state: true
+      trigger:
         - platform: time_pattern
-          minutes: '/5'
-        condition:
-    # Переключатель режима работы сервера
+          minutes: "/5"
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Сенсор определяющий недоступность ленты
+          state: "on"
         - condition: state
           entity_id: binary_sensor.da_wled_unavailable
-          state: 'on'
-    # Сенсор электричества
+          state: "on"
         - condition: state
-          entity_id: binary_sensor.blackout_after
-          state: 'off'  
-        action:
-    # Перезагрузка по питанию если лента недоступна
-        - service: switch.turn_off
-          entity_id: switch.0xa4c138131a85d3ff
+          entity_id: binary_sensor.electricity_internal
+          state: "off"
+      action:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.0xa4c138131a85d3ff
         - delay: 00:00:05
-        - service: switch.turn_on
-          entity_id: switch.0xa4c138131a85d3ff
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0xa4c138131a85d3ff
         - action: telegram_bot.send_message
           data:
             chat_id:
-                - !secret chat_id_log
-            message: | 
-                 {{"\U0001F916"}}  Детская А - перезагрузка зависшей WLED ленты {{ states('sensor.time_date') }} 
-                 
-
-                 
-                 
-                 
-                 
-                 
-                 
+              - !secret chat_id_log
+            message: |
+              {{"\U0001F916"}}  Детская А - перезагрузка зависшей WLED ленты {{ states('sensor.time_date') }}

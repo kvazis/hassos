@@ -1,44 +1,70 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 lr_humidification:
 
-  ###################################################################
-  # Режим роботи зволожувача у вітальні
-  ###################################################################
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
+
+  homeassistant:
+    customize:
+
+      input_boolean.lr_humidification_mode:
+        friendly_name: Вітальня - режим зволожувача
+        icon: mdi:air-humidifier
+
+      binary_sensor.lr_humidifier_allowed:
+        friendly_name: Вітальня - дозвіл роботи зволожувача
+        icon: mdi:check-circle-outline
+
+      binary_sensor.lr_humidifier_water_problem:
+        friendly_name: Вітальня - проблема з водою
+        icon: mdi:water-alert
+
+      automation.lr_humidification_control:
+        friendly_name: Вітальня - керування зволожувачем
+        icon: mdi:air-humidifier
+
+      automation.lr_humidifier_no_water_notify:
+        friendly_name: Вітальня - сповіщення про воду
+        icon: mdi:water-off
+
+  ##################################################
+  ## INPUT_BOOLEAN
+  ##################################################
 
   input_boolean:
+
     lr_humidification_mode:
-      name: Вітальня режим роботи зволожувача
-      icon: mdi:air-humidifier
+      name: lr_humidification_mode
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
 
   template:
-    - binary_sensor:
 
-  ###################################################################
-  # Дозвіл на роботу зволожувача
-  # Працює тільки вдень і коли немає провітрювання
-  ###################################################################
+    - binary_sensor:
 
         - name: lr_humidifier_allowed
           unique_id: lr_humidifier_allowed
-          state: >-
+          state: >
             {{
               is_state('binary_sensor.night_time', 'off')
               and is_state('binary_sensor.lr_aeration', 'off')
             }}
-          icon: >-
+          icon: >
             {% if is_state('binary_sensor.lr_humidifier_allowed', 'on') %}
               mdi:check-circle-outline
             {% else %}
               mdi:close-circle-outline
             {% endif %}
 
-  ###################################################################
-  # Проблема з водою
-  # Або закінчилась вода, або бак не встановлено
-  ###################################################################
-
         - name: lr_humidifier_water_problem
           unique_id: lr_humidifier_water_problem
-          state: >-
+          state: >
             {{
               is_state('binary_sensor.deerma_jsq2g_34d8_water_shortage_fault', 'on')
               or is_state('binary_sensor.deerma_jsq2g_34d8_the_tank_filed', 'on')
@@ -47,52 +73,43 @@ lr_humidification:
             seconds: 10
           delay_off:
             seconds: 10
-          icon: >-
+          icon: >
             {% if is_state('binary_sensor.lr_humidifier_water_problem', 'on') %}
               mdi:water-off
             {% else %}
               mdi:water-check
             {% endif %}
 
-  automation:
+  ##################################################
+  ## AUTOMATION
+  ##################################################
 
-  ###################################################################
-  # Основне керування зволожувачем
-  ###################################################################
+  automation:
 
     - alias: lr_humidification_control
       id: lr_humidification_control
-      description: Вітальня керування зволожувачем
+      description: Вітальня - керування зволожувачем
+      initial_state: true
       mode: single
-
-      triggers:
-        - trigger: state
+      trigger:
+        - platform: state
           entity_id:
             - input_boolean.lr_humidification_mode
             - binary_sensor.lr_humidifier_allowed
             - binary_sensor.lr_humidifier_water_problem
             - humidifier.deerma_jsq2g_34d8_humidifier
-        - trigger: homeassistant
+        - platform: homeassistant
           event: start
-
-      conditions:
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: "on"
-
-      actions:
+      action:
         - choose:
-
-  ###################################################################
-  # Вимкнення зволожувача:
-  # - якщо вимкнений режим
-  # - або ніч / провітрювання
-  # - або є проблема з водою
-  ###################################################################
 
             - conditions:
                 - condition: template
-                  value_template: >-
+                  value_template: >
                     {{
                       is_state('humidifier.deerma_jsq2g_34d8_humidifier', 'on')
                       and (
@@ -106,23 +123,16 @@ lr_humidification:
                   target:
                     entity_id: humidifier.deerma_jsq2g_34d8_humidifier
 
-  ###################################################################
-  # Увімкнення і приведення до правильних параметрів:
-  # - режим активний
-  # - день
-  # - немає провітрювання
-  # - немає проблеми з водою
-  ###################################################################
-
             - conditions:
                 - condition: template
-                  value_template: >-
+                  value_template: >
                     {{
                       is_state('input_boolean.lr_humidification_mode', 'on')
                       and is_state('binary_sensor.lr_humidifier_allowed', 'on')
                       and is_state('binary_sensor.lr_humidifier_water_problem', 'off')
                     }}
               sequence:
+
                 - if:
                     - condition: state
                       entity_id: humidifier.deerma_jsq2g_34d8_humidifier
@@ -134,7 +144,7 @@ lr_humidification:
 
                 - if:
                     - condition: template
-                      value_template: >-
+                      value_template: >
                         {{
                           state_attr('humidifier.deerma_jsq2g_34d8_humidifier', 'mode')
                           != 'Constant Humidity'
@@ -148,10 +158,9 @@ lr_humidification:
 
                 - if:
                     - condition: template
-                      value_template: >-
+                      value_template: >
                         {{
-                          (state_attr('humidifier.deerma_jsq2g_34d8_humidifier', 'humidity') | int(0))
-                          != 50
+                          (state_attr('humidifier.deerma_jsq2g_34d8_humidifier', 'humidity') | int(0)) != 50
                         }}
                   then:
                     - action: humidifier.set_humidity
@@ -160,30 +169,23 @@ lr_humidification:
                       data:
                         humidity: 50
 
-  ###################################################################
-  # Сповіщення про відсутність води / знятий бак
-  ###################################################################
-
     - alias: lr_humidifier_no_water_notify
       id: lr_humidifier_no_water_notify
-      description: Вітальня сповіщення про відсутність води в зволожувачі
+      description: Вітальня - сповіщення про відсутність води
+      initial_state: true
       mode: single
-
-      triggers:
-        - trigger: state
+      trigger:
+        - platform: state
           entity_id: binary_sensor.lr_humidifier_water_problem
           to: "on"
-
-      conditions:
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: "on"
-
-      actions:
+      action:
         - action: telegram_bot.send_message
           data:
             target:
               - !secret chat_id_group_tech
-            message: >-
+            message: >
               💧 У зволожувачі в вітальні закінчилась вода або не встановлений бак.
-              

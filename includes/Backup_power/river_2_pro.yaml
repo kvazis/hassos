@@ -1,293 +1,341 @@
+##################################################
+## Актуалізовано: 2026-03-24
+##################################################
+
 river_2_pro:
 
-    homeassistant:
-      customize:
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-        sensor.river_2_pro_battery_in_power:
-          friendly_name: Ecoflow River 2 Pro, потужність на аккумулятор
-          device_class: power
-          unit_of_measurement: W
-          
-        sensor.river_2_pro_battery_out_power:
-          friendly_name: Ecoflow River 2 Pro, потужність з аккумулятора
-          device_class: power
-          unit_of_measurement: W
+  homeassistant:
+    customize:
 
-    recorder:
-      include:
-        entities:
-          - sensor.river_2_pro_ac_in_power
-          - sensor.river_2_pro_ac_in_volts
-          - sensor.river_2_pro_ac_out_power
-          - sensor.river_2_pro_ac_out_volts
-          - sensor.river_2_pro_total_in_power
-          - sensor.river_2_pro_total_out_power
-          - sensor.river_2_pro_battery_in_power
-          - sensor.river_2_pro_battery_out_power
-          - sensor.river_2_pro_main_battery_level
-          - sensor.river_2_pro_battery_level
-          - sensor.river_2_pro_solar_in_power
-          - binary_sensor.river_2_pro_power_outage
-          
-    template:
+      sensor.river_2_pro_battery_in_power:
+        friendly_name: EcoFlow River 2 Pro - потужність заряджання акумулятора
+        icon: mdi:battery-arrow-up
 
-      - sensor:
+      sensor.river_2_pro_battery_out_power:
+        friendly_name: EcoFlow River 2 Pro - потужність розряджання акумулятора
+        icon: mdi:battery-arrow-down
 
-          - name: river_2_pro_battery_in_power
-            unique_id: river_2_pro_battery_in_power
-            state: >
-                {% if states('sensor.river_2_pro_total_in_power')|float > states('sensor.river_2_pro_total_out_power')|float %}
-                {{ states('sensor.river_2_pro_total_in_power')|float - states('sensor.river_2_pro_total_out_power')|float }}
-                {% else %}
-                0
-                {% endif %} 
-                
-          - name: river_2_pro_battery_out_power
-            unique_id: river_2_pro_battery_out_power
-            state: >
-                {% if states('sensor.river_2_pro_total_out_power')|float > states('sensor.river_2_pro_total_in_power')|float %}
-                {{ states('sensor.river_2_pro_total_out_power')|float - states('sensor.river_2_pro_total_in_power')|float }}
-                {% else %}
-                0
-                {% endif %} 
-                
-      - binary_sensor:
-
-          - name: river_2_pro_stage_2
-            unique_id: river_2_pro_stage_2
-            state: >
-                {{ is_state('input_boolean.river_2_pro_stage_1', 'on') and
-                   states('sensor.river_2_pro_battery_level')|int == 100 }}
-            delay_on: 
-                minutes: 1
-                   
-          - name: river_2_pro_stage_3
-            unique_id: river_2_pro_stage_3
-            state: >
-                {{ is_state('input_boolean.river_2_pro_stage_2', 'on') and             
-                  is_state('binary_sensor.lr_electricity', 'on') }}
-                   
-          - name: river_2_pro_control
-            unique_id: river_2_pro_control
-            state: >
-                {{ is_state('input_boolean.river_2_pro_stage_3', 'on') and
-                  is_state('binary_sensor.lr_electricity', 'on') }}
-                   
-          - name: river_2_pro_control_notification
-            unique_id: river_2_pro_control_notification
-            state: >
-                {{ is_state('input_boolean.river_2_pro_stage_3', 'on') and
-                  is_state('binary_sensor.lr_electricity', 'off') }}
-                  
-          - name: river_2_pro_finish
-            unique_id: river_2_pro_finish
-            state: >
-                {{ is_state('input_boolean.river_2_pro_stage_3', 'on') and
-                   states('sensor.river_2_pro_battery_level')|int == 60 }}
-                   
-    input_boolean:
-    
-     river_2_pro_stage_1:
-        name: Ecoflow River 2 Pro, тренування - стадія 1
-        icon: mdi:numeric-1
-        
-     river_2_pro_stage_2:
-        name: Ecoflow River 2 Pro, тренування - стадія 2
+      binary_sensor.river_2_pro_stage_2_start:
+        friendly_name: EcoFlow River 2 Pro - стадія 2
         icon: mdi:numeric-2
-        
-     river_2_pro_stage_3:
-        name: Ecoflow River 2 Pro, тренування - стадія 3
-        icon: mdi:numeric-3     
-        
-    automation:
-    
-      - alias: river_2_pro_stage_1
-        id: river_2_pro_stage_1
-        description: Ecoflow River 2 Pro, тренування - стадія 1
-        initial_state: true
-        trigger:
-    ## Manual training mode start
+
+      binary_sensor.river_2_pro_stage_3_start:
+        friendly_name: EcoFlow River 2 Pro - стадія 3
+        icon: mdi:numeric-3
+
+      binary_sensor.river_2_pro_control:
+        friendly_name: EcoFlow River 2 Pro - контроль розеток
+        icon: mdi:power-plug
+
+      binary_sensor.river_2_pro_control_notification:
+        friendly_name: EcoFlow River 2 Pro - повідомлення контролю розеток
+        icon: mdi:message-badge
+
+      binary_sensor.river_2_pro_finish:
+        friendly_name: EcoFlow River 2 Pro - завершення тренування
+        icon: mdi:flag-checkered
+
+      input_boolean.river_2_pro_stage_1_active:
+        friendly_name: EcoFlow River 2 Pro - тренування стадія 1
+        icon: mdi:numeric-1
+
+      input_boolean.river_2_pro_stage_2_active:
+        friendly_name: EcoFlow River 2 Pro - тренування стадія 2
+        icon: mdi:numeric-2
+
+      input_boolean.river_2_pro_stage_3_active:
+        friendly_name: EcoFlow River 2 Pro - тренування стадія 3
+        icon: mdi:numeric-3
+
+      automation.river_2_pro_stage_1_start:
+        friendly_name: EcoFlow River 2 Pro - запуск стадії 1
+        icon: mdi:numeric-1-circle
+
+      automation.river_2_pro_stage_2_start:
+        friendly_name: EcoFlow River 2 Pro - запуск стадії 2
+        icon: mdi:numeric-2-circle
+
+      automation.river_2_pro_stage_3_start:
+        friendly_name: EcoFlow River 2 Pro - запуск стадії 3
+        icon: mdi:numeric-3-circle
+
+      automation.river_2_pro_control:
+        friendly_name: EcoFlow River 2 Pro - контроль розеток
+        icon: mdi:power-plug
+
+      automation.river_2_pro_control_notification:
+        friendly_name: EcoFlow River 2 Pro - повідомлення про розетки
+        icon: mdi:message-alert
+
+      automation.river_2_pro_finish:
+        friendly_name: EcoFlow River 2 Pro - завершення тренування
+        icon: mdi:check-circle
+
+  ##################################################
+  ## INPUT_BOOLEAN
+  ##################################################
+
+  input_boolean:
+
+    river_2_pro_stage_1_active:
+      name: river_2_pro_stage_1_active
+
+    river_2_pro_stage_2_active:
+      name: river_2_pro_stage_2_active
+
+    river_2_pro_stage_3_active:
+      name: river_2_pro_stage_3_active
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    - sensor:
+        - name: river_2_pro_battery_in_power
+          unique_id: river_2_pro_battery_in_power
+          device_class: power
+          unit_of_measurement: "W"
+          state: >
+            {% set total_in = states('sensor.river_2_pro_total_in_power') | float(0) %}
+            {% set total_out = states('sensor.river_2_pro_total_out_power') | float(0) %}
+            {% if total_in > total_out %}
+              {{ total_in - total_out }}
+            {% else %}
+              0
+            {% endif %}
+
+        - name: river_2_pro_battery_out_power
+          unique_id: river_2_pro_battery_out_power
+          device_class: power
+          unit_of_measurement: "W"
+          state: >
+            {% set total_in = states('sensor.river_2_pro_total_in_power') | float(0) %}
+            {% set total_out = states('sensor.river_2_pro_total_out_power') | float(0) %}
+            {% if total_out > total_in %}
+              {{ total_out - total_in }}
+            {% else %}
+              0
+            {% endif %}
+
+    - binary_sensor:
+        - name: river_2_pro_stage_2_start
+          unique_id: river_2_pro_stage_2_start
+          state: >
+            {{ is_state('input_boolean.river_2_pro_stage_1_active', 'on') and
+               states('sensor.river_2_pro_battery_level') | int(0) == 100 }}
+          delay_on:
+            minutes: 1
+
+        - name: river_2_pro_stage_3_start
+          unique_id: river_2_pro_stage_3_start
+          state: >
+            {{ is_state('input_boolean.river_2_pro_stage_2_active', 'on') and
+               is_state('binary_sensor.lr_electricity', 'on') }}
+
+        - name: river_2_pro_control
+          unique_id: river_2_pro_control
+          state: >
+            {{ is_state('input_boolean.river_2_pro_stage_3_active', 'on') and
+               is_state('binary_sensor.lr_electricity', 'on') }}
+
+        - name: river_2_pro_control_notification
+          unique_id: river_2_pro_control_notification
+          state: >
+            {{ is_state('input_boolean.river_2_pro_stage_3_active', 'on') and
+               is_state('binary_sensor.lr_electricity', 'off') }}
+
+        - name: river_2_pro_finish
+          unique_id: river_2_pro_finish
+          state: >
+            {{ is_state('input_boolean.river_2_pro_stage_3_active', 'on') and
+               states('sensor.river_2_pro_battery_level') | int(0) == 60 }}
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    - alias: river_2_pro_stage_1_start
+      id: river_2_pro_stage_1_start
+      description: Запуск першої стадії тренування EcoFlow River 2 Pro
+      initial_state: true
+
+      trigger:
         - platform: state
-          entity_id: input_boolean.river_2_pro_stage_1
-          to: 'on'
-        action:
-    ## Set charge level to 100%
+          entity_id: input_boolean.river_2_pro_stage_1_active
+          to: "on"
+
+      action:
         - action: number.set_value
           target:
             entity_id: number.river_2_pro_max_charge_level
           data:
             value: "100"
-    ## Set charging power to 300 Watts
+
         - action: number.set_value
           target:
             entity_id: number.river_2_pro_ac_charging_power
           data:
             value: "400"
-    ## Delay for data update
-        - delay: 00:00:05
-    ## Telegram notification
-        - service: telegram_bot.send_message
-          data_template:
-            target:
-                - !secret chat_id_group_tech
-            message: | 
-                 {{ "\u0031\uFE0F\u20E3" }} Стадія 1 - зарядка, запущено в {{ now().strftime('%Y-%m-%d %H:%M') }}
-                 {{ "\U0001F50B" }} Поточний рівень заряду - {{ states('sensor.river_2_pro_battery_level') }}  %
-                 {{ "\U0001F39A" }} Заряджати до - {{ states('number.river_2_pro_max_charge_level') }} %
-                 {{ "\U0001F50C" }} Потужність заряду - {{ states('number.river_2_pro_ac_charging_power') }} Ватт
 
-      - alias: river_2_pro_stage_2
-        id: river_2_pro_stage_2
-        description: Ecoflow River 2 Pro, тренування - стадія 2
-        initial_state: true
-        trigger:
-    ## Transition to stage 2
+        - delay: "00:00:05"
+
+        - action: telegram_bot.send_message
+          data:
+            target:
+              - !secret chat_id_group_tech
+            message: |
+              {{ "\u0031\uFE0F\u20E3" }} Стадія 1 - зарядка, запущено в {{ now().strftime('%Y-%m-%d %H:%M') }}
+              {{ "\U0001F50B" }} Поточний рівень заряду - {{ states('sensor.river_2_pro_battery_level') }} %
+              {{ "\U0001F39A" }} Заряджати до - {{ states('number.river_2_pro_max_charge_level') }} %
+              {{ "\U0001F50C" }} Потужність заряду - {{ states('number.river_2_pro_ac_charging_power') }} Ватт
+
+    - alias: river_2_pro_stage_2_start
+      id: river_2_pro_stage_2_start
+      description: Запуск другої стадії тренування EcoFlow River 2 Pro
+      initial_state: true
+
+      trigger:
         - platform: state
-          entity_id: binary_sensor.river_2_pro_stage_2
-          to: 'on'
-        action:        
-    ## Set charge level to 60%
+          entity_id: binary_sensor.river_2_pro_stage_2_start
+          to: "on"
+
+      action:
         - action: number.set_value
           target:
             entity_id: number.river_2_pro_max_charge_level
           data:
-            value: "60"        
-    ## Disable stage 1 switch
+            value: "60"
+
         - action: input_boolean.turn_off
-          data: {}
           target:
-            entity_id: input_boolean.river_2_pro_stage_1
-    ## Enable stage 2 switch
+            entity_id: input_boolean.river_2_pro_stage_1_active
+
         - action: input_boolean.turn_on
-          data: {}
           target:
-            entity_id: input_boolean.river_2_pro_stage_2 
-    ## Turn off load outlet     
+            entity_id: input_boolean.river_2_pro_stage_2_active
+
         - action: switch.turn_off
-          data: {}
           target:
             entity_id: switch.0xa4c138ee9e1e5451
-    ## Delay for data update
-        - delay: 00:00:05
-    ## Telegram notification
-        - service: telegram_bot.send_message
-          data_template:
-            target:
-                - !secret chat_id_group_tech
-            message: | 
-                 {{ "\u0032\uFE0F\u20E3" }} Стадія 2 - розряджання, запущено в {{ now().strftime('%Y-%m-%d %H:%M') }}
-                 {{ "\U0001F50B" }} Поточний рівень заряду - {{ states('sensor.river_2_pro_battery_level') }} %
-                 {{ "\U0001F39A" }} Заряджати до - {{ states('number.river_2_pro_max_charge_level') }} % 
-                 {{ "\U0001F50C" }} Мережева розетка - {{ states('switch.0xa4c138ee9e1e5451') }} 
-        
 
-      - alias: river_2_pro_stage_3
-        id: river_2_pro_stage_3
-        description: Ecoflow River 2 Pro, тренування - стадія 3
-        initial_state: true
-        trigger:
-    ## Transition to stage 3
+        - delay: "00:00:05"
+
+        - action: telegram_bot.send_message
+          data:
+            target:
+              - !secret chat_id_group_tech
+            message: |
+              {{ "\u0032\uFE0F\u20E3" }} Стадія 2 - розряджання, запущено в {{ now().strftime('%Y-%m-%d %H:%M') }}
+              {{ "\U0001F50B" }} Поточний рівень заряду - {{ states('sensor.river_2_pro_battery_level') }} %
+              {{ "\U0001F39A" }} Заряджати до - {{ states('number.river_2_pro_max_charge_level') }} %
+              {{ "\U0001F50C" }} Мережева розетка - {{ states('switch.0xa4c138ee9e1e5451') }}
+
+    - alias: river_2_pro_stage_3_start
+      id: river_2_pro_stage_3_start
+      description: Запуск третьої стадії тренування EcoFlow River 2 Pro
+      initial_state: true
+
+      trigger:
         - platform: state
-          entity_id: binary_sensor.river_2_pro_stage_3
-          to: 'on'
-        action:               
-    ## Disable stage 2 switch
-        - action: input_boolean.turn_off
-          data: {}
-          target:
-            entity_id: input_boolean.river_2_pro_stage_2
-    ## Enable stage 3 switch
-        - action: input_boolean.turn_on
-          data: {}
-          target:
-            entity_id: input_boolean.river_2_pro_stage_3
-    ## Turn on load outlet     
-        - action: switch.turn_on
-          data: {}
-          target:
-            entity_id: switch.0xa4c138ee9e1e5451        
-    ## Delay for data update
-        - delay: 00:00:15
-    ## Telegram notification
-        - service: telegram_bot.send_message
-          data_template:
-            target:
-                - !secret chat_id_group_tech
-            message: | 
-                 {{ "\u0033\uFE0F\u20E3" }} Стадія 3 - зарядка, запущено в {{ now().strftime('%Y-%m-%d %H:%M') }}
-                 {{ "\U0001F50B" }} Поточний рівень заряду - {{ states('sensor.river_2_pro_battery_level') }} %
-                 {{ "\U0001F39A" }} Заряджати до - {{ states('number.river_2_pro_max_charge_level') }} % 
-                 {{ "\U0001F50C" }} Мережева розетка - {{ states('switch.0xa4c138ee9e1e5451') }}
-                 {{ "\U0001F50C" }} Розетки станції - {{ states('switch.river_2_pro_ac_enabled') }}
-        
+          entity_id: binary_sensor.river_2_pro_stage_3_start
+          to: "on"
 
-      - alias: river_2_pro_control
-        id: river_2_pro_control
-        description: Ecoflow River 2 Pro контроль розеток
-        initial_state: true
-        trigger:
-    # Check every minute
+      action:
+        - action: input_boolean.turn_off
+          target:
+            entity_id: input_boolean.river_2_pro_stage_2_active
+
+        - action: input_boolean.turn_on
+          target:
+            entity_id: input_boolean.river_2_pro_stage_3_active
+
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0xa4c138ee9e1e5451
+
+        - delay: "00:00:15"
+
+        - action: telegram_bot.send_message
+          data:
+            target:
+              - !secret chat_id_group_tech
+            message: |
+              {{ "\u0033\uFE0F\u20E3" }} Стадія 3 - зарядка, запущено в {{ now().strftime('%Y-%m-%d %H:%M') }}
+              {{ "\U0001F50B" }} Поточний рівень заряду - {{ states('sensor.river_2_pro_battery_level') }} %
+              {{ "\U0001F39A" }} Заряджати до - {{ states('number.river_2_pro_max_charge_level') }} %
+              {{ "\U0001F50C" }} Мережева розетка - {{ states('switch.0xa4c138ee9e1e5451') }}
+              {{ "\U0001F50C" }} Розетки станції - {{ states('switch.river_2_pro_ac_enabled') }}
+
+    - alias: river_2_pro_control
+      id: river_2_pro_control
+      description: Контроль розеток EcoFlow River 2 Pro
+      initial_state: true
+
+      trigger:
         - platform: time_pattern
-          minutes: '/1'
-        condition:
-    # Stage 3 in progress, but socket is still off
+          minutes: "/1"
+
+      condition:
         - condition: state
           entity_id: binary_sensor.river_2_pro_control
-          state: 'on'        
-        action:             
-    ## Turn on station outlet
+          state: "on"
+
+      action:
         - action: switch.turn_on
-          data: {}
           target:
             entity_id: switch.river_2_pro_ac_enabled
-        
-      - alias: river_2_pro_control_notification
-        id: river_2_pro_control_notification
-        description: Ecoflow River 2 Pro, повідомлення при ввімкнені розетки
-        initial_state: true
-        trigger:
-    # Stage 3 in progress, station outlet turned on
+
+    - alias: river_2_pro_control_notification
+      id: river_2_pro_control_notification
+      description: Повідомлення про стан розеток EcoFlow River 2 Pro
+      initial_state: true
+
+      trigger:
         - platform: state
           entity_id: binary_sensor.river_2_pro_control_notification
-          to: 'on' 
-        action:
-    ## Delay for data update
-        - delay: 00:00:05
-    ## Telegram notification
-        - service: telegram_bot.send_message
-          data_template:
-            target:
-                - !secret chat_id_group_tech
-            message: | 
-                 {{ "\u0033\uFE0F\u20E3" }} Стадія 3 триває
-                 {{ "\U0001F50B" }} Поточний рівень заряду - {{ states('sensor.river_2_pro_battery_level') }} %
-                 {{ "\U0001F39A" }} Заряджати до - {{ states('number.river_2_pro_max_charge_level') }} % 
-                 {{ "\U0001F50C" }} Мережева розетка - {{ states('switch.0xa4c138ee9e1e5451') }}
-                 {{ "\U0001F50C" }} Розетки станції - {{ states('switch.river_2_pro_ac_enabled') }}      
-        
+          to: "on"
 
-      - alias: river_2_pro_finish
-        id: river_2_pro_finish
-        description: Ecoflow River 2 Pro, training finished 
-        initial_state: true
-        trigger:
-    ## Transition to final stage
+      action:
+        - delay: "00:00:05"
+
+        - action: telegram_bot.send_message
+          data:
+            target:
+              - !secret chat_id_group_tech
+            message: |
+              {{ "\u0033\uFE0F\u20E3" }} Стадія 3 триває
+              {{ "\U0001F50B" }} Поточний рівень заряду - {{ states('sensor.river_2_pro_battery_level') }} %
+              {{ "\U0001F39A" }} Заряджати до - {{ states('number.river_2_pro_max_charge_level') }} %
+              {{ "\U0001F50C" }} Мережева розетка - {{ states('switch.0xa4c138ee9e1e5451') }}
+              {{ "\U0001F50C" }} Розетки станції - {{ states('switch.river_2_pro_ac_enabled') }}
+
+    - alias: river_2_pro_finish
+      id: river_2_pro_finish
+      description: Завершення тренування EcoFlow River 2 Pro
+      initial_state: true
+
+      trigger:
         - platform: state
           entity_id: binary_sensor.river_2_pro_finish
-          to: 'on'
-        action:               
-    ## Disable stage 3 switch
+          to: "on"
+
+      action:
         - action: input_boolean.turn_off
-          data: {}
           target:
-            entity_id: input_boolean.river_2_pro_stage_3
-    ## Telegram notification
-        - service: telegram_bot.send_message
-          data_template:
+            entity_id: input_boolean.river_2_pro_stage_3_active
+
+        - action: telegram_bot.send_message
+          data:
             target:
-                - !secret chat_id_group_tech
-            message: | 
-                 {{ "\u0033\uFE0F\u20E3" }} Тренування завершене в {{ now().strftime('%Y-%m-%d %H:%M') }}, станцію можна вимикати
-                 {{ "\U0001F50B" }} Поточний рівень заряду - {{ states('sensor.river_2_pro_battery_level') }} %
-                                      
-                   
+              - !secret chat_id_group_tech
+            message: |
+              {{ "\u0033\uFE0F\u20E3" }} Тренування завершене в {{ now().strftime('%Y-%m-%d %H:%M') }}, станцію можна вимикати
+              {{ "\U0001F50B" }} Поточний рівень заряду - {{ states('sensor.river_2_pro_battery_level') }} %

@@ -1,70 +1,86 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 lr_fan:
 
-    automation:
-    
-    # Управление охлаждающей подставкой ноута
-      - alias: lr_control_fan_notebook
-        id: lr_control_fan_notebook
-        description: Управление охлаждающей подставкой ноута
-        initial_state: true
-        trigger:
-    # Выключатель на столе, удерживание 1 кнопки
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
+
+  homeassistant:
+    customize:
+
+      automation.lr_control_fan_notebook:
+        friendly_name: Вітальня - керування охолодженням ноутбука
+        icon: mdi:fan
+
+      automation.lr_control_fan_router:
+        friendly_name: Вітальня - керування охолодженням роутера
+        icon: mdi:fan-auto
+        
+      fan.0x00124b00246ef1a8:
+        friendly_name: Охолодження роутера
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    - alias: lr_control_fan_notebook
+      id: lr_control_fan_notebook
+      description: Вітальня - керування охолоджувальною підставкою ноутбука
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
           to: 'button_1_hold'
-        condition:
-    # Переключатель режима работы сервера
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-        action:
+      action:
         - action: fan.toggle
           data: {}
           target:
             entity_id: fan.0xa4c138d641b6346f_l1
 
-    # Управление охлаждающей подставкой роутера
-      - alias: lr_control_fan_router
-        id: lr_control_fan_router
-        description: Управление охлаждающей подставкой роутера
-        initial_state: true
-        trigger:
-    # Проверка раз в 5 минут
+    - alias: lr_control_fan_router
+      id: lr_control_fan_router
+      description: Вітальня - керування охолоджувальною підставкою роутера
+      initial_state: true
+      trigger:
         - platform: time_pattern
           minutes: '/5'
-        condition:
-    # Переключатель режима работы сервера
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Сенсор электричества
-        - condition: state
-          entity_id: binary_sensor.blackout_after
-          state: 'off' 
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: fan.0x00124b00246ef1a8
+                  state: 'on'
+                - condition: state
+                  entity_id: binary_sensor.night_time
+                  state: 'on'
+              sequence:
+                - action: fan.turn_off
+                  data: {}
+                  target:
                     entity_id: fan.0x00124b00246ef1a8
-                    state: 'on'
-                  - condition: state
-                    entity_id: binary_sensor.night_time
-                    state: 'on'
-                sequence:
-                  - action: fan.turn_off
-                    data: {}
-                    target:
-                      entity_id: fan.0x00124b00246ef1a8
 
-              - conditions:
-                  - condition: state
+            - conditions:
+                - condition: state
+                  entity_id: fan.0x00124b00246ef1a8
+                  state: 'off'
+                - condition: state
+                  entity_id: binary_sensor.night_time
+                  state: 'off'
+              sequence:
+                - action: fan.turn_on
+                  data: {}
+                  target:
                     entity_id: fan.0x00124b00246ef1a8
-                    state: 'off'
-                  - condition: state
-                    entity_id: binary_sensor.night_time
-                    state: 'off'
-                sequence:
-                  - action: fan.turn_on
-                    data: {}
-                    target:
-                      entity_id: fan.0x00124b00246ef1a8

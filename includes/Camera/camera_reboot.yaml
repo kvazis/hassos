@@ -1,77 +1,104 @@
+##################################################
+## Актуалізовано: 2026-03-21
+##################################################
+
 camera_reboot:
 
+  homeassistant:
+    customize:
+      automation.camera_reboot_reolink_411:
+        friendly_name: Поверх - перезавантаження Reolink 411
+        icon: mdi:cctv
+      automation.camera_reboot_reolink_410:
+        friendly_name: Поверх - перезавантаження Reolink 410
+        icon: mdi:cctv
 
-    automation:
-    
-#################### ПЕРЕЗАГРУЗКА КАМЕР ####################
+  automation:
 
-      - alias: camera_reolink411_reboot
-        id: camera_reolink411_reboot
-        description: Этаж - перезагрузка зависшей Reolink 411 ws
-        initial_state: true
-        trigger:
-    # Проверка раз в 10 минут, перезагрузка если камера недоступна
+    ##################################################
+    ## ПЕРЕЗАВАНТАЖЕННЯ REOLINK 411
+    ##################################################
+
+    - alias: camera_reboot_reolink_411
+      id: camera_reboot_reolink_411
+      description: Перезавантаження завислої камери Reolink 411
+      initial_state: true
+
+      trigger:
         - platform: time_pattern
-          minutes: '/10'
-        condition:
-    # Переключатель режима работы сервера
+          minutes: "/10"
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Камера недоступна
+          state: "on"
+
         - condition: state
           entity_id: camera.reolink_411_rtsp
-          state: 'unavailable'
-    # Сенсор электричества
+          state: "unavailable"
+
         - condition: state
           entity_id: binary_sensor.electricity_on_5
-          state: 'on' 
-        action:
-    # Перезагрузка по питанию
-        - service: switch.turn_off
-          entity_id: switch.0x00158d0003f46bb6_l2
-        - delay: 00:00:05
-        - service: switch.turn_on
-          entity_id: switch.0x00158d0003f46bb6_l2
+          state: "on"
+
+      action:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.0x00158d0003f46bb6_l2
+
+        - delay: "00:00:05"
+
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0x00158d0003f46bb6_l2
+
         - action: telegram_bot.send_message
           data:
             chat_id:
-                - !secret chat_id_log
-            message: | 
-                 {{"\U0001F916"}} Антонио - Перезагрузка Reolink 411 {{ states('sensor.time_date') }} 
+              - !secret chat_id_log
+            message: |
+              🤖 Перезавантаження Reolink 411 {{ states('sensor.time_date') }}
 
-          
-      - alias: camera_reolink410_reboot
-        id: camera_reolink410_reboot
-        description: Этаж - перезагрузка зависшей Reolink 410 ws
-        initial_state: true
-        trigger:
-    # Проверка раз в 10 минут, перезагрузка если камера недоступна
+    ##################################################
+    ## ПЕРЕЗАВАНТАЖЕННЯ REOLINK 410
+    ##################################################
+
+    - alias: camera_reboot_reolink_410
+      id: camera_reboot_reolink_410
+      description: Перезавантаження завислої камери Reolink 410
+      initial_state: true
+
+      trigger:
         - platform: time_pattern
-          minutes: '/10'
-        condition:
-    # Переключатель режима работы сервера
+          minutes: "/10"
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Камера недоступна
+          state: "on"
+
         - condition: state
           entity_id: camera.reolink_410_rtsp
-          state: 'unavailable'
-    # Сенсор электричества
+          state: "unavailable"
+
         - condition: state
           entity_id: binary_sensor.electricity_on_5
-          state: 'on' 
-        action:
-    # Перезагрузка по питанию
-        - service: switch.turn_off
-          entity_id: switch.0x00158d0003f46bb6_l1
-        - delay: 00:00:05
-        - service: switch.turn_on
-          entity_id: switch.0x00158d0003f46bb6_l1
+          state: "on"
+
+      action:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.0x00158d0003f46bb6_l1
+
+        - delay: "00:00:05"
+
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0x00158d0003f46bb6_l1
+
         - action: telegram_bot.send_message
           data:
             chat_id:
-                - !secret chat_id_log
-            message: | 
-                 {{"\U0001F916"}} Антонио - Перезагрузка Reolink 410 {{ states('sensor.time_date') }} 
+              - !secret chat_id_log
+            message: |
+              🤖 Перезавантаження Reolink 410 {{ states('sensor.time_date') }}

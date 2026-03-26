@@ -1,633 +1,625 @@
-############################ Питание ############################
+############################ Живлення ############################
 title: Зовнішнє живлення
 icon: mdi:transmission-tower
 sections:
 
 ############################ Колонка 1 ############################
-    - type: grid
-      cards:
+  - type: grid
+    cards:
 
-        - type: markdown
-          content: >
-             ## Електрика
+      - type: markdown
+        content: >
+          ## Електромережа
 
-        - type: markdown
-          content: >
-             ### Зовнішнє живлення
+      - type: markdown
+        content: >
+          ### Зовнішнє живлення
 
-        - type: markdown
-          content: >
-             ### Поточна потужність з міста - {{states ('sensor.total_enter_power')}} Ват
+      - type: markdown
+        content: >
+          ### Потужність з мережі - {{ states('sensor.total_enter_power') }} Вт
 
-        - type: custom:mushroom-template-card
-          primary: Сенсор живлення
-          secondary: |-
-            {% if is_state("binary_sensor.electricity", "off") %}
-            Зовнішнє живлення є
-            {% else %}
-            Зовнішнє живлення відключене
-            {% endif %}
-          layout: horizontal
-          entity: binary_sensor.electricity
-          icon_color: |-
-            {% if is_state("binary_sensor.electricity", "off") %}
-            green
-            {% else %}
-            red
-            {% endif %}
-          icon: |-
-            {% if is_state("binary_sensor.electricity", "off") %}
-            mdi:power-plug
-            {% else %}
-            mdi:power-plug-off
-            {% endif %}
-          tap_action:
-            action: more-info
+      - type: custom:mushroom-template-card
+        primary: Основний сенсор живлення
+        secondary: |-
+          {% if is_state("binary_sensor.electricity", "off") %}
+          Є живлення
+          {% else %}
+          Немає живлення
+          {% endif %}
+        layout: horizontal
+        entity: binary_sensor.electricity
+        icon_color: |-
+          {% if is_state("binary_sensor.electricity", "off") %}
+          green
+          {% else %}
+          red
+          {% endif %}
+        icon: |-
+          {% if is_state("binary_sensor.electricity", "off") %}
+          mdi:power-plug
+          {% else %}
+          mdi:power-plug-off
+          {% endif %}
+        tap_action:
+          action: more-info
 
-        - type: custom:mushroom-template-card
-          primary: Сенсор живлення резервний
-          secondary: |-
-            {% if is_state("binary_sensor.electricity_second", "off") %}
-            Зовнішнє живлення є
-            {% else %}
-            Зовнішнє живлення відключене
-            {% endif %}
-          layout: horizontal
-          entity: binary_sensor.electricity_second
-          icon_color: |-
-            {% if is_state("binary_sensor.electricity_second", "off") %}
-            green
-            {% else %}
-            red
-            {% endif %}
-          icon: |-
-            {% if is_state("binary_sensor.electricity_second", "off") %}
-            mdi:power-plug
-            {% else %}
-            mdi:power-plug-off
-            {% endif %}
-          tap_action:
-            action: more-info
+      - type: custom:mushroom-template-card
+        primary: Резервний сенсор живлення
+        secondary: |-
+          {% if is_state("binary_sensor.electricity_second", "off") %}
+          Є живлення
+          {% else %}
+          Немає живлення
+          {% endif %}
+        layout: horizontal
+        entity: binary_sensor.electricity_second
+        icon_color: |-
+          {% if is_state("binary_sensor.electricity_second", "off") %}
+          green
+          {% else %}
+          red
+          {% endif %}
+        icon: |-
+          {% if is_state("binary_sensor.electricity_second", "off") %}
+          mdi:power-plug
+          {% else %}
+          mdi:power-plug-off
+          {% endif %}
+        tap_action:
+          action: more-info
 
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - entity: input_datetime.electricity_off
+          - entity: input_datetime.electricity_on
 
-        - type: entities
-          show_header_toggle: false
-          entities:
-           - entity: input_datetime.electricity_off                
-           - entity: input_datetime.electricity_on 
+      - type: markdown
+        content: >
+          ### Лічильник електроенергії
 
-        - type: markdown
-          content: >
-             ### Лічильник електроенергії
+      - type: horizontal-stack
+        cards:
 
-        - type: horizontal-stack
-    
-          cards:
+          - type: custom:mushroom-template-card
+            primary: Поточний тариф
+            secondary: |-
+              {% if is_state("select.total_counter_energy", "day") %}
+              День
+              {% else %}
+              Ніч
+              {% endif %}
+            layout: horizontal
+            entity: select.total_counter_energy
+            icon_color: |-
+              {% if is_state("select.total_counter_energy", "day") %}
+              white
+              {% else %}
+              grey
+              {% endif %}
+            icon: |-
+              {% if is_state("select.total_counter_energy", "day") %}
+              mdi:weather-sunny
+              {% else %}
+              mdi:weather-night
+              {% endif %}
+            tap_action:
+              action: more-info
 
-            - type: custom:mushroom-template-card
-              primary: Поточний тариф
-              secondary: |-
-                {% if is_state("select.total_counter_energy", "day") %}
-                День
-                {% else %}
-                Ночь
-                {% endif %}
-              layout: horizontal
-              entity: select.total_monthly_energy
-              icon_color: |-
-                {% if is_state("select.total_counter_energy", "day") %}
-                white
-                {% else %}
-                grey
-                {% endif %}
-              icon: |-
-                {% if is_state("select.total_counter_energy", "day") %}
-                mdi:weather-sunny
-                {% else %}
-                mdi:weather-night
-                {% endif %}
-              tap_action:
-                action: more-info
+          - type: custom:mushroom-template-card
+            primary: Оновити тариф
+            layout: horizontal
+            entity: input_button.select_tariff
+            icon: mdi:reload
+            multiline_secondary: true
+            icon_color: amber
+            tap_action:
+              action: call-service
+              service: input_button.press
+              target:
+                entity_id: input_button.select_tariff
 
+      - type: markdown
+        content: >
+          ### Енергія за {{ states('sensor.current_month') }} / Покази лічильника
 
-            - type: custom:mushroom-template-card
-              primary: Встановлення тарифу
-              layout: horizontal
-              entity: input_button.select_tariff
-              icon: mdi:reload
-              multiline_secondary: true
-              icon_color: amber
-              tap_action:
-                action: call-service
-                service: input_button.press
-                target:
-                  entity_id: input_button.select_tariff
-                      
-        - type: markdown
-          content: >
-             ### Енергія за {{states ('sensor.current_month')}} / Покази лічильника
+      - type: custom:mushroom-template-card
+        primary: |-
+          День - {{ states('sensor.total_monthly_energy_day') }} кВт·год, на {{ (4.32 * (states('sensor.total_monthly_energy_day')|float))|round(2) }} грн
+        secondary: |-
+          Ніч - {{ states('sensor.total_monthly_energy_night') }} кВт·год, на {{ (2.16 * (states('sensor.total_monthly_energy_night')|float))|round(2) }} грн
+        layout: horizontal
+        entity: sensor.total_monthly_energy_day
+        icon_color: grey
+        icon: mdi:home-lightning-bolt
+        tap_action:
+          action: more-info
 
-        - type: custom:mushroom-template-card
-          primary: |-
-                  День - {{states ('sensor.total_monthly_energy_day')}} КВт*г, на {{ (4.32 * (states ('sensor.total_monthly_energy_day')|float))|round (2)}} грн
-          secondary: |-
-                  Ніч - {{states ('sensor.total_monthly_energy_night')}} КВт*г, на {{ (2.16 * (states ('sensor.total_monthly_energy_night')|float))|round (2)}} грн
-          layout: horizontal
-          entity: sensor.total_monthly_energy_day
-          icon_color: grey
-          icon: mdi:home-lightning-bolt
-          tap_action:
-            action: more-info
+      - type: custom:mushroom-template-card
+        primary: |-
+          День - {{ states('sensor.total_counter_energy_day') }} кВт·год
+        secondary: |-
+          Ніч - {{ states('sensor.total_counter_energy_night') }} кВт·год
+        layout: horizontal
+        entity: sensor.total_counter_energy_day
+        icon_color: grey
+        icon: mdi:counter
+        tap_action:
+          action: more-info
 
-        - type: custom:mushroom-template-card
-          primary: |-
-                  День - {{states ('sensor.total_counter_energy_day')}} КВт*г
-          secondary: |-
-                  Ніч - {{states ('sensor.total_counter_energy_night')}} КВт*г
-          layout: horizontal
-          entity: sensor.total_counter_energy_day
-          icon_color: grey
-          icon: mdi:home-lightning-bolt
-          tap_action:
-            action: more-info
-
-        - type: entities
-          show_header_toggle: false
-          entities:
+      - type: entities
+        show_header_toggle: false
+        entities:
           - entity: input_text.energy_correction
 
-        - type: custom:mushroom-template-card
-          primary: День
-          layout: horizontal
-          entity: input_button.energy_correction_day
-          icon: mdi:weather-sunny
-          multiline_secondary: true
-          icon_color: white
-          tap_action:
-            action: call-service
-            service: input_button.press
-            target:
-              entity_id: input_button.energy_correction_day
+      - type: custom:mushroom-template-card
+        primary: Корекція день
+        layout: horizontal
+        entity: input_button.energy_correction_day
+        icon: mdi:weather-sunny
+        multiline_secondary: true
+        icon_color: white
+        tap_action:
+          action: call-service
+          service: input_button.press
+          target:
+            entity_id: input_button.energy_correction_day
 
-        - type: custom:mushroom-template-card
-          primary: Ніч
-          layout: horizontal
-          entity: input_button.energy_correction_night
-          icon: mdi:weather-night
-          multiline_secondary: true
-          icon_color: grey
-          tap_action:
-            action: call-service
-            service: input_button.press
-            target:
-              entity_id: input_button.energy_correction_night
+      - type: custom:mushroom-template-card
+        primary: Корекція ніч
+        layout: horizontal
+        entity: input_button.energy_correction_night
+        icon: mdi:weather-night
+        multiline_secondary: true
+        icon_color: grey
+        tap_action:
+          action: call-service
+          service: input_button.press
+          target:
+            entity_id: input_button.energy_correction_night
 
 
-                      
 ############################ Колонка 2 ############################
-    - type: grid
-      cards:
+  - type: grid
+    cards:
 
-        - type: markdown
-          content: >
-             ## Електрика
+      - type: markdown
+        content: >
+          ## Інвертор
 
-        - type: markdown
-          content: >
-             ### Внутрішнє живлення
+      - type: markdown
+        content: >
+          ### Внутрішнє живлення
 
-        - type: markdown
-          content: >
-             ### Поточна потужність з інвертора - {{states ('sensor.deye_sun15_load_power')}} Ват
+      - type: markdown
+        content: >
+          ### Потужність з інвертора - {{ states('sensor.deye_sun15_load_power') }} Вт
 
-        - type: custom:mushroom-template-card
-          primary: Сенсор живлення
-          secondary: |-
-            {% if is_state("binary_sensor.electricity_internal", "off") %}
-            Внутрішнє живлення є
-            {% else %}
-            Внутрішнє живлення відключене
-            {% endif %}
-          layout: horizontal
-          entity: binary_sensor.electricity_internal
-          icon_color: |-
-            {% if is_state("binary_sensor.electricity_internal", "off") %}
-            green
-            {% else %}
-            red
-            {% endif %}
-          icon: |-
-            {% if is_state("binary_sensor.electricity_internal", "off") %}
-            mdi:power-plug
-            {% else %}
-            mdi:power-plug-off
-            {% endif %}
-          tap_action:
-            action: more-info
- 
-        - type: custom:mushroom-template-card
-          primary: Сенсор блекаут
-          secondary: |-
-            {% if is_state("binary_sensor.blackout", "off") %}
-            ОК
-            {% else %}
-            Блекаут
-            {% endif %}
-          layout: horizontal
-          entity: binary_sensor.blackout
-          icon_color: |-
-            {% if is_state("binary_sensor.blackout", "off") %}
-            green
-            {% else %}
-            red
-            {% endif %}
-          icon: |-
-            {% if is_state("binary_sensor.blackout", "off") %}
-            mdi:power-plug
-            {% else %}
-            mdi:power-plug-off
-            {% endif %}
-          tap_action:
-            action: more-info
+      - type: custom:mushroom-template-card
+        primary: Сенсор внутрішнього живлення
+        secondary: |-
+          {% if is_state("binary_sensor.electricity_internal", "off") %}
+          Є живлення
+          {% else %}
+          Немає живлення
+          {% endif %}
+        layout: horizontal
+        entity: binary_sensor.electricity_internal
+        icon_color: |-
+          {% if is_state("binary_sensor.electricity_internal", "off") %}
+          green
+          {% else %}
+          red
+          {% endif %}
+        icon: |-
+          {% if is_state("binary_sensor.electricity_internal", "off") %}
+          mdi:power-plug
+          {% else %}
+          mdi:power-plug-off
+          {% endif %}
+        tap_action:
+          action: more-info
 
+      - type: custom:mushroom-template-card
+        primary: Сенсор блекауту
+        secondary: |-
+          {% if is_state("binary_sensor.blackout", "off") %}
+          ОК
+          {% else %}
+          Блекаут
+          {% endif %}
+        layout: horizontal
+        entity: binary_sensor.blackout
+        icon_color: |-
+          {% if is_state("binary_sensor.blackout", "off") %}
+          green
+          {% else %}
+          red
+          {% endif %}
+        icon: |-
+          {% if is_state("binary_sensor.blackout", "off") %}
+          mdi:power-plug
+          {% else %}
+          mdi:power-plug-off
+          {% endif %}
+        tap_action:
+          action: more-info
 
-        - type: markdown
-          content: >
-             ### Фізичні внутрішні сенсори живлення
+      - type: markdown
+        content: >
+          ### Фізичні внутрішні сенсори живлення
 
+      - type: custom:mushroom-template-card
+        primary: Вітальня 1
+        secondary: |-
+          {% if is_state("binary_sensor.lr_electricity", "off") %}
+          Є живлення
+          {% else %}
+          Немає живлення
+          {% endif %}
+        layout: horizontal
+        entity: binary_sensor.lr_electricity
+        icon_color: |-
+          {% if is_state("binary_sensor.lr_electricity", "off") %}
+          green
+          {% else %}
+          red
+          {% endif %}
+        icon: |-
+          {% if is_state("binary_sensor.lr_electricity", "off") %}
+          mdi:power-plug
+          {% else %}
+          mdi:power-plug-off
+          {% endif %}
+        tap_action:
+          action: more-info
 
-        - type: custom:mushroom-template-card
-          primary: Гостиная 1
-          secondary: |-
-            {% if is_state("binary_sensor.lr_electricity", "off") %}
-            Питание есть
-            {% else %}
-            Питание отключено
-            {% endif %}
-          layout: horizontal
-          entity: binary_sensor.lr_electricity
-          icon_color: |-
-            {% if is_state("binary_sensor.lr_electricity", "off") %}
-            green
-            {% else %}
-            red
-            {% endif %}
-          icon: |-
-            {% if is_state("binary_sensor.lr_electricity", "off") %}
-            mdi:power-plug
-            {% else %}
-            mdi:power-plug-off
-            {% endif %}
-          tap_action:
-            action: more-info
+      - type: custom:mushroom-template-card
+        primary: Вітальня 2
+        secondary: |-
+          {% if is_state("binary_sensor.lr2_electricity", "off") %}
+          Є живлення
+          {% else %}
+          Немає живлення
+          {% endif %}
+        layout: horizontal
+        entity: binary_sensor.lr2_electricity
+        icon_color: |-
+          {% if is_state("binary_sensor.lr2_electricity", "off") %}
+          green
+          {% else %}
+          red
+          {% endif %}
+        icon: |-
+          {% if is_state("binary_sensor.lr2_electricity", "off") %}
+          mdi:power-plug
+          {% else %}
+          mdi:power-plug-off
+          {% endif %}
+        tap_action:
+          action: more-info
 
-        - type: custom:mushroom-template-card
-          primary: Гостиная 2
-          secondary: |-
-            {% if is_state("binary_sensor.lr2_electricity", "off") %}
-            Питание есть
-            {% else %}
-            Питание отключено
-            {% endif %}
-          layout: horizontal
-          entity: binary_sensor.lr2_electricity
-          icon_color: |-
-            {% if is_state("binary_sensor.lr2_electricity", "off") %}
-            green
-            {% else %}
-            red
-            {% endif %}
-          icon: |-
-            {% if is_state("binary_sensor.lr2_electricity", "off") %}
-            mdi:power-plug
-            {% else %}
-            mdi:power-plug-off
-            {% endif %}
-          tap_action:
-            action: more-info
+      - type: custom:mushroom-template-card
+        primary: Кухня
+        secondary: |-
+          {% if is_state("binary_sensor.kn_electricity", "off") %}
+          Є живлення
+          {% else %}
+          Немає живлення
+          {% endif %}
+        layout: horizontal
+        entity: binary_sensor.kn_electricity
+        icon_color: |-
+          {% if is_state("binary_sensor.kn_electricity", "off") %}
+          green
+          {% else %}
+          red
+          {% endif %}
+        icon: |-
+          {% if is_state("binary_sensor.kn_electricity", "off") %}
+          mdi:power-plug
+          {% else %}
+          mdi:power-plug-off
+          {% endif %}
+        tap_action:
+          action: more-info
 
-        - type: custom:mushroom-template-card
-          primary: Кухня
-          secondary: |-
-            {% if is_state("binary_sensor.kn_electricity", "off") %}
-            Питание есть
-            {% else %}
-            Питание отключено
-            {% endif %}
-          layout: horizontal
-          entity: binary_sensor.kn_electricity
-          icon_color: |-
-            {% if is_state("binary_sensor.kn_electricity", "off") %}
-            green
-            {% else %}
-            red
-            {% endif %}
-          icon: |-
-            {% if is_state("binary_sensor.kn_electricity", "off") %}
-            mdi:power-plug
-            {% else %}
-            mdi:power-plug-off
-            {% endif %}
-          tap_action:
-            action: more-info
+      - type: custom:mushroom-template-card
+        primary: Спальня
+        secondary: |-
+          {% if is_state("binary_sensor.br_electricity", "off") %}
+          Є живлення
+          {% else %}
+          Немає живлення
+          {% endif %}
+        layout: horizontal
+        entity: binary_sensor.br_electricity
+        icon_color: |-
+          {% if is_state("binary_sensor.br_electricity", "off") %}
+          green
+          {% else %}
+          red
+          {% endif %}
+        icon: |-
+          {% if is_state("binary_sensor.br_electricity", "off") %}
+          mdi:power-plug
+          {% else %}
+          mdi:power-plug-off
+          {% endif %}
+        tap_action:
+          action: more-info
 
-        - type: custom:mushroom-template-card
-          primary: Спальня
-          secondary: |-
-            {% if is_state("binary_sensor.br_electricity", "off") %}
-            Питание есть
-            {% else %}
-            Питание отключено
-            {% endif %}
-          layout: horizontal
-          entity: binary_sensor.br_electricity
-          icon_color: |-
-            {% if is_state("binary_sensor.br_electricity", "off") %}
-            green
-            {% else %}
-            red
-            {% endif %}
-          icon: |-
-            {% if is_state("binary_sensor.br_electricity", "off") %}
-            mdi:power-plug
-            {% else %}
-            mdi:power-plug-off
-            {% endif %}
-          tap_action:
-            action: more-info
+      - type: markdown
+        content: >
+          ### Скидання внутрішніх сенсорів живлення
 
-        - type: markdown
-          content: >
-             ### Скидання внутрішніх сенсорів живлення
+      - type: custom:mushroom-template-card
+        primary: Вітальня 1
+        secondary: |-
+          {% if is_state("switch.0xa4c138cd1b6a0a9a", "on") %}
+          Увімкнено
+          {% else %}
+          Вимкнено
+          {% endif %}
+        layout: horizontal
+        tap_action:
+          action: toggle
+        entity: switch.0xa4c138cd1b6a0a9a
+        icon: mdi:power-standby
+        multiline_secondary: true
+        icon_color: |-
+          {% if is_state("switch.0xa4c138cd1b6a0a9a", "on") %}
+          green
+          {% else %}
+          red
+          {% endif %}
 
-        - type: custom:mushroom-template-card
-          primary: Гостиная 1
-          secondary: |-
-            {% if is_state("switch.0xa4c138cd1b6a0a9a", "on") %}
-            Вкл
-            {% else %}
-            Выкл
-            {% endif %}
-          layout: horizontal
-          tap_action:
-            action: toggle
-          entity: switch.0xa4c138cd1b6a0a9a
-          icon: mdi:power-standby
-          multiline_secondary: true
-          icon_color: |-
-            {% if is_state("switch.0xa4c138cd1b6a0a9a", "on") %}
-            green
-            {% else %}
-            red
-            {% endif %}
+      - type: custom:mushroom-template-card
+        primary: Вітальня 2
+        secondary: |-
+          {% if is_state("switch.smart_power_strip_44eu_w_socket_3", "on") %}
+          Увімкнено
+          {% else %}
+          Вимкнено
+          {% endif %}
+        layout: horizontal
+        tap_action:
+          action: toggle
+        entity: switch.smart_power_strip_44eu_w_socket_3
+        icon: mdi:power-standby
+        multiline_secondary: true
+        icon_color: |-
+          {% if is_state("switch.smart_power_strip_44eu_w_socket_3", "on") %}
+          green
+          {% else %}
+          red
+          {% endif %}
 
-        - type: custom:mushroom-template-card
-          primary: Гостиная 2
-          secondary: |-
-            {% if is_state("switch.smart_power_strip_44eu_w_socket_3", "on") %}
-            Вкл
-            {% else %}
-            Выкл
-            {% endif %}
-          layout: horizontal
-          tap_action:
-            action: toggle
-          entity: switch.smart_power_strip_44eu_w_socket_3
-          icon: mdi:power-standby
-          multiline_secondary: true
-          icon_color: |-
-            {% if is_state("switch.smart_power_strip_44eu_w_socket_3", "on") %}
-            green
-            {% else %}
-            red
-            {% endif %}
+      - type: custom:mushroom-template-card
+        primary: Кухня
+        secondary: |-
+          {% if is_state("switch.0xa4c138235d1e6877", "on") %}
+          Увімкнено
+          {% else %}
+          Вимкнено
+          {% endif %}
+        layout: horizontal
+        tap_action:
+          action: toggle
+        entity: switch.0xa4c138235d1e6877
+        icon: mdi:power-standby
+        multiline_secondary: true
+        icon_color: |-
+          {% if is_state("switch.0xa4c138235d1e6877", "on") %}
+          green
+          {% else %}
+          red
+          {% endif %}
 
-
-
-        - type: custom:mushroom-template-card
-          primary: Кухня
-          secondary: |-
-            {% if is_state("switch.0xa4c138235d1e6877", "on") %}
-            Вкл
-            {% else %}
-            Выкл
-            {% endif %}
-          layout: horizontal
-          tap_action:
-            action: toggle
-          entity: switch.0xa4c138235d1e6877
-          icon: mdi:power-standby
-          multiline_secondary: true
-          icon_color: |-
-            {% if is_state("switch.0xa4c138235d1e6877", "on") %}
-            green
-            {% else %}
-            red
-            {% endif %}
-            
-        - type: custom:mushroom-template-card
-          primary: Спальня
-          secondary: |-
-            {% if is_state("switch.0xa4c1382dc9fecb3e", "on") %}
-            Вкл
-            {% else %}
-            Выкл
-            {% endif %}
-          layout: horizontal
-          tap_action:
-            action: toggle
-          entity: switch.0xa4c1382dc9fecb3e
-          icon: mdi:power-standby
-          multiline_secondary: true
-          icon_color: |-
-            {% if is_state("switch.0xa4c1382dc9fecb3e", "on") %}
-            green
-            {% else %}
-            red
-            {% endif %}
+      - type: custom:mushroom-template-card
+        primary: Спальня
+        secondary: |-
+          {% if is_state("switch.0xa4c1382dc9fecb3e", "on") %}
+          Увімкнено
+          {% else %}
+          Вимкнено
+          {% endif %}
+        layout: horizontal
+        tap_action:
+          action: toggle
+        entity: switch.0xa4c1382dc9fecb3e
+        icon: mdi:power-standby
+        multiline_secondary: true
+        icon_color: |-
+          {% if is_state("switch.0xa4c1382dc9fecb3e", "on") %}
+          green
+          {% else %}
+          red
+          {% endif %}
 
 
 ############################ Колонка 3 ############################
-    - type: grid
-      cards:
+  - type: grid
+    cards:
 
-        - type: markdown
-          content: >
-             ## Зовнішня мережа
+      - type: markdown
+        content: >
+          ## Зовнішня мережа
 
-        - type: markdown
-          content: >
-             ### Фаза 1
+      - type: markdown
+        content: >
+          ### Фаза 1
 
-        - type: markdown
-          content: >
-             #### Потужність - {{states ('sensor.phase_1_power')}} Ват, напруга - {{states ('sensor.phase_1_voltage')}} В
+      - type: markdown
+        content: >
+          #### Потужність - {{ states('sensor.phase_1_power') }} Вт, напруга - {{ states('sensor.phase_1_voltage') }} В
 
-        - type: custom:plotly-graph
-          hours_to_show: 24
-          refresh_interval: 10      
-          entities:
-            - entity: sensor.phase_1_voltage
-              show_value: true
-              line:
-                 width: 1
-                 color: lightgreen
+      - type: custom:plotly-graph
+        hours_to_show: 24
+        refresh_interval: 10
+        entities:
+          - entity: sensor.phase_1_voltage
+            show_value: true
+            line:
+              width: 1
+              color: lightgreen
 
-        - type: custom:plotly-graph
-          hours_to_show: 24
-          refresh_interval: 10      
-          entities:
-            - entity: sensor.phase_1_power
-              show_value: true
-              line:
-                 width: 1
-                 color: lightblue
+      - type: custom:plotly-graph
+        hours_to_show: 24
+        refresh_interval: 10
+        entities:
+          - entity: sensor.phase_1_power
+            show_value: true
+            line:
+              width: 1
+              color: lightblue
 
+      - type: markdown
+        content: >
+          ### Фаза 2
 
-        - type: markdown
-          content: >
-             ### Фаза 2
+      - type: markdown
+        content: >
+          #### Потужність - {{ states('sensor.phase_2_power') }} Вт, напруга - {{ states('sensor.phase_2_voltage') }} В
 
-        - type: markdown
-          content: >
-             #### Потужність - {{states ('sensor.phase_2_power')}} Ват, напруга - {{states ('sensor.phase_2_voltage')}} В
+      - type: custom:plotly-graph
+        hours_to_show: 24
+        refresh_interval: 10
+        entities:
+          - entity: sensor.phase_2_voltage
+            show_value: true
+            line:
+              width: 1
+              color: lightgreen
 
-        - type: custom:plotly-graph
-          hours_to_show: 24
-          refresh_interval: 10      
-          entities:
-            - entity: sensor.phase_2_voltage
-              show_value: true
-              line:
-                 width: 1
-                 color: lightgreen
+      - type: custom:plotly-graph
+        hours_to_show: 24
+        refresh_interval: 10
+        entities:
+          - entity: sensor.phase_2_power
+            show_value: true
+            line:
+              width: 1
+              color: lightblue
 
-        - type: custom:plotly-graph
-          hours_to_show: 24
-          refresh_interval: 10      
-          entities:
-            - entity: sensor.phase_2_power
-              show_value: true
-              line:
-                 width: 1
-                 color: lightblue    
+      - type: markdown
+        content: >
+          ### Фаза 3
 
-        - type: markdown
-          content: >
-             ### Фаза 3
+      - type: markdown
+        content: >
+          #### Потужність - {{ states('sensor.phase_3_power') }} Вт, напруга - {{ states('sensor.phase_3_voltage') }} В
 
-        - type: markdown
-          content: >
-             #### Потужність - {{states ('sensor.phase_3_power')}} Ват, напруга - {{states ('sensor.phase_3_voltage')}} В
+      - type: custom:plotly-graph
+        hours_to_show: 24
+        refresh_interval: 10
+        entities:
+          - entity: sensor.phase_3_voltage
+            show_value: true
+            line:
+              width: 1
+              color: lightgreen
 
-        - type: custom:plotly-graph
-          hours_to_show: 24
-          refresh_interval: 10      
-          entities:
-            - entity: sensor.phase_3_voltage
-              show_value: true
-              line:
-                 width: 1
-                 color: lightgreen
-                    
-        - type: custom:plotly-graph
-          hours_to_show: 24
-          refresh_interval: 10      
-          entities:
-            - entity: sensor.phase_3_power
-              show_value: true
-              line:
-                 width: 1
-                 color: lightblue                    
+      - type: custom:plotly-graph
+        hours_to_show: 24
+        refresh_interval: 10
+        entities:
+          - entity: sensor.phase_3_power
+            show_value: true
+            line:
+              width: 1
+              color: lightblue
+
 
 ############################ Колонка 4 ############################
-    - type: grid
-      cards:
+  - type: grid
+    cards:
 
-        - type: markdown
-          content: >
-             ## Внутрішня мережа
+      - type: markdown
+        content: >
+          ## Внутрішня мережа
 
-        - type: markdown
-          content: >
-             ### Фаза 1
+      - type: markdown
+        content: >
+          ### Фаза 1
 
-        - type: markdown
-          content: >
-             #### Потужність - {{states ('sensor.deye_sun15_load_l1_power')}} Ват, напруга - {{states ('sensor.deye_sun15_load_l1_voltage')}} В
+      - type: markdown
+        content: >
+          #### Потужність - {{ states('sensor.deye_sun15_load_l1_power') }} Вт, напруга - {{ states('sensor.deye_sun15_load_l1_voltage') }} В
 
-        - type: custom:plotly-graph
-          hours_to_show: 24
-          refresh_interval: 10      
-          entities:
-            - entity: sensor.deye_sun15_load_l1_voltage
-              show_value: true
-              line:
-                 width: 1
-                 color: lightgreen
+      - type: custom:plotly-graph
+        hours_to_show: 24
+        refresh_interval: 10
+        entities:
+          - entity: sensor.deye_sun15_load_l1_voltage
+            show_value: true
+            line:
+              width: 1
+              color: lightgreen
 
-        - type: custom:plotly-graph
-          hours_to_show: 24
-          refresh_interval: 10      
-          entities:
-            - entity: sensor.deye_sun15_load_l1_power
-              show_value: true
-              line:
-                 width: 1
-                 color: lightblue
-                 
-        - type: markdown
-          content: >
-             ### Фаза 2
+      - type: custom:plotly-graph
+        hours_to_show: 24
+        refresh_interval: 10
+        entities:
+          - entity: sensor.deye_sun15_load_l1_power
+            show_value: true
+            line:
+              width: 1
+              color: lightblue
 
-        - type: markdown
-          content: >
-             #### Потужність - {{states ('sensor.deye_sun15_load_l2_power')}} Ват, напруга - {{states ('sensor.deye_sun15_load_l2_voltage')}} В
+      - type: markdown
+        content: >
+          ### Фаза 2
 
-        - type: custom:plotly-graph
-          hours_to_show: 24
-          refresh_interval: 10      
-          entities:
-            - entity: sensor.deye_sun15_load_l2_voltage
-              show_value: true
-              line:
-                 width: 1
-                 color: lightgreen
+      - type: markdown
+        content: >
+          #### Потужність - {{ states('sensor.deye_sun15_load_l2_power') }} Вт, напруга - {{ states('sensor.deye_sun15_load_l2_voltage') }} В
 
-        - type: custom:plotly-graph
-          hours_to_show: 24
-          refresh_interval: 10      
-          entities:
-            - entity: sensor.deye_sun15_load_l2_power
-              show_value: true
-              line:
-                 width: 1
-                 color: lightblue
-                 
-        - type: markdown
-          content: >
-             ### Фаза 3
+      - type: custom:plotly-graph
+        hours_to_show: 24
+        refresh_interval: 10
+        entities:
+          - entity: sensor.deye_sun15_load_l2_voltage
+            show_value: true
+            line:
+              width: 1
+              color: lightgreen
 
-        - type: markdown
-          content: >
-             #### Потужність - {{states ('sensor.deye_sun15_load_l3_power')}} Ват, напруга - {{states ('sensor.deye_sun15_load_l3_voltage')}} В
+      - type: custom:plotly-graph
+        hours_to_show: 24
+        refresh_interval: 10
+        entities:
+          - entity: sensor.deye_sun15_load_l2_power
+            show_value: true
+            line:
+              width: 1
+              color: lightblue
 
-        - type: custom:plotly-graph
-          hours_to_show: 24
-          refresh_interval: 10      
-          entities:
-            - entity: sensor.deye_sun15_load_l3_voltage
-              show_value: true
-              line:
-                 width: 1
-                 color: lightgreen
+      - type: markdown
+        content: >
+          ### Фаза 3
 
-        - type: custom:plotly-graph
-          hours_to_show: 24
-          refresh_interval: 10      
-          entities:
-            - entity: sensor.deye_sun15_load_l3_power
-              show_value: true
-              line:
-                 width: 1
-                 color: lightblue
+      - type: markdown
+        content: >
+          #### Потужність - {{ states('sensor.deye_sun15_load_l3_power') }} Вт, напруга - {{ states('sensor.deye_sun15_load_l3_voltage') }} В
+
+      - type: custom:plotly-graph
+        hours_to_show: 24
+        refresh_interval: 10
+        entities:
+          - entity: sensor.deye_sun15_load_l3_voltage
+            show_value: true
+            line:
+              width: 1
+              color: lightgreen
+
+      - type: custom:plotly-graph
+        hours_to_show: 24
+        refresh_interval: 10
+        entities:
+          - entity: sensor.deye_sun15_load_l3_power
+            show_value: true
+            line:
+              width: 1
+              color: lightblue

@@ -1,88 +1,120 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 ln_washmashine:
 
-    recorder:
-      include:
-        entities:
-           - sensor.0x842e14fffe51c5ae_power
-           - sensor.0x842e14fffe51c5ae_meter
-           - binary_sensor.ln_washing
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-    template:
-    
-      - binary_sensor:
+  homeassistant:
+    customize:
 
-          - name: ln_washing
-            unique_id: ln_washing
-            state: >
-              {{ states('sensor.0x842e14fffe51c5ae_power')|int > 6 }}
-            delay_on: 
-                minutes: 2
-            delay_off: 
-                minutes: 2
-            device_class: running
-            
-    automation:
+      binary_sensor.ln_washing:
+        friendly_name: Пральня - прання активне
+        icon: mdi:washing-machine
 
-      - alias: ln_washing_end
-        id: ln_washing_end
-        description: Повідомлення про завершення прання
-        initial_state: true          
-        trigger:
+      automation.ln_washing_end:
+        friendly_name: Пральня - завершення прання
+        icon: mdi:washing-machine-alert
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - sensor.0x842e14fffe51c5ae_power
+        - sensor.0x842e14fffe51c5ae_meter
+        - binary_sensor.ln_washing
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    - binary_sensor:
+
+        - name: ln_washing
+          unique_id: ln_washing
+          state: >
+            {{ states('sensor.0x842e14fffe51c5ae_power') | int > 6 }}
+          delay_on:
+            minutes: 2
+          delay_off:
+            minutes: 2
+          device_class: running
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    - alias: ln_washing_end
+      id: ln_washing_end
+      description: Пральня - повідомлення про завершення прання
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: binary_sensor.ln_washing
           from: 'on'
           to: 'off'
-        condition:
-    # Перемикач режиму роботи серверу
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Денний режим роботи
         - condition: state
           entity_id: binary_sensor.night_time
           state: 'off'
-        action:
-        - service: telegram_bot.send_message
+      action:
+        - action: telegram_bot.send_message
           data_template:
             chat_id:
-                - !secret chat_id_group
-            message: | 
-                  {{"\U0001F9D9"}} Прання завершено ! {{ states('sensor.time_date') }}
-        - service: light.turn_on
-          entity_id: 
-             - light.gld_wled
-             - light.br_wled_round
+              - !secret chat_id_group
+            message: |
+              {{"\U0001F9D9"}} Прання завершено ! {{ states('sensor.time_date') }}
+        - action: light.turn_on
+          target:
+            entity_id:
+              - light.gld_wled
+              - light.br_wled_round
           data:
             effect: Washing Machine
             brightness_pct: 10
-        - service: select.select_option
+        - action: select.select_option
+          target:
+            entity_id:
+              - select.gld_wled_color_palette
+              - select.br_wled_round_color_palette
           data:
             option: Icefire
+        - action: number.set_value
           target:
-            entity_id: 
-             - select.gld_wled_color_palette
-             - select.br_wled_round_color_palette
-        - service: number.set_value
-          target:
-            entity_id: 
-             - number.gld_wled_speed
-             - number.br_wled_round_speed
+            entity_id:
+              - number.gld_wled_speed
+              - number.br_wled_round_speed
           data:
             value: 157
-        - service: number.set_value
+        - action: number.set_value
           target:
-            entity_id: 
-             - number.gld_wled_intensity
-             - number.br_wled_round_intensity
+            entity_id:
+              - number.gld_wled_intensity
+              - number.br_wled_round_intensity
           data:
             value: 221
         - delay: 00:00:30
-        - service: light.turn_off
-          entity_id: 
-             - light.gld_wled
-             - light.br_wled_round
+        - action: light.turn_off
+          target:
+            entity_id:
+              - light.gld_wled
+              - light.br_wled_round
         - delay: 00:00:15
-        - service: light.turn_off
-          entity_id: 
-             - light.gld_wled
-             - light.br_wled_round
+        - action: light.turn_off
+          target:
+            entity_id:
+              - light.gld_wled
+              - light.br_wled_round

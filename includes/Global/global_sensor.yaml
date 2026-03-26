@@ -1,58 +1,103 @@
+##################################################
+## Актуалізовано: 2026-03-24
+##################################################
+
 global_sensor:
 
-    homeassistant:
-      customize:
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-        binary_sensor.notification_time:
-          friendly_name: Уведомления
-        binary_sensor.night_time:
-          friendly_name: Ночной режим
+  homeassistant:
+    customize:
 
-    input_datetime:
-      notification_start:
-        name: Начало уведомлений
-        has_date: false
-        has_time: true
+      binary_sensor.notification_time:
+        friendly_name: Система - час сповіщень
+        icon: mdi:bell-time
 
-      notification_stop:
-        name: Завершение уведомлений
-        has_date: false
-        has_time: true
-        
-      night_start:
-        name: Старт ночного режима
-        has_date: false
-        has_time: true
+      binary_sensor.night_time:
+        friendly_name: Система - нічний режим
+        icon: mdi:weather-night
 
-      night_stop:
-        name: Завершение ночного режима
-        has_date: false
-        has_time: true
+      input_datetime.notification_start:
+        friendly_name: Система - початок сповіщень
+        icon: mdi:clock-start
 
-    template:
-    
-      - binary_sensor:
-      
-################# Custom time sensor #################     
-          - name: notification_time
-            unique_id: notification_time
-            state: >
-                {% if states('input_datetime.notification_start') < states('input_datetime.notification_stop') %}
-                {{ states('input_datetime.notification_start') <= now().strftime('%H:%M:%S') <= states('input_datetime.notification_stop') }}
-                {% elif states('input_datetime.notification_start') > states('input_datetime.notification_stop') %}
-                {{states('input_datetime.notification_start') <= now().strftime('%H:%M:%S') <= '23:59:59'
-                or '00:00:00' <= now().strftime('%H:%M:%S') <= states('input_datetime.notification_stop')}}
-                {% endif %}                
-            device_class: running
-            
-          - name: night_time
-            unique_id: night_time
-            state: >
-                {% if states('input_datetime.night_start') < states('input_datetime.night_stop') %}
-                {{ states('input_datetime.night_start') <= now().strftime('%H:%M:%S') <= states('input_datetime.night_stop') }}
-                {% elif states('input_datetime.night_start') > states('input_datetime.night_stop') %}
-                {{states('input_datetime.night_start') <= now().strftime('%H:%M:%S') <= '23:59:59'
-                or '00:00:00' <= now().strftime('%H:%M:%S') <= states('input_datetime.night_stop')}}
-                {% endif %}            
-            device_class: running
+      input_datetime.notification_stop:
+        friendly_name: Система - завершення сповіщень
+        icon: mdi:clock-end
 
+      input_datetime.night_start:
+        friendly_name: Система - початок нічного режиму
+        icon: mdi:weather-night-partly-cloudy
+
+      input_datetime.night_stop:
+        friendly_name: Система - завершення нічного режиму
+        icon: mdi:white-balance-sunny
+
+  ##################################################
+  ## INPUT_DATETIME
+  ##################################################
+
+  input_datetime:
+
+    notification_start:
+      name: notification_start
+      has_date: false
+      has_time: true
+
+    notification_stop:
+      name: notification_stop
+      has_date: false
+      has_time: true
+
+    night_start:
+      name: night_start
+      has_date: false
+      has_time: true
+
+    night_stop:
+      name: night_stop
+      has_date: false
+      has_time: true
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    ##################################################
+    ## ГЛОБАЛЬНІ ЧАСОВІ СЕНСОРИ
+    ##################################################
+
+    - binary_sensor:
+        - name: notification_time
+          unique_id: notification_time
+          state: >
+            {% set start = states('input_datetime.notification_start') %}
+            {% set stop = states('input_datetime.notification_stop') %}
+            {% set current = now().strftime('%H:%M:%S') %}
+            {% if start < stop %}
+              {{ start <= current <= stop }}
+            {% elif start > stop %}
+              {{ start <= current <= '23:59:59'
+                 or '00:00:00' <= current <= stop }}
+            {% else %}
+              false
+            {% endif %}
+
+        - name: night_time
+          unique_id: night_time
+          state: >
+            {% set start = states('input_datetime.night_start') %}
+            {% set stop = states('input_datetime.night_stop') %}
+            {% set current = now().strftime('%H:%M:%S') %}
+            {% if start < stop %}
+              {{ start <= current <= stop }}
+            {% elif start > stop %}
+              {{ start <= current <= '23:59:59'
+                 or '00:00:00' <= current <= stop }}
+            {% else %}
+              false
+            {% endif %}

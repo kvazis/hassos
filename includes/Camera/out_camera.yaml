@@ -1,276 +1,373 @@
+##################################################
+## Актуалізовано: 2026-03-21
+##################################################
+
 out_camera:
 
-    input_button:
-
-      hikvision1_photo:
-        name: Фото hikvision 1
+  homeassistant:
+    customize:
+      input_button.hikvision1_photo:
+        friendly_name: Hikvision 1 - зробити фото
         icon: mdi:camera
-        
-      hikvision3_photo:
-        name: Фото hikvision 3
+      input_button.hikvision3_photo:
+        friendly_name: Hikvision 3 - зробити фото
         icon: mdi:camera
-        
-      hikvision5_photo:
-        name: Фото hikvision 5
+      input_button.hikvision5_photo:
+        friendly_name: Hikvision 5 - зробити фото
         icon: mdi:camera
-
-      hikvision7_photo:
-        name: Фото hikvision 7
+      input_button.hikvision7_photo:
+        friendly_name: Hikvision 7 - зробити фото
         icon: mdi:camera
-        
-      hikvision1_cast:
-        name: Каст hikvision1
+      input_button.hikvision1_cast:
+        friendly_name: Hikvision 1 - каст
         icon: mdi:cast-connected
-        
-      hikvision3_cast:
-        name: Каст hikvision3
+      input_button.hikvision3_cast:
+        friendly_name: Hikvision 3 - каст
         icon: mdi:cast-connected
-        
-      hikvision5_cast:
-        name: Каст hikvision5
+      input_button.hikvision5_cast:
+        friendly_name: Hikvision 5 - каст
         icon: mdi:cast-connected
+      input_button.hikvision7_cast:
+        friendly_name: Hikvision 7 - каст
+        icon: mdi:cast-connected
+      automation.out_camera_hikvision1_photo:
+        friendly_name: Hikvision 1 - фото в Telegram
+        icon: mdi:camera-send
+      automation.out_camera_hikvision1_cast:
+        friendly_name: Hikvision 1 - каст керування
+        icon: mdi:cast
+      automation.out_camera_hikvision3_photo:
+        friendly_name: Hikvision 3 - фото в Telegram
+        icon: mdi:camera-send
+      automation.out_camera_hikvision3_cast:
+        friendly_name: Hikvision 3 - каст керування
+        icon: mdi:cast
+      automation.out_camera_hikvision5_photo:
+        friendly_name: Hikvision 5 - фото в Telegram
+        icon: mdi:camera-send
+      automation.out_camera_hikvision5_cast:
+        friendly_name: Hikvision 5 - каст керування
+        icon: mdi:cast
+      automation.out_camera_hikvision7_photo:
+        friendly_name: Hikvision 7 - фото в Telegram
+        icon: mdi:camera-send
+      automation.out_camera_hikvision7_cast:
+        friendly_name: Hikvision 7 - каст керування
+        icon: mdi:cast
 
-      hikvision7_cast:
-        name: Каст hikvision7
-        icon: mdi:cast-connected
+  input_button:
 
-    automation:
+    ##################################################
+    ## КНОПКИ КЕРУВАННЯ КАМЕРАМИ
+    ##################################################
 
-      - alias: camera_hikvision1_photo
-        id: camera_hikvision1_photo
-        description: Hikvision 1 - фото и отправка в телеграмм
-        initial_state: true
-        trigger:
-    ## Виртуальная кнопка
+    hikvision1_photo:
+    hikvision3_photo:
+    hikvision5_photo:
+    hikvision7_photo:
+    hikvision1_cast:
+    hikvision3_cast:
+    hikvision5_cast:
+    hikvision7_cast:
+
+  automation:
+
+    ##################################################
+    ## HIKVISION 1 - ФОТО
+    ##################################################
+
+    - alias: out_camera_hikvision1_photo
+      id: out_camera_hikvision1_photo
+      description: Створення фото з Hikvision 1 та надсилання в Telegram
+      initial_state: true
+
+      trigger:
         - platform: state
           entity_id: input_button.hikvision1_photo
-        condition:
-         - condition: state
-           entity_id: switch.control_mode
-           state: 'on'
-        action:
-         - service: camera.snapshot
-           data:
-              entity_id: camera.hikvision_1
-              filename: "/config/www/cam_captures/hikvision1_photo.jpg"
-         - delay: 00:00:10
-         - action: telegram_bot.send_photo
-           data:
-             target:
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - action: camera.snapshot
+          target:
+            entity_id: camera.hikvision_1
+          data:
+            filename: "/config/www/cam_captures/hikvision1_photo.jpg"
+
+        - delay: "00:00:10"
+
+        - action: telegram_bot.send_photo
+          data:
+            target:
               - !secret chat_id_group
-             file: "/config/www/cam_captures/hikvision1_photo.jpg" 
-             
-      - alias: camera_hikvision1_cast
-        id: camera_hikvision1_cast
-        description: Hikvision 1 - Google Cast
-        initial_state: true
-        trigger:
-    ## Виртуальная кнопка
+            file: "/config/www/cam_captures/hikvision1_photo.jpg"
+
+    ##################################################
+    ## HIKVISION 1 - CAST
+    ##################################################
+
+    - alias: out_camera_hikvision1_cast
+      id: out_camera_hikvision1_cast
+      description: Каст Hikvision 1 на пристрій у вітальні
+      initial_state: true
+
+      trigger:
         - platform: state
           entity_id: input_button.hikvision1_cast
-    ## Aqara Opple на столе
+
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
-          to: 'button_4_double'
-        condition:
-         - condition: state
-           entity_id: switch.control_mode
-           state: 'on'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
+          to: "button_4_double"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: media_player.living_room
+                  state: "off"
+              sequence:
+                - action: camera.play_stream
+                  data:
+                    media_player: media_player.living_room
+                  target:
+                    entity_id: camera.hikvision_1
+
+            - conditions:
+                - condition: state
+                  entity_id: media_player.living_room
+                  state: "playing"
+              sequence:
+                - action: media_player.turn_off
+                  target:
                     entity_id: media_player.living_room
-                    state: 'off'
-                sequence:
-                  - service: camera.play_stream
-                    data:
-                      media_player: media_player.living_room
-                    target:
-                      entity_id: camera.hikvision_1
-              - conditions:
-                  - condition: state
-                    entity_id: media_player.living_room
-                    state: 'playing'
-                sequence:
-                  - service: media_player.turn_off
-                    target:
-                      entity_id: media_player.living_room
-                    
-      - alias: camera_hikvision3_photo
-        id: camera_hikvision3_photo
-        description: Hikvision 3 - фото и отправка в телеграмм
-        initial_state: true
-        trigger:
-    ## Виртуальная кнопка
+
+    ##################################################
+    ## HIKVISION 3 - ФОТО
+    ##################################################
+
+    - alias: out_camera_hikvision3_photo
+      id: out_camera_hikvision3_photo
+      description: Створення фото з Hikvision 3 та надсилання в Telegram
+      initial_state: true
+
+      trigger:
         - platform: state
           entity_id: input_button.hikvision3_photo
-        condition:
-         - condition: state
-           entity_id: switch.control_mode
-           state: 'on'
-        action:
-         - service: camera.snapshot
-           data:
-              entity_id: camera.hikvision_3
-              filename: "/config/www/cam_captures/hikvision3_photo.jpg"
-         - delay: 00:00:10
-         - action: telegram_bot.send_photo
-           data:
-             target:
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - action: camera.snapshot
+          target:
+            entity_id: camera.hikvision_3
+          data:
+            filename: "/config/www/cam_captures/hikvision3_photo.jpg"
+
+        - delay: "00:00:10"
+
+        - action: telegram_bot.send_photo
+          data:
+            target:
               - !secret chat_id_group
-             file: "/config/www/cam_captures/hikvision3_photo.jpg" 
-             
-      - alias: camera_hikvision3_cast
-        id: camera_hikvision3_cast
-        description: Hikvision 3 - Google Cast
-        initial_state: true
-        trigger:
-    ## Виртуальная кнопка
+            file: "/config/www/cam_captures/hikvision3_photo.jpg"
+
+    ##################################################
+    ## HIKVISION 3 - CAST
+    ##################################################
+
+    - alias: out_camera_hikvision3_cast
+      id: out_camera_hikvision3_cast
+      description: Каст Hikvision 3 на пристрій у вітальні
+      initial_state: true
+
+      trigger:
         - platform: state
           entity_id: input_button.hikvision3_cast
-        condition:
-         - condition: state
-           entity_id: switch.control_mode
-           state: 'on'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: media_player.living_room
+                  state: "off"
+              sequence:
+                - action: camera.play_stream
+                  data:
+                    media_player: media_player.living_room
+                  target:
+                    entity_id: camera.hikvision_3
+
+            - conditions:
+                - condition: state
+                  entity_id: media_player.living_room
+                  state: "playing"
+              sequence:
+                - action: media_player.turn_off
+                  target:
                     entity_id: media_player.living_room
-                    state: 'off'
-                sequence:
-                  - service: camera.play_stream
-                    data:
-                      media_player: media_player.living_room
-                    target:
-                      entity_id: camera.hikvision_3
-              - conditions:
-                  - condition: state
-                    entity_id: media_player.living_room
-                    state: 'playing'
-                sequence:
-                  - service: media_player.turn_off
-                    target:
-                      entity_id: media_player.living_room                    
-                    
-      - alias: camera_hikvision5_photo
-        id: camera_hikvision5_photo
-        description: Hikvision 5 - фото и отправка в телеграмм
-        initial_state: true
-        trigger:
-    ## Виртуальная кнопка
+
+    ##################################################
+    ## HIKVISION 5 - ФОТО
+    ##################################################
+
+    - alias: out_camera_hikvision5_photo
+      id: out_camera_hikvision5_photo
+      description: Створення фото з Hikvision 5 та надсилання в Telegram
+      initial_state: true
+
+      trigger:
         - platform: state
           entity_id: input_button.hikvision5_photo
-        condition:
-         - condition: state
-           entity_id: switch.control_mode
-           state: 'on'
-        action:
-         - service: camera.snapshot
-           data:
-              entity_id: camera.hikvision_5
-              filename: "/config/www/cam_captures/hikvision5_photo.jpg"
-         - delay: 00:00:10
-         - action: telegram_bot.send_photo
-           data:
-             target:
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - action: camera.snapshot
+          target:
+            entity_id: camera.hikvision_5
+          data:
+            filename: "/config/www/cam_captures/hikvision5_photo.jpg"
+
+        - delay: "00:00:10"
+
+        - action: telegram_bot.send_photo
+          data:
+            target:
               - !secret chat_id_group
-             file: "/config/www/cam_captures/hikvision5_photo.jpg" 
-             
-      - alias: camera_hikvision5_cast
-        id: camera_hikvision5_cast
-        description: Hikvision 5 - Google Cast
-        initial_state: true
-        trigger:
-    ## Виртуальная кнопка
+            file: "/config/www/cam_captures/hikvision5_photo.jpg"
+
+    ##################################################
+    ## HIKVISION 5 - CAST
+    ##################################################
+
+    - alias: out_camera_hikvision5_cast
+      id: out_camera_hikvision5_cast
+      description: Каст Hikvision 5 на пристрій у вітальні
+      initial_state: true
+
+      trigger:
         - platform: state
           entity_id: input_button.hikvision5_cast
-    ## Aqara Opple на столе
+
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
-          to: 'button_4_single'
-        condition:
-         - condition: state
-           entity_id: switch.control_mode
-           state: 'on'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
+          to: "button_4_single"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: media_player.living_room
+                  state: "off"
+              sequence:
+                - action: camera.play_stream
+                  data:
+                    media_player: media_player.living_room
+                  target:
+                    entity_id: camera.hikvision_5
+
+            - conditions:
+                - condition: state
+                  entity_id: media_player.living_room
+                  state: "playing"
+              sequence:
+                - action: media_player.turn_off
+                  target:
                     entity_id: media_player.living_room
-                    state: 'off'
-                sequence:
-                  - service: camera.play_stream
-                    data:
-                      media_player: media_player.living_room
-                    target:
-                      entity_id: camera.hikvision_5
-              - conditions:
-                  - condition: state
-                    entity_id: media_player.living_room
-                    state: 'playing'
-                sequence:
-                  - service: media_player.turn_off
-                    target:
-                      entity_id: media_player.living_room  
-                      
-      - alias: camera_hikvision7_photo
-        id: camera_hikvision7_photo
-        description: Hikvision 7 - фото и отправка в телеграмм
-        initial_state: true
-        trigger:
-    ## Виртуальная кнопка
+
+    ##################################################
+    ## HIKVISION 7 - ФОТО
+    ##################################################
+
+    - alias: out_camera_hikvision7_photo
+      id: out_camera_hikvision7_photo
+      description: Створення фото з Hikvision 7 та надсилання в Telegram
+      initial_state: true
+
+      trigger:
         - platform: state
           entity_id: input_button.hikvision7_photo
-        condition:
-         - condition: state
-           entity_id: switch.control_mode
-           state: 'on'
-        action:
-         - service: camera.snapshot
-           data:
-              entity_id: camera.hikvision_7
-              filename: "/config/www/cam_captures/hikvision7_photo.jpg"
-         - delay: 00:00:10
-         - action: telegram_bot.send_photo
-           data:
-             target:
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - action: camera.snapshot
+          target:
+            entity_id: camera.hikvision_7
+          data:
+            filename: "/config/www/cam_captures/hikvision7_photo.jpg"
+
+        - delay: "00:00:10"
+
+        - action: telegram_bot.send_photo
+          data:
+            target:
               - !secret chat_id_group
-             file: "/config/www/cam_captures/hikvision7_photo.jpg" 
-             
-      - alias: camera_hikvision7_cast
-        id: camera_hikvision7_cast
-        description: Hikvision 7 - Google Cast
-        initial_state: true
-        trigger:
-    ## Виртуальная кнопка
+            file: "/config/www/cam_captures/hikvision7_photo.jpg"
+
+    ##################################################
+    ## HIKVISION 7 - CAST
+    ##################################################
+
+    - alias: out_camera_hikvision7_cast
+      id: out_camera_hikvision7_cast
+      description: Каст Hikvision 7 на пристрій у вітальні
+      initial_state: true
+
+      trigger:
         - platform: state
           entity_id: input_button.hikvision7_cast
-        condition:
-         - condition: state
-           entity_id: switch.control_mode
-           state: 'on'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: media_player.living_room
+                  state: "off"
+              sequence:
+                - action: camera.play_stream
+                  data:
+                    media_player: media_player.living_room
+                  target:
+                    entity_id: camera.hikvision_7
+
+            - conditions:
+                - condition: state
+                  entity_id: media_player.living_room
+                  state: "playing"
+              sequence:
+                - action: media_player.turn_off
+                  target:
                     entity_id: media_player.living_room
-                    state: 'off'
-                sequence:
-                  - service: camera.play_stream
-                    data:
-                      media_player: media_player.living_room
-                    target:
-                      entity_id: camera.hikvision_7
-              - conditions:
-                  - condition: state
-                    entity_id: media_player.living_room
-                    state: 'playing'
-                sequence:
-                  - service: media_player.turn_off
-                    target:
-                      entity_id: media_player.living_room  
-                    
-                    
-                    

@@ -1,108 +1,126 @@
+##################################################
+## Актуалізовано: 2026-03-21
+##################################################
+
 en_reboot:
 
+  homeassistant:
+    customize:
+      binary_sensor.en_light_unavailable:
+        friendly_name: Передпокій - лампа недоступна
+        icon: mdi:alert-circle-outline
+      input_button.en_light_reboot:
+        friendly_name: Передпокій - перезавантажити лампу
+        icon: mdi:restart
+      automation.en_reboot_light:
+        friendly_name: Передпокій - перезавантаження лампи
+        icon: mdi:lightbulb-alert
+      automation.en_reboot_switch_ensure_on:
+        friendly_name: Передпокій - контроль вимикача
+        icon: mdi:toggle-switch
+      automation.en_reboot_switch_check:
+        friendly_name: Передпокій - перевірка вимикача через MQTT
+        icon: mdi:mqtt
+      automation.en_reboot_mi_camera:
+        friendly_name: Передпокій - перезавантаження камери MI
+        icon: mdi:cctv
+      automation.en_reboot_usb_switch_turn_on_check:
+        friendly_name: Передпокій - контроль живлення камери
+        icon: mdi:usb-port
 
-  ###################################################################
-  # Оновлено 18.03.2026
-  ###################################################################
+  template:
 
-    template:
-     
-      - binary_sensor:
+    ##################################################
+    ## ВИЗНАЧЕННЯ ЗАВИСАННЯ ЛАМПИ
+    ##################################################
 
-  ###################################################################
-  # Визначення зависання лампи
-  ###################################################################
-        - name: en_light_unavailable
-          unique_id: en_light_unavailable
+    - binary_sensor:
+        - unique_id: en_light_unavailable
           state: >
             {{ is_state('light.0x00158d0003e74c31', 'unavailable') }}
-          delay_on: 
-              minutes: 3
-          device_class: problem  
+          delay_on:
+            minutes: 3
 
-  ###################################################################
-  # Кнопка для ручного перезавантаження
-  ###################################################################
+  input_button:
 
-    input_button:
+    ##################################################
+    ## КНОПКА ДЛЯ РУЧНОГО ПЕРЕЗАВАНТАЖЕННЯ
+    ##################################################
 
-      en_light_reboot:
-        name: EN Light reboot
-            
-    automation:
-    
-###################################################################
-# Перезавантаження завислої лампи
-# Авто: коли сенсор недоступності став on
-# Ручний запуск: через input_button
-###################################################################
+    en_light_reboot:
 
-    - alias: en_reboot_bulb
-      id: en_bulb_reboot
-      description: Передпокій — перезавантаження завислої лампи
+  automation:
+
+    ##################################################
+    ## ПЕРЕЗАВАНТАЖЕННЯ ЗАВИСЛОЇ ЛАМПИ
+    ##################################################
+
+    - alias: en_reboot_light
+      id: en_reboot_light
+      description: Перезавантаження завислої лампи в передпокої
       initial_state: true
       mode: single
-    
-      triggers:
-        - trigger: state
+
+      trigger:
+        - platform: state
           entity_id: binary_sensor.en_light_unavailable
           to: "on"
           id: auto
-    
-        - trigger: state
+
+        - platform: state
           entity_id: input_button.en_light_reboot
           id: manual
-    
-      conditions:
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: "on"
-    
+
         - condition: state
           entity_id: binary_sensor.electricity_internal
           state: "off"
-    
-      actions:
+
+      action:
         - action: switch.turn_off
           target:
             entity_id: switch.0x00158d00057305ac_right
-    
+
         - delay: "00:00:05"
-   
+
         - action: switch.turn_on
           target:
             entity_id: switch.0x00158d00057305ac_right
-    
+
         - action: telegram_bot.send_message
           data:
             chat_id:
               - !secret chat_id_log
             message: >
-              🤖 Передпокій — {{
+              🤖 Передпокій - {{
               'ручне' if trigger.id == 'manual' else 'автоматичне'
               }} перезавантаження лампи {{ states('sensor.time_date') }}
-                   
-  ###################################################################
-  # Перезавантаження вимикача
-  ###################################################################
+
+    ##################################################
+    ## ПЕРЕЗАВАНТАЖЕННЯ ВИМИКАЧА
+    ##################################################
 
     - alias: en_reboot_switch_ensure_on
       id: en_reboot_switch_ensure_on
-      description: Передпокій — контроль та відновлення стану вимикача
+      description: Контроль та відновлення стану вимикача в передпокої
       initial_state: true
       mode: single
 
-      triggers:
-        - trigger: state
+      trigger:
+        - platform: state
           entity_id: switch.0x00158d00057305ac_right
           to: "off"
           id: state_off
 
-        - trigger: time_pattern
+        - platform: time_pattern
           minutes: "/5"
           id: periodic_check
 
-      conditions:
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: "on"
@@ -111,7 +129,7 @@ en_reboot:
           entity_id: binary_sensor.electricity_internal
           state: "off"
 
-      actions:
+      action:
         - choose:
             - conditions:
                 - condition: trigger
@@ -134,106 +152,99 @@ en_reboot:
                   target:
                     entity_id: switch.0x00158d00057305ac_right
 
-  ###################################################################
-  # Примусове оновлення стану вимикача через MQTT
-  ###################################################################
+    ##################################################
+    ## ПРИМУСОВЕ ОНОВЛЕННЯ СТАНУ ВИМИКАЧА ЧЕРЕЗ MQTT
+    ##################################################
 
     - alias: en_reboot_switch_check
       id: en_reboot_switch_check
-      description: Передпокій — перевірка стану вимикача
+      description: Перевірка стану вимикача в передпокої через MQTT
       initial_state: true
-    
-      triggers:
-        # Перевірка кожні 15 хвилин
-        - trigger: time_pattern
+
+      trigger:
+        - platform: time_pattern
           minutes: "/15"
-    
-      conditions:
-        # Режим роботи сервера
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: "on"
-    
-        # Є електроживлення
+
         - condition: state
           entity_id: binary_sensor.electricity_internal
           state: "off"
-    
-      actions:
-        # Примусове оновлення стану через MQTT
+
+      action:
         - action: mqtt.publish
           data:
             topic: "zigstar/EN wd 2ch/get"
             payload: '{ "state_left": "" }'
 
-
-  ###################################################################
-  # Перезавантаження і контроль живлення камери MI
-  # Ребут за розкладом або якщо камера недоступна
-  ###################################################################
+    ##################################################
+    ## ПЕРЕЗАВАНТАЖЕННЯ І КОНТРОЛЬ ЖИВЛЕННЯ КАМЕРИ MI
+    ##################################################
 
     - alias: en_reboot_mi_camera
       id: en_reboot_mi_camera
-      description: Передпокій — перезавантаження IP-камери MI
+      description: Перезавантаження IP-камери MI в передпокої
       initial_state: true
-    
-      triggers:
-        - trigger: time
+
+      trigger:
+        - platform: time
           at: "04:00:00"
-    
-        - trigger: state
+
+        - platform: state
           entity_id: camera.mi_2k
           to: "unavailable"
-    
-      conditions:
-        # Режим роботи сервера
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: "on"
-    
-        # Є електроживлення
+
         - condition: state
           entity_id: binary_sensor.blackout_after
           state: "off"
-    
-      actions:
+
+      action:
         - action: switch.turn_off
           target:
             entity_id: switch.sonoff_1000d036a0_1
-    
+
         - delay: "00:00:10"
-    
+
         - action: switch.turn_on
           target:
             entity_id: switch.sonoff_1000d036a0_1
-    
+
         - delay: "00:03:00"
 
-  ###################################################################
-  # Контроль живлення USB вимикача камери
-  # Реакція на вимкнення + періодична підстраховка
-  ###################################################################
+    ##################################################
+    ## КОНТРОЛЬ ЖИВЛЕННЯ USB ВИМИКАЧА КАМЕРИ
+    ##################################################
 
-
-    - alias: en_reboot_USB_switch_turn_on_check
-      id: en_reboot_USB_switch_turn_on_check
-      description: Передпокій, перевірка живлення на камеру
+    - alias: en_reboot_usb_switch_turn_on_check
+      id: en_reboot_usb_switch_turn_on_check
+      description: Перевірка живлення камери в передпокої
       initial_state: true
-      triggers:
-        - trigger: time_pattern
+
+      trigger:
+        - platform: time_pattern
           minutes: "/5"
-    
-      conditions:
+
+      condition:
         - condition: template
           value_template: "{{ states('switch.sonoff_1000d036a0_1') != 'on' }}"
+
         - condition: state
           entity_id: switch.control_mode
           state: "on"
+
         - condition: state
           entity_id: binary_sensor.electricity_internal
           state: "off"
-    
-      actions:
+
+      action:
         - delay: "00:00:05"
         - action: switch.turn_on
           target:

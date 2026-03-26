@@ -1,12 +1,14 @@
+##################################################
+## Актуалізовано: 2026-03-21
+##################################################
+
 git:
 
   homeassistant:
     customize:
-
       automation.sys_git_update:
         friendly_name: Git - оновлення конфігурації
         icon: mdi:git
-
       input_button.sys_git_update:
         friendly_name: Git - оновлення конфігурації
         icon: mdi:git
@@ -15,15 +17,27 @@ git:
     git_config: "bash ./ha_git.sh"
 
   input_button:
+
+    ##################################################
+    ## КНОПКА ОНОВЛЕННЯ КОНФІГУРАЦІЇ
+    ##################################################
+
     sys_git_update:
-      name: Git - оновлення конфігурації
 
   automation:
+
+    ##################################################
+    ## ОНОВЛЕННЯ КОНФІГУРАЦІЇ GIT
+    ##################################################
+
     - alias: sys_git_update
       id: sys_git_update
-      description: Git - оновлення конфігурації
+      description: Запуск оновлення конфігурації Git
+      initial_state: true
+
       trigger:
         - platform: state
           entity_id: input_button.sys_git_update
+
       action:
         - action: shell_command.git_config

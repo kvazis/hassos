@@ -1,277 +1,369 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 da_alarm:
 
-    input_boolean:
-      da_alarm1_enabled:
-        name: Alarm 1
-      da_alarm2_enabled:
-        name: Alarm 2
-      da_alarm3_enabled:
-        name: Alarm 3
-    
-    input_datetime:
-      da_alarm1_time:
-        name: Alarm 1 — time
-        has_date: false
-        has_time: true
-      da_alarm2_time:
-        name: Alarm 2 — time
-        has_date: false
-        has_time: true
-      da_alarm3_time:
-        name: Alarm 3 — time
-        has_date: false
-        has_time: true
-    
-    input_select:
-      da_alarm1_repeat:
-        name: Alarm 1 — repeat
-        options: ["Once", "Weekdays"]
+  ##################################################
+  ## HOMEASSISTANT
+  ##################################################
 
-      da_alarm2_repeat:
-        name: Alarm 2 — repeat
-        options: ["Once", "Weekdays"]
+  homeassistant:
+    customize:
+      input_boolean.da_alarm1_enabled:
+        friendly_name: Дитяча - будильник 1 увімкнено
+        icon: mdi:alarm
+      input_boolean.da_alarm2_enabled:
+        friendly_name: Дитяча - будильник 2 увімкнено
+        icon: mdi:alarm
+      input_boolean.da_alarm3_enabled:
+        friendly_name: Дитяча - будильник 3 увімкнено
+        icon: mdi:alarm
 
-      da_alarm3_repeat:
-        name: Alarm 3 — repeat
-        options: ["Once", "Weekdays"]
+      input_datetime.da_alarm1_time:
+        friendly_name: Дитяча - будильник 1 час
+        icon: mdi:clock-outline
+      input_datetime.da_alarm2_time:
+        friendly_name: Дитяча - будильник 2 час
+        icon: mdi:clock-outline
+      input_datetime.da_alarm3_time:
+        friendly_name: Дитяча - будильник 3 час
+        icon: mdi:clock-outline
 
+      input_select.da_alarm1_repeat:
+        friendly_name: Дитяча - будильник 1 повтор
+        icon: mdi:repeat
+      input_select.da_alarm2_repeat:
+        friendly_name: Дитяча - будильник 2 повтор
+        icon: mdi:repeat
+      input_select.da_alarm3_repeat:
+        friendly_name: Дитяча - будильник 3 повтор
+        icon: mdi:repeat
 
-      da_alarm1_tone:
-        name: Alarm 1 — tone
-        options: [melody_1, melody_2, melody_3, melody_4, melody_5]
-        initial: melody_1
-      da_alarm2_tone:
-        name: Alarm 2 — tone
-        options: [melody_1, melody_2, melody_3, melody_4, melody_5]
-        initial: melody_1
-      da_alarm3_tone:
-        name: Alarm 3 — tone
-        options: [melody_1, melody_2, melody_3, melody_4, melody_5]
-        initial: melody_1
+      input_select.da_alarm1_tone:
+        friendly_name: Дитяча - будильник 1 мелодія
+        icon: mdi:music
+      input_select.da_alarm2_tone:
+        friendly_name: Дитяча - будильник 2 мелодія
+        icon: mdi:music
+      input_select.da_alarm3_tone:
+        friendly_name: Дитяча - будильник 3 мелодія
+        icon: mdi:music
 
+      binary_sensor.da_alarm1_fire_once:
+        friendly_name: Дитяча - будильник 1 одноразовий запуск
+        icon: mdi:alarm-check
+      binary_sensor.da_alarm1_fire_weekday:
+        friendly_name: Дитяча - будильник 1 будні запуск
+        icon: mdi:calendar-week
 
-    template:
+      binary_sensor.da_alarm2_fire_once:
+        friendly_name: Дитяча - будильник 2 одноразовий запуск
+        icon: mdi:alarm-check
+      binary_sensor.da_alarm2_fire_weekday:
+        friendly_name: Дитяча - будильник 2 будні запуск
+        icon: mdi:calendar-week
 
-      - binary_sensor:
+      binary_sensor.da_alarm3_fire_once:
+        friendly_name: Дитяча - будильник 3 одноразовий запуск
+        icon: mdi:alarm-check
+      binary_sensor.da_alarm3_fire_weekday:
+        friendly_name: Дитяча - будильник 3 будні запуск
+        icon: mdi:calendar-week
 
-    # Sensor once 1 alarm
-          - name: 'da_alarm1_fire_once'
-            unique_id: 'da_alarm1_fire_once'
-            state: >
-              {{ states('input_select.da_alarm1_repeat') == 'Once' and
-                   states("sensor.current_time") == states("input_datetime.da_alarm1_time")}}
-            device_class: running
-            
-    # Sensor weekday 1 alarm
-          - name: 'da_alarm1_fire_weekday'
-            unique_id: 'da_alarm1_fire_weekday'
-            state: >
-              {{ states('input_select.da_alarm1_repeat') == 'Weekdays' and 
-                 now().isoweekday() in [1,2,3,4] and
+      script.da_alarm_play_60s_ramp:
+        friendly_name: Дитяча - будильник відтворення
+        icon: mdi:volume-high
+
+      automation.da_alarm:
+        friendly_name: Дитяча - керування будильником
+        icon: mdi:alarm-multiple
+
+  ##################################################
+  ## INPUT_BOOLEAN
+  ##################################################
+
+  input_boolean:
+    da_alarm1_enabled:
+    da_alarm2_enabled:
+    da_alarm3_enabled:
+
+  ##################################################
+  ## INPUT_DATETIME
+  ##################################################
+
+  input_datetime:
+    da_alarm1_time:
+      has_date: false
+      has_time: true
+    da_alarm2_time:
+      has_date: false
+      has_time: true
+    da_alarm3_time:
+      has_date: false
+      has_time: true
+
+  ##################################################
+  ## INPUT_SELECT
+  ##################################################
+
+  input_select:
+    da_alarm1_repeat:
+      options: ["Once", "Weekdays"]
+
+    da_alarm2_repeat:
+      options: ["Once", "Weekdays"]
+
+    da_alarm3_repeat:
+      options: ["Once", "Weekdays"]
+
+    da_alarm1_tone:
+      options: [melody_1, melody_2, melody_3, melody_4, melody_5]
+      initial: melody_1
+    da_alarm2_tone:
+      options: [melody_1, melody_2, melody_3, melody_4, melody_5]
+      initial: melody_1
+    da_alarm3_tone:
+      options: [melody_1, melody_2, melody_3, melody_4, melody_5]
+      initial: melody_1
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+    - binary_sensor:
+        - name: da_alarm1_fire_once
+          unique_id: da_alarm1_fire_once
+          state: >
+            {{ states('input_select.da_alarm1_repeat') == 'Once' and
                  states("sensor.current_time") == states("input_datetime.da_alarm1_time")}}
-            device_class: running
-            
-    # Sensor once 2 alarm
-          - name: 'da_alarm2_fire_once'
-            unique_id: 'da_alarm2_fire_once'
-            state: >
-              {{ states('input_select.da_alarm2_repeat') == 'Once' and
-                   states("sensor.current_time") == states("input_datetime.da_alarm2_time")}}
-            device_class: running
-            
-    # Sensor weekday 2 alarm
-          - name: 'da_alarm2_fire_weekday'
-            unique_id: 'da_alarm2_fire_weekday'
-            state: >
-              {{ states('input_select.da_alarm2_repeat') == 'Weekdays' and 
-                 now().isoweekday() in [1,2,3,4] and
-                 states("sensor.current_time") == states("input_datetime.da_alarm2_time")}}
-            device_class: running
-            
-    # Sensor once 3 alarm
-          - name: 'da_alarm3_fire_once'
-            unique_id: 'da_alarm3_fire_once'
-            state: >
-              {{ states('input_select.da_alarm3_repeat') == 'Once' and
-                   states("sensor.current_time") == states("input_datetime.da_alarm3_time")}}
-            device_class: running
-            
-    # Sensor weekday 3 alarm
-          - name: 'da_alarm3_fire_weekday'
-            unique_id: 'da_alarm3_fire_weekday'
-            state: >
-              {{ states('input_select.da_alarm3_repeat') == 'Weekdays' and 
-                 now().isoweekday() in [1,2,3,4] and
-                 states("sensor.current_time") == states("input_datetime.da_alarm3_time")}}
-            device_class: running
-    
-    script:
-      da_alarm_play_60s_ramp:
-        alias: DA Alarm — play 60s with increasing volume
-        mode: restart
-        variables:
-          player: media_player.living_room
-          default_media: media-source://media_source/local/melody_1.mp3
-          start: 0.10      # Start volume (10%)
-          step: 0.05       # step +5% every 10s
-          steps: 3         # 3 steps 
-        sequence:
-          - service: media_player.volume_set
-            target: { entity_id: "{{ player }}" }
-            data: { volume_level: "{{ start }}" }
-    
-          - service: media_player.play_media
-            target: { entity_id: "{{ player }}" }
-            data:
-              media_content_id: "{{ media | default(default_media) }}"
-              media_content_type: music
-    
-          - repeat:
-              count: "{{ steps }}"
-              sequence:
-                - delay: "00:00:10"
-                - service: media_player.volume_set
-                  target: { entity_id: "{{ player }}" }
-                  data:
-                    volume_level: "{{ [start + step * repeat.index, 1] | min }}"
-          - delay: "00:00:10"
-          - service: media_player.media_stop
-            target: { entity_id: "{{ player }}" }
-    
-    automation:
-    
-      - alias: da_alarm
-        id: da_alarm
-        description: DA Alarm 
-        trigger:
+          device_class: running
 
+        - name: da_alarm1_fire_weekday
+          unique_id: da_alarm1_fire_weekday
+          state: >
+            {{ states('input_select.da_alarm1_repeat') == 'Weekdays' and 
+               now().isoweekday() in [1,2,3,4] and
+               states("sensor.current_time") == states("input_datetime.da_alarm1_time")}}
+          device_class: running
+
+        - name: da_alarm2_fire_once
+          unique_id: da_alarm2_fire_once
+          state: >
+            {{ states('input_select.da_alarm2_repeat') == 'Once' and
+                 states("sensor.current_time") == states("input_datetime.da_alarm2_time")}}
+          device_class: running
+
+        - name: da_alarm2_fire_weekday
+          unique_id: da_alarm2_fire_weekday
+          state: >
+            {{ states('input_select.da_alarm2_repeat') == 'Weekdays' and 
+               now().isoweekday() in [1,2,3,4] and
+               states("sensor.current_time") == states("input_datetime.da_alarm2_time")}}
+          device_class: running
+
+        - name: da_alarm3_fire_once
+          unique_id: da_alarm3_fire_once
+          state: >
+            {{ states('input_select.da_alarm3_repeat') == 'Once' and
+                 states("sensor.current_time") == states("input_datetime.da_alarm3_time")}}
+          device_class: running
+
+        - name: da_alarm3_fire_weekday
+          unique_id: da_alarm3_fire_weekday
+          state: >
+            {{ states('input_select.da_alarm3_repeat') == 'Weekdays' and 
+               now().isoweekday() in [1,2,3,4] and
+               states("sensor.current_time") == states("input_datetime.da_alarm3_time")}}
+          device_class: running
+
+  ##################################################
+  ## SCRIPT
+  ##################################################
+
+  script:
+    da_alarm_play_60s_ramp:
+      alias: da_alarm_play_60s_ramp
+      mode: restart
+      variables:
+        player: media_player.living_room
+        default_media: media-source://media_source/local/melody_1.mp3
+        start: 0.10
+        step: 0.05
+        steps: 3
+      sequence:
+        - action: media_player.volume_set
+          target:
+            entity_id: "{{ player }}"
+          data:
+            volume_level: "{{ start }}"
+
+        - action: media_player.play_media
+          target:
+            entity_id: "{{ player }}"
+          data:
+            media_content_id: "{{ media | default(default_media) }}"
+            media_content_type: music
+
+        - repeat:
+            count: "{{ steps }}"
+            sequence:
+              - delay: "00:00:10"
+              - action: media_player.volume_set
+                target:
+                  entity_id: "{{ player }}"
+                data:
+                  volume_level: "{{ [start + step * repeat.index, 1] | min }}"
+
+        - delay: "00:00:10"
+
+        - action: media_player.media_stop
+          target:
+            entity_id: "{{ player }}"
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+    - alias: da_alarm
+      id: da_alarm
+      description: Дитяча - керування будильником
+      trigger:
         - platform: state
           entity_id: binary_sensor.da_alarm1_fire_once
-          from: 'off'
-          to: 'on'
+          from: "off"
+          to: "on"
           id: alarm_once_1
-          
+
         - platform: state
           entity_id: binary_sensor.da_alarm2_fire_once
-          from: 'off'
-          to: 'on'
+          from: "off"
+          to: "on"
           id: alarm_once_2
-          
+
         - platform: state
           entity_id: binary_sensor.da_alarm3_fire_once
-          from: 'off'
-          to: 'on'
+          from: "off"
+          to: "on"
           id: alarm_once_3
 
         - platform: state
           entity_id: binary_sensor.da_alarm1_fire_weekday
-          from: 'off'
-          to: 'on'
+          from: "off"
+          to: "on"
           id: alarm_weekday_1
-          
+
         - platform: state
           entity_id: binary_sensor.da_alarm2_fire_weekday
-          from: 'off'
-          to: 'on'
+          from: "off"
+          to: "on"
           id: alarm_weekday_2
-          
+
         - platform: state
           entity_id: binary_sensor.da_alarm3_fire_weekday
-          from: 'off'
-          to: 'on'
+          from: "off"
+          to: "on"
           id: alarm_weekday_3
 
-        action:
-            - choose:
-              - conditions:
-                  - condition: trigger
-                    id: alarm_once_1
-                  - condition: state
+      action:
+        - choose:
+            - conditions:
+                - condition: trigger
+                  id: alarm_once_1
+                - condition: state
+                  entity_id: input_boolean.da_alarm1_enabled
+                  state: "on"
+              sequence:
+                - action: script.turn_on
+                  target:
+                    entity_id: script.da_alarm_play_60s_ramp
+                  data:
+                    variables:
+                      media: >-
+                        media-source://media_source/local/{{ states('input_select.da_alarm1_tone') }}.mp3
+                - action: input_boolean.turn_off
+                  target:
                     entity_id: input_boolean.da_alarm1_enabled
-                    state: 'on' 
-                sequence:
-                  - service: script.turn_on
-                    target: { entity_id: script.da_alarm_play_60s_ramp }
-                    data:
-                      variables:
-                        media: >-
-                          media-source://media_source/local/{{ states('input_select.da_alarm1_tone') }}.mp3
-                  - service: input_boolean.turn_off
-                    target:
-                      entity_id: input_boolean.da_alarm1_enabled
 
-              - conditions:
-                  - condition: trigger
-                    id: alarm_once_2
-                  - condition: state
+            - conditions:
+                - condition: trigger
+                  id: alarm_once_2
+                - condition: state
+                  entity_id: input_boolean.da_alarm2_enabled
+                  state: "on"
+              sequence:
+                - action: script.turn_on
+                  target:
+                    entity_id: script.da_alarm_play_60s_ramp
+                  data:
+                    variables:
+                      media: >-
+                        media-source://media_source/local/{{ states('input_select.da_alarm2_tone') }}.mp3
+                - action: input_boolean.turn_off
+                  target:
                     entity_id: input_boolean.da_alarm2_enabled
-                    state: 'on' 
-                sequence:
-                  - service: script.turn_on
-                    target: { entity_id: script.da_alarm_play_60s_ramp }
-                    data:
-                      variables:
-                        media: >-
-                          media-source://media_source/local/{{ states('input_select.da_alarm2_tone') }}.mp3
-                  - service: input_boolean.turn_off
-                    target:
-                      entity_id: input_boolean.da_alarm2_enabled                      
 
-              - conditions:
-                  - condition: trigger
-                    id: alarm_once_3
-                  - condition: state
+            - conditions:
+                - condition: trigger
+                  id: alarm_once_3
+                - condition: state
+                  entity_id: input_boolean.da_alarm3_enabled
+                  state: "on"
+              sequence:
+                - action: script.turn_on
+                  target:
+                    entity_id: script.da_alarm_play_60s_ramp
+                  data:
+                    variables:
+                      media: >-
+                        media-source://media_source/local/{{ states('input_select.da_alarm3_tone') }}.mp3
+                - action: input_boolean.turn_off
+                  target:
                     entity_id: input_boolean.da_alarm3_enabled
-                    state: 'on' 
-                sequence:
-                  - service: script.turn_on
-                    target: { entity_id: script.da_alarm_play_60s_ramp }
-                    data:
-                      variables:
-                        media: >-
-                          media-source://media_source/local/{{ states('input_select.da_alarm3_tone') }}.mp3
-                  - service: input_boolean.turn_off
-                    target:
-                      entity_id: input_boolean.da_alarm3_enabled              
 
-              - conditions:
-                  - condition: trigger
-                    id: alarm_weekday_1
-                  - condition: state
-                    entity_id: input_boolean.da_alarm1_enabled
-                    state: 'on' 
-                sequence:
-                  - service: script.turn_on
-                    target: { entity_id: script.da_alarm_play_60s_ramp }
-                    data:
-                      variables:
-                        media: >-
-                          media-source://media_source/local/{{ states('input_select.da_alarm1_tone') }}.mp3
-    
-              - conditions:
-                  - condition: trigger
-                    id: alarm_weekday_2
-                  - condition: state
-                    entity_id: input_boolean.da_alarm2_enabled
-                    state: 'on' 
-                sequence:
-                  - service: script.turn_on
-                    target: { entity_id: script.da_alarm_play_60s_ramp }
-                    data:
-                      variables:
-                        media: >-
-                          media-source://media_source/local/{{ states('input_select.da_alarm2_tone') }}.mp3
-                          
-              - conditions:
-                  - condition: trigger
-                    id: alarm_weekday_3
-                  - condition: state
-                    entity_id: input_boolean.da_alarm3_enabled
-                    state: 'on' 
-                sequence:
-                  - service: script.turn_on
-                    target: { entity_id: script.da_alarm_play_60s_ramp }
-                    data:
-                      variables:
-                        media: >-
-                          media-source://media_source/local/{{ states('input_select.da_alarm3_tone') }}.mp3
+            - conditions:
+                - condition: trigger
+                  id: alarm_weekday_1
+                - condition: state
+                  entity_id: input_boolean.da_alarm1_enabled
+                  state: "on"
+              sequence:
+                - action: script.turn_on
+                  target:
+                    entity_id: script.da_alarm_play_60s_ramp
+                  data:
+                    variables:
+                      media: >-
+                        media-source://media_source/local/{{ states('input_select.da_alarm1_tone') }}.mp3
+
+            - conditions:
+                - condition: trigger
+                  id: alarm_weekday_2
+                - condition: state
+                  entity_id: input_boolean.da_alarm2_enabled
+                  state: "on"
+              sequence:
+                - action: script.turn_on
+                  target:
+                    entity_id: script.da_alarm_play_60s_ramp
+                  data:
+                    variables:
+                      media: >-
+                        media-source://media_source/local/{{ states('input_select.da_alarm2_tone') }}.mp3
+
+            - conditions:
+                - condition: trigger
+                  id: alarm_weekday_3
+                - condition: state
+                  entity_id: input_boolean.da_alarm3_enabled
+                  state: "on"
+              sequence:
+                - action: script.turn_on
+                  target:
+                    entity_id: script.da_alarm_play_60s_ramp
+                  data:
+                    variables:
+                      media: >-
+                        media-source://media_source/local/{{ states('input_select.da_alarm3_tone') }}.mp3

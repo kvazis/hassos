@@ -1,28 +1,40 @@
+##################################################
+## Актуалізовано: 2026-03-23
+##################################################
+
 out_sensors:
 
-    recorder:
-      include:
-        entities:
-           - sensor.0x00158d0001a4b9da_temperature
-           - sensor.0x00158d0001a4b9da_humidity
-           - sensor.0x00158d0001a4b9da_pressure
-           - sensor.0x00124b001d3bdce0_radiation_dose_per_hour
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
+  homeassistant:
+    customize:
 
-    homeassistant:
-      customize:
+      sensor.0x00158d0001a4b9da_temperature:
+        friendly_name: Вулиця - температура
+        icon: mdi:thermometer
 
+      sensor.0x00158d0001a4b9da_humidity:
+        friendly_name: Вулиця - вологість
+        icon: mdi:water-percent
 
-        sensor.0x00158d0001a4b9da_temperature:
-          friendly_name: Улица, температура
-        sensor.0x00158d0001a4b9da_humidity:
-          friendly_name: Улица, влажность
-        sensor.0x00158d0001a4b9da_pressure:
-          friendly_name: Улица, давление
-          
-        sensor.0x00124b001d3bdce0_radiation_dose_per_hour:
-          friendly_name: Счетчик Гейгера
+      sensor.0x00158d0001a4b9da_pressure:
+        friendly_name: Вулиця - тиск
+        icon: mdi:gauge
 
+      sensor.0x00124b001d3bdce0_radiation_dose_per_hour:
+        friendly_name: Вулиця - радіація
+        icon: mdi:radioactive
 
+  ##################################################
+  ## RECORDER
+  ##################################################
 
-
+  recorder:
+    include:
+      entities:
+        - sensor.0x00158d0001a4b9da_temperature
+        - sensor.0x00158d0001a4b9da_humidity
+        - sensor.0x00158d0001a4b9da_pressure
+        - sensor.0x00124b001d3bdce0_radiation_dose_per_hour

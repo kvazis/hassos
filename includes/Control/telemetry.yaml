@@ -1,324 +1,321 @@
+##################################################
+## Актуалізовано: 2026-03-24
+##################################################
+
 telemetry:
 
-    homeassistant:
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-      customize:
-        sensor.server_telemetry:
-          friendly_name: Уровень отказа - 
-          icon: mdi:alert
-        sensor.count_automation:
-          friendly_name: Автоматизаций в системе -
-        sensor.count_automation_on:
-          friendly_name: Активных автоматизаций -
-        sensor.count_automation_off:
-          friendly_name: Отключенных автоматизаций -
-        sensor.count_automation_unavailable:
-          friendly_name: Недоступных автоматизаций -
-        sensor.count_script:
-          friendly_name: Скриптов в системе -
-        sensor.count_script_on:
-          friendly_name: Активных скриптов -
-        sensor.count_script_off:
-          friendly_name: Отключенных скриптов -
-        sensor.count_script_unavailable:
-          friendly_name: Недоступных скриптов -
-        sensor.count_update:
-           friendly_name: Аддонов в системе -
-        sensor.count_update_on:
-           friendly_name: Доступно обновлений -
-        sensor.count_light:
-          friendly_name: Светильников в системе -
-        sensor.count_light_on:
-          friendly_name: Активных светильников -
-        sensor.count_light_off:
-          friendly_name: Отключенных светильников -
-        sensor.count_light_unavailable:
-          friendly_name: Недоступных светильников - 
-        sensor.count_switch:
-          friendly_name: Реле в системе -
-        sensor.count_switch_on:
-          friendly_name: Активных реле -
-        sensor.count_switch_off:
-          friendly_name: Отключенных реле -
-        sensor.count_switch_unavailable:
-          friendly_name: Недоступных реле -
-        sensor.count_climate:
-          friendly_name: Термоголовок в системе -
-        sensor.climate_switch_heat:
-          friendly_name: Активных термоголовок -
-        sensor.climate_switch_off:
-          friendly_name: Отключенных термоголовок -
-        sensor.count_climate_unavailable:
-          friendly_name: Недоступных термоголовок -
-        sensor.count_sensor:
-          friendly_name: Сенсоров в системе -
-        sensor.count_sensor_unavailable:
-          friendly_name: Недоступных сенсоров -
-        sensor.count_binary_sensor:
-          friendly_name: Бинарных сенсоров в системе -
-        sensor.count_binary_sensor_unavailable:
-          friendly_name: Недоступных бинарных сенсоров -
-        sensor.count_camera:
-          friendly_name: Камер в системе -
-        sensor.count_camera_unavailable:
-          friendly_name: Недоступных камер сенсоров -          
-          
-    template:
-    
-      - sensor:
+  homeassistant:
+    customize:
 
+      sensor.server_telemetry:
+        friendly_name: Система - рівень відмов
+        icon: mdi:alert
 
-          - name: server_telemetry
-            unique_id: server_telemetry
-            state: >
-                {% set light = (states('sensor.count_light_unavailable') | int) *20 %} 
-                {% set switch = (states('sensor.count_switch_unavailable') | int) *20 %}
-                {% set sensor = (states('sensor.count_sensor_unavailable') | int) *5 %}
-                {% set binary_sensor = (states('sensor.count_binary_sensor_unavailable') | int) *5 %}
-                {{light + switch + sensor + binary_sensor}}
+      sensor.count_automation:
+        friendly_name: Система - автоматизацій
+        icon: mdi:head
 
-################# Автоматизации #################
+      sensor.count_automation_on:
+        friendly_name: Система - активні автоматизації
+        icon: mdi:head-check
 
-          - name: count_automation
-            unique_id: count_automation
-            state: >
-                  {%- set domains = ['automation'] -%}
-                  {%- for domain in domains -%}
-                    {%- for item in states[domain] -%}
-                      {% if loop.first %}
-                        {{loop.length}}
-                      {% endif %}
-                    {%- endfor -%}
-                  {%- endfor -%}
-            icon: mdi:head
-            
-          - name: count_automation_on
-            unique_id: count_automation_on
-            state: "{{states.automation | selectattr ('state', 'equalto', 'on') | list | length}}"
-            icon: mdi:head-check
+      sensor.count_automation_off:
+        friendly_name: Система - вимкнені автоматизації
+        icon: mdi:head-remove
 
-          - name: count_automation_off
-            unique_id: count_automation_off
-            state: "{{states.automation | selectattr ('state', 'equalto', 'off') | list | length}}"
-            icon: mdi:head-remove            
+      sensor.count_automation_unavailable:
+        friendly_name: Система - недоступні автоматизації
+        icon: mdi:head-question
 
-          - name: count_automation_unavailable
-            unique_id: count_automation_unavailable
-            state: "{{states.automation | selectattr ('state', 'equalto', 'unavailable') | list | length}}"
-            icon: mdi:head-question
-            
-################# Скрипты #################
+      sensor.count_script:
+        friendly_name: Система - скрипти
+        icon: mdi:file
 
-          - name: count_script
-            unique_id: count_script
-            state: >
-                  {%- set domains = ['script'] -%}
-                  {%- for domain in domains -%}
-                    {%- for item in states[domain] -%}
-                      {% if loop.first %}
-                        {{loop.length}}
-                      {% endif %}
-                    {%- endfor -%}
-                  {%- endfor -%}
-            icon: mdi:file
-            
-          - name: count_script_on
-            unique_id: count_script_on
-            state: "{{states.script | selectattr ('state', 'equalto', 'on') | list | length}}"
-            icon: mdi:file-check
+      sensor.count_script_on:
+        friendly_name: Система - активні скрипти
+        icon: mdi:file-check
 
-          - name: count_script_off
-            unique_id: count_script_off
-            state: "{{states.script | selectattr ('state', 'equalto', 'off') | list | length}}"
-            icon: mdi:file-remove            
+      sensor.count_script_off:
+        friendly_name: Система - вимкнені скрипти
+        icon: mdi:file-remove
 
-          - name: count_script_unavailable
-            unique_id: count_script_unavailable
-            state: "{{states.script | selectattr ('state', 'equalto', 'unavailable') | list | length}}"
-            icon: mdi:file-question
+      sensor.count_script_unavailable:
+        friendly_name: Система - недоступні скрипти
+        icon: mdi:file-question
 
-################# Обновления #################
+      sensor.count_update:
+        friendly_name: Система - оновлення
+        icon: mdi:monitor-dashboard
 
-          - name: count_update
-            unique_id: count_update
-            state: >
-                  {%- set domains = ['update'] -%}
-                  {%- for domain in domains -%}
-                    {%- for item in states[domain] -%}
-                      {% if loop.first %}
-                        {{loop.length}}
-                      {% endif %}
-                    {%- endfor -%}
-                  {%- endfor -%}
-            icon: mdi:monitor-dashboard
-            
-          - name: count_update_on
-            unique_id: count_update_on
-            state: "{{states.update | selectattr ('state', 'equalto', 'on') | list | length}}"
-            icon: mdi:monitor-arrow-down-variant
-            
-################# Светильники #################
+      sensor.count_update_on:
+        friendly_name: Система - доступні оновлення
+        icon: mdi:monitor-arrow-down-variant
 
-          - name: count_light
-            unique_id: count_light
-            state: >
-                  {%- set domains = ['light'] -%}
-                  {%- for domain in domains -%}
-                    {%- for item in states[domain] -%}
-                      {% if loop.first %}
-                        {{loop.length}}
-                      {% endif %}
-                    {%- endfor -%}
-                  {%- endfor -%}
-            icon: mdi:lightbulb-group
-            
-          - name: count_light_on
-            unique_id: count_light_on
-            state: "{{states.light | selectattr ('state', 'equalto', 'on') | list | length}}"
-            icon: mdi:lightbulb-on
+      sensor.count_light:
+        friendly_name: Система - світильники
+        icon: mdi:lightbulb-group
 
-          - name: count_light_off
-            unique_id: count_light_off
-            state: "{{states.light | selectattr ('state', 'equalto', 'off') | list | length}}"
-            icon: mdi:lightbulb
+      sensor.count_light_on:
+        friendly_name: Система - активні світильники
+        icon: mdi:lightbulb-on
 
-          - name: count_light_unavailable
-            unique_id: count_light_unavailable
-            state: >
-                {% set variable = namespace(value = {}) %}
-                {% for entity in states.light if is_state(entity.entity_id, 'unavailable')   
-                   and not (entity.entity_id.endswith("_virtual")) %}
-                 {% set variable.value = dict(variable.value, **{entity.name: entity.state }) %}
-                {% endfor %}
-                {% if (variable.value | length) | int > 0 %}
-                {{ variable.value | length }}
-                {% else %}
-                 0
-                {% endif %}
-            icon: mdi:lightbulb-question
+      sensor.count_light_off:
+        friendly_name: Система - вимкнені світильники
+        icon: mdi:lightbulb
 
-################# Реле #################
+      sensor.count_light_unavailable:
+        friendly_name: Система - недоступні світильники
+        icon: mdi:lightbulb-question
 
-          - name: count_switch
-            unique_id: count_switch
-            state: >
-                  {%- set domains = ['switch'] -%}
-                  {%- for domain in domains -%}
-                    {%- for item in states[domain] -%}
-                      {% if loop.first %}
-                        {{loop.length}}
-                      {% endif %}
-                    {%- endfor -%}
-                  {%- endfor -%}
-            icon: mdi:power
-            
-          - name: count_switch_on
-            unique_id: count_switch_on
-            state: "{{states.switch | selectattr ('state', 'equalto', 'on') | list | length}}"
-            icon: mdi:power-plug
+      sensor.count_switch:
+        friendly_name: Система - реле
+        icon: mdi:power
 
-          - name: count_switch_off
-            unique_id: count_switch_off
-            state: "{{states.switch | selectattr ('state', 'equalto', 'off') | list | length}}"
-            icon: mdi:power-plug-off
+      sensor.count_switch_on:
+        friendly_name: Система - активні реле
+        icon: mdi:power-plug
 
-          - name: count_switch_unavailable
-            unique_id: count_switch_unavailable
-            state: "{{states.switch | selectattr ('state', 'equalto', 'unavailable') | list | length}}"
-            icon: mdi:power-plug-outline
+      sensor.count_switch_off:
+        friendly_name: Система - вимкнені реле
+        icon: mdi:power-plug-off
 
+      sensor.count_switch_unavailable:
+        friendly_name: Система - недоступні реле
+        icon: mdi:power-plug-outline
 
-################# Термоголовки #################
+      sensor.count_climate:
+        friendly_name: Система - термоголовки
+        icon: mdi:thermostat
 
-          - name: count_climate
-            unique_id: count_climate
-            state: >
-                  {%- set domains = ['climate'] -%}
-                  {%- for domain in domains -%}
-                    {%- for item in states[domain] -%}
-                      {% if loop.first %}
-                        {{loop.length}}
-                      {% endif %}
-                    {%- endfor -%}
-                  {%- endfor -%}
-            icon: mdi:thermostat
-            
-          - name: count_climate_heat
-            unique_id: count_climate_heat
-            state: "{{states.climate | selectattr ('state', 'equalto', 'heat') | list | length}}"
-            icon: mdi:thermometer-plus
+      sensor.count_climate_heat:
+        friendly_name: Система - активні термоголовки
+        icon: mdi:thermometer-plus
 
-          - name: count_climate_off
-            unique_id: count_climate_off
-            state: "{{states.climate | selectattr ('state', 'equalto', 'off') | list | length}}"
-            icon: mdi:thermometer-minus
+      sensor.count_climate_off:
+        friendly_name: Система - вимкнені термоголовки
+        icon: mdi:thermometer-minus
 
-          - name: count_climate_unavailable
-            unique_id: count_climate_unavailable
-            state: "{{states.climate | selectattr ('state', 'equalto', 'unavailable') | list | length}}"
-            icon: mdi:thermometer-alert
-            
-################# Сенсоры #################
+      sensor.count_climate_unavailable:
+        friendly_name: Система - недоступні термоголовки
+        icon: mdi:thermometer-alert
 
-          - name: count_sensor
-            unique_id: count_sensor
-            state: >
-                  {%- set domains = ['sensor'] -%}
-                  {%- for domain in domains -%}
-                    {%- for item in states[domain] -%}
-                      {% if loop.first %}
-                        {{loop.length}}
-                      {% endif %}
-                    {%- endfor -%}
-                  {%- endfor -%}
-            icon: mdi:eye
-            
-          - name: count_sensor_unavailable
-            unique_id: count_sensor_unavailable
-            state: "{{states.sensor | selectattr ('state', 'equalto', 'unavailable') | list | length}}"
-            icon: mdi:eye-off
-            
+      sensor.count_sensor:
+        friendly_name: Система - сенсори
+        icon: mdi:eye
 
-################# Бинарные сенсоры #################
+      sensor.count_sensor_unavailable:
+        friendly_name: Система - недоступні сенсори
+        icon: mdi:eye-off
 
-          - name: count_binary_sensor
-            unique_id: count_binary_sensor
-            state: >
-                  {%- set domains = ['binary_sensor'] -%}
-                  {%- for domain in domains -%}
-                    {%- for item in states[domain] -%}
-                      {% if loop.first %}
-                        {{loop.length}}
-                      {% endif %}
-                    {%- endfor -%}
-                  {%- endfor -%}
-            icon: mdi:numeric-10-circle
+      sensor.count_binary_sensor:
+        friendly_name: Система - бінарні сенсори
+        icon: mdi:numeric-10-circle
 
-          - name: count_window_sensor
-            unique_id: count_window_sensor
-            state: "{{states.binary_sensor | selectattr('state', 'equalto', 'on') | selectattr('attributes.device_class', 'equalto', 'window') | list | count | int }}"
-            
-          - name: count_binary_sensor_unavailable
-            unique_id: count_binary_sensor_unavailable
-            state: "{{states.binary_sensor | selectattr ('state', 'equalto', 'unavailable') | list | length}}"
-            icon: mdi:alert-circle
+      sensor.count_window_sensor:
+        friendly_name: Система - відкриті вікна
+        icon: mdi:window-open
 
-################# Камеры #################
+      sensor.count_binary_sensor_unavailable:
+        friendly_name: Система - недоступні бінарні сенсори
+        icon: mdi:alert-circle
 
-          - name: count_camera
-            unique_id: count_camera
-            state: >
-                  {%- set domains = ['camera'] -%}
-                  {%- for domain in domains -%}
-                    {%- for item in states[domain] -%}
-                      {% if loop.first %}
-                        {{loop.length}}
-                      {% endif %}
-                    {%- endfor -%}
-                  {%- endfor -%}
-            icon: mdi:cctv
-            
-          - name: count_camera_unavailable
-            unique_id: count_camera_unavailable
-            state: "{{states.camera | selectattr ('state', 'equalto', 'unavailable') | list | length}}"
-            icon: mdi:alert-circle
+      sensor.count_camera:
+        friendly_name: Система - камери
+        icon: mdi:cctv
+
+      sensor.count_camera_unavailable:
+        friendly_name: Система - недоступні камери
+        icon: mdi:alert-circle
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    ##################################################
+    ## ТЕЛЕМЕТРІЯ
+    ##################################################
+
+    - sensor:
+        - name: server_telemetry
+          unique_id: server_telemetry
+          state: >
+            {% set light = states('sensor.count_light_unavailable') | int(0) * 20 %}
+            {% set switch = states('sensor.count_switch_unavailable') | int(0) * 20 %}
+            {% set sensor = states('sensor.count_sensor_unavailable') | int(0) * 5 %}
+            {% set binary_sensor = states('sensor.count_binary_sensor_unavailable') | int(0) * 5 %}
+            {{ light + switch + sensor + binary_sensor }}
+
+        ##################################################
+        ## АВТОМАТИЗАЦІЇ
+        ##################################################
+
+        - name: count_automation
+          unique_id: count_automation
+          state: >
+            {{ states.automation | list | length }}
+
+        - name: count_automation_on
+          unique_id: count_automation_on
+          state: "{{ states.automation | selectattr('state', 'equalto', 'on') | list | length }}"
+
+        - name: count_automation_off
+          unique_id: count_automation_off
+          state: "{{ states.automation | selectattr('state', 'equalto', 'off') | list | length }}"
+
+        - name: count_automation_unavailable
+          unique_id: count_automation_unavailable
+          state: "{{ states.automation | selectattr('state', 'equalto', 'unavailable') | list | length }}"
+
+        ##################################################
+        ## СКРИПТИ
+        ##################################################
+
+        - name: count_script
+          unique_id: count_script
+          state: >
+            {{ states.script | list | length }}
+
+        - name: count_script_on
+          unique_id: count_script_on
+          state: "{{ states.script | selectattr('state', 'equalto', 'on') | list | length }}"
+
+        - name: count_script_off
+          unique_id: count_script_off
+          state: "{{ states.script | selectattr('state', 'equalto', 'off') | list | length }}"
+
+        - name: count_script_unavailable
+          unique_id: count_script_unavailable
+          state: "{{ states.script | selectattr('state', 'equalto', 'unavailable') | list | length }}"
+
+        ##################################################
+        ## ОНОВЛЕННЯ
+        ##################################################
+
+        - name: count_update
+          unique_id: count_update
+          state: >
+            {{ states.update | list | length }}
+
+        - name: count_update_on
+          unique_id: count_update_on
+          state: "{{ states.update | selectattr('state', 'equalto', 'on') | list | length }}"
+
+        ##################################################
+        ## СВІТИЛЬНИКИ
+        ##################################################
+
+        - name: count_light
+          unique_id: count_light
+          state: >
+            {{ states.light | list | length }}
+
+        - name: count_light_on
+          unique_id: count_light_on
+          state: "{{ states.light | selectattr('state', 'equalto', 'on') | list | length }}"
+
+        - name: count_light_off
+          unique_id: count_light_off
+          state: "{{ states.light | selectattr('state', 'equalto', 'off') | list | length }}"
+
+        - name: count_light_unavailable
+          unique_id: count_light_unavailable
+          state: >
+            {{ states.light
+               | selectattr('state', 'equalto', 'unavailable')
+               | rejectattr('entity_id', 'search', '_virtual$')
+               | list | length }}
+
+        ##################################################
+        ## РЕЛЕ
+        ##################################################
+
+        - name: count_switch
+          unique_id: count_switch
+          state: >
+            {{ states.switch | list | length }}
+
+        - name: count_switch_on
+          unique_id: count_switch_on
+          state: "{{ states.switch | selectattr('state', 'equalto', 'on') | list | length }}"
+
+        - name: count_switch_off
+          unique_id: count_switch_off
+          state: "{{ states.switch | selectattr('state', 'equalto', 'off') | list | length }}"
+
+        - name: count_switch_unavailable
+          unique_id: count_switch_unavailable
+          state: "{{ states.switch | selectattr('state', 'equalto', 'unavailable') | list | length }}"
+
+        ##################################################
+        ## ТЕРМОГОЛОВКИ
+        ##################################################
+
+        - name: count_climate
+          unique_id: count_climate
+          state: >
+            {{ states.climate | list | length }}
+
+        - name: count_climate_heat
+          unique_id: count_climate_heat
+          state: "{{ states.climate | selectattr('state', 'equalto', 'heat') | list | length }}"
+
+        - name: count_climate_off
+          unique_id: count_climate_off
+          state: "{{ states.climate | selectattr('state', 'equalto', 'off') | list | length }}"
+
+        - name: count_climate_unavailable
+          unique_id: count_climate_unavailable
+          state: "{{ states.climate | selectattr('state', 'equalto', 'unavailable') | list | length }}"
+
+        ##################################################
+        ## СЕНСОРИ
+        ##################################################
+
+        - name: count_sensor
+          unique_id: count_sensor
+          state: >
+            {{ states.sensor | list | length }}
+
+        - name: count_sensor_unavailable
+          unique_id: count_sensor_unavailable
+          state: "{{ states.sensor | selectattr('state', 'equalto', 'unavailable') | list | length }}"
+
+        ##################################################
+        ## БІНАРНІ СЕНСОРИ
+        ##################################################
+
+        - name: count_binary_sensor
+          unique_id: count_binary_sensor
+          state: >
+            {{ states.binary_sensor | list | length }}
+
+        - name: count_window_sensor
+          unique_id: count_window_sensor
+          state: >
+            {{ states.binary_sensor
+               | selectattr('state', 'equalto', 'on')
+               | selectattr('attributes.device_class', 'equalto', 'window')
+               | list | count | int(0) }}
+
+        - name: count_binary_sensor_unavailable
+          unique_id: count_binary_sensor_unavailable
+          state: "{{ states.binary_sensor | selectattr('state', 'equalto', 'unavailable') | list | length }}"
+
+        ##################################################
+        ## КАМЕРИ
+        ##################################################
+
+        - name: count_camera
+          unique_id: count_camera
+          state: >
+            {{ states.camera | list | length }}
+
+        - name: count_camera_unavailable
+          unique_id: count_camera_unavailable
+          state: "{{ states.camera | selectattr('state', 'equalto', 'unavailable') | list | length }}"

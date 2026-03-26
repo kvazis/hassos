@@ -1,371 +1,402 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 bt_light:
 
-    template:
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-      - binary_sensor:
-    
-    # Свет без движения в ванной днем дверь открыта
-          - name: bt_light_day_open_door
-            unique_id: bt_light_day_open_door
-            state: >
-              {{ is_state('light.yeelight_ceiling3_0x45727f2', 'on')  
-                 and is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'off')
-                 and is_state('binary_sensor.0xa4c138a9cf8e75ef_presence', 'off')
-                 and is_state('binary_sensor.0x00158d00054495dc_contact', 'on')
-                 and is_state('binary_sensor.night_time', 'off')
-              }}
-            delay_on: 00:01:00
-            device_class: light
-            
-    # Свет без движения в ванной ночью дверь открыта
-          - name: bt_light_night_open_door
-            unique_id: bt_night_day_open_door
-            state: >
-              {{ is_state('light.yeelight_ceiling3_0x45727f2', 'on')  
-                 and is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'off')
-                 and is_state('binary_sensor.0xa4c138a9cf8e75ef_presence', 'off')
-                 and is_state('binary_sensor.0x00158d00054495dc_contact', 'on')
-                 and is_state('binary_sensor.night_time', 'on')
-              }}
-            device_class: light
-            
-    # Свет без движения в ванной дверь закрыта
-          - name: bt_light_closed_door
-            unique_id: bt_light_closed_door
-            state: >
-              {{ is_state('light.yeelight_ceiling3_0x45727f2', 'on')  
-                 and is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'off')
-                 and is_state('binary_sensor.0xa4c138a9cf8e75ef_presence', 'off')
-                 and is_state('binary_sensor.0x00158d00054495dc_contact', 'off')
-              }}
-            delay_on: 00:15:00
-            device_class: light
+  homeassistant:
+    customize:
 
-    # Автономный свет без движения в ванной 
-          - name: bt_blackout_light
-            unique_id: bt_blackout_light
-            state: >
-              {{ is_state('light.0xa4c13861cd14a054', 'on')  
-                 and is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'off')
-                 and is_state('binary_sensor.0xa4c138a9cf8e75ef_presence', 'off')
-              }}
-            device_class: light
-            delay_on: 00:01:00
+      automation.bt_light_on:
+        friendly_name: Ванна світло - увімкнення
+        icon: mdi:lightbulb-on
 
-            
-    automation:
-    
-      - alias: bt_light_on
-        id: bt_light_on
-        description: Ванная включение света
-        initial_state: true
-        trigger:
-    # Датчик присутствия 
+      automation.bt_light_on_full:
+        friendly_name: Ванна світло - увімкнення 100%
+        icon: mdi:brightness-7
+
+      automation.bt_light_switching_switch:
+        friendly_name: Ванна світло - контроль вимикача
+        icon: mdi:light-switch
+
+      automation.bt_light_switching:
+        friendly_name: Ванна світло - аварійне увімкнення
+        icon: mdi:alert
+
+      automation.bt_light_switching_back:
+        friendly_name: Ванна світло - повернення основного
+        icon: mdi:restore
+
+      automation.bt_light_off:
+        friendly_name: Ванна світло - вимкнення
+        icon: mdi:lightbulb-off
+
+      automation.bt_blackout_light_off:
+        friendly_name: Ванна світло - вимкнення аварійного
+        icon: mdi:power
+
+      binary_sensor.bt_light_day_open_door:
+        friendly_name: Ванна - світло без руху день двері відкриті
+        icon: mdi:door-open
+
+      binary_sensor.bt_light_night_open_door:
+        friendly_name: Ванна - світло без руху ніч двері відкриті
+        icon: mdi:door-open
+
+      binary_sensor.bt_light_closed_door:
+        friendly_name: Ванна - світло без руху двері закриті
+        icon: mdi:door-closed
+
+      binary_sensor.bt_blackout_light:
+        friendly_name: Ванна - аварійне світло без руху
+        icon: mdi:alert
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    - binary_sensor:
+
+##################################################
+## ДЕНЬ ДВЕРІ ВІДКРИТІ
+##################################################
+
+        - name: bt_light_day_open_door
+          unique_id: bt_light_day_open_door
+          state: >
+            {{ is_state('light.yeelight_ceiling3_0x45727f2', 'on')  
+               and is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'off')
+               and is_state('binary_sensor.0xa4c138a9cf8e75ef_presence', 'off')
+               and is_state('binary_sensor.0x00158d00054495dc_contact', 'on')
+               and is_state('binary_sensor.night_time', 'off')
+            }}
+          delay_on: 00:01:00
+          device_class: light
+
+##################################################
+## НІЧ ДВЕРІ ВІДКРИТІ
+##################################################
+
+        - name: bt_light_night_open_door
+          unique_id: bt_night_day_open_door
+          state: >
+            {{ is_state('light.yeelight_ceiling3_0x45727f2', 'on')  
+               and is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'off')
+               and is_state('binary_sensor.0xa4c138a9cf8e75ef_presence', 'off')
+               and is_state('binary_sensor.0x00158d00054495dc_contact', 'on')
+               and is_state('binary_sensor.night_time', 'on')
+            }}
+          device_class: light
+
+##################################################
+## ДВЕРІ ЗАКРИТІ
+##################################################
+
+        - name: bt_light_closed_door
+          unique_id: bt_light_closed_door
+          state: >
+            {{ is_state('light.yeelight_ceiling3_0x45727f2', 'on')  
+               and is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'off')
+               and is_state('binary_sensor.0xa4c138a9cf8e75ef_presence', 'off')
+               and is_state('binary_sensor.0x00158d00054495dc_contact', 'off')
+            }}
+          delay_on: 00:15:00
+          device_class: light
+
+##################################################
+## АВАРІЙНЕ СВІТЛО
+##################################################
+
+        - name: bt_blackout_light
+          unique_id: bt_blackout_light
+          state: >
+            {{ is_state('light.0xa4c13861cd14a054', 'on')  
+               and is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'off')
+               and is_state('binary_sensor.0xa4c138a9cf8e75ef_presence', 'off')
+            }}
+          device_class: light
+          delay_on: 00:01:00
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+##################################################
+## УВІМКНЕННЯ СВІТЛА
+##################################################
+
+    - alias: bt_light_on
+      id: bt_light_on
+      description: Увімкнення світла у ванній
+      initial_state: true
+      trigger:
+
         - platform: state
           entity_id: binary_sensor.0xa4c138a9cf8e75ef_presence
           to: 'on'
-    # Датчик движения
+
         - platform: state
           entity_id: binary_sensor.0x00158d0001e547a3_occupancy
           to: 'on'
-    # Выключатель на стене у входа
+
         - platform: state
           entity_id: sensor.0x00158d000a8244b4_action
           to: 'single_right'
-    # Выключатель в ванной
+
         - platform: state
           entity_id: sensor.0x00158d0003d50723_action
           to: 'single_left'
-    ## Aqara Opple на столе гостинной
+
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
           to: 'button_5_triple'
-    ## Aqara Opple на тумбочке в спальне
+
         - platform: state
           entity_id: sensor.0x54ef4410004c1706_action
           to: 'button_3_single'
-        condition:
-    # Переключатель режима работы сервера
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-        action:
-            - choose:
 
-              - conditions:
-            # Свет выключен
-                  - condition: state
-                    entity_id: light.yeelight_ceiling3_0x45727f2
-                    state: 'off'
-            # Включение днем
-                  - condition: state
-                    entity_id: binary_sensor.night_time
-                    state: 'off' 
-            # # Есть электрика
-            #       - condition: state
-            #         entity_id: binary_sensor.electricity
-            #         state: 'off'
-                sequence:        
-                  - service: light.turn_on
-                    entity_id: light.yeelight_ceiling3_0x45727f2
-                    data_template:
-                      brightness_pct: 100
-                      color_temp_kelvin: 4000         
+      action:
+        - choose:
 
-              - conditions:
-            # Свет выключен
-                  - condition: state
+            - conditions:
+                - condition: state
+                  entity_id: light.yeelight_ceiling3_0x45727f2
+                  state: 'off'
+                - condition: state
+                  entity_id: binary_sensor.night_time
+                  state: 'off'
+              sequence:
+                - action: light.turn_on
+                  target:
                     entity_id: light.yeelight_ceiling3_0x45727f2
-                    state: 'off'
-            # Включение ночью
-                  - condition: state
-                    entity_id: binary_sensor.night_time
-                    state: 'on' 
-            # # Есть электрика
-            #       - condition: state
-            #         entity_id: binary_sensor.electricity
-            #         state: 'off'
-                sequence:        
-                  - service: light.turn_on
-                    entity_id: light.yeelight_ceiling3_0x45727f2
-                    data_template:
-                      brightness_pct: 70
-                      color_temp_kelvin: 4000 
+                  data:
+                    brightness_pct: 100
+                    color_temp_kelvin: 4000
 
-              - conditions:
-            # Люстра недоступна
-                  - condition: state
+            - conditions:
+                - condition: state
+                  entity_id: light.yeelight_ceiling3_0x45727f2
+                  state: 'off'
+                - condition: state
+                  entity_id: binary_sensor.night_time
+                  state: 'on'
+              sequence:
+                - action: light.turn_on
+                  target:
                     entity_id: light.yeelight_ceiling3_0x45727f2
-                    state: 'unavailable'
-            # Аварийный свет выключен
-                  - condition: state
+                  data:
+                    brightness_pct: 70
+                    color_temp_kelvin: 4000
+
+            - conditions:
+                - condition: state
+                  entity_id: light.yeelight_ceiling3_0x45727f2
+                  state: 'unavailable'
+                - condition: state
+                  entity_id: light.0xa4c13861cd14a054
+                  state: 'off'
+              sequence:
+                - action: light.turn_on
+                  target:
                     entity_id: light.0xa4c13861cd14a054
-                    state: 'off'
-                sequence:        
-                  - service: light.turn_on
-                    entity_id: light.0xa4c13861cd14a054
-                    data_template:
-                      brightness_pct: 50
+                  data:
+                    brightness_pct: 50
 
-      - alias: bt_light_on_full
-        id: bt_light_on_full
-        description: Ванная включение света 100%
-        initial_state: true
-        trigger:
-    # Выключатель в ванной
+##################################################
+## УВІМКНЕННЯ 100%
+##################################################
+
+    - alias: bt_light_on_full
+      id: bt_light_on_full
+      description: Увімкнення світла 100%
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: sensor.0x00158d0003d50723_action
           to: 'double_left'
-        condition:
-    # Переключатель режима работы сервера
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-        action:
-        - service: light.turn_on
-          entity_id: light.yeelight_ceiling3_0x45727f2
-          data_template:
+
+      action:
+        - action: light.turn_on
+          target:
+            entity_id: light.yeelight_ceiling3_0x45727f2
+          data:
             brightness_pct: 100
             color_temp_kelvin: 4000
 
+##################################################
+## АВАРІЙНЕ СВІТЛО
+##################################################
 
-      - alias: bt_light_switching_switch
-        id: bt_light_switching_switch
-        description: Ванная переключения света при отвале выключателя
-        initial_state: true
-        trigger:
-    # Выключатель на стене у входа
+    - alias: bt_light_switching
+      id: bt_light_switching
+      description: Перехід на аварійне освітлення
+      initial_state: true
+      trigger:
         - platform: state
-          entity_id: switch.0x00158d000a8244b4_right
-          to: 'off'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-#   # Есть электрика
-#         - condition: state
-#           entity_id: binary_sensor.electricity
-#           state: 'off'
-        action:
-            - choose:
-
-              - conditions:
-            # Свет выключен
-                  - condition: state
-                    entity_id: light.yeelight_ceiling3_0x45727f2
-                    state: 'off'
-                sequence:        
-                  - delay: 00:00:05
-                  - action: switch.turn_on
-                    data: {}
-                    target:
-                      entity_id: switch.0x00158d000a8244b4_right 
-                      
-              - conditions:
-            # Свет включен
-                  - condition: state
-                    entity_id: light.yeelight_ceiling3_0x45727f2
-                    state: 'on'
-                sequence:        
-                  - service: light.turn_on
-                    entity_id: light.0xa4c13861cd14a054
-                    data_template:
-                      brightness_pct: 90
-                  - delay: 00:00:05
-                  - action: switch.turn_on
-                    data: {}
-                    target:
-                      entity_id: switch.0x00158d000a8244b4_right 
-
-    # Переключение основного и аварийного освещения
-      - alias: bt_light_switching
-        id: bt_light_switching
-        description: Ванная, переключение на аварийное освещение
-        initial_state: false
-        trigger:
-    # Сработка сенсора электричества
-        - platform: state
-          entity_id: binary_sensor.electricity
+          entity_id: binary_sensor.electricity_internal
           from: 'off'
           to: 'on'
-        condition:
-    # Переключатель режима работы сервера
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Был включен основной свет
         - condition: state
           entity_id: light.yeelight_ceiling3_0x45727f2
           state: 'on'
-        action:
-        - service: light.turn_on
-          entity_id: light.0xa4c13861cd14a054
-          data_template:
+
+      action:
+        - action: light.turn_on
+          target:
+            entity_id: light.0xa4c13861cd14a054
+          data:
             brightness_pct: 50
 
+##################################################
+## ПОВЕРНЕННЯ ОСНОВНОГО СВІТЛА
+##################################################
 
-
-    # Переключение аварийного и основного освещения
-      - alias: bt_light_switching_back
-        id: bt_light_switching_back
-        description: Ванная, переключение на основное освещение
-        initial_state: true
-        trigger:
-    # Восстановление доступности люстры
+    - alias: bt_light_switching_back
+      id: bt_light_switching_back
+      description: Повернення основного освітлення
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: light.yeelight_ceiling3_0x45727f2
           from: 'unavailable'
           to: 'off'
-        condition:
-    # Переключатель режима работы сервера
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Был включен аварийный свет
         - condition: state
           entity_id: light.0xa4c13861cd14a054
           state: 'on'
-        action:
-        - service: light.turn_on
-          entity_id: light.yeelight_ceiling3_0x45727f2
-          data_template:
+
+      action:
+        - action: light.turn_on
+          target:
+            entity_id: light.yeelight_ceiling3_0x45727f2
+          data:
             brightness_pct: 100
-            color_temp_kelvin: 4000 
+            color_temp_kelvin: 4000
         - delay: 00:00:05
-        - service: light.turn_off
-          entity_id:
-            - light.0xa4c13861cd14a054 
+        - action: light.turn_off
+          target:
+            entity_id:
+              - light.0xa4c13861cd14a054
 
+##################################################
+## ВИМКНЕННЯ СВІТЛА
+##################################################
 
-                      
-      - alias: bt_light_off
-        id: bt_light_off
-        description: Ванная выключение света
-        initial_state: true
-        trigger:
-    # Виртуальные сущности 
-    # Выключение света без движения в ванной днем дверь открыта
+    - alias: bt_light_off
+      id: bt_light_off
+      description: Вимкнення світла у ванній
+      initial_state: true
+      trigger:
+
         - platform: state
           entity_id: binary_sensor.bt_light_day_open_door
           to: 'on'
-    # Выключение света без движения в ванной ночью дверь открыта
+
         - platform: state
           entity_id: binary_sensor.bt_light_night_open_door
           to: 'on'
-    # Выключение света без движения в ванной дверь закрыта
+
         - platform: state
           entity_id: binary_sensor.bt_light_closed_door
           to: 'on'
-    # Физические сущности 
-    # Выключатель на стене у входа
+
         - platform: state
           entity_id: sensor.0x00158d000a8244b4_action
           to: 'single_right'
-    # Выключатель в ванной
+
         - platform: state
           entity_id: sensor.0x00158d0003d50723_action
           to: 'single_left'
-    ## Aqara Opple на столе
+
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
           to: 'button_5_triple'
-    ## Aqara Opple на тумбочке в спальне
+
         - platform: state
           entity_id: sensor.0x54ef4410004c1706_action
           to: 'button_3_single'
-        condition:
-    # Переключатель режима работы сервера
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Свет выключен
         - condition: state
           entity_id: light.yeelight_ceiling3_0x45727f2
           state: 'on'
-        action:
-        - service: light.turn_off
-          entity_id:
-            - light.yeelight_ceiling3_0x45727f2
 
-      - alias: bt_blackout_light_off
-        id: bt_blackout_light_off
-        description: Ванная выключение автономного света
-        initial_state: true
-        trigger:
-    # Виртуальные сущности 
-    # Выключение света без движения 
+      action:
+        - action: light.turn_off
+          target:
+            entity_id:
+              - light.yeelight_ceiling3_0x45727f2
+
+##################################################
+## ВИМКНЕННЯ АВАРІЙНОГО
+##################################################
+
+    - alias: bt_blackout_light_off
+      id: bt_blackout_light_off
+      description: Вимкнення аварійного світла
+      initial_state: true
+      trigger:
+
         - platform: state
           entity_id: binary_sensor.bt_blackout_light
           to: 'on'
-    # Физические сущности 
-    # Выключатель на стене у входа
+
         - platform: state
           entity_id: sensor.0x00158d000a8244b4_action
           to: 'single_right'
-    # Выключатель в ванной
+
         - platform: state
           entity_id: sensor.0x00158d0003d50723_action
           to: 'single_left'
-    ## Aqara Opple на столе
+
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
           to: 'button_5_triple'
-    ## Aqara Opple на тумбочке в спальне
+
         - platform: state
           entity_id: sensor.0x54ef4410004c1706_action
           to: 'button_3_single'
-        condition:
-    # Переключатель режима работы сервера
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Аварийный свет включен
         - condition: state
           entity_id: light.0xa4c13861cd14a054
           state: 'on'
-        action:
-        - service: light.turn_off
-          entity_id:
-            - light.0xa4c13861cd14a054          
-    
+
+      action:
+        - action: light.turn_off
+          target:
+            entity_id:
+              - light.0xa4c13861cd14a054

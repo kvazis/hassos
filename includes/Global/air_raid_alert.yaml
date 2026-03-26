@@ -1,373 +1,495 @@
+##################################################
+## Актуалізовано: 2026-03-24
+##################################################
+
 air_raid_alert:
 
-    homeassistant:
-      customize:
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-        automation.lr_light_wled_threat_notification:
-          friendly_name: Гостиная WLED - тревога
-          icon: mdi:airplane-alert
-          
-        automation.lr_light_wled_threat_cancel:
-          friendly_name: Гостиная WLED - отмена тревоги
-          icon: mdi:airplane-off
-          
-        automation.kn_light_wled_threat_notification:
-          friendly_name: Кухня WLED - тревога
-          icon: mdi:airplane-alert
-          
-        automation.kn_light_wled_threat_cancel:
-          friendly_name: Кухня WLED - отмена тревоги
-          icon: mdi:airplane-off
-          
+  homeassistant:
+    customize:
 
-    # Сохранение в базе состояний сенсоров тревоги
-    recorder:
-      include:
-        entities:
-           - binary_sensor.m_kiyiv_air
-           - binary_sensor.m_kiyiv_artillery
-           - binary_sensor.m_kiyiv_unknown
-           - binary_sensor.m_kiyiv_urban_fights
-           - binary_sensor.m_kiyiv_chemical
-           - binary_sensor.m_kiyiv_nuclear
-           
-    template:
+      binary_sensor.threat:
+        friendly_name: Система - повітряна тривога
+        icon: mdi:shield-alert
 
-      - binary_sensor:
+      automation.air_raid_alert_lr_ceiling_threat_notification:
+        friendly_name: Вітальня - світлова індикація тривоги
+        icon: mdi:airplane-alert
 
-    # Сборный сенсор тревоги - будет активен при любой из видов тревог
-          - name: threat
-            unique_id: threat
-            state: >
-              {{ is_state('binary_sensor.m_kiyiv_air', 'on')  
-                 or is_state('binary_sensor.m_kiyiv_artillery', 'on')
-                 or is_state('binary_sensor.m_kiyiv_unknown', 'on')
-                 or is_state('binary_sensor.m_kiyiv_urban_fights', 'on')
-                 or is_state('binary_sensor.m_kiyiv_chemical', 'on')
-                 or is_state('binary_sensor.m_kiyiv_nuclear', 'on')
-              }}
-            device_class: safety
-            icon: >
-              {% if is_state("binary_sensor.threat", "on") %}
-              mdi:skull
-              {% else %}
-              mdi:shield-check
-              {% endif %}
+      automation.air_raid_alert_lr_ceiling_threat_cancel:
+        friendly_name: Вітальня - світлова індикація відбою
+        icon: mdi:airplane-off
 
+      automation.air_raid_alert_lr_light_wled_threat_notification:
+        friendly_name: Вітальня WLED - тривога
+        icon: mdi:airplane-alert
 
-    automation:
+      automation.air_raid_alert_lr_light_wled_threat_cancel:
+        friendly_name: Вітальня WLED - відбій
+        icon: mdi:airplane-off
 
-      - alias: lr_ceiling_threat_notification
-        id: lr_ceiling_threat_notification
-        description: Включение световой индикации в гостиной при сработке сенсоров тревоги
-        initial_state: true
-        trigger:
-    # Сборный сенсор тревоги
-        - platform: state
-          entity_id: binary_sensor.m_kiyiv_air
-          from: 'off'
-          to: 'on'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-    # Отключен ночной режим работы
-        - condition: state
-          entity_id: binary_sensor.night_time
-          state: 'off'
-        action:
-     # Сохранение состояния светильников
-        - service: scene.create
-          data:
-           scene_id: light_before_threat
-           snapshot_entities:
-             - light.yeelight_ceiling4_0x456e813
-             - light.yeelight_ceiling4_0x456e813_ambilight
-             - light.yeelight_ceiling4_0x49c726b
-             - light.yeelight_ceiling4_0x49c726b_ambilight
-             - light.yeelight_ceiling4_0x4a1dacd
-             - light.yeelight_ceiling4_0x4a1dacd_ambilight
-    # Отключение основного освещения
-        - service: light.turn_off
-          entity_id: 
-             - light.yeelight_ceiling4_0x456e813
-             - light.yeelight_ceiling4_0x49c726b
-             - light.yeelight_ceiling4_0x4a1dacd
-    # Включение эффекта Alarm на задней подсветке на 30 секунд
-        - service: light.turn_on
-          data:
-            transition: 2
-            brightness_pct: 70
-            effect: Alarm
-          target:
-            entity_id:
-             - light.yeelight_ceiling4_0x456e813_ambilight
-             - light.yeelight_ceiling4_0x49c726b_ambilight
-             - light.yeelight_ceiling4_0x4a1dacd_ambilight
-        - delay: 00:00:30
-    # Включение эффекта Stop, иначе эффект Alarm применится при следующем включении
-        - service: light.turn_on
-          data:
-            effect: Stop
-          target:
-            entity_id:
-             - light.yeelight_ceiling4_0x456e813_ambilight
-             - light.yeelight_ceiling4_0x49c726b_ambilight
-             - light.yeelight_ceiling4_0x4a1dacd_ambilight
-    # Отключение подсветки
-        - service: light.turn_off
-          entity_id: 
-             - light.yeelight_ceiling4_0x456e813_ambilight
-             - light.yeelight_ceiling4_0x49c726b_ambilight
-             - light.yeelight_ceiling4_0x4a1dacd_ambilight
-    # Возврат к предыдущему состоянию
-        - service: scene.turn_on
-          target:
-            entity_id: scene.light_before_threat
+      automation.air_raid_alert_kn_gateway_threat_notification:
+        friendly_name: Кухня - тривога
+        icon: mdi:airplane-alert
 
-      - alias: lr_ceiling_threat_cancel
-        id: lr_ceiling_threat_cancel
-        description: Включение световой индикации в гостиной - отмена тревоги
-        initial_state: true
-        trigger:
-    # Сборный сенсор тревоги
-        - platform: state
-          entity_id: binary_sensor.m_kiyiv_air
-          from: 'on'
-          to: 'off'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-    # Отключен ночной режим работы
-        - condition: state
-          entity_id: binary_sensor.night_time
-          state: 'off'
-        action:
-    # Сохранение состояния светильников
-        - service: scene.create
-          data:
-           scene_id: light_after_threat
-           snapshot_entities:
-             - light.yeelight_ceiling4_0x456e813
-             - light.yeelight_ceiling4_0x456e813_ambilight
-             - light.yeelight_ceiling4_0x49c726b
-             - light.yeelight_ceiling4_0x49c726b_ambilight
-             - light.yeelight_ceiling4_0x4a1dacd
-             - light.yeelight_ceiling4_0x4a1dacd_ambilight
-    # Отключение основного освещения
-        - service: light.turn_off
-          entity_id: 
-             - light.yeelight_ceiling4_0x456e813
-             - light.yeelight_ceiling4_0x49c726b
-             - light.yeelight_ceiling4_0x4a1dacd
-    # Запуск скрипта светового уведомления и ожидание 20 сек
-        - service: script.turn_on
-          entity_id: script.lr_threat_cancel_notification
-        - delay: 00:00:20
-    # Отключение подсветки
-        - service: light.turn_off
-          entity_id: 
-             - light.yeelight_ceiling4_0x456e813_ambilight
-             - light.yeelight_ceiling4_0x49c726b_ambilight
-             - light.yeelight_ceiling4_0x4a1dacd_ambilight
-    # Возврат к предыдущему состоянию
-        - service: scene.turn_on
-          target:
-            entity_id: scene.light_after_threat
+      automation.air_raid_alert_kn_gateway_threat_cancel:
+        friendly_name: Кухня - відбій
+        icon: mdi:airplane-off
 
-      - alias: lr_light_wled_threat_notification
-        id: lr_light_wled_threat_notification
-        description: Гостиная WLED - тревога
-        initial_state: true          
-        trigger:
-    # Сборный сенсор тревоги
-        - platform: state
-          entity_id: binary_sensor.m_kiyiv_air
-          from: 'off'
-          to: 'on'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-        action:
-        - service: light.turn_on
-          entity_id: light.gld_wled
-          data:
-            effect: Gravcentric
-            brightness_pct: 50
-        - service: select.select_option
-          data:
-            option: Red Tide
-          target:
-            entity_id: select.gld_wled_color_palette
-        - service: number.set_value
-          target:
-            entity_id: number.gld_wled_speed
-          data:
-            value: 218
-        - service: number.set_value
-          target:
-            entity_id: number.gld_wled_intensity
-          data:
-            value: 128
-        - delay: 00:00:30
-        - service: light.turn_off
-          entity_id: light.gld_wled
-        - delay: 00:00:15
-        - service: light.turn_off
-          entity_id: light.gld_wled
+      script.lr_threat_cancel_notification:
+        friendly_name: Вітальня - 5 зелених спалахів
+        icon: mdi:led-strip-variant
 
-      - alias: lr_light_wled_threat_cancel
-        id: lr_light_wled_threat_cancel
-        description: Гостиная WLED - отмена тревоги
-        initial_state: true          
-        trigger:
-    # Сборный сенсор тревоги
-        - platform: state
-          entity_id: binary_sensor.m_kiyiv_air
-          from: 'on'
-          to: 'off'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-        action:
-        - service: light.turn_on
-          entity_id: light.gld_wled
-          data:
-            effect: Aurora
-            brightness_pct: 50
-        - service: select.select_option
-          data:
-            option: Aurora
-          target:
-            entity_id: select.gld_wled_color_palette
-        - service: number.set_value
-          target:
-            entity_id: number.gld_wled_speed
-          data:
-            value: 200
-        - service: number.set_value
-          target:
-            entity_id: number.gld_wled_intensity
-          data:
-            value: 200
-        - delay: 00:00:30
-        - service: light.turn_off
-          entity_id: light.gld_wled
-        - delay: 00:00:15
-        - service: light.turn_off
-          entity_id: light.gld_wled
+      script.kn_threat_notification:
+        friendly_name: Кухня - 5 червоних спалахів
+        icon: mdi:led-strip-variant
 
-      - alias: kn_gateway_threat_notification
-        id: kn_gateway_threat_notification
-        description: Кухня шлюз - тревога
-        initial_state: true          
-        trigger:
-    # Сборный сенсор тревоги
-        - platform: state
-          entity_id: binary_sensor.m_kiyiv_air
-          from: 'off'
-          to: 'on'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-        action:
-         - service: script.turn_on
-           entity_id: script.kn_threat_notification
+      script.kn_threat_cancel_notification:
+        friendly_name: Кухня - 5 зелених спалахів
+        icon: mdi:led-strip-variant
 
-      - alias: kn_gateway_threat_cancel
-        id: kn_gateway_threat_cancel
-        description: Кухня шлюз  - отмена тревоги
-        initial_state: true          
-        trigger:
-    # Сборный сенсор тревоги
-        - platform: state
-          entity_id: binary_sensor.m_kiyiv_air
-          from: 'on'
-          to: 'off'
-        condition:
-    # Переключатель режима работы сервера
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-        action:
-         - service: script.turn_on
-           entity_id: script.kn_threat_cancel_notification
+  ##################################################
+  ## RECORDER
+  ##################################################
 
+  recorder:
+    include:
+      entities:
+        - binary_sensor.m_kiyiv_air
+        - binary_sensor.m_kiyiv_artillery
+        - binary_sensor.m_kiyiv_unknown
+        - binary_sensor.m_kiyiv_urban_fights
+        - binary_sensor.m_kiyiv_chemical
+        - binary_sensor.m_kiyiv_nuclear
 
-    script:
-    
-      lr_threat_cancel_notification:
-        alias: Амбилайт в гостиной 5 зеленых вспышек
-        sequence:
-            repeat:
-              count: 5 
-              sequence:
-              - service: light.turn_on
-                entity_id: 
-                 - light.yeelight_ceiling4_0x456e813_ambilight
-                 - light.yeelight_ceiling4_0x49c726b_ambilight
-                 - light.yeelight_ceiling4_0x4a1dacd_ambilight
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    ##################################################
+    ## ЗБІРНИЙ СЕНСОР ТРИВОГИ
+    ##################################################
+
+    - binary_sensor:
+        - name: threat
+          unique_id: threat
+          state: >
+            {{ is_state('binary_sensor.m_kiyiv_air', 'on')
+               or is_state('binary_sensor.m_kiyiv_artillery', 'on')
+               or is_state('binary_sensor.m_kiyiv_unknown', 'on')
+               or is_state('binary_sensor.m_kiyiv_urban_fights', 'on')
+               or is_state('binary_sensor.m_kiyiv_chemical', 'on')
+               or is_state('binary_sensor.m_kiyiv_nuclear', 'on') }}
+
+  ##################################################
+  ## SCRIPT
+  ##################################################
+
+  script:
+
+    ##################################################
+    ## ВІТАЛЬНЯ - 5 ЗЕЛЕНИХ СПАЛАХІВ
+    ##################################################
+
+    lr_threat_cancel_notification:
+      alias: lr_threat_cancel_notification
+      sequence:
+        - repeat:
+            count: 5
+            sequence:
+              - action: light.turn_on
+                target:
+                  entity_id:
+                    - light.yeelight_ceiling4_0x456e813_ambilight
+                    - light.yeelight_ceiling4_0x49c726b_ambilight
+                    - light.yeelight_ceiling4_0x4a1dacd_ambilight
                 data:
                   brightness_pct: 70
                   color_name: green
                   transition: 2
-              - delay: 2
-              - service: light.turn_off
-                entity_id: 
-                 - light.yeelight_ceiling4_0x456e813_ambilight
-                 - light.yeelight_ceiling4_0x49c726b_ambilight
-                 - light.yeelight_ceiling4_0x4a1dacd_ambilight
-                data:
-                  transition: 2
+
               - delay: 2
 
-      kn_threat_notification:
-        alias: Шлюз в кухне 5 красных вспышек
-        sequence:
-            repeat:
-              count: 5 
-              sequence:
-              - service: light.turn_on
-                entity_id: 
-                   - light.gateway_light_7811dc64f4c8
+              - action: light.turn_off
+                target:
+                  entity_id:
+                    - light.yeelight_ceiling4_0x456e813_ambilight
+                    - light.yeelight_ceiling4_0x49c726b_ambilight
+                    - light.yeelight_ceiling4_0x4a1dacd_ambilight
+                data:
+                  transition: 2
+
+              - delay: 2
+
+    ##################################################
+    ## КУХНЯ - 5 ЧЕРВОНИХ СПАЛАХІВ
+    ##################################################
+
+    kn_threat_notification:
+      alias: kn_threat_notification
+      sequence:
+        - repeat:
+            count: 5
+            sequence:
+              - action: light.turn_on
+                target:
+                  entity_id:
+                    - light.gateway_light_7811dc64f4c8
                 data:
                   brightness_pct: 70
                   color_name: red
                   transition: 2
+
               - delay: 2
-              - service: light.turn_off
-                entity_id: 
-                   - light.gateway_light_7811dc64f4c8
+
+              - action: light.turn_off
+                target:
+                  entity_id:
+                    - light.gateway_light_7811dc64f4c8
                 data:
                   transition: 2
-              - delay: 2              
-              
-      kn_threat_cancel_notification:
-        alias: Шлюз в кухне 5 красных вспышек
-        sequence:
-            repeat:
-              count: 5 
-              sequence:
-              - service: light.turn_on
-                entity_id: 
-                   - light.gateway_light_7811dc64f4c8
+
+              - delay: 2
+
+    ##################################################
+    ## КУХНЯ - 5 ЗЕЛЕНИХ СПАЛАХІВ
+    ##################################################
+
+    kn_threat_cancel_notification:
+      alias: kn_threat_cancel_notification
+      sequence:
+        - repeat:
+            count: 5
+            sequence:
+              - action: light.turn_on
+                target:
+                  entity_id:
+                    - light.gateway_light_7811dc64f4c8
                 data:
                   brightness_pct: 70
                   color_name: green
                   transition: 2
+
               - delay: 2
-              - service: light.turn_off
-                entity_id: 
-                   - light.gateway_light_7811dc64f4c8
+
+              - action: light.turn_off
+                target:
+                  entity_id:
+                    - light.gateway_light_7811dc64f4c8
                 data:
                   transition: 2
-              - delay: 2 
+
+              - delay: 2
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    ##################################################
+    ## ВІТАЛЬНЯ - СВІТЛОВА ІНДИКАЦІЯ ТРИВОГИ
+    ##################################################
+
+    - alias: air_raid_alert_lr_ceiling_threat_notification
+      id: air_raid_alert_lr_ceiling_threat_notification
+      description: Світлова індикація тривоги у вітальні
+      initial_state: true
+
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: "off"
+          to: "on"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+        - condition: state
+          entity_id: binary_sensor.night_time
+          state: "off"
+
+      action:
+        - action: scene.create
+          data:
+            scene_id: light_before_threat
+            snapshot_entities:
+              - light.yeelight_ceiling4_0x456e813
+              - light.yeelight_ceiling4_0x456e813_ambilight
+              - light.yeelight_ceiling4_0x49c726b
+              - light.yeelight_ceiling4_0x49c726b_ambilight
+              - light.yeelight_ceiling4_0x4a1dacd
+              - light.yeelight_ceiling4_0x4a1dacd_ambilight
+
+        - action: light.turn_off
+          target:
+            entity_id:
+              - light.yeelight_ceiling4_0x456e813
+              - light.yeelight_ceiling4_0x49c726b
+              - light.yeelight_ceiling4_0x4a1dacd
+
+        - action: light.turn_on
+          target:
+            entity_id:
+              - light.yeelight_ceiling4_0x456e813_ambilight
+              - light.yeelight_ceiling4_0x49c726b_ambilight
+              - light.yeelight_ceiling4_0x4a1dacd_ambilight
+          data:
+            transition: 2
+            brightness_pct: 70
+            effect: Alarm
+
+        - delay: "00:00:30"
+
+        - action: light.turn_on
+          target:
+            entity_id:
+              - light.yeelight_ceiling4_0x456e813_ambilight
+              - light.yeelight_ceiling4_0x49c726b_ambilight
+              - light.yeelight_ceiling4_0x4a1dacd_ambilight
+          data:
+            effect: Stop
+
+        - action: light.turn_off
+          target:
+            entity_id:
+              - light.yeelight_ceiling4_0x456e813_ambilight
+              - light.yeelight_ceiling4_0x49c726b_ambilight
+              - light.yeelight_ceiling4_0x4a1dacd_ambilight
+
+        - action: scene.turn_on
+          target:
+            entity_id: scene.light_before_threat
+
+    ##################################################
+    ## ВІТАЛЬНЯ - СВІТЛОВА ІНДИКАЦІЯ ВІДБОЮ
+    ##################################################
+
+    - alias: air_raid_alert_lr_ceiling_threat_cancel
+      id: air_raid_alert_lr_ceiling_threat_cancel
+      description: Світлова індикація відбою у вітальні
+      initial_state: true
+
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: "on"
+          to: "off"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+        - condition: state
+          entity_id: binary_sensor.night_time
+          state: "off"
+
+      action:
+        - action: scene.create
+          data:
+            scene_id: light_after_threat
+            snapshot_entities:
+              - light.yeelight_ceiling4_0x456e813
+              - light.yeelight_ceiling4_0x456e813_ambilight
+              - light.yeelight_ceiling4_0x49c726b
+              - light.yeelight_ceiling4_0x49c726b_ambilight
+              - light.yeelight_ceiling4_0x4a1dacd
+              - light.yeelight_ceiling4_0x4a1dacd_ambilight
+
+        - action: light.turn_off
+          target:
+            entity_id:
+              - light.yeelight_ceiling4_0x456e813
+              - light.yeelight_ceiling4_0x49c726b
+              - light.yeelight_ceiling4_0x4a1dacd
+
+        - action: script.turn_on
+          target:
+            entity_id: script.lr_threat_cancel_notification
+
+        - delay: "00:00:20"
+
+        - action: light.turn_off
+          target:
+            entity_id:
+              - light.yeelight_ceiling4_0x456e813_ambilight
+              - light.yeelight_ceiling4_0x49c726b_ambilight
+              - light.yeelight_ceiling4_0x4a1dacd_ambilight
+
+        - action: scene.turn_on
+          target:
+            entity_id: scene.light_after_threat
+
+    ##################################################
+    ## ВІТАЛЬНЯ WLED - ТРИВОГА
+    ##################################################
+
+    - alias: air_raid_alert_lr_light_wled_threat_notification
+      id: air_raid_alert_lr_light_wled_threat_notification
+      description: Світлова індикація тривоги на WLED у вітальні
+      initial_state: true
+
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: "off"
+          to: "on"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - action: light.turn_on
+          target:
+            entity_id: light.gld_wled
+          data:
+            effect: Gravcentric
+            brightness_pct: 50
+
+        - action: select.select_option
+          target:
+            entity_id: select.gld_wled_color_palette
+          data:
+            option: Red Tide
+
+        - action: number.set_value
+          target:
+            entity_id: number.gld_wled_speed
+          data:
+            value: 218
+
+        - action: number.set_value
+          target:
+            entity_id: number.gld_wled_intensity
+          data:
+            value: 128
+
+        - delay: "00:00:30"
+
+        - action: light.turn_off
+          target:
+            entity_id: light.gld_wled
+
+        - delay: "00:00:15"
+
+        - action: light.turn_off
+          target:
+            entity_id: light.gld_wled
+
+    ##################################################
+    ## ВІТАЛЬНЯ WLED - ВІДБІЙ
+    ##################################################
+
+    - alias: air_raid_alert_lr_light_wled_threat_cancel
+      id: air_raid_alert_lr_light_wled_threat_cancel
+      description: Світлова індикація відбою на WLED у вітальні
+      initial_state: true
+
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: "on"
+          to: "off"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - action: light.turn_on
+          target:
+            entity_id: light.gld_wled
+          data:
+            effect: Aurora
+            brightness_pct: 50
+
+        - action: select.select_option
+          target:
+            entity_id: select.gld_wled_color_palette
+          data:
+            option: Aurora
+
+        - action: number.set_value
+          target:
+            entity_id: number.gld_wled_speed
+          data:
+            value: 200
+
+        - action: number.set_value
+          target:
+            entity_id: number.gld_wled_intensity
+          data:
+            value: 200
+
+        - delay: "00:00:30"
+
+        - action: light.turn_off
+          target:
+            entity_id: light.gld_wled
+
+        - delay: "00:00:15"
+
+        - action: light.turn_off
+          target:
+            entity_id: light.gld_wled
+
+    ##################################################
+    ## КУХНЯ - ТРИВОГА
+    ##################################################
+
+    - alias: air_raid_alert_kn_gateway_threat_notification
+      id: air_raid_alert_kn_gateway_threat_notification
+      description: Світлова індикація тривоги на шлюзі кухні
+      initial_state: true
+
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: "off"
+          to: "on"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - action: script.turn_on
+          target:
+            entity_id: script.kn_threat_notification
+
+    ##################################################
+    ## КУХНЯ - ВІДБІЙ
+    ##################################################
+
+    - alias: air_raid_alert_kn_gateway_threat_cancel
+      id: air_raid_alert_kn_gateway_threat_cancel
+      description: Світлова індикація відбою на шлюзі кухні
+      initial_state: true
+
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.m_kiyiv_air
+          from: "on"
+          to: "off"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - action: script.turn_on
+          target:
+            entity_id: script.kn_threat_cancel_notification

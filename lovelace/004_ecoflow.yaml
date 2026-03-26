@@ -101,9 +101,9 @@ sections:
           - type: divider
           - entity: sensor.delta_2_state_of_health
           - entity: sensor.delta_2_cycles
-          - entity: input_boolean.delta_2_stage_1
-          - entity: input_boolean.delta_2_stage_2
-          - entity: input_boolean.delta_2_stage_3
+          - entity: input_boolean.delta_2_stage_1_active
+          - entity: input_boolean.delta_2_stage_2_active
+          - entity: input_boolean.delta_2_stage_3_active
 
       - type: custom:power-flow-card-plus
         clickable_entities: true
@@ -243,9 +243,9 @@ sections:
           - type: divider
           - entity: sensor.river_2_pro_state_of_health
           - entity: sensor.river_2_pro_cycles
-          - entity: input_boolean.river_2_pro_stage_1
-          - entity: input_boolean.river_2_pro_stage_2
-          - entity: input_boolean.river_2_pro_stage_3
+          - entity: input_boolean.river_2_pro_stage_1_active
+          - entity: input_boolean.river_2_pro_stage_2_active
+          - entity: input_boolean.river_2_pro_stage_3_active
 
       - type: custom:power-flow-card-plus
         clickable_entities: true
@@ -385,9 +385,9 @@ sections:
           - type: divider
           - entity: sensor.river_2_max_state_of_health
           - entity: sensor.river_2_max_cycles
-          - entity: input_boolean.river_2_max_stage_1
-          - entity: input_boolean.river_2_max_stage_2
-          - entity: input_boolean.river_2_max_stage_3
+          - entity: input_boolean.river_2_max_stage_1_active
+          - entity: input_boolean.river_2_max_stage_2_active
+          - entity: input_boolean.river_2_max_stage_3_active
 
       - type: custom:power-flow-card-plus
         clickable_entities: true
@@ -527,9 +527,9 @@ sections:
           - type: divider
           - entity: sensor.river_2_state_of_health
           - entity: sensor.river_2_cycles
-          - entity: input_boolean.river_2_stage_1
-          - entity: input_boolean.river_2_stage_2
-          - entity: input_boolean.river_2_stage_3
+          - entity: input_boolean.river_2_stage_1_active
+          - entity: input_boolean.river_2_stage_2_active
+          - entity: input_boolean.river_2_stage_3_active
 
       - type: custom:power-flow-card-plus
         clickable_entities: true

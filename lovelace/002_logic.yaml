@@ -1,9 +1,7 @@
-############################ Логіка ############################
 title: Логіка
 icon: mdi:format-list-bulleted
 sections:
 
-############################ Колонка 1 ############################
   - type: grid
     cards:
 
@@ -11,274 +9,439 @@ sections:
         content: >
           ## Система
 
-      - type: markdown
-        content: >
-          ### Контроль
+      - type: entities
+        title: Системні
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.sys_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                  exclude:
+                    - entity_id: automation.sys_notification_*
+                sort:
+                  method: friendly_name
 
-      - type: custom:auto-entities
-        show_empty: false
-        card:
-          type: entities
-          show_header_toggle: false
-        filter:
-          include:
-            - entity_id: automation.control*
-              options:
-                secondary_info: last-changed
-                state_color: true
+      - type: entities
+        title: Електрика
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.electricity_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                sort:
+                  method: friendly_name
 
-      - type: markdown
-        content: >
-          ### Електрика
+      - type: entities
+        title: Безпека
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.alarm_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.air_raid_alert_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                sort:
+                  method: friendly_name
 
-      - type: custom:auto-entities
-        show_empty: false
-        card:
-          type: entities
-          show_header_toggle: false
-        filter:
-          include:
-            - entity_id: automation.electricity*
-              options:
-                secondary_info: last-changed
-                state_color: true
+      - type: entities
+        title: Повідомлення
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.sys_notification_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.k7_notification_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.telegram_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                sort:
+                  method: friendly_name
 
-      - type: markdown
-        content: >
-          ### Повідомлення
+      - type: entities
+        title: Енергетика
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.deye_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.delta_2_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.river_2_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.river_2_max_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.river_2_pro_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                sort:
+                  method: friendly_name
 
-      - type: custom:auto-entities
-        show_empty: false
-        card:
-          type: entities
-          show_header_toggle: false
-        filter:
-          include:
-            - entity_id: automation.telegram*
-            - entity_id: automation.k7_notification_*
-              options:
-                secondary_info: last-changed
-                state_color: true
-
-      - type: markdown
-        content: >
-          ### Камери
-
-      - type: custom:auto-entities
-        show_empty: false
-        card:
-          type: entities
-          show_header_toggle: false
-        filter:
-          include:
-            - entity_id: automation.camera*
-              options:
-                secondary_info: last-changed
-                state_color: true
-
-############################ Колонка 2 ############################
   - type: grid
     cards:
 
-      - type: markdown
-        content: >
-          ## Санвузол
+      - type: entities
+        title: Передпокій
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.en_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                sort:
+                  method: friendly_name
 
-      - type: markdown
-        content: >
-          ### Світло і вентиляція
+      - type: entities
+        title: Коридор
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.cr_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                sort:
+                  method: friendly_name
 
-      - type: custom:auto-entities
-        card:
-          type: entities
-          show_header_toggle: false
-        filter:
-          include:
-            - entity_id: automation.tt_light_*
-            - entity_id: automation.tt_fan_*
-              options:
-                secondary_info: last-changed
-                state_color: true
+      - type: entities
+        title: Кухня
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.kn_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                sort:
+                  method: friendly_name
 
-      - type: markdown
-        content: >
-          ### Контроль
+      - type: entities
+        title: Санвузол
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.tt_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.bt_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                sort:
+                  method: friendly_name
 
-      - type: custom:auto-entities
-        card:
-          type: entities
-        filter:
-          include:
-            - entity_id: automation.tt_reboot_*
+      - type: entities
+        title: Пральня
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.ln_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                sort:
+                  method: friendly_name
 
-      - type: markdown
-        content: >
-          ## Пральня
-
-      - type: custom:auto-entities
-        card:
-          type: entities
-        filter:
-          include:
-            - entity_id: automation.ln*
-
-      - type: markdown
-        content: >
-          ## Передпокій
-
-      - type: custom:auto-entities
-        card:
-          type: entities
-        filter:
-          include:
-            - entity_id: automation.en*
-
-############################ Колонка 3 ############################
   - type: grid
     cards:
 
-      - type: markdown
-        content: >
-          ## Коридор
+      - type: entities
+        title: Вітальня - освітлення та сценарії
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.lr_ceiling_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.lr_light_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                sort:
+                  method: friendly_name
 
-      - type: markdown
-        content: >
-          ### Світло
+      - type: entities
+        title: Вітальня - пристрої та дисплеї
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.lr_awtrix_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.lr_control_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.lr_reboot_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                sort:
+                  method: friendly_name
 
-      - type: custom:auto-entities
-        card:
-          type: entities
-        filter:
-          include:
-            - entity_id: automation.cr_ceiling_*
-            - entity_id: automation.cr_en_light_control
+      - type: entities
+        title: Дитяча
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.da_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                sort:
+                  method: friendly_name
 
-      - type: markdown
-        content: >
-          ### Контроль
+      - type: entities
+        title: Спальня
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.br_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                sort:
+                  method: friendly_name
 
-      - type: custom:auto-entities
-        card:
-          type: entities
-        filter:
-          include:
-            - entity_id: automation.cr_reboot_*
-            - entity_id: automation.cr_turn_on_*
-
-      - type: markdown
-        content: >
-          ## Кухня
-
-      - type: markdown
-        content: >
-          ### Світло
-
-      - type: custom:auto-entities
-        card:
-          type: entities
-        filter:
-          include:
-            - entity_id: automation.kn_ceiling_*
-            - entity_id: automation.kn_light_*
-
-      - type: markdown
-        content: >
-          ### Управління
-
-      - type: custom:auto-entities
-        card:
-          type: entities
-        filter:
-          include:
-            - entity_id: automation.0xa4c1388ce0ff53a8_*
-
-      - type: markdown
-        content: >
-          ### Контроль
-
-      - type: custom:auto-entities
-        card:
-          type: entities
-        filter:
-          include:
-            - entity_id: automation.kn_reboot_*
-
-############################ Колонка 4 ############################
   - type: grid
     cards:
 
-      - type: markdown
-        content: >
-          ## Вітальня
+      - type: entities
+        title: Камери
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.floor_camera_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.out_camera_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.camera_reboot_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                sort:
+                  method: friendly_name
 
-      - type: markdown
-        content: >
-          ### Світло
-
-      - type: custom:auto-entities
-        card:
-          type: entities
-        filter:
-          include:
-            - entity_id: automation.lr_ceiling_*
-            - entity_id: automation.lr_light_*
-
-      - type: markdown
-        content: >
-          ### Управління
-
-      - type: custom:auto-entities
-        card:
-          type: entities
-        filter:
-          include:
-            - entity_id: automation.lr_control_*
-
-      - type: markdown
-        content: >
-          ### Контроль
-
-      - type: custom:auto-entities
-        card:
-          type: entities
-        filter:
-          include:
-            - entity_id: automation.lr_reboot_*
-
-      - type: markdown
-        content: >
-          ## Ванна
-
-      - type: custom:auto-entities
-        card:
-          type: entities
-        filter:
-          include:
-            - entity_id: automation.bt_reboot_*
-
-      - type: markdown
-        content: >
-          ## Дитяча
-
-      - type: custom:auto-entities
-        card:
-          type: entities
-        filter:
-          include:
-            - entity_id: automation.da_reboot_*
-
-      - type: markdown
-        content: >
-          ## Інше
-
-      - type: custom:auto-entities
-        card:
-          type: entities
-        filter:
-          include:
-            - domain: automation
-          exclude:
-            - entity_id: automation.control*
-            - entity_id: automation.electricity*
-            - entity_id: automation.telegram*
-            - entity_id: automation.camera*
+      - type: entities
+        title: Інше
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - domain: automation
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                  exclude:
+                    - entity_id: automation.sys_*
+                    - entity_id: automation.electricity_*
+                    - entity_id: automation.alarm_*
+                    - entity_id: automation.air_raid_alert_*
+                    - entity_id: automation.deye_*
+                    - entity_id: automation.delta_2_*
+                    - entity_id: automation.river_2_*
+                    - entity_id: automation.river_2_max_*
+                    - entity_id: automation.river_2_pro_*
+                    - entity_id: automation.en_*
+                    - entity_id: automation.cr_*
+                    - entity_id: automation.kn_*
+                    - entity_id: automation.tt_*
+                    - entity_id: automation.bt_*
+                    - entity_id: automation.ln_*
+                    - entity_id: automation.lr_*
+                    - entity_id: automation.da_*
+                    - entity_id: automation.br_*
+                    - entity_id: automation.floor_camera_*
+                    - entity_id: automation.out_camera_*
+                    - entity_id: automation.camera_reboot_*
+                sort:
+                  method: friendly_name

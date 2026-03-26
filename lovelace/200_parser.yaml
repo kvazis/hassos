@@ -73,34 +73,34 @@ sections:
           show_header_toggle: false
           entities:
           - entity: binary_sensor.93_127_127_43
-          - entity: binary_sensor.tg_1_3_ping
+          - entity: binary_sensor.k7_1_3_power_ping
           - type: divider
-          - entity: sensor.electricity_1_3_yesterday
+          - entity: sensor.k7_1_3_power_on_yesterday
           - type: divider
-          - entity: input_boolean.tg_parser_1_3_gone_lock
-          - entity: input_boolean.tg_parser_1_3_back_lock
+          - entity: input_boolean.k7_1_3_power_off_notify_lock
+          - entity: input_boolean.k7_1_3_power_on_notify_lock
           - type: divider
-          - entity: input_datetime.electricity_off_1_3
-          - entity: input_datetime.electricity_on_1_3
+          - entity: input_datetime.k7_1_3_power_off_time
+          - entity: input_datetime.k7_1_3_power_on_time
 
 
         - type: entities
           show_header_toggle: false
           entities:
-          - entity: sensor.tg_parser_k7_3_partial_source
-          - entity: sensor.tg_parser_k7_3_partial_type
+          - entity: sensor.k7_3_partial_power_source
+          - entity: sensor.k7_3_partial_power_event
           - type: divider
-          - entity: binary_sensor.k7_3_partial_back
-          - entity: binary_sensor.k7_1_3_ping_stable_5m
+          - entity: binary_sensor.k7_3_partial_power_on
+          - entity: binary_sensor.k7_1_3_power_ping_stable_5m
           - type: divider
-          - entity: binary_sensor.k7_3_partial_gone
-          - entity: binary_sensor.k7_1_3_ping_unstable_5m
+          - entity: binary_sensor.k7_3_partial_power_off
+          - entity: binary_sensor.k7_1_3_power_ping_unstable_5m
           - type: divider
-          - entity: input_boolean.tg_parser_3_partial_log
-          - entity: sensor.electricity_3_partial_yesterday
+          - entity: input_boolean.k7_3_partial_power_log
+          - entity: sensor.k7_3_partial_power_on_yesterday
           - type: divider
-          - entity: input_boolean.tg_parser_3_partial_gone_lock
-          - entity: input_boolean.tg_parser_3_partial_back_lock
+          - entity: input_boolean.k7_3_partial_power_off_notify_lock
+          - entity: input_boolean.k7_3_partial_power_on_notify_lock
           - type: divider
-          - entity: input_datetime.electricity_off_3_partial
-          - entity: input_datetime.electricity_on_3_partial
+          - entity: input_datetime.k7_3_partial_power_off_time
+          - entity: input_datetime.k7_3_partial_power_on_time

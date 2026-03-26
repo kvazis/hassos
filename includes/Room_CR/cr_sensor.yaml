@@ -1,55 +1,73 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 cr_sensor:
 
+  ##################################################
+  ## HOMEASSISTANT
+  ##################################################
 
-    recorder:
-      include:
-        entities:
-           - sensor.0x00124b0022659c04_temperature
-           - sensor.0x00124b0022659c04_humidity
-           - binary_sensor.0x00158d00010f8920_occupancy
-           - sensor.0x00158d0002a4f77e_action
-           - binary_sensor.0x00158d0002a4f77e_vibration
-           - binary_sensor.0xa4c138dc97e602e5_presence
-           - sensor.0xa4c138dc97e602e5_illuminance
+  homeassistant:
+    customize:
+      binary_sensor.0x00158d00010f8920_occupancy:
+        friendly_name: Коридор - датчик руху
+        icon: mdi:motion-sensor
+      sensor.0x00158d00010f8920_battery:
+        friendly_name: Коридор - датчик руху
+        icon: mdi:battery
 
+      binary_sensor.0xa4c138dc97e602e5_presence:
+        friendly_name: Коридор - датчик присутності
+        icon: mdi:motion-sensor
+      sensor.0xa4c138dc97e602e5_illuminance:
+        friendly_name: Коридор - освітленість
+        icon: mdi:brightness-6
+      sensor.0xa4c138dc97e602e5_battery:
+        friendly_name: Коридор - датчик присутності
+        icon: mdi:battery
 
-    homeassistant:
-      customize:
+      sensor.0x00124b0022659c04_humidity:
+        friendly_name: Коридор - вологість
+        icon: mdi:water-percent
+        unit_of_measurement: "%"
+      sensor.0x00124b0022659c04_temperature:
+        friendly_name: Коридор - температура
+        icon: mdi:temperature-celsius
+        unit_of_measurement: "°C"
+      sensor.0x00124b0022659c04_raw_humidity:
+        friendly_name: Коридор - вологість
+        icon: mdi:water-percent
+        unit_of_measurement: "%"
+      sensor.0x00124b0022659c04_raw_temperature:
+        friendly_name: Коридор - температура
+        icon: mdi:temperature-celsius
+        unit_of_measurement: "°C"
+      sensor.0x00124b0022659c04_battery:
+        friendly_name: Коридор - клімат
+        icon: mdi:battery
 
-        binary_sensor.0x00158d00010f8920_occupancy:
-          friendly_name: Коридор движение 
-        sensor.0x00158d00010f8920_battery:
-          friendly_name: Коридор движение         
-          
-        binary_sensor.0xa4c138dc97e602e5_presence:
-          friendly_name: Коридор присутствие
-        sensor.0xa4c138dc97e602e5_illuminance:
-          friendly_name: Коридор яркость
-        sensor.0xa4c138dc97e602e5_battery:
-          friendly_name: Коридор присутствие
-          
-          
-        sensor.0x00124b0022659c04_humidity:
-          friendly_name:  Коридор, влажность
-          icon: mdi:water-percent
-          unit_of_measurement: '%'
-        sensor.0x00124b0022659c04_temperature:
-          friendly_name:  Коридор, температура
-          icon: mdi:temperature-celsius
-          unit_of_measurement: '°C'
-        sensor.0x00124b0022659c04_raw_humidity:
-          friendly_name:  Коридор, влажность
-          icon: mdi:water-percent
-          unit_of_measurement: '%'
-        sensor.0x00124b0022659c04_raw_temperature:
-          friendly_name:  Коридор, температура
-          icon: mdi:temperature-celsius
-          unit_of_measurement: '°C'
-        sensor.0x00124b0022659c04_battery:
-          friendly_name:  Коридор, климат
-        sensor.0x00158d0002a4f77e_action:
-          friendly_name: Коридор - датчик вибрации
-        binary_sensor.0x00158d0002a4f77e_vibration:
-          friendly_name: Коридор - датчик вибрации
-        sensor.0x00158d0002a4f77e_battery:
-          friendly_name: Коридор - датчик вибрации
+      sensor.0x00158d0002a4f77e_action:
+        friendly_name: Коридор - датчик вібрації
+        icon: mdi:vibrate
+      binary_sensor.0x00158d0002a4f77e_vibration:
+        friendly_name: Коридор - датчик вібрації
+        icon: mdi:vibrate
+      sensor.0x00158d0002a4f77e_battery:
+        friendly_name: Коридор - датчик вібрації
+        icon: mdi:battery
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - sensor.0x00124b0022659c04_temperature
+        - sensor.0x00124b0022659c04_humidity
+        - binary_sensor.0x00158d00010f8920_occupancy
+        - sensor.0x00158d0002a4f77e_action
+        - binary_sensor.0x00158d0002a4f77e_vibration
+        - binary_sensor.0xa4c138dc97e602e5_presence
+        - sensor.0xa4c138dc97e602e5_illuminance

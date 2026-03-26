@@ -1,36 +1,69 @@
-youtube_sensors:
+##################################################
+## Актуалізовано: 2026-03-23
+##################################################
+
+sys_youtube_sensors:
+
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
+
+  homeassistant:
+    customize:
+
+      sensor.youtube_api:
+        friendly_name: YouTube - API
+
+      sensor.youtube_subscriber_count:
+        friendly_name: YouTube - кількість підписників
+        icon: mdi:account-group
+
+      sensor.youtube_view_count:
+        friendly_name: YouTube - кількість переглядів
+        icon: mdi:eye
+
+      sensor.youtube_video_count:
+        friendly_name: YouTube - кількість відео
+        icon: mdi:youtube
+
+  ##################################################
+  ## SENSOR
+  ##################################################
 
   sensor:
-  - platform: rest
-    name: youtube_api
-    resource_template: !secret youtube
-    method: GET
-    headers:
-      content-type: 'application/json'
-    value_template: "0"
-    json_attributes:
-      - "items"
-    scan_interval: 600 # 10 Minutes
+    - platform: rest
+      name: youtube_api
+      resource_template: !secret youtube
+      method: GET
+      headers:
+        content-type: "application/json"
+      value_template: "0"
+      json_attributes:
+        - "items"
+      scan_interval: 600
 
-## in secret.yaml - youtube: "https://www.googleapis.com/youtube/v3/channels?part=statistics&id=CHANNEL_ID&key=CHANNEL_API"
-
+  ##################################################
+  ## TEMPLATE
+  ##################################################
 
   template:
-    
-      - sensor:
+    - sensor:
 
-          - name: youtube_subscriber_count
-            unique_id: youtube_subscriber_count
-            state: > 
-               {{state_attr('sensor.youtube_api','items')[0].statistics.subscriberCount }} 
-               
-          - name: youtube_view_count
-            unique_id: youtube_view_count
-            state: > 
-               {{state_attr('sensor.youtube_api','items')[0].statistics.viewCount }}
+        ##################################################
+        ## YOUTUBE
+        ##################################################
 
-          - name:  youtube_video_count
-            unique_id: youtube_video_count
-            state: > 
-               {{state_attr('sensor.youtube_api','items')[0].statistics.videoCount }}
+        - name: youtube_subscriber_count
+          unique_id: youtube_subscriber_count
+          state: >
+            {{ state_attr('sensor.youtube_api', 'items')[0].statistics.subscriberCount | int(0) }}
 
+        - name: youtube_view_count
+          unique_id: youtube_view_count
+          state: >
+            {{ state_attr('sensor.youtube_api', 'items')[0].statistics.viewCount | int(0) }}
+
+        - name: youtube_video_count
+          unique_id: youtube_video_count
+          state: >
+            {{ state_attr('sensor.youtube_api', 'items')[0].statistics.videoCount | int(0) }}

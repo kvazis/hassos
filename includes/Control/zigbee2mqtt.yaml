@@ -1,76 +1,134 @@
+##################################################
+## Актуалізовано: 2026-03-24
+##################################################
+
 zigbee2mqtt:
 
-    template:
-     
-      - binary_sensor:
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-          - name: zigbee2mqtt_1_state
-            unique_id: zigbee2mqtt_1_state
-            state: >
-              {{ is_state('binary_sensor.zigbee2mqtt_bridge_connection_state_1', 'off')  
-              }}
-            delay_on: 00:00:15
-            
-          - name: zigbee2mqtt_2_state
-            unique_id: zigbee2mqtt_2_state
-            state: >
-              {{ is_state('binary_sensor.zigbee2mqtt_bridge_connection_state_2', 'off')  
-              }}
-            delay_on: 00:00:15
-            
-          - name: zigbee2mqtt_3_state
-            unique_id: zigbee2mqtt_3_state
-            state: >
-              {{ is_state('binary_sensor.zigbee2mqtt_bridge_connection_state_3', 'off')  
-              }}
-            delay_on: 00:00:15
+  homeassistant:
+    customize:
 
+      binary_sensor.zigbee2mqtt_1_state:
+        friendly_name: Система - Zigbee2MQTT 1 недоступний
+        icon: mdi:zigbee
 
-    automation:
-    
-      - alias: control_zigbee2mqtt_1
-        id: control_zigbee2mqtt_1
-        description: Активация zigbee2mqtt 1
-        initial_state: true
-        trigger:
-         - platform: state
-           entity_id: binary_sensor.zigbee2mqtt_1_state
-           from: 'off'    
-           to: 'on'
-        action:
-         - service: mqtt.publish
-           data:
-             topic: zigstar/bridge/state
-             payload: online
-             
-      - alias: control_zigbee2mqtt_2
-        id: control_zigbee2mqtt_2
-        description: Активация zigbee2mqtt 2
-        initial_state: true
-        trigger:
-         - platform: state
-           entity_id: binary_sensor.zigbee2mqtt_2_state
-           from: 'off'    
-           to: 'on'
-        action:
-         - service: mqtt.publish
-           data:
-             topic: zigstar_poe/bridge/state
-             payload: online 
-             
-      - alias: control_zigbee2mqtt_3
-        id: control_zigbee2mqtt_3
-        description: Активация zigstar zigbee2mqtt 3
-        initial_state: false
-        trigger:
-         - platform: state
-           entity_id: binary_sensor.zigbee2mqtt_3_state
-           from: 'off'    
-           to: 'on'
-        action:
-         - service: mqtt.publish
-           data:
-             topic: zigbee2mqtt_3/bridge/state
-             payload: online 
-        
-        
+      binary_sensor.zigbee2mqtt_2_state:
+        friendly_name: Система - Zigbee2MQTT 2 недоступний
+        icon: mdi:zigbee
+
+      binary_sensor.zigbee2mqtt_3_state:
+        friendly_name: Система - Zigbee2MQTT 3 недоступний
+        icon: mdi:zigbee
+
+      automation.sys_zigbee2mqtt_1_activate:
+        friendly_name: Система - активація Zigbee2MQTT 1
+        icon: mdi:zigbee
+
+      automation.sys_zigbee2mqtt_2_activate:
+        friendly_name: Система - активація Zigbee2MQTT 2
+        icon: mdi:zigbee
+
+      automation.sys_zigbee2mqtt_3_activate:
+        friendly_name: Система - активація Zigbee2MQTT 3
+        icon: mdi:zigbee
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    ##################################################
+    ## КОНТРОЛЬ СТАНУ ZIGBEE2MQTT
+    ##################################################
+
+    - binary_sensor:
+        - name: zigbee2mqtt_1_state
+          unique_id: zigbee2mqtt_1_state
+          state: >
+            {{ is_state('binary_sensor.zigbee2mqtt_bridge_connection_state_1', 'off') }}
+          delay_on: "00:00:15"
+
+        - name: zigbee2mqtt_2_state
+          unique_id: zigbee2mqtt_2_state
+          state: >
+            {{ is_state('binary_sensor.zigbee2mqtt_bridge_connection_state_2', 'off') }}
+          delay_on: "00:00:15"
+
+        - name: zigbee2mqtt_3_state
+          unique_id: zigbee2mqtt_3_state
+          state: >
+            {{ is_state('binary_sensor.zigbee2mqtt_bridge_connection_state_3', 'off') }}
+          delay_on: "00:00:15"
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    ##################################################
+    ## АКТИВАЦІЯ ZIGBEE2MQTT 1
+    ##################################################
+
+    - alias: sys_zigbee2mqtt_1_activate
+      id: sys_zigbee2mqtt_1_activate
+      description: Активація Zigbee2MQTT 1
+      initial_state: true
+
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.zigbee2mqtt_1_state
+          from: "off"
+          to: "on"
+
+      action:
+        - action: mqtt.publish
+          data:
+            topic: zigstar/bridge/state
+            payload: "online"
+
+    ##################################################
+    ## АКТИВАЦІЯ ZIGBEE2MQTT 2
+    ##################################################
+
+    - alias: sys_zigbee2mqtt_2_activate
+      id: sys_zigbee2mqtt_2_activate
+      description: Активація Zigbee2MQTT 2
+      initial_state: true
+
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.zigbee2mqtt_2_state
+          from: "off"
+          to: "on"
+
+      action:
+        - action: mqtt.publish
+          data:
+            topic: zigstar_poe/bridge/state
+            payload: "online"
+
+    ##################################################
+    ## АКТИВАЦІЯ ZIGBEE2MQTT 3
+    ##################################################
+
+    - alias: sys_zigbee2mqtt_3_activate
+      id: sys_zigbee2mqtt_3_activate
+      description: Активація Zigbee2MQTT 3
+      initial_state: true
+
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.zigbee2mqtt_3_state
+          from: "off"
+          to: "on"
+
+      action:
+        - action: mqtt.publish
+          data:
+            topic: zigbee2mqtt_3/bridge/state
+            payload: "online"

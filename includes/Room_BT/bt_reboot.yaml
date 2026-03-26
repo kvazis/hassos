@@ -1,46 +1,65 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 bt_reboot:
 
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-    template:
+  homeassistant:
+    customize:
+      binary_sensor.bt_ceiling_unavailable:
+        friendly_name: Ванна кімната - недоступність люстри
+        icon: mdi:ceiling-light
+      automation.bt_reboot_ceiling:
+        friendly_name: Ванна кімната - перезавантаження люстри
+        icon: mdi:restart
+      automation.bt_reboot_switch_turn_on_check:
+        friendly_name: Ванна кімната - перевірка ввімкнення живлення люстри
+        icon: mdi:light-switch
+      automation.bt_reboot_switch_check:
+        friendly_name: Ванна кімната - примусове оновлення стану вимикача
+        icon: mdi:update
 
-      - binary_sensor:
-      
-    # A sensor that detects the inaccessibility of the light
-          - name: bt_ceiling_unavailable
-            unique_id: bt_ceiling_unavailable
-            state: >
-              {{ is_state('light.yeelight_ceiling3_0x45727f2', 'unavailable') }}
-            delay_on: 
-                minutes: 3
-            device_class: problem  
-            
-    automation:
-    
-#################### REBOOT CEILING LIGHT ####################
-               
-      - alias: bt_reboot_ceiling
-        id: bt_reboot_ceiling
-        description: Bathroom – rebooting a ceiling light
-        initial_state: true
-        trigger:
-    # Check every 5 minutes
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+    - binary_sensor:
+        - name: bt_ceiling_unavailable
+          unique_id: bt_ceiling_unavailable
+          state: >
+            {{ is_state('light.yeelight_ceiling3_0x45727f2', 'unavailable') }}
+          delay_on:
+            minutes: 3
+          device_class: problem
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+    - alias: bt_reboot_ceiling
+      id: bt_reboot_ceiling
+      description: Ванна кімната - перезавантаження люстри
+      initial_state: true
+      trigger:
         - platform: time_pattern
-          minutes: '/5'
-        condition:
-    # A sensor that detects the inaccessibility of the light
+          minutes: "/5"
+      condition:
         - condition: state
           entity_id: binary_sensor.bt_ceiling_unavailable
-          state: 'on'
-    # Operating mode
+          state: "on"
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Electricity sensor
+          state: "on"
         - condition: state
-          entity_id: binary_sensor.blackout_after
-          state: 'off'  
-        action: 
-     # Power reboot if the chandelier is inaccessible
+          entity_id: binary_sensor.electricity_internal
+          state: "off"
+      action:
         - action: switch.turn_off
           data: {}
           target:
@@ -53,40 +72,33 @@ bt_reboot:
         - action: telegram_bot.send_message
           data:
             message: >-
-                 {{"\U0001F916"}} Ванна кімната, перезавантаження люстри {{ states('sensor.time_date') }} 
+              {{"\U0001F916"}} Ванна кімната, перезавантаження люстри {{ states('sensor.time_date') }}
             chat_id:
-                - !secret chat_id_log
-                
-                
-#################### AUTOMATIC SWITCH-ON OF THE CEILING LIGHT SWITCH ####################
+              - !secret chat_id_log
 
-      - alias: bt_reboot_switch_turn_on_check
-        id: bt_reboot_switch_on_turn_on_check
-        description: Bathroom switch status check
-        initial_state: true
-        trigger:
-    # Check every 5 minutes
+    - alias: bt_reboot_switch_turn_on_check
+      id: bt_reboot_switch_turn_on_check
+      description: Ванна кімната - перевірка стану вимикача
+      initial_state: true
+      trigger:
         - platform: time_pattern
-          minutes: '/7'
-        condition:
-    # Not turned on
+          minutes: "/7"
+      condition:
         - condition: template
           value_template: "{{ states('switch.0x00158d000a8244b4_right') != 'on' }}"
-    # Operating mode
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Electricity sensor
+          state: "on"
         - condition: state
-          entity_id: binary_sensor.blackout_after
-          state: 'off' 
-        action:
+          entity_id: binary_sensor.electricity_internal
+          state: "off"
+      action:
         - action: telegram_bot.send_message
           data:
             message: >-
-              {{"\U0001F916"}} Ванна кімната, вимикач - {{states('switch.0x00158d000a8244b4_right') }} 
-            target:
-                - !secret chat_id_log
+              {{"\U0001F916"}} Ванна кімната, вимикач - {{ states('switch.0x00158d000a8244b4_right') }}
+            chat_id:
+              - !secret chat_id_log
         - delay: 00:00:05
         - action: switch.turn_on
           data: {}
@@ -95,30 +107,26 @@ bt_reboot:
         - action: telegram_bot.send_message
           data:
             message: >-
-              {{"\U0001F916"}} Ванна кімната, ввімкнення вимикача живлення люстри {{states('sensor.time_date') }} 
+              {{"\U0001F916"}} Ванна кімната, ввімкнення вимикача живлення люстри {{ states('sensor.time_date') }}
             chat_id:
-                - !secret chat_id_log
+              - !secret chat_id_log
 
-      - alias: bt_reboot_switch_check
-        id: bt_reboot_switch_check
-        description: Bathroom forced update of switch status
-        initial_state: false
-        trigger:
-    # Check every 15 minutes
+    - alias: bt_reboot_switch_check
+      id: bt_reboot_switch_check
+      description: Ванна кімната - примусове оновлення стану вимикача
+      initial_state: false
+      trigger:
         - platform: time_pattern
-          minutes: '/15'
-        condition:
-    # Operating mode
+          minutes: "/15"
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Electricity sensor
+          state: "on"
         - condition: state
-          entity_id: binary_sensor.blackout_after
-          state: 'off' 
-        action:
-    # Forced update of switch status
+          entity_id: binary_sensor.electricity_internal
+          state: "off"
+      action:
         - action: mqtt.publish
           data:
             topic: zigstar_poe/BT wd 2ch enter/get
-            payload: "{ \"state_right\": \"\" }"    
+            payload: '{ "state_right": "" }'

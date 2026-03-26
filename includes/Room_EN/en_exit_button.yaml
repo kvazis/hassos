@@ -1,48 +1,93 @@
+##################################################
+## Актуалізовано: 2026-03-21
+##################################################
+
 en_exit_button:
 
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-    automation:
+  homeassistant:
+    customize:
+      automation.en_exit_button_light_all_off:
+        friendly_name: Передпокій - вимкнення всього світла при виході
+        icon: mdi:lightbulb-multiple-off
 
-      - alias: en_light_all_off
-        id: en_light_all_off
-        description: Кнопка на выходе, отключение освещения
-        initial_state: true
-        trigger:
-    ## Кнопка на выходе
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    - alias: en_exit_button_light_all_off
+      id: en_exit_button_light_all_off
+      description: Вимкнення освітлення кнопкою на виході
+      initial_state: true
+
+      trigger:
+        ##################################################
+        ## КНОПКА НА ВИХОДІ
+        ##################################################
         - platform: state
           entity_id: sensor.0x00158d00010b1963_action
-          to: 'single'
-    # Выключатель возле кровати спальня
+          to: "single"
+
+        ##################################################
+        ## ВИМИКАЧ БІЛЯ ЛІЖКА СПАЛЬНІ
+        ##################################################
         - platform: state
           entity_id: sensor.0x54ef4410004c1706_action
-          to: 'button_6_single'
-        condition:
+          to: "button_6_single"
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-        action:
-        - service: light.turn_off
-          entity_id:
-    ## Кухня
-            - light.kn_ceiling_light
-    ## Туалет
-            - light.0x54ef44100096af68
-    ## Коридор
-            - light.yeelight_ceiling4_0x456e813
-            - light.yeelight_ceiling4_0x456e813_ambilight
-    ## Гостиная
-            - light.smart_desk_lamp
-            - light.yeelight_ceiling4_0x49c726b
-            - light.yeelight_ceiling4_0x4a1dacd
-            - light.yeelight_ceiling4_0x49c726b_ambilight
-            - light.yeelight_ceiling4_0x4a1dacd_ambilight
-            - light.0x54ef4410008e96fd_bottom
-            - light.0xa4c138da30166b8f
-            - light.lr_bedside_lamp
-    ## Спальня
-            - light.br_philips_62
-        - delay: 00:00:10
-        - service: light.turn_off
-          entity_id:
-    ## Прихожая
-            - light.0x00158d0003e74c31
+          state: "on"
+
+      action:
+        - action: light.turn_off
+          target:
+            entity_id:
+              ##################################################
+              ## КУХНЯ
+              ##################################################
+              - light.kn_ceiling_light
+
+              ##################################################
+              ## ТУАЛЕТ
+              ##################################################
+              - light.0x54ef44100096af68
+
+              ##################################################
+              ## КОРИДОР
+              ##################################################
+              - light.yeelight_ceiling4_0x456e813
+              - light.yeelight_ceiling4_0x456e813_ambilight
+
+              ##################################################
+              ## ВІТАЛЬНЯ
+              ##################################################
+              - light.smart_desk_lamp
+              - light.yeelight_ceiling4_0x49c726b
+              - light.yeelight_ceiling4_0x4a1dacd
+              - light.yeelight_ceiling4_0x49c726b_ambilight
+              - light.yeelight_ceiling4_0x4a1dacd_ambilight
+              - light.0x54ef4410008e96fd_bottom
+              - light.0xa4c138da30166b8f
+              - light.lr_bedside_lamp
+
+              ##################################################
+              ## СПАЛЬНЯ
+              ##################################################
+              - light.br_philips_62
+
+        - delay: "00:00:10"
+
+        - action: light.turn_off
+          target:
+            entity_id:
+              ##################################################
+              ## ПЕРЕДПОКІЙ
+              ##################################################
+              - light.0x00158d0003e74c31

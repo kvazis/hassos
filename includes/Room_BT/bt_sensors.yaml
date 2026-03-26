@@ -1,38 +1,56 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 bt_sensors:
 
+  ##################################################
+  ## HOMEASSISTANT
+  ##################################################
 
-    recorder:
-      include:
-        entities:
-           - sensor.0x00158d0001dcd47e_temperature
-           - sensor.0x00158d0001dcd47e_humidity
-           - binary_sensor.0x00158d0001e547a3_occupancy
-           - binary_sensor.0xa4c138a9cf8e75ef_presence
+  homeassistant:
+    customize:
+      sensor.0x00158d0001dcd47e_humidity:
+        friendly_name: Ванна кімната - вологість
+        icon: mdi:water-percent
+        unit_of_measurement: "%"
+      sensor.0x00158d0001dcd47e_temperature:
+        friendly_name: Ванна кімната - температура
+        icon: mdi:temperature-celsius
+        unit_of_measurement: "°C"
+      sensor.0x00158d0001dcd47e_battery:
+        friendly_name: Ванна кімната - клімат
+        icon: mdi:battery
+      binary_sensor.0x00158d0001e547a3_occupancy:
+        friendly_name: Ванна кімната - датчик руху
+        icon: mdi:motion-sensor
+      sensor.0x00158d0001e547a3_battery:
+        friendly_name: Ванна кімната - датчик руху
+        icon: mdi:battery
+      binary_sensor.0xa4c138a9cf8e75ef_presence:
+        friendly_name: Ванна кімната - датчик присутності
+        icon: mdi:motion-sensor
+      sensor.0xa4c138a9cf8e75ef_illuminance_lux:
+        friendly_name: Ванна кімната - освітленість
+        icon: mdi:brightness-6
+      sensor.0xa4c138a9cf8e75ef_battery:
+        friendly_name: Ванна кімната - датчик присутності
+        icon: mdi:battery
+      binary_sensor.0x00158d00054495dc_contact:
+        friendly_name: Ванна кімната - двері
+        icon: mdi:door
+      sensor.0x00158d00054495dc_battery:
+        friendly_name: Ванна кімната - двері
+        icon: mdi:battery
 
-    homeassistant:
-      customize:
-        
-        sensor.0x00158d0001dcd47e_humidity:
-          friendly_name: Ванная влажность
-          icon: mdi:water-percent
-          unit_of_measurement: '%'
-        sensor.0x00158d0001dcd47e_temperature:
-          friendly_name: Ванная температура
-          icon: mdi:temperature-celsius
-          unit_of_measurement: '°C'
-        sensor.0x00158d0001dcd47e_battery:
-          friendly_name: Ванная климат
-        binary_sensor.0x00158d0001e547a3_occupancy:
-          friendly_name: Ванная датчик движения
-        sensor.0x00158d0001e547a3_battery:
-          friendly_name: Ванная датчик движения
-        binary_sensor.0xa4c138a9cf8e75ef_presence:
-          friendly_name: Ванная датчик присутствия
-        sensor.0xa4c138a9cf8e75ef_illuminance_lux:
-          friendly_name: Ванная освещенность
-        sensor.0xa4c138a9cf8e75ef_battery:
-          friendly_name: Ванная датчик присутствия
-        binary_sensor.0x00158d00054495dc_contact:
-          friendly_name: Ванная дверь
-        sensor.0x00158d00054495dc_battery:
-          friendly_name: Ванная дверь
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - sensor.0x00158d0001dcd47e_temperature
+        - sensor.0x00158d0001dcd47e_humidity
+        - binary_sensor.0x00158d0001e547a3_occupancy
+        - binary_sensor.0xa4c138a9cf8e75ef_presence

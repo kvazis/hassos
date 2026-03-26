@@ -1,267 +1,347 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 br_heat:
-## Спальня термоголовка
 
-    recorder:
-      include:
-        entities:
-           - climate.0x84fd27fffe31ada3
-         
-    homeassistant:
-      customize:
-        
-        climate.0x84fd27fffe31ada3:
-          friendly_name: Спальня TRV
-        switch.0x84fd27fffe31ada3_heating_stop:
-          friendly_name: Спальня TRV стоп нагрев
-        number.0x84fd27fffe31ada3_local_temperature_calibration:
-          friendly_name: Спальня TRV t калибровка
-          unit_of_measurement: '°C'
-        number.0x84fd27fffe31ada3_comfort_temperature:
-          friendly_name: Спальня TRV t комфорт
-          unit_of_measurement: '°C'
-        number.0x84fd27fffe31ada3_open_window_temperature:
-          friendly_name: Спальня TRV t окно
-          unit_of_measurement: '°C'
-        number.0x84fd27fffe31ada3_holiday_temperature:
-          friendly_name: Спальня TRV t выходные
-          unit_of_measurement: '°C'
-        number.0x84fd27fffe31ada3_eco_temperature:
-          friendly_name: Спальня TRV t эко
-          unit_of_measurement: '°C'
-        binary_sensor.0x84fd27fffe31ada3_battery_low:
-          friendly_name: Спальня TRV питание
-        br_thermostat_local_temperature_calibration:
-          friendly_name: Спальня необходимость калибровки
-          device_class: update
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-    mqtt:
-      binary_sensor:
-        - name: br_radiator
-          unique_id: br_radiator
-          state_topic: "states/br_radiator"
+  homeassistant:
+    customize:
 
+      ##################################################
+      ## PHYSICAL
+      ##################################################
 
+      climate.0x84fd27fffe31ada3:
+        friendly_name: Спальня TRV
+        icon: mdi:radiator
 
-    template:
-    
-      - binary_sensor:
-      
-          - name: br_thermostat_local_temperature_calibration
-            unique_id: br_thermostat_local_temperature_calibration
-            state: >
-                    {{((states('sensor.0x00158d000156e92e_temperature') | float - state_attr('climate.0x84fd27fffe31ada3', 'current_temperature') | float))|round(1) > 1
-                     or ((states('sensor.0x00158d000156e92e_temperature') | float - state_attr('climate.0x84fd27fffe31ada3', 'current_temperature') | float))|round(1) < -1}}
-            device_class: update
+      switch.0x84fd27fffe31ada3_heating_stop:
+        friendly_name: Спальня TRV - стоп нагріву
+        icon: mdi:radiator-off
 
-      - switch:
+      number.0x84fd27fffe31ada3_local_temperature_calibration:
+        friendly_name: Спальня TRV - калібрування температури
+        unit_of_measurement: "°C"
+        icon: mdi:thermometer-chevron-up
 
-          - unique_id: br_radiator_mode
-            name: Режим отопления Спальня
-            default_entity_id: switch.br_radiator_mode
-            state: >
-              {{ is_state('binary_sensor.br_radiator', 'on') }}    
-            turn_on:
-              - action: mqtt.publish
-                data:
-                  topic: states/br_radiator
-                  payload: 'ON'
-                  retain: true          
-            turn_off:
-              - action: mqtt.publish
-                data:
-                  topic: states/br_radiator
-                  payload: 'OFF'
-                  retain: true          
-            icon: >
-              {% if is_state('switch.br_radiator_mode', 'on') %}
-                mdi:radiator
-              {% else %}
-                mdi:radiator
-              {% endif %}
-     
-    script:
-    
-        br_temperature_calibration:
-          alias: Спальня TRV, калибровка
-          sequence:
-          - action: number.set_value
-            data:
-              value: "0.0"
-            target:
-              entity_id: number.0x84fd27fffe31ada3_local_temperature_calibration 
-          - delay: 00:00:10
-          - action: number.set_value
-            data:
-              value: "{{((states('sensor.0x00158d000156e92e_temperature') | float - state_attr('climate.0x84fd27fffe31ada3', 'current_temperature') | float))|round(1) }}"
-            target:
-              entity_id: number.0x84fd27fffe31ada3_local_temperature_calibration 
+      number.0x84fd27fffe31ada3_comfort_temperature:
+        friendly_name: Спальня TRV - комфортна температура
+        unit_of_measurement: "°C"
+        icon: mdi:thermometer
 
+      number.0x84fd27fffe31ada3_open_window_temperature:
+        friendly_name: Спальня TRV - температура провітрювання
+        unit_of_measurement: "°C"
+        icon: mdi:window-open-variant
 
-    automation:
+      number.0x84fd27fffe31ada3_holiday_temperature:
+        friendly_name: Спальня TRV - температура вихідного режиму
+        unit_of_measurement: "°C"
+        icon: mdi:calendar-weekend
 
-      - alias: br_heat_night_temp_manual_control
-        id: br_heat_night_temp_manual_control
-        description: Спальня TRV - ручная установка температуры
-        initial_state: true
-        trigger:
-    # Выключатель возле кровати
-          - platform: state
-            entity_id: sensor.0x54ef4410004c1706_action
-            to: 'button_6_triple'
-        condition:
-          - condition: state
-            entity_id: switch.control_mode
-            state: 'on'
-          - condition: state
-            entity_id: binary_sensor.br_radiator
-            state: 'on' 
-        action:
-          - service: climate.set_temperature
-            data:
-              entity_id: climate.0x84fd27fffe31ada3
-              temperature: 17
+      number.0x84fd27fffe31ada3_eco_temperature:
+        friendly_name: Спальня TRV - еко температура
+        unit_of_measurement: "°C"
+        icon: mdi:leaf
 
+      binary_sensor.0x84fd27fffe31ada3_battery_low:
+        friendly_name: Спальня TRV - низький заряд
+        icon: mdi:battery-alert
 
-      - alias: br_heat_temperature_calibration
-        id: br_heat_temperature_calibration
-        description: Спальня TRV - калибровка температуры 
-        initial_state: true
-        trigger:
-          - platform: time_pattern
-            minutes: "/15"
-        condition:
-          - condition: state
-            entity_id: switch.control_mode
-            state: 'on'
-          - condition: state
-            entity_id: binary_sensor.br_radiator
-            state: 'on' 
-          - condition: state
-            entity_id: binary_sensor.br_thermostat_local_temperature_calibration
-            state: 'on'
-        action:
-         - service: script.turn_on
-           entity_id: script.br_temperature_calibration
-           
-      - alias: br_heat_mode_toggle
-        id: br_heat_mode_toggle
-        description: Спальня TRV - переключение режима работы
-        initial_state: true
-        trigger:
+      ##################################################
+      ## HELPERS
+      ##################################################
+
+      switch.br_radiator_mode:
+        friendly_name: Спальня - режим опалення
+        icon: mdi:radiator
+
+      ##################################################
+      ## TEMPLATE
+      ##################################################
+
+      binary_sensor.br_thermostat_local_temperature_calibration:
+        friendly_name: Спальня - потрібне калібрування TRV
+        icon: mdi:thermometer-sync
+
+      ##################################################
+      ## SCRIPT
+      ##################################################
+
+      script.br_heat_temperature_calibration:
+        friendly_name: Спальня - калібрування температури TRV
+        icon: mdi:thermometer-auto
+
+      ##################################################
+      ## AUTOMATION
+      ##################################################
+
+      automation.br_heat_night_temp_manual_control:
+        friendly_name: Спальня - ручна нічна температура
+
+      automation.br_heat_temperature_calibration:
+        friendly_name: Спальня - калібрування температури
+
+      automation.br_heat_mode_toggle:
+        friendly_name: Спальня - перемикання режиму опалення
+
+      automation.br_heat_temperature_set:
+        friendly_name: Спальня - керування температурою
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - climate.0x84fd27fffe31ada3
+
+  ##################################################
+  ## MQTT
+  ##################################################
+
+  mqtt:
+    switch:
+      - name: br_radiator_mode
+        unique_id: br_radiator_mode
+        state_topic: "states/br_radiator"
+        command_topic: "states/br_radiator"
+        payload_on: "ON"
+        payload_off: "OFF"
+        state_on: "ON"
+        state_off: "OFF"
+        retain: true
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+    - binary_sensor:
+
+      ##################################################
+      ## ПОТРЕБА КАЛІБРУВАННЯ TRV
+      ##################################################
+
+        - name: br_thermostat_local_temperature_calibration
+          unique_id: br_thermostat_local_temperature_calibration
+          state: >
+            {{
+              (
+                states('sensor.0x00158d000156e92e_temperature') | float(0)
+                - state_attr('climate.0x84fd27fffe31ada3', 'current_temperature') | float(0)
+              ) | abs > 1
+            }}
+
+  ##################################################
+  ## SCRIPT
+  ##################################################
+
+  script:
+
+    ##################################################
+    ## КАЛІБРУВАННЯ ТЕМПЕРАТУРИ TRV
+    ##################################################
+
+    br_heat_temperature_calibration:
+      alias: br_heat_temperature_calibration
+      sequence:
+        - action: number.set_value
+          target:
+            entity_id: number.0x84fd27fffe31ada3_local_temperature_calibration
+          data:
+            value: 0
+        - delay: "00:00:10"
+        - action: number.set_value
+          target:
+            entity_id: number.0x84fd27fffe31ada3_local_temperature_calibration
+          data:
+            value: >
+              {{
+                (
+                  states('sensor.0x00158d000156e92e_temperature') | float(0)
+                  - state_attr('climate.0x84fd27fffe31ada3', 'current_temperature') | float(0)
+                ) | round(1)
+              }}
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    ##################################################
+    ## РУЧНА НІЧНА ТЕМПЕРАТУРА
+    ##################################################
+
+    - alias: br_heat_night_temp_manual_control
+      id: br_heat_night_temp_manual_control
+      description: Ручне встановлення нічної температури в спальні
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: sensor.0x54ef4410004c1706_action
+          to: "button_6_triple"
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+        - condition: state
+          entity_id: switch.br_radiator_mode
+          state: "on"
+      action:
+        - action: climate.set_temperature
+          target:
+            entity_id: climate.0x84fd27fffe31ada3
+          data:
+            temperature: 17
+
+    ##################################################
+    ## КАЛІБРУВАННЯ ТЕМПЕРАТУРИ
+    ##################################################
+
+    - alias: br_heat_temperature_calibration
+      id: br_heat_temperature_calibration
+      description: Періодичне калібрування температури TRV у спальні
+      initial_state: true
+      trigger:
+        - platform: time_pattern
+          minutes: "/15"
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+        - condition: state
+          entity_id: switch.br_radiator_mode
+          state: "on"
+        - condition: state
+          entity_id: binary_sensor.br_thermostat_local_temperature_calibration
+          state: "on"
+      action:
+        - action: script.turn_on
+          target:
+            entity_id: script.br_heat_temperature_calibration
+
+    ##################################################
+    ## ПЕРЕМИКАННЯ РЕЖИМУ ОПАЛЕННЯ
+    ##################################################
+
+    - alias: br_heat_mode_toggle
+      id: br_heat_mode_toggle
+      description: Перемикання режиму роботи TRV у спальні
+      initial_state: true
+      trigger:
         - platform: homeassistant
           event: start
         - platform: state
           entity_id:
-            - binary_sensor.br_radiator
-        condition:
-          - condition: state
-            entity_id: switch.control_mode
-            state: 'on'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.br_radiator
-                    state: 'on'
-                  - condition: template
-                    value_template: "{{ states('climate.0x84fd27fffe31ada3') != 'heat' or state_attr('climate.0x84fd27fffe31ada3', 'preset_mode') != 'manual'}}"
-                sequence:
-                  - service: climate.set_hvac_mode
-                    target:
-                      entity_id: climate.0x84fd27fffe31ada3
-                    data:
-                      hvac_mode: heat
-                  - service: climate.set_preset_mode
-                    data:
-                      preset_mode: manual
-                    target:
-                      entity_id: climate.0x84fd27fffe31ada3
-                  - service: climate.set_temperature
-                    data:
-                      entity_id: climate.0x84fd27fffe31ada3
-                      temperature: "{{ states('number.0x84fd27fffe31ada3_comfort_temperature')}}"
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.br_radiator
-                    state: 'off'
-                  - condition: template
-                    value_template: "{{ states('climate.0x84fd27fffe31ada3') != 'off' }}"
-                sequence:
-                  - service: climate.set_hvac_mode
-                    target:
-                      entity_id: climate.0x84fd27fffe31ada3
-                    data:
-                      hvac_mode: 'off'
+            - switch.br_radiator_mode
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: switch.br_radiator_mode
+                  state: "on"
+                - condition: template
+                  value_template: >
+                    {{
+                      states('climate.0x84fd27fffe31ada3') != 'heat'
+                      or state_attr('climate.0x84fd27fffe31ada3', 'preset_mode') != 'manual'
+                    }}
+              sequence:
+                - action: climate.set_hvac_mode
+                  target:
+                    entity_id: climate.0x84fd27fffe31ada3
+                  data:
+                    hvac_mode: heat
 
-      - alias: br_heat_temperature_set
-        id: br_heat_temperature_set
-        description: Спальня TRV - проветривание и ночной режим
-        initial_state: true
-        trigger:
+                - action: climate.set_preset_mode
+                  target:
+                    entity_id: climate.0x84fd27fffe31ada3
+                  data:
+                    preset_mode: manual
+
+                - action: climate.set_temperature
+                  target:
+                    entity_id: climate.0x84fd27fffe31ada3
+                  data:
+                    temperature: >
+                      {{ states('number.0x84fd27fffe31ada3_comfort_temperature') | float(0) }}
+
+            - conditions:
+                - condition: state
+                  entity_id: switch.br_radiator_mode
+                  state: "off"
+                - condition: template
+                  value_template: "{{ states('climate.0x84fd27fffe31ada3') != 'off' }}"
+              sequence:
+                - action: climate.set_hvac_mode
+                  target:
+                    entity_id: climate.0x84fd27fffe31ada3
+                  data:
+                    hvac_mode: "off"
+
+    ##################################################
+    ## КЕРУВАННЯ ТЕМПЕРАТУРОЮ
+    ##################################################
+
+    - alias: br_heat_temperature_set
+      id: br_heat_temperature_set
+      description: Керування температурою TRV за провітрюванням і нічним режимом
+      initial_state: true
+      trigger:
         - platform: state
           entity_id:
             - binary_sensor.br_aeration
         - platform: state
           entity_id:
             - binary_sensor.night_time
-        condition:
-          - condition: state
-            entity_id: switch.control_mode
-            state: 'on'
-          - condition: state
-            entity_id: binary_sensor.br_radiator
-            state: 'on' 
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.br_aeration
-                    state: 'on'
-                  - condition: state
-                    entity_id: binary_sensor.night_time
-                    state: 'on'
-                sequence:
-                  - service: climate.set_temperature
-                    data:
-                      entity_id: climate.0x84fd27fffe31ada3
-                      temperature: "{{ states('number.0x84fd27fffe31ada3_open_window_temperature')}}"
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+        - condition: state
+          entity_id: switch.br_radiator_mode
+          state: "on"
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.br_aeration
+                  state: "on"
+              sequence:
+                - action: climate.set_temperature
+                  target:
+                    entity_id: climate.0x84fd27fffe31ada3
+                  data:
+                    temperature: >
+                      {{ states('number.0x84fd27fffe31ada3_open_window_temperature') | float(0) }}
 
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.br_aeration
-                    state: 'off'
-                  - condition: state
-                    entity_id: binary_sensor.night_time
-                    state: 'off'
-                sequence:
-                  - service: climate.set_temperature
-                    data:
-                      entity_id: climate.0x84fd27fffe31ada3
-                      temperature: "{{ states('number.0x84fd27fffe31ada3_comfort_temperature')}}"
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.night_time
+                  state: "on"
+              sequence:
+                - action: climate.set_temperature
+                  target:
+                    entity_id: climate.0x84fd27fffe31ada3
+                  data:
+                    temperature: >
+                      {{ states('number.0x84fd27fffe31ada3_eco_temperature') | float(0) }}
 
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.br_aeration
-                    state: 'on'
-                  - condition: state
-                    entity_id: binary_sensor.night_time
-                    state: 'off'
-                sequence:
-                  - service: climate.set_temperature
-                    data:
-                      entity_id: climate.0x84fd27fffe31ada3
-                      temperature: "{{ states('number.0x84fd27fffe31ada3_open_window_temperature')}}"
-
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.br_aeration
-                    state: 'off'
-                  - condition: state
-                    entity_id: binary_sensor.night_time
-                    state: 'on'
-                sequence:
-                  - service: climate.set_temperature
-                    data:
-                      entity_id: climate.0x84fd27fffe31ada3
-                      temperature: "{{ states('number.0x84fd27fffe31ada3_eco_temperature')}}"
-
+          default:
+            - action: climate.set_temperature
+              target:
+                entity_id: climate.0x84fd27fffe31ada3
+              data:
+                temperature: >
+                  {{ states('number.0x84fd27fffe31ada3_comfort_temperature') | float(0) }}

@@ -1,102 +1,135 @@
+##################################################
+## Актуалізовано: 2026-03-24
+##################################################
+
 system_sensors:
 
-    homeassistant:
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-      customize:
-        sensor.processor_use:
-          friendly_name: Загрузка процессора
-        sensor.disk_use_percent:
-          friendly_name: Использование диска
-        sensor.memory_use_percent:
-          friendly_name: Использование ОЗУ
-        sensor.disk_free:
-          friendly_name: Свободно на диске
-        sensor.mariadb:
-          friendly_name: Объем базы Maria DB
-        sensor.uptime_custom:
-          friendly_name: Home Assistant в онлайне -
-        sensor.last_boot_custom:
-          friendly_name: Сервер в онлайне -
-        sensor.current_time:
-          friendly_name: Текущее время -
-        sensor.current_month:
-          friendly_name: Текущий месяц -
-        sensor.last_month:
-          friendly_name: Прошлый месяц -
+  homeassistant:
+    customize:
 
+      sensor.processor_use:
+        friendly_name: Система - завантаження процесора
 
-    recorder:
-      db_url: !secret db_link
-      purge_keep_days: 14
-      include:
-        entities:
-          - sensor.n100_cpu_temperature
-          - sensor.n100_chipset_temperature
-          - sensor.n100_nvme_temperature
-          - sensor.processor_use
-          - sensor.disk_use_percent
-          - sensor.memory_use_percent
-          - sensor.disk_free
-          - sensor.mariadb
+      sensor.disk_use_percent:
+        friendly_name: Система - використання диска
 
-    sensor:    
-    # - platform: systemmonitor
-    #   resources:
-    #   - type: processor_use
-    #   - type: disk_use_percent
-    #     arg: /
-    #   - type: memory_use_percent
-    #   - type: last_boot
-    #   - type: disk_free
-    #     arg: /
-    #   - type: processor_temperature
-      
+      sensor.memory_use_percent:
+        friendly_name: Система - використання ОЗП
+
+      sensor.disk_free:
+        friendly_name: Система - вільно на диску
+
+      sensor.mariadb:
+        friendly_name: Система - розмір бази MariaDB
+
+      sensor.uptime_custom:
+        friendly_name: Система - Home Assistant в онлайні
+
+      sensor.last_boot_custom:
+        friendly_name: Система - сервер в онлайні
+
+      sensor.current_time:
+        friendly_name: Система - поточний час
+
+      sensor.current_month:
+        friendly_name: Система - поточний місяць
+
+      sensor.last_month:
+        friendly_name: Система - минулий місяць
+
+      sensor.tod_15_sec:
+        friendly_name: Система - службовий час 15 секунд
+        icon: mdi:timer-refresh
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    db_url: !secret db_link
+    purge_keep_days: 14
+    include:
+      entities:
+        - sensor.n100_cpu_temperature
+        - sensor.n100_chipset_temperature
+        - sensor.n100_nvme_temperature
+        - sensor.processor_use
+        - sensor.disk_use_percent
+        - sensor.memory_use_percent
+        - sensor.disk_free
+        - sensor.mariadb
+
+  ##################################################
+  ## SENSOR
+  ##################################################
+
+  sensor:
+
+    ##################################################
+    ## ЧАС І ДАТА
+    ##################################################
+
     - platform: time_date
       display_options:
-        - 'time'
-        - 'date'
-        - 'date_time'
-        - 'time_date'
+        - "time"
+        - "date"
+        - "date_time"
+        - "time_date"
 
-    template:
-    
-      - trigger:
-          - platform: time_pattern
-            seconds: "/15"
-        sensor:
-          - name: tod_15_sec
-            unique_id: tod_15_sec
-            state: '{{ as_timestamp(now()) | round(default=0)}}'
+  ##################################################
+  ## TEMPLATE
+  ##################################################
 
-      - sensor:
+  template:
 
-          - name: current_time
-            unique_id: current_time
-            state: >
-              {{states("sensor.tod_15_sec") | int | timestamp_custom("%H:%M:%S") }}
-            
-          - name: current_month
-            unique_id: current_month
-            state: >
-                {% set month_num = ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"] %}
-                {% set month_of_year = month_num[now().month-1] %}
-                {{ month_of_year }}
-                
-          - name: last_month
-            unique_id: last_month
-            state: >
-                {% set month_num = ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"] %}
-                {% set month_of_year = month_num[now().month-2] %}
-                {{ month_of_year }}
-                
-          - name: uptime_custom
-            unique_id: uptime_custom
-            state: >
-               {% set s = (states("sensor.tod_15_sec") | int - as_timestamp(states('sensor.uptime')) | int) %}
-               {{ '{:d} дн. {:02d}:{:02d}:{:02d}'.format (s // 86400, s % 86400 // 3600, s % 3600 // 60, s % 60) }}
-               
-          - name: last_boot_custom
-            unique_id: last_boot_custom
-            state: >
-               {% set s = (states("sensor.tod_15_sec") | int - as_timestamp(states('sensor.last_boot')) | int) %}
-               {{ '{:d} дн. {:02d}:{:02d}:{:02d}'.format (s // 86400, s % 86400 // 3600, s % 3600 // 60, s % 60) }}
+    ##################################################
+    ## СЛУЖБОВИЙ СЕНСОР ЧАСУ
+    ##################################################
+
+    - trigger:
+        - platform: time_pattern
+          seconds: "/15"
+      sensor:
+        - name: tod_15_sec
+          unique_id: tod_15_sec
+          state: "{{ as_timestamp(now()) | round(default=0) }}"
+
+    ##################################################
+    ## СИСТЕМНІ СЕНСОРИ
+    ##################################################
+
+    - sensor:
+        - name: current_time
+          unique_id: current_time
+          state: >
+            {{ states('sensor.tod_15_sec') | int(0) | timestamp_custom('%H:%M:%S') }}
+
+        - name: current_month
+          unique_id: current_month
+          state: >
+            {% set month_num = ['Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень', 'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'] %}
+            {% set month_of_year = month_num[now().month - 1] %}
+            {{ month_of_year }}
+
+        - name: last_month
+          unique_id: last_month
+          state: >
+            {% set month_num = ['Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень', 'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'] %}
+            {% set month_of_year = month_num[now().month - 2] %}
+            {{ month_of_year }}
+
+        - name: uptime_custom
+          unique_id: uptime_custom
+          state: >
+            {% set s = states('sensor.tod_15_sec') | int(0) - as_timestamp(states('sensor.uptime')) | int(0) %}
+            {{ '{:d} дн. {:02d}:{:02d}:{:02d}'.format(s // 86400, s % 86400 // 3600, s % 3600 // 60, s % 60) }}
+
+        - name: last_boot_custom
+          unique_id: last_boot_custom
+          state: >
+            {% set s = states('sensor.tod_15_sec') | int(0) - as_timestamp(states('sensor.last_boot')) | int(0) %}
+            {{ '{:d} дн. {:02d}:{:02d}:{:02d}'.format(s // 86400, s % 86400 // 3600, s % 3600 // 60, s % 60) }}

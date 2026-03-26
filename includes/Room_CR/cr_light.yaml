@@ -1,429 +1,326 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 cr_light:
 
-    template:
-     
-      - binary_sensor:
-          
-    # Свет без движения в коридоре днем
-          - name: cr_light_day
-            unique_id: cr_light_day
-            state: >
-              {{ is_state('light.yeelight_ceiling4_0x456e813', 'on')  
-                 and is_state('binary_sensor.0x00158d00010f8920_occupancy', 'off')
-                 and is_state('binary_sensor.night_time', 'off')
-              }}
-            delay_on: 00:05:00
-            icon: >
-              {% if is_state("binary_sensor.cr_light_day", "on") %}
-              mdi:timer
-              {% else %}
-              mdi:timer-off
-              {% endif %}
-              
-    # Свет без движения в коридоре ночью
-          - name: cr_light_night
-            unique_id: cr_light_night
-            state: >
-              {{ is_state('light.yeelight_ceiling4_0x456e813', 'on')  
-                 and is_state('binary_sensor.0x00158d00010f8920_occupancy', 'off')
-                 and is_state('binary_sensor.night_time', 'on')
-              }}
-            delay_on: 00:01:00
-            icon: >
-              {% if is_state("binary_sensor.cr_light_night", "on") %}
-              mdi:timer
-              {% else %}
-              mdi:timer-off
-              {% endif %}
-              
-    # Отслеживание включения лампочки в прихожей в течении 10 сек
-          - name: 0x00158d0003e74c31_on
-            unique_id: 0x00158d0003e74c31_on
-            state: >
-              {{ is_state('light.0x00158d0003e74c31', 'on')  
-              }}
-            delay_on: 00:00:05
-            icon: >
-              {% if is_state("binary_sensor.0x00158d0003e74c31_on", "on") %}
-              mdi:radiobox-marked
-              {% else %}
-              mdi:radiobox-blank
-              {% endif %}
+  ##################################################
+  ## HOMEASSISTANT
+  ##################################################
 
-     # Сенсор для для ввімкнення автоматичного підсвічування
-          - name: cr_mode_auto_light_on
-            unique_id: cr_mode_auto_light_on
-            state: >
-              {{ is_state('light.yeelight_ceiling4_0x456e813', 'off') and
-                 is_state('light.yeelight_ceiling4_0x456e813_ambilight', 'off') and                 
-                 is_state('binary_sensor.0xa4c138dc97e602e5_presence', 'on') and
-                 states('sensor.0xa4c138dc97e602e5_illuminance')|int < 200 }}
+  homeassistant:
+    customize:
+      binary_sensor.cr_light_day:
+        friendly_name: Коридор - світло без руху (день)
+        icon: mdi:timer
+      binary_sensor.cr_light_night:
+        friendly_name: Коридор - світло без руху (ніч)
+        icon: mdi:timer
+      binary_sensor.0x00158d0003e74c31_on:
+        friendly_name: Коридор - лампа активна
+        icon: mdi:radiobox-marked
+      binary_sensor.cr_mode_auto_light_on:
+        friendly_name: Коридор - авто підсвічування
+        icon: mdi:lightbulb-auto
+      automation.cr_ceiling_light_manual_control:
+        friendly_name: Коридор - ручне керування люстрою
+        icon: mdi:ceiling-light
+      automation.cr_ceiling_light_vibration:
+        friendly_name: Коридор - увімкнення від вібрації
+        icon: mdi:vibrate
+      automation.cr_ceiling_light_auto_off:
+        friendly_name: Коридор - авто вимкнення світла
+        icon: mdi:lightbulb-off
+      automation.cr_mode_auto_light_on:
+        friendly_name: Коридор - авто підсвічування
+        icon: mdi:lightbulb-auto
+      automation.cr_en_light_control:
+        friendly_name: Коридор і передпокій - керування освітленням
+        icon: mdi:lightbulb-group
 
+  ##################################################
+  ## TEMPLATE
+  ##################################################
 
+  template:
+    - binary_sensor:
+        - name: cr_light_day
+          unique_id: cr_light_day
+          state: >
+            {{ is_state('light.yeelight_ceiling4_0x456e813', 'on')
+               and is_state('binary_sensor.0x00158d00010f8920_occupancy', 'off')
+               and is_state('binary_sensor.night_time', 'off')
+            }}
+          delay_on: 00:05:00
+          icon: >
+            {% if is_state("binary_sensor.cr_light_day", "on") %}
+            mdi:timer
+            {% else %}
+            mdi:timer-off
+            {% endif %}
 
-    automation:
-    
-      - alias: cr_ceiling_light_manual_control
-        id: cr_ceiling_light_manual_control
-        description: Коридор - ручное управление люстрой
-        initial_state: true
-        trigger:
-    # Выключатель на стене у входа
+        - name: cr_light_night
+          unique_id: cr_light_night
+          state: >
+            {{ is_state('light.yeelight_ceiling4_0x456e813', 'on')
+               and is_state('binary_sensor.0x00158d00010f8920_occupancy', 'off')
+               and is_state('binary_sensor.night_time', 'on')
+            }}
+          delay_on: 00:01:00
+          icon: >
+            {% if is_state("binary_sensor.cr_light_night", "on") %}
+            mdi:timer
+            {% else %}
+            mdi:timer-off
+            {% endif %}
+
+        - name: 0x00158d0003e74c31_on
+          unique_id: 0x00158d0003e74c31_on
+          state: >
+            {{ is_state('light.0x00158d0003e74c31', 'on') }}
+          delay_on: 00:00:05
+          icon: >
+            {% if is_state("binary_sensor.0x00158d0003e74c31_on", "on") %}
+            mdi:radiobox-marked
+            {% else %}
+            mdi:radiobox-blank
+            {% endif %}
+
+        - name: cr_mode_auto_light_on
+          unique_id: cr_mode_auto_light_on
+          state: >
+            {{ is_state('light.yeelight_ceiling4_0x456e813', 'off') and
+               is_state('light.yeelight_ceiling4_0x456e813_ambilight', 'off') and
+               is_state('binary_sensor.0xa4c138dc97e602e5_presence', 'on') and
+               states('sensor.0xa4c138dc97e602e5_illuminance') | int < 200 }}
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+    - alias: cr_ceiling_light_manual_control
+      id: cr_ceiling_light_manual_control
+      description: Коридор - ручне керування люстрою
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: sensor.0x00158d00057305ac_action
-          to: 'single_left'
-    # Круглая кнопка в шкафу
+          to: "single_left"
         - platform: state
           entity_id: sensor.0x00158d0001f3fefe_action
-          to: 'single' 
-    # 6 клавишник на входе в кухню
+          to: "single"
         - platform: state
           entity_id: sensor.0x04cf8cdf3c794209_action
-          to: 'button_3_single'
-    # 4 клавишник на комоде
+          to: "button_3_single"
         - platform: state
           entity_id: sensor.0x04cf8cdf3c7942ca_action
-          to: 'button_3_single'
-    ## Aqara Opple на столе
+          to: "button_3_single"
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
-          to: 'button_3_double'
-        condition:
+          to: "button_3_double"
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-        action:
-            - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: light.yeelight_ceiling4_0x456e813
-                    state: 'off'
-                sequence:
-                  - service: light.turn_on
+          state: "on"
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: light.yeelight_ceiling4_0x456e813
+                  state: "off"
+              sequence:
+                - action: light.turn_on
+                  target:
                     entity_id:
                       - light.yeelight_ceiling4_0x456e813
-                    data_template:
-                      brightness_pct: 75
-                      color_temp_kelvin: 4000
-              - conditions:
-                  - condition: state
-                    entity_id: light.yeelight_ceiling4_0x456e813
-                    state: 'on'
-                sequence:
-                  - service: light.turn_off
+                  data:
+                    brightness_pct: 75
+                    color_temp_kelvin: 4000
+            - conditions:
+                - condition: state
+                  entity_id: light.yeelight_ceiling4_0x456e813
+                  state: "on"
+              sequence:
+                - action: light.turn_off
+                  target:
                     entity_id:
                       - light.yeelight_ceiling4_0x456e813
-                      
-      - alias: cr_ceiling_light_vibration
-        id: cr_ceiling_light_vibration
-        description: Коридор - включение по датчику вибрации
-        initial_state: true
-        trigger:
+
+    - alias: cr_ceiling_light_vibration
+      id: cr_ceiling_light_vibration
+      description: Коридор - увімкнення по датчику вібрації
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: sensor.0x00158d0002a4f77e_action
-          to: 'vibration'
-        condition:
+          to: "vibration"
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
+          state: "on"
         - condition: state
           entity_id: binary_sensor.0x00158d00010f8920_occupancy
-          state: 'on'
+          state: "on"
         - condition: state
           entity_id: binary_sensor.night_time
-          state: 'off'
+          state: "off"
         - condition: state
           entity_id: light.yeelight_ceiling4_0x456e813
-          state: 'off'
-        action:
-        - service: light.turn_on
-          entity_id:
-            - light.yeelight_ceiling4_0x456e813
-          data_template:
+          state: "off"
+      action:
+        - action: light.turn_on
+          target:
+            entity_id:
+              - light.yeelight_ceiling4_0x456e813
+          data:
             brightness_pct: 75
             color_temp_kelvin: 4000
         - delay: 00:00:15
-        - service: light.turn_off
-          entity_id:
-            - light.yeelight_ceiling4_0x456e813
-    
-      - alias: cr_ceiling_light_auto_off
-        id: cr_ceiling_light_auto_off
-        description: Коридор - автоматическое выключение освещения
-        initial_state: true
-        trigger:
+        - action: light.turn_off
+          target:
+            entity_id:
+              - light.yeelight_ceiling4_0x456e813
+
+    - alias: cr_ceiling_light_auto_off
+      id: cr_ceiling_light_auto_off
+      description: Коридор - автоматичне вимкнення освітлення
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: binary_sensor.cr_light_day
-          to: 'on'
+          to: "on"
         - platform: state
           entity_id: binary_sensor.cr_light_night
-          to: 'on'
-        condition:
+          to: "on"
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-        action:
-        - service: light.turn_off
-          entity_id:
-            - light.yeelight_ceiling4_0x456e813
-    
-      - alias: cr_ceiling_light_moving
-        id: cr_ceiling_light_moving
-        description: Коридор - включение по датчику движения ночью
-        initial_state: false
-        trigger:
-        - platform: state
-          entity_id: binary_sensor.0x00158d00010f8920_occupancy
-          to: 'on'
-        condition:
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-        - condition: state
-          entity_id: binary_sensor.night_time
-          state: 'on'
-        - condition: state
-          entity_id: light.yeelight_ceiling4_0x456e813
-          state: 'off'
-        action:
-        - service: light.turn_on
-          entity_id:
-            - light.yeelight_ceiling4_0x456e813_ambilight
-          data_template:
-            brightness_pct: 75
-            color_temp_kelvin: 4000
-        - delay: 00:00:10
-        - service: light.turn_off
-          entity_id:
-            - light.yeelight_ceiling4_0x456e813_ambilight
-            
-      - alias: cr_mode_auto_light_on
-        id: cr_mode_auto_light_on
-        description: Коридор - автоматичне підсвічування
-        initial_state: true
-        trigger:
+          state: "on"
+      action:
+        - action: light.turn_off
+          target:
+            entity_id:
+              - light.yeelight_ceiling4_0x456e813
+
+    - alias: cr_mode_auto_light_on
+      id: cr_mode_auto_light_on
+      description: Коридор - автоматичне підсвічування
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: binary_sensor.cr_mode_auto_light_on
-          to: 'on'
+          to: "on"
         - platform: state
           entity_id: binary_sensor.0xa4c138dc97e602e5_presence
-          to: 'off'
-        condition:
+          to: "off"
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-        # - condition: state
-        #   entity_id: binary_sensor.electricity
-        #   state: 'off'
-        action:
-            - choose:
+          state: "on"
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.cr_mode_auto_light_on
+                  state: "on"
+              sequence:
+                - action: light.turn_on
+                  target:
+                    entity_id: light.yeelight_ceiling4_0x456e813_ambilight
+                  data:
+                    color_temp_kelvin: 4000
+                    brightness_pct: 100
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.0xa4c138dc97e602e5_presence
+                  state: "off"
+              sequence:
+                - action: light.turn_off
+                  target:
+                    entity_id: light.yeelight_ceiling4_0x456e813_ambilight
 
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.cr_mode_auto_light_on
-                    state: 'on'
-                sequence:
-                  - action: light.turn_on
-                    data:
-                      color_temp_kelvin: 4000
-                      brightness_pct: 100
-                    target:
-                      entity_id: light.yeelight_ceiling4_0x456e813_ambilight
-
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.0xa4c138dc97e602e5_presence
-                    state: 'off'
-                sequence:
-                  - action: light.turn_off
-                    target:
-                      entity_id: light.yeelight_ceiling4_0x456e813_ambilight                      
-
-
-    #   - alias: cr_mode_blackout_light_on
-    #     id: cr_mode_blackout_light_on
-    #     description: Коридор - аварійне підсвічування
-    #     initial_state: false
-    #     trigger:
-    #     - platform: state
-    #       entity_id:
-    #         - binary_sensor.0xa4c138dc97e602e5_presence
-    #         - binary_sensor.0x00158d00010f8920_occupancy
-    #     condition:
-    #     - condition: state
-    #       entity_id: switch.control_mode
-    #       state: 'on'
-    #     - condition: state
-    #       entity_id: binary_sensor.electricity
-    #       state: 'on'
-    #     action:
-    #         - choose:
-
-    #           - conditions:
-    #               - condition: or
-    #                 conditions:
-    #                   - condition: state
-    #                     entity_id: binary_sensor.0xa4c138dc97e602e5_presence
-    #                     state: 'on'
-    #                   - condition: state
-    #                     entity_id: binary_sensor.0x00158d00010f8920_occupancy
-    #                     state: 'on'
-    #             sequence:
-    #               - action: light.turn_on
-    #                 data: {}
-    #                 target:
-    #                   entity_id: light.outsmart_rgbic_led
-
-    #           - conditions:
-    #               - condition: and
-    #                 conditions:
-    #                   - condition: state
-    #                     entity_id: binary_sensor.0xa4c138dc97e602e5_presence
-    #                     state: 'off'
-    #                   - condition: state
-    #                     entity_id: binary_sensor.0x00158d00010f8920_occupancy
-    #                     state: 'off'
-    #             sequence:
-    #               - action: light.turn_off
-    #                 target:
-    #                   entity_id: light.outsmart_rgbic_led           
-
-
-    #   - alias: cr_rgbic_led_auto_off
-    #     id: cr_rgbic_led_auto_off
-    #     description: Коридок 
-    #     initial_state: true
-    #     trigger:
-    #     - platform: time_pattern
-    #       minutes: '/3'         
-    #     condition:
-    #     - condition: state
-    #       entity_id: switch.control_mode
-    #       state: 'on'    
-    #     - condition: state
-    #       entity_id: light.gateway_light_7811dc64f4c8
-    #       state: 'on' 
-    #     action:          
-    #     - service: light.turn_off
-    #       entity_id: light.gateway_light_7811dc64f4c8
-
-
-
-
-            
-      - alias: cr_en_light_control
-        id: cr_en_light_control
-        description: Коридор и прихожая, управление освещением
-        initial_state: true
-        trigger:
-    # Выключатель на стене у входа в гостиную
+    - alias: cr_en_light_control
+      id: cr_en_light_control
+      description: Коридор і передпокій - керування освітленням
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: sensor.0x00158d00013fc3bc_action
-          to: 'single_both'
-        condition:
+          to: "single_both"
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-        action:
-            - choose:
-            # Оба светильника выключены - включается лампочка в прихожей
-              - conditions:
-                  - condition: state
-                    entity_id: light.0x00158d0003e74c31
-                    state: 'off'
-                  - condition: state
-                    entity_id: light.yeelight_ceiling4_0x456e813
-                    state: 'off'
-                sequence:
-                  - service: light.turn_on
+          state: "on"
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: light.0x00158d0003e74c31
+                  state: "off"
+                - condition: state
+                  entity_id: light.yeelight_ceiling4_0x456e813
+                  state: "off"
+              sequence:
+                - action: light.turn_on
+                  target:
                     entity_id:
                       - light.0x00158d0003e74c31
-                    data_template:
-                      brightness_pct: 100
-                      color_temp_kelvin: 4000
-            # Лампочка включена менее 10 сек, люстра выключена - включается люстра в коридоре
-              - conditions:
-                  - condition: state
-                    entity_id: light.0x00158d0003e74c31
-                    state: 'on'
-                  - condition: state
-                    entity_id: binary_sensor.0x00158d0003e74c31_on
-                    state: 'off'
-                  - condition: state
-                    entity_id: light.yeelight_ceiling4_0x456e813
-                    state: 'off'
-                sequence:
-                  - service: light.turn_on
+                  data:
+                    brightness_pct: 100
+                    color_temp_kelvin: 4000
+            - conditions:
+                - condition: state
+                  entity_id: light.0x00158d0003e74c31
+                  state: "on"
+                - condition: state
+                  entity_id: binary_sensor.0x00158d0003e74c31_on
+                  state: "off"
+                - condition: state
+                  entity_id: light.yeelight_ceiling4_0x456e813
+                  state: "off"
+              sequence:
+                - action: light.turn_on
+                  target:
                     entity_id:
                       - light.yeelight_ceiling4_0x456e813
-                    data_template:
-                      brightness_pct: 75
-                      color_temp_kelvin: 4000
-            # Оба светильника включены - оба выключается
-              - conditions:
-                  - condition: state
-                    entity_id: light.0x00158d0003e74c31
-                    state: 'on'
-                  - condition: state
-                    entity_id: light.yeelight_ceiling4_0x456e813
-                    state: 'on'
-                sequence:
-                  - service: light.turn_off
+                  data:
+                    brightness_pct: 75
+                    color_temp_kelvin: 4000
+            - conditions:
+                - condition: state
+                  entity_id: light.0x00158d0003e74c31
+                  state: "on"
+                - condition: state
+                  entity_id: light.yeelight_ceiling4_0x456e813
+                  state: "on"
+              sequence:
+                - action: light.turn_off
+                  target:
                     entity_id:
                       - light.0x00158d0003e74c31
                       - light.yeelight_ceiling4_0x456e813
-            # Лампочка включена более 10 сек, люстра выключена - выключается лампочка в прихожей
-              - conditions:
-                  - condition: state
-                    entity_id: binary_sensor.0x00158d0003e74c31_on
-                    state: 'on'
-                  - condition: state
-                    entity_id: light.yeelight_ceiling4_0x456e813
-                    state: 'off'
-                sequence:
-                  - service: light.turn_off
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.0x00158d0003e74c31_on
+                  state: "on"
+                - condition: state
+                  entity_id: light.yeelight_ceiling4_0x456e813
+                  state: "off"
+              sequence:
+                - action: light.turn_off
+                  target:
                     entity_id:
                       - light.0x00158d0003e74c31
-            # Лампочка выключена, люстра включена - выключается люстра в коридоре
-              - conditions:
-                  - condition: state
-                    entity_id: light.0x00158d0003e74c31
-                    state: 'off'
-                  - condition: state
-                    entity_id: light.yeelight_ceiling4_0x456e813
-                    state: 'on'
-                sequence:
-                  - service: light.turn_off
+            - conditions:
+                - condition: state
+                  entity_id: light.0x00158d0003e74c31
+                  state: "off"
+                - condition: state
+                  entity_id: light.yeelight_ceiling4_0x456e813
+                  state: "on"
+              sequence:
+                - action: light.turn_off
+                  target:
                     entity_id:
                       - light.yeelight_ceiling4_0x456e813
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    

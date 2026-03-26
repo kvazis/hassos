@@ -1,119 +1,183 @@
+##################################################
+## Актуалізовано: 2026-03-24
+##################################################
+
 br_reboot:
 
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-    homeassistant:
-      customize:
+  homeassistant:
+    customize:
 
-        automation.br_reboot_ceiling:
-          friendly_name: Спальня - перезагрузка зависшей люстры
-          icon: phu:ceiling-being
-          
-    template:
+      binary_sensor.br_ceiling_unavailable:
+        friendly_name: Спальня - недоступність люстри
+        icon: mdi:ceiling-light-outline
 
-      - binary_sensor:
-      
-    # Сенсор определяющий недоступность люстры
-          - name: br_ceiling_unavailable
-            unique_id: br_ceiling_unavailable
-            state: >
-              {{ is_state('light.br_philips_62', 'unavailable') }}
-            delay_on: 
-                minutes: 3
-            device_class: problem
-            
-    input_button:
+      input_button.br_ceiling_reset:
+        friendly_name: Спальня - перезавантаження люстри
+        icon: mdi:restart
 
-      br_ceiling_reset:
-        name: BR ceiling reboot
-        
-    automation:
-    
-#################### ПЕРЕЗАГРУЗКА ЛЮСТРЫ ####################
-               
-      - alias: br_reboot_ceiling
-        id: br_reboot_ceiling
-        description: Спальня - перезагрузка зависшей люстры
-        initial_state: true
-        trigger:
-    # Проверка раз в 5 минут
+      automation.br_reboot_ceiling:
+        friendly_name: Спальня - перезавантаження люстри
+        icon: phu:ceiling-being
+
+      automation.br_reboot_ceiling_manual:
+        friendly_name: Спальня - ручне перезавантаження люстри
+        icon: mdi:restart
+
+      automation.br_ceiling_off_after_unavailable:
+        friendly_name: Спальня - вимкнення люстри після відновлення
+        icon: mdi:lightbulb-auto-outline
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    - binary_sensor:
+
+        ##################################################
+        ## НЕДОСТУПНІСТЬ ЛЮСТРИ
+        ##################################################
+
+        - name: br_ceiling_unavailable
+          unique_id: br_ceiling_unavailable
+          state: >
+            {{ is_state('light.br_philips_62', 'unavailable') }}
+          delay_on:
+            minutes: 3
+          device_class: problem
+
+  ##################################################
+  ## INPUT_BUTTON
+  ##################################################
+
+  input_button:
+
+    br_ceiling_reset:
+      name: br_ceiling_reset
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    ##################################################
+    ## ПЕРЕЗАВАНТАЖЕННЯ ЛЮСТРИ
+    ##################################################
+
+    - alias: br_reboot_ceiling
+      id: br_reboot_ceiling
+      description: Перезавантаження недоступної люстри
+      initial_state: true
+
+      trigger:
         - platform: time_pattern
-          minutes: '/5'
-        condition:
-    # Переключатель режима работы сервера
+          minutes: "/5"
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-    # Сенсор определяющий недоступность люстры
+          state: "on"
+
         - condition: state
           entity_id: binary_sensor.br_ceiling_unavailable
-          state: 'on'
-    # Сенсор электричества
+          state: "on"
+
         - condition: state
           entity_id: binary_sensor.blackout_after
-          state: 'off'  
-        action:
-     # Перезагрузка по питанию если люстра недоступна
-        - service: switch.turn_off
-          entity_id: switch.0x54ef44100024689c_right
-        - delay: 00:00:05
-        - service: switch.turn_on
-          entity_id: switch.0x54ef44100024689c_right
+          state: "off"
+
+      action:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.0x54ef44100024689c_right
+
+        - delay: "00:00:05"
+
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0x54ef44100024689c_right
+
         - action: telegram_bot.send_message
           data:
             chat_id:
-                - !secret chat_id_log
-            message: | 
-                 {{"\U0001F916"}} Антонио. Спальня - перезагрузка люстры {{ states('sensor.time_date') }} 
-                 
-      - alias: br_reboot_ceiling_manual
-        id: br_reboot_ceiling_manual
-        description: Спальня - ручная перезагрузка зависшей люстры
-        trigger:
-    ## Виртуальная кнопка
+              - !secret chat_id_log
+            message: |
+              🤖 Спальня - перезавантаження люстри {{ states('sensor.time_date') }}
+
+    ##################################################
+    ## РУЧНЕ ПЕРЕЗАВАНТАЖЕННЯ ЛЮСТРИ
+    ##################################################
+
+    - alias: br_reboot_ceiling_manual
+      id: br_reboot_ceiling_manual
+      description: Ручне перезавантаження люстри
+      initial_state: true
+
+      trigger:
         - platform: state
           entity_id: input_button.br_ceiling_reset
-        action: 
-     # Перезагрузка по питанию если люстра недоступна
-        - service: switch.turn_off
-          entity_id: switch.0x54ef44100024689c_right
-        - delay: 00:00:05
-        - service: switch.turn_on
-          entity_id: switch.0x54ef44100024689c_right
+
+      action:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.0x54ef44100024689c_right
+
+        - delay: "00:00:05"
+
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0x54ef44100024689c_right
+
         - action: telegram_bot.send_message
           data:
             chat_id:
-                - !secret chat_id_log
-            message: | 
-                 {{"\U0001F916"}} Антонио. Спальня - перезагрузка люстры {{ states('sensor.time_date') }}    
-                 
-                 
-      - alias: br_ceiling_off_after_unavailable
-        id: br_ceiling_off_after_unavailable
-        description: Спальня - отключение люстры с понижением яркости
-        initial_state: true
-        trigger:
-    # Восстановление работы люстры
+              - !secret chat_id_log
+            message: |
+              🤖 Спальня - ручне перезавантаження люстри {{ states('sensor.time_date') }}
+
+    ##################################################
+    ## ВИМКНЕННЯ ПІСЛЯ ВІДНОВЛЕННЯ
+    ##################################################
+
+    - alias: br_ceiling_off_after_unavailable
+      id: br_ceiling_off_after_unavailable
+      description: Вимкнення люстри після відновлення
+      initial_state: true
+
+      trigger:
         - platform: state
           entity_id: binary_sensor.br_ceiling_unavailable
-          from: 'on'
-          to: 'off'
-        condition:
-    # Переключатель режима работы сервера
+          from: "on"
+          to: "off"
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
+          state: "on"
+
         - condition: state
           entity_id: binary_sensor.electricity
-          state: 'off'
-        action:
-        - service: xiaomi_miio.light_set_scene
-          entity_id: light.br_philips_62
+          state: "off"
+
+      action:
+        - action: xiaomi_miio.light_set_scene
+          target:
+            entity_id: light.br_philips_62
           data:
-            scene: 4 
-        - delay: 00:00:03
-        - service: input_boolean.turn_off
+            scene: 4
+
+        - delay: "00:00:03"
+
+        - action: input_boolean.turn_off
           target:
             entity_id: input_boolean.br_ceiling
-        - service: light.turn_off
-          entity_id:
-            - light.br_philips_62
+
+        - action: light.turn_off
+          target:
+            entity_id: light.br_philips_62

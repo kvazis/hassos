@@ -1,37 +1,28 @@
+##################################################
+## Актуалізовано: 2026-03-21
+##################################################
+
 control_mode:
 
-    mqtt:
-      binary_sensor:
-        - name: control
-          unique_id: control
-          state_topic: "states/control"
+  homeassistant:
+    customize:
+      switch.control_mode:
+        friendly_name: Система - режим керування
+        icon: mdi:server
 
-    template:
-    
-      - switch:
+  mqtt:
 
-          - unique_id: control_mode
-            name: Режим управления
-            default_entity_id: switch.control_mode
-            state: >
-              {{ is_state('binary_sensor.control', 'on') }}    
-            turn_on:
-              - action: mqtt.publish
-                data:
-                  topic: states/control
-                  payload: 'ON'
-                  retain: true          
-            turn_off:
-              - action: mqtt.publish
-                data:
-                  topic: states/control
-                  payload: 'OFF'
-                  retain: true          
-            icon: >
-              {% if is_state('switch.control_mode', 'on') %}
-                mdi:server
-              {% else %}
-                mdi:server-off
-              {% endif %}
+    ##################################################
+    ## ПЕРЕМИКАЧ РЕЖИМУ КЕРУВАННЯ (MQTT)
+    ##################################################
 
-
+    switch:
+      - name: control_mode
+        unique_id: control_mode
+        state_topic: "states/control"
+        command_topic: "states/control"
+        payload_on: "ON"
+        payload_off: "OFF"
+        state_on: "ON"
+        state_off: "OFF"
+        retain: true

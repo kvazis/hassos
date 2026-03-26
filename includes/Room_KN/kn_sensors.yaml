@@ -1,153 +1,199 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 kn_sensors:
 
-    recorder:
-      include:
-        entities:
-           - binary_sensor.0x00158d0001ab3350_occupancy
-           - binary_sensor.0x54ef441000118375_occupancy
-           - binary_sensor.0x54ef44100042e226_occupancy
-           - binary_sensor.kn_presence
-           - sensor.0x04cf8cdf3c772379_illuminance
-           - sensor.0x00158d0001581109_temperature
-           - sensor.0x00158d0001581109_humidity
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-           - sensor.0xa4c1381ff5d0e03f_humidity
-           - sensor.0xa4c1381ff5d0e03f_temperature
+  homeassistant:
+    customize:
 
-    homeassistant:
-      customize:
+      ##################################################
+      ## КУХНЯ
+      ##################################################
 
-############# кухня
+      binary_sensor.0x00158d0001ab3350_occupancy:
+        friendly_name: Кухня - рух 1
 
-        binary_sensor.0x00158d0001ab3350_occupancy:
-          friendly_name: Кухня движение 1
-        sensor.0x00158d0001ab3350_battery:
-          friendly_name: Кухня движение 1
+      sensor.0x00158d0001ab3350_battery:
+        friendly_name: Кухня - датчик руху 1
 
-        binary_sensor.0x54ef441000118375_occupancy:
-          friendly_name: Кухня движение 2
-        sensor.0x54ef441000118375_battery:
-          friendly_name: Кухня движение 2
-          
-        binary_sensor.0x54ef44100042e226_presence:
-          friendly_name: Кухня FP1 presence
-        binary_sensor.0x54ef44100042e226_occupancy:
-          friendly_name: Кухня FP1 движение       
-        sensor.0x54ef44100042e226_presence_event:
-          friendly_name: Кухня FP1, событие
+      binary_sensor.0x54ef441000118375_occupancy:
+        friendly_name: Кухня - рух 2
 
-        sensor.0x00158d0001581109_humidity:
-          friendly_name: Кухня влажность
-          icon: mdi:water-percent
-        sensor.0x00158d0001581109_temperature:
-          friendly_name: Кухня температура
-          icon: mdi:temperature-celsius
-        sensor.0x00158d0001581109_battery:
-          friendly_name: Кухня климат
-          
-        sensor.0x04cf8cdf3c772379_illuminance_lux:
-          friendly_name: Кухня освещенность
-        sensor.0x04cf8cdf3c772379_battery:
-          friendly_name: Кухня освещенность
+      sensor.0x54ef441000118375_battery:
+        friendly_name: Кухня - датчик руху 2
 
-        binary_sensor.0x00158d0001a99562_contact:
-          friendly_name: Кухня, окно
-          device_class: window
-        sensor.0x00158d0001a99562_battery:
-          friendly_name: Кухня, окно
+      binary_sensor.0x54ef44100042e226_presence:
+        friendly_name: Кухня - FP1 присутність
 
-############# Растения
+      binary_sensor.0x54ef44100042e226_occupancy:
+        friendly_name: Кухня - FP1 рух
 
-        sensor.0x00124b0022027bd2_soil_moisture:
-          friendly_name: Растение - Диффенбахия
-        sensor.0x00124b0022027bd2_battery:
-          friendly_name: Растение - Диффенбахия
+      sensor.0x54ef44100042e226_presence_event:
+        friendly_name: Кухня - FP1 подія
 
-        sensor.0x00124b0022145bc7_soil_moisture:
-          friendly_name: Растение - Юкка
-        sensor.0x00124b0022145bc7_battery:
-          friendly_name: Растение - Юкка
-          
-        sensor.0x00124b0022145c90_soil_moisture:
-          friendly_name: Растение - Замиокулькас
-        sensor.0x00124b0022145c90_battery :
-          friendly_name: Растение - Замиокулькас
-          
-############# Балкон
+      sensor.0x00158d0001581109_humidity:
+        friendly_name: Кухня - вологість
+        icon: mdi:water-percent
 
-        binary_sensor.0x00158d0001a20885_contact:
-          friendly_name: Кухня, балкон дверь
-          device_class: door
-        sensor.0x00158d0001a20885_battery:
-          friendly_name: Кухня, балкон дверь
+      sensor.0x00158d0001581109_temperature:
+        friendly_name: Кухня - температура
+        icon: mdi:temperature-celsius
 
-        binary_sensor.0x00158d0001a4a394_contact:
-          friendly_name: Кухня, балкон окно
-          device_class: window
-        sensor.0x00158d0001a4a394_battery:
-          friendly_name: Кухня, балкон окно
+      sensor.0x00158d0001581109_battery:
+        friendly_name: Кухня - клімат
 
-        binary_sensor.0xec1bbdfffe302df1_occupancy:
-          friendly_name: Кухня, балкон движение
+      sensor.0x04cf8cdf3c772379_illuminance_lux:
+        friendly_name: Кухня - освітленість
 
-        sensor.0xa4c1381ff5d0e03f_humidity:
-          friendly_name: Кухня, балкон влажность
-          icon: mdi:water-percent
-        sensor.0xa4c1381ff5d0e03f_temperature:
-          friendly_name: Кухня, балкон температура
-          icon: mdi:temperature-celsius
-        sensor.0xa4c1381ff5d0e03f_battery:
-          friendly_name: Кухня, балкон климат          
+      sensor.0x04cf8cdf3c772379_battery:
+        friendly_name: Кухня - датчик освітлення
 
+      binary_sensor.0x00158d0001a99562_contact:
+        friendly_name: Кухня - вікно
+        device_class: window
 
+      sensor.0x00158d0001a99562_battery:
+        friendly_name: Кухня - вікно батарея
 
-    template:
+      ##################################################
+      ## РОСЛИНИ
+      ##################################################
 
-      - binary_sensor:
+      sensor.0x00124b0022027bd2_soil_moisture:
+        friendly_name: Рослина - дифенбахія
 
-    # Сенсор проветривания      
-          - name: kn_aeration
-            unique_id: kn_aeration
-            state: >
-              {{ is_state('binary_sensor.0x00158d0001a99562_contact', 'on')  
-                 or is_state('binary_sensor.0x00158d0001a20885_contact', 'on')
-              }}
-            delay_on: 
-                seconds: 30
-            delay_off: 
-                seconds: 30
-            device_class: opening
-            icon: >
-              {% if is_state("binary_sensor.kn_aeration", "on") %}
-              mdi:window-open-variant
-              {% else %}
-              mdi:window-closed-variant
-              {% endif %}
+      sensor.0x00124b0022027bd2_battery:
+        friendly_name: Рослина - дифенбахія
 
-    # Сенсор определения движения на Aqara FP1
-          - name: '0x54ef44100042e226_occupancy'
-            unique_id: '0x54ef44100042e226_occupancy'
-            state: >
-              {{not is_state("sensor.0x54ef44100042e226_presence_event", "leave")}}
-            device_class: occupancy
-            
-    # Сборный сенсор движения
-          - name: kn_occupancy
-            unique_id: kn_occupancy
-            state: >
-              {{ is_state('binary_sensor.0x00158d0001ab3350_occupancy', 'on')  
-                 or is_state('binary_sensor.0x54ef441000118375_occupancy', 'on')
-              }}
-            delay_off: 
-                seconds: 30
-            device_class: occupancy
-            
-    # Сборный сенсор присутствия
-          - name: kn_presence
-            unique_id: kn_presence
-            state: >
-              {{ is_state('binary_sensor.kn_occupancy', 'on')  
-                 or is_state('binary_sensor.0x54ef44100042e226_presence', 'on')
-                 or is_state('binary_sensor.kn_tv_work', 'on')                 
-              }}
-            device_class: presence
+      sensor.0x00124b0022145bc7_soil_moisture:
+        friendly_name: Рослина - юкка
+
+      sensor.0x00124b0022145bc7_battery:
+        friendly_name: Рослина - юкка
+
+      sensor.0x00124b0022145c90_soil_moisture:
+        friendly_name: Рослина - заміокулькас
+
+      sensor.0x00124b0022145c90_battery:
+        friendly_name: Рослина - заміокулькас
+
+      ##################################################
+      ## БАЛКОН
+      ##################################################
+
+      binary_sensor.0x00158d0001a20885_contact:
+        friendly_name: Кухня - двері балкона
+        device_class: door
+
+      sensor.0x00158d0001a20885_battery:
+        friendly_name: Кухня - двері балкона
+
+      binary_sensor.0x00158d0001a4a394_contact:
+        friendly_name: Кухня - вікно балкона
+        device_class: window
+
+      sensor.0x00158d0001a4a394_battery:
+        friendly_name: Кухня - вікно балкона
+
+      binary_sensor.0xec1bbdfffe302df1_occupancy:
+        friendly_name: Кухня - рух балкон
+
+      sensor.0xa4c1381ff5d0e03f_humidity:
+        friendly_name: Кухня - балкон вологість
+        icon: mdi:water-percent
+
+      sensor.0xa4c1381ff5d0e03f_temperature:
+        friendly_name: Кухня - балкон температура
+        icon: mdi:temperature-celsius
+
+      sensor.0xa4c1381ff5d0e03f_battery:
+        friendly_name: Кухня - балкон клімат
+
+      ##################################################
+      ## TEMPLATE
+      ##################################################
+
+      binary_sensor.kn_aeration:
+        friendly_name: Кухня - провітрювання
+        icon: mdi:window-open
+
+      binary_sensor.kn_occupancy:
+        friendly_name: Кухня - рух (збірний)
+        icon: mdi:motion-sensor
+
+      binary_sensor.kn_presence:
+        friendly_name: Кухня - присутність
+        icon: mdi:account
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - binary_sensor.0x00158d0001ab3350_occupancy
+        - binary_sensor.0x54ef441000118375_occupancy
+        - binary_sensor.0x54ef44100042e226_occupancy
+        - binary_sensor.kn_presence
+        - sensor.0x04cf8cdf3c772379_illuminance
+        - sensor.0x00158d0001581109_temperature
+        - sensor.0x00158d0001581109_humidity
+        - sensor.0xa4c1381ff5d0e03f_humidity
+        - sensor.0xa4c1381ff5d0e03f_temperature
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    - binary_sensor:
+
+        - name: kn_aeration
+          unique_id: kn_aeration
+          state: >
+            {{ is_state('binary_sensor.0x00158d0001a99562_contact', 'on')  
+               or is_state('binary_sensor.0x00158d0001a20885_contact', 'on')
+            }}
+          delay_on:
+            seconds: 30
+          delay_off:
+            seconds: 30
+          device_class: opening
+          icon: >
+            {% if is_state("binary_sensor.kn_aeration", "on") %}
+            mdi:window-open-variant
+            {% else %}
+            mdi:window-closed-variant
+            {% endif %}
+
+        - name: 0x54ef44100042e226_occupancy
+          unique_id: 0x54ef44100042e226_occupancy
+          state: >
+            {{ not is_state("sensor.0x54ef44100042e226_presence_event", "leave") }}
+          device_class: occupancy
+
+        - name: kn_occupancy
+          unique_id: kn_occupancy
+          state: >
+            {{ is_state('binary_sensor.0x00158d0001ab3350_occupancy', 'on')  
+               or is_state('binary_sensor.0x54ef441000118375_occupancy', 'on')
+            }}
+          delay_off:
+            seconds: 30
+          device_class: occupancy
+
+        - name: kn_presence
+          unique_id: kn_presence
+          state: >
+            {{ is_state('binary_sensor.kn_occupancy', 'on')  
+               or is_state('binary_sensor.0x54ef44100042e226_presence', 'on')
+               or is_state('binary_sensor.kn_tv_work', 'on')                 
+            }}
+          device_class: presence

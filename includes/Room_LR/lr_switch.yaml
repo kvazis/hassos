@@ -1,70 +1,121 @@
+##################################################
+## Актуалізовано: 2026-03-23
+##################################################
+
 lr_switch:
 
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-    homeassistant:
-      customize:
+  homeassistant:
+    customize:
 
-        switch.0xa4c138cd1b6a0a9a:
-          friendly_name: Датчик электрики в гостиной, питание
-          
-        switch.0xa4c138716822e6a7:
-          friendly_name: DC UPS, вход
-        sensor.0xa4c138716822e6a7_power:
-          friendly_name: DC UPS, вход
+      ##################################################
+      ## PHYSICAL SWITCH
+      ##################################################
+
+      switch.0xa4c138cd1b6a0a9a:
+        friendly_name: Вітальня - живлення датчика електрики
+        icon: mdi:power-plug
+
+      switch.0xa4c138716822e6a7:
+        friendly_name: Вітальня - DC UPS вхід
+        icon: mdi:power-plug
+
+      switch.0xa4c138ee9e1e5451:
+        friendly_name: Вітальня - UPS
+        icon: mdi:power-plug
+
+      switch.0xa4c1382600c57620:
+        friendly_name: Вітальня - подовжувач стійки ТВ
+        icon: mdi:power-strip
+
+      switch.0xa4c1384452a34172:
+        friendly_name: Вітальня - телевізор
+        icon: mdi:television
+
+      switch.0xa4c1387c6584d955:
+        friendly_name: Вітальня - шлюз Mi
+        icon: mdi:router-wireless
+
+      switch.0xa4c138f41459f92a:
+        friendly_name: Вітальня - подовжувач столу
+        icon: mdi:power-strip
+
+      ##################################################
+      ## PHYSICAL SENSOR
+      ##################################################
+
+      sensor.0xa4c138716822e6a7_power:
+        friendly_name: Вітальня - потужність DC UPS
+        unit_of_measurement: Вт
+        device_class: power
+        icon: mdi:flash
+
+      sensor.0xa4c138ee9e1e5451_power:
+        friendly_name: Вітальня - потужність UPS
+        unit_of_measurement: Вт
+        device_class: power
+        icon: mdi:flash
+
+      sensor.0xa4c1382600c57620_power:
+        friendly_name: Вітальня - потужність подовжувача стійки ТВ
+        unit_of_measurement: Вт
+        device_class: power
+        icon: mdi:flash
+
+      sensor.0xa4c1384452a34172_power:
+        friendly_name: Вітальня - потужність телевізора
+        unit_of_measurement: Вт
+        device_class: power
+        icon: mdi:flash
+
+      sensor.0xa4c1387c6584d955_power:
+        friendly_name: Вітальня - потужність шлюзу Mi
+        unit_of_measurement: Вт
+        device_class: power
+        icon: mdi:flash
+
+      sensor.0xa4c138f41459f92a_power:
+        friendly_name: Вітальня - потужність подовжувача столу
+        unit_of_measurement: Вт
+        device_class: power
+        icon: mdi:flash
+
+      ##################################################
+      ## TEMPLATE SENSOR
+      ##################################################
+
+      sensor.lr_phase_l3_power_tv_rack:
+        friendly_name: L3 - стійка ТВ
+        unit_of_measurement: Вт
+        icon: mdi:flash
+
+      sensor.lr_phase_l3_power_desk:
+        friendly_name: L3 - робочий стіл
+        unit_of_measurement: Вт
+        icon: mdi:flash
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+    - sensor:
+
+        ##################################################
+        ## ФАЗА L3
+        ##################################################
+
+        - name: lr_phase_l3_power_tv_rack
+          unique_id: lr_phase_l3_power_tv_rack
           unit_of_measurement: Вт
-          device_class: power
+          state: >
+            {{ states('sensor.0xa4c1382600c57620_power') | float(0) }}
 
-
-        switch.0xa4c138ee9e1e5451:
-          friendly_name: Гостиная UPS
-        sensor.0xa4c138ee9e1e5451_power:
-          friendly_name: Гостиная UPS
+        - name: lr_phase_l3_power_desk
+          unique_id: lr_phase_l3_power_desk
           unit_of_measurement: Вт
-          device_class: power
-          
-          
-        switch.0xa4c1382600c57620:
-          friendly_name: Гостиная удлинитель на стойке ТВ
-        sensor.0xa4c1382600c57620_power:
-          friendly_name: Гостиная удлинитель на стойке ТВ
-          unit_of_measurement: Вт
-          device_class: power
-
-        switch.0xa4c1384452a34172:
-          friendly_name: Гостиная телевизор
-        sensor.0xa4c1384452a34172_power:
-          friendly_name: Гостиная телевизор
-          unit_of_measurement: Вт
-          device_class: power
-
-
-        switch.0xa4c1387c6584d955:
-          friendly_name: Шлюз Mi
-        sensor.0xa4c1387c6584d955_power:
-          friendly_name: Шлюз Mi
-          unit_of_measurement: Вт
-          device_class: power
-
-
-        switch.0xa4c138f41459f92a:
-          friendly_name: Ноутбук Asus
-        sensor.0xa4c138f41459f92a_power:
-          friendly_name: Ноутбук Asus
-          unit_of_measurement: Вт
-          device_class: power
-
-
-          
-          
-        # switch.0xa4c1382dc9fecb3e:
-        #   friendly_name: Гостиная UPS 1 in
-        #   icon: phu:apc-ups-upright
-        # sensor.0xa4c1382dc9fecb3e_power:
-        #   friendly_name: Гостиная UPS 1 in, мощность
-        #   unit_of_measurement: Вт
-        #   device_class: power
-        # sensor.0xa4c1382dc9fecb3e_voltage:
-        #   friendly_name: Гостиная UPS 1 in, напряжение
-        # sensor.0xa4c1382dc9fecb3e_energy:
-        #   friendly_name: Гостиная UPS 1 in, энергия
-        #   icon: mdi:chart-line
+          state: >
+            {{ states('sensor.0xa4c138f41459f92a_power') | float(0) }}

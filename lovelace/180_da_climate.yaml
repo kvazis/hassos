@@ -191,8 +191,8 @@ sections:
               action: call-service
               service: script.turn_on
               service_data:
-                entity_id: script.da_temperature_calibration
-            entity: script.da_temperature_calibration
+                entity_id: script.da_heat_temperature_calibration
+            entity: script.da_heat_temperature_calibration
             icon: mdi:sync
             multiline_secondary: true
             icon_color: |-

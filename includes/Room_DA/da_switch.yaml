@@ -1,31 +1,41 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 da_switch:
 
+  ##################################################
+  ## HOMEASSISTANT
+  ##################################################
 
-    homeassistant:
-      customize:
-      
-        switch.0x04cf8cdf3c764e0a:
-          friendly_name: Детская А рекуператор, питание
-          icon: mdi:hvac
-        sensor.0x04cf8cdf3c764e0a_power:
-          friendly_name: Детская А рекуператор, мощность
-          unit_of_measurement: Вт
-          device_class: power
-        sensor.0x04cf8cdf3c764e0a_energy:
-          friendly_name: Детская А рекуператор, энергия
-          icon: mdi:chart-line
-        sensor.0x04cf8cdf3c764e0a_voltage:
-          friendly_name: Детская А рекуператор, напряжение
-          
-        switch.0xa4c138131a85d3ff:
-          friendly_name: Детская А питание WLED
-          icon: mdi:hvac
-        sensor.0xa4c138131a85d3ff_power:
-          friendly_name: Детская А W мощность WLED
-          unit_of_measurement: Вт
-          device_class: power
-        sensor.0xa4c138131a85d3ff_energy:
-          friendly_name: Детская А энергия WLED
-          icon: mdi:chart-line
-        sensor.0xa4c138131a85d3ff_voltage:
-          friendly_name: Детская А напряжение WLED
+  homeassistant:
+    customize:
+      switch.0x04cf8cdf3c764e0a:
+        friendly_name: Дитяча - рекуператор живлення
+        icon: mdi:hvac
+      sensor.0x04cf8cdf3c764e0a_power:
+        friendly_name: Дитяча - потужність рекуператора
+        icon: mdi:flash
+        unit_of_measurement: "Вт"
+        device_class: power
+      sensor.0x04cf8cdf3c764e0a_energy:
+        friendly_name: Дитяча - енергія рекуператора
+        icon: mdi:chart-line
+      sensor.0x04cf8cdf3c764e0a_voltage:
+        friendly_name: Дитяча - напруга рекуператора
+        icon: mdi:sine-wave
+
+      switch.0xa4c138131a85d3ff:
+        friendly_name: Дитяча - живлення WLED
+        icon: mdi:power-plug
+      sensor.0xa4c138131a85d3ff_power:
+        friendly_name: Дитяча - потужність WLED
+        icon: mdi:flash
+        unit_of_measurement: "Вт"
+        device_class: power
+      sensor.0xa4c138131a85d3ff_energy:
+        friendly_name: Дитяча - енергія WLED
+        icon: mdi:chart-line
+      sensor.0xa4c138131a85d3ff_voltage:
+        friendly_name: Дитяча - напруга WLED
+        icon: mdi:sine-wave

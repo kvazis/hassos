@@ -1,76 +1,125 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 early_warning:
 
-  ###################################################################
-  # Пишемо історію
-  ###################################################################
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
+
+  homeassistant:
+    customize:
+      sensor.tg_parser_source_1:
+        friendly_name: Парсер ТГ - джерело 1
+        icon: mdi:telegram
+
+      sensor.tg_parser_source_2:
+        friendly_name: Парсер ТГ - джерело 2
+        icon: mdi:telegram
+
+      sensor.tg_parser_source_1_type:
+        friendly_name: Парсер ТГ - тип події 1
+        icon: mdi:information
+
+      sensor.tg_parser_source_2_type:
+        friendly_name: Парсер ТГ - тип події 2
+        icon: mdi:information
+
+      input_boolean.tg_parser_gone_lock:
+        friendly_name: Блокування - вимкнення світла
+        icon: mdi:lock
+
+      input_boolean.tg_parser_back_lock:
+        friendly_name: Блокування - увімкнення світла
+        icon: mdi:lock
+
+      automation.tg_parser_gone_notification:
+        friendly_name: Світло - попередження про вимкнення
+        icon: mdi:flash
+
+      automation.tg_parser_gone_notification_block:
+        friendly_name: Світло - блокування попередження вимкнення
+        icon: mdi:lock-alert
+
+      automation.tg_parser_gone_notification_reload:
+        friendly_name: Світло - розблокування вимкнення
+        icon: mdi:lock-open
+
+      automation.tg_parser_back_notification:
+        friendly_name: Світло - попередження про увімкнення
+        icon: mdi:flash-outline
+
+      automation.tg_parser_back_notification_block:
+        friendly_name: Світло - блокування попередження увімкнення
+        icon: mdi:lock-alert
+
+      automation.tg_parser_back_notification_reload:
+        friendly_name: Світло - розблокування увімкнення
+        icon: mdi:lock-open
+
+  ##################################################
+  ## RECORDER
+  ##################################################
 
   recorder:
-      include:
-        entities:
-           - sensor.parser_tg_parser_source_1
-           - sensor.parser_tg_parser_source_2
-           - sensor.parser_tg_parser_source_1_type
-           - sensor.parser_tg_parser_source_2_type
+    include:
+      entities:
+        - sensor.parser_tg_parser_source_1
+        - sensor.parser_tg_parser_source_2
+        - sensor.parser_tg_parser_source_1_type
+        - sensor.parser_tg_parser_source_2_type
 
-
-  ###################################################################
-  # REST: тягнемо стрічку з каналу
-  ###################################################################
+  ##################################################
+  ## REST
+  ##################################################
 
   rest:
-    - resource_template: "https://r.jina.ai/https://t.me/s/svitlobot_pr19?nocache={{ now().timestamp()|int }}"       
+    - resource_template: "https://r.jina.ai/https://t.me/s/svitlobot_pr19?nocache={{ now().timestamp()|int }}"
       scan_interval: 20
       timeout: 30
       sensor:
-
         - name: tg_parser_source_1
           value_template: >-
             {% set page = value | default('', true) %}
             {% set text = page | lower
                            | replace('’','ʼ') | replace("'",'ʼ') | replace('`','ʼ') %}
 
-            {# позиції всіх варіантів фрази #}
             {% set pos_gone  = text.rfind('світло зникло') %}
             {% set pos_back1 = text.rfind('світло зʼявилося') %}
             {% set pos_back2 = text.rfind('світло зявилося') %}
 
-            {# беремо максимальну позицію #}
             {% set idx = [pos_gone, pos_back1, pos_back2] | max %}
 
             {% if idx == -1 %}
               {{ '' }}
             {% else %}
-              {# вирізаємо «рядок» навколо цієї позиції #}
               {% set start = page.rfind('\n', 0, idx) %}
               {% set end   = page.find('\n', idx) %}
               {% set start = 0 if start == -1 else start + 1 %}
               {% set end   = page|length if end == -1 else end %}
               {{ page[start:end] | trim }}
             {% endif %}
-            
-    - resource_template: "https://r.jina.ai/https://t.me/s/svitlobot_ivasuka_v32?nocache={{ now().timestamp()|int }}"  
+
+    - resource_template: "https://r.jina.ai/https://t.me/s/svitlobot_ivasuka_v32?nocache={{ now().timestamp()|int }}"
       scan_interval: 20
       timeout: 30
       sensor:
-
         - name: tg_parser_source_2
           value_template: >-
             {% set page = value | default('', true) %}
             {% set text = page | lower
                            | replace('’','ʼ') | replace("'",'ʼ') | replace('`','ʼ') %}
 
-            {# позиції всіх варіантів фрази #}
             {% set pos_gone  = text.rfind('світло зникло') %}
             {% set pos_back1 = text.rfind('світло зʼявилося') %}
             {% set pos_back2 = text.rfind('світло зявилося') %}
 
-            {# беремо максимальну позицію #}
             {% set idx = [pos_gone, pos_back1, pos_back2] | max %}
 
             {% if idx == -1 %}
               {{ '' }}
             {% else %}
-              {# вирізаємо «рядок» навколо цієї позиції #}
               {% set start = page.rfind('\n', 0, idx) %}
               {% set end   = page.find('\n', idx) %}
               {% set start = 0 if start == -1 else start + 1 %}
@@ -78,12 +127,10 @@ early_warning:
               {{ page[start:end] | trim }}
             {% endif %}
 
+  ##################################################
+  ## TEMPLATE
+  ##################################################
 
-  ###################################################################
-  # Template-сенсори 
-  ###################################################################
-
-            
   template:
     - sensor:
         - name: tg_parser_source_1_type
@@ -94,7 +141,7 @@ early_warning:
             {% elif 'світло зʼявилося' in l or 'світло зявилося' in l %} back
             {% else %} unknown
             {% endif %}
-            
+
         - name: tg_parser_source_2_type
           state: >-
             {% set l = (states('sensor.tg_parser_source_2') | lower
@@ -103,315 +150,231 @@ early_warning:
             {% elif 'світло зʼявилося' in l or 'світло зявилося' in l %} back
             {% else %} unknown
             {% endif %}
-            
 
-  ###################################################################
-  # Запобіжники від повторного спрацювання
-  ###################################################################
-            
+  ##################################################
+  ## INPUT_BOOLEAN
+  ##################################################
+
   input_boolean:
-    
-     tg_parser_gone_lock:
-        name: Блокування повідомлення про відключення світла
-        
-     tg_parser_back_lock:
-        name: Блокування повідомлення про повернення світла
-        
-        
+    tg_parser_gone_lock:
+      name: tg_parser_gone_lock
+
+    tg_parser_back_lock:
+      name: tg_parser_back_lock
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
   automation:
 
-  ###################################################################
-  # Нотифікація при очікуванні відключення світла
-  ###################################################################
-
-    - alias:  tg_parser_gone_notification
+    ##################################################
+    ## ПОПЕРЕДЖЕННЯ ПРО ВИМКНЕННЯ СВІТЛА
+    ##################################################
+    - alias: tg_parser_gone_notification
       id: tg_parser_gone_notification
-      description: Нотифікація при очікуванні відключення світла
+      description: Сповіщення про можливе вимкнення світла
       initial_state: false
-
       trigger:
-
-  # Спрацювання першого сенсору
         - platform: state
           entity_id: sensor.tg_parser_source_1_type
-          to: 'gone'
+          to: "gone"
 
-  # Спрацювання другого сенсору
         - platform: state
           entity_id: sensor.tg_parser_source_2_type
-          to: 'gone'
-    
-      condition:
+          to: "gone"
 
-  # Перемикач режиму роботи серверу
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
- 
-  # Перемикач режиму роботи сповіщень
+          state: "on"
+
         - condition: state
           entity_id: input_boolean.k7_notification
-          state: 'on'
+          state: "on"
 
-  # Нема блокування на сповіщення
         - condition: state
           entity_id: input_boolean.tg_parser_gone_lock
-          state: 'off'
+          state: "off"
 
-  # Електрика є
         - condition: state
           entity_id: binary_sensor.electricity
-          state: 'off'
+          state: "off"
 
-    # Перемикач екстрених відключень
         - condition: state
           entity_id: input_boolean.k7_notification_extr
-          state: 'off'   
+          state: "off"
 
       action:
- 
-  # Встановлення блокування на дублюючі сповіщення
         - action: input_boolean.turn_on
-          data: {}
           target:
             entity_id: input_boolean.tg_parser_gone_lock
 
-  # Сповіщення про майбутнє відключення           
         - action: telegram_bot.send_message
           data:
             chat_id:
-                - !secret chat_id_k7
+              - !secret chat_id_k7
             message: |
               🔶 4️⃣5️⃣6️⃣7️⃣
-              Увага! Виявлено ознаки можливого відключення електроенергії в найближчі хвилини
+              Увага! Виявлено ознаки можливого вимкнення електроенергії найближчими хвилинами
               Аналіз на основі інших будинків групи 9.1
-              
-  ###################################################################
-  # Запобіжник якщо попередження про вимкнення запізнилось
-  ###################################################################
 
+    ##################################################
+    ## БЛОКУВАННЯ (ЯКЩО ЗАПІЗНИЛОСЬ)
+    ##################################################
     - alias: tg_parser_gone_notification_block
       id: tg_parser_gone_notification_block
-      description: Сповіщення про фактичне включення і відключення електрики
+      description: Блокування при фактичному вимкненні
       initial_state: true
       trigger:
-
-  # Вимкнення електрики
         - platform: state
           entity_id: binary_sensor.electricity
-          from: 'off'
-          to: 'on'
+          from: "off"
+          to: "on"
 
       condition:
-
-  # Нема блокування на сповіщення
         - condition: state
           entity_id: input_boolean.tg_parser_gone_lock
-          state: 'off'
+          state: "off"
 
       action:
- 
-  # Встановлення блокування на дублюючі сповіщення
         - action: input_boolean.turn_on
-          data: {}
           target:
             entity_id: input_boolean.tg_parser_gone_lock
 
-  ###################################################################
-  # Розблокування нотифікації при очікуванні відключення світла
-  ###################################################################
-            
+    ##################################################
+    ## РОЗБЛОКУВАННЯ ВИМКНЕННЯ
+    ##################################################
     - alias: tg_parser_gone_notification_reload
       id: tg_parser_gone_notification_reload
-      description: Розблокування нотифікації при очікуванні відключення світла
+      description: Розблокування повідомлення про вимкнення
       initial_state: true
-
       trigger:
-
-  # Спрацювання першого сенсору
         - platform: state
           entity_id: sensor.tg_parser_source_1_type
-          to: 'back'
+          to: "back"
 
-  # Спрацювання другого сенсору        
         - platform: state
           entity_id: sensor.tg_parser_source_2_type
-          to: 'back'
+          to: "back"
 
       condition:
-
-  # Перевірка що обидва сенсори прийняли відповідний статус
         - condition: template
           value_template: >
-              {{ is_state('sensor.tg_parser_source_1_type', 'back')
+            {{ is_state('sensor.tg_parser_source_1_type', 'back')
                and is_state('sensor.tg_parser_source_2_type', 'back') }}
 
-  # Перевірка що встановлено блокування на дублюючі сповіщення
         - condition: state
           entity_id: input_boolean.tg_parser_gone_lock
-          state: 'on'
+          state: "on"
 
       action:
-      
-  # Зняття блокування на дублюючі сповіщення
         - action: input_boolean.turn_off
-          data: {}
           target:
             entity_id: input_boolean.tg_parser_gone_lock
-            
-  ###################################################################
-  #  Нотіфікація про майбутнє включення світла
-  ################################################################### 
-            
+
+    ##################################################
+    ## ПОПЕРЕДЖЕННЯ ПРО УВІМКНЕННЯ СВІТЛА
+    ##################################################
     - alias: tg_parser_back_notification
       id: tg_parser_back_notification
-      description: Нотіфікація про майбутнє включення світла
+      description: Сповіщення про можливе увімкнення світла
       initial_state: false
       mode: single
-
       trigger:
-
-  # Спрацювання першого сенсору
         - platform: state
           entity_id: sensor.tg_parser_source_1_type
-          to: 'back'
+          to: "back"
 
-  # Спрацювання другого сенсору
         - platform: state
           entity_id: sensor.tg_parser_source_2_type
-          to: 'back'
+          to: "back"
 
       condition:
-
-  # Перемикач режиму роботи серверу
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
- 
-  # Перемикач режиму роботи сповіщень
+          state: "on"
+
         - condition: state
           entity_id: input_boolean.k7_notification
-          state: 'on'
+          state: "on"
 
-  # Нема блокування на сповіщення
         - condition: state
           entity_id: input_boolean.tg_parser_back_lock
-          state: 'off'
+          state: "off"
 
-  # Електрики немає
         - condition: state
           entity_id: binary_sensor.electricity
-          state: 'on'
+          state: "on"
 
-    # Перемикач екстрених відключень
         - condition: state
           entity_id: input_boolean.k7_notification_extr
-          state: 'off'   
+          state: "off"
 
       action:
-
-  # Встановлення блокування на дублюючі сповіщення      
         - action: input_boolean.turn_on
-          data: {}
           target:
             entity_id: input_boolean.tg_parser_back_lock
 
-  # Сповіщення про майбутнє включення              
         - action: telegram_bot.send_message
           data:
             chat_id:
-             - !secret chat_id_k7
+              - !secret chat_id_k7
             message: |
-              🔷 4️⃣5️⃣6️⃣7️⃣ 
-              Виявлено ознаки можливого включення електроенергії в найближчий час
-              Аналіз на основі інших будинків групи 9.1 
-              
-  ###################################################################
-  # Запобіжник якщо попередження про включення запізнилось
-  ###################################################################
-  
+              🔷 4️⃣5️⃣6️⃣7️⃣
+              Виявлено ознаки можливого увімкнення електроенергії найближчим часом
+              Аналіз на основі інших будинків групи 9.1
+
+    ##################################################
+    ## БЛОКУВАННЯ (ЯКЩО ЗАПІЗНИЛОСЬ)
+    ##################################################
     - alias: tg_parser_back_notification_block
       id: tg_parser_back_notification_block
-      description: Запобіжник якщо попередження про включення запізнилось
+      description: Блокування при фактичному увімкненні
       initial_state: true
       trigger:
-
-  # Увімкнення електрики
         - platform: state
           entity_id: binary_sensor.electricity
-          from: 'on'
-          to: 'off'
+          from: "on"
+          to: "off"
 
       condition:
-
-  # Нема блокування на сповіщення
         - condition: state
           entity_id: input_boolean.tg_parser_back_lock
-          state: 'off'
+          state: "off"
 
       action:
- 
-  # Встановлення блокування на дублюючі сповіщення
         - action: input_boolean.turn_on
-          data: {}
           target:
             entity_id: input_boolean.tg_parser_back_lock
-  
-  ###################################################################
-  # 7. Розблокування нотифікації про майбутнє включення світла
-  ###################################################################
-            
+
+    ##################################################
+    ## РОЗБЛОКУВАННЯ УВІМКНЕННЯ
+    ##################################################
     - alias: tg_parser_back_notification_reload
       id: tg_parser_back_notification_reload
-      description: Розблокування нотифікації про майбутнє включення світла
+      description: Розблокування повідомлення про увімкнення
       initial_state: true
-
       trigger:
-
-  # Спрацювання першого сенсору
         - platform: state
           entity_id: sensor.tg_parser_source_1_type
-          to: 'gone'
+          to: "gone"
 
-  # Спрацювання другого сенсору        
         - platform: state
           entity_id: sensor.tg_parser_source_2_type
-          to: 'gone'
+          to: "gone"
 
       condition:
-
-  # Перевірка що обидва сенсори прийняли відповідний статус
         - condition: template
           value_template: >
-              {{ is_state('sensor.tg_parser_source_1_type', 'gone')
+            {{ is_state('sensor.tg_parser_source_1_type', 'gone')
                and is_state('sensor.tg_parser_source_2_type', 'gone') }}
 
-  # Перевірка що встановлено блокування на дублюючі сповіщення
         - condition: state
           entity_id: input_boolean.tg_parser_back_lock
-          state: 'on'
+          state: "on"
 
       action:
-
-  # Зняття блокування на дублюючі сповіщення
         - action: input_boolean.turn_off
-          data: {}
           target:
             entity_id: input_boolean.tg_parser_back_lock
-        
-
- 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        

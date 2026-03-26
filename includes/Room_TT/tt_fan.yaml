@@ -1,70 +1,112 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 tt_fan:
 
-    template:
-     
-      - binary_sensor:
-      
-    # Свет более 5 минут, условие для включения вентиляции
-          - name: tt_fan_on
-            unique_id: tt_fan_on
-            state: >
-              {{ is_state('binary_sensor.tt_light_on', 'on') 
-                 and is_state('binary_sensor.0xa4c1384e55f274ef_contact', 'off')
-                 and is_state('fan.0x00158d00062fbb54_right', 'off')
-              }}
-            delay_on: 00:05:00
-            icon: >
-              {% if is_state("binary_sensor.tt_fan_on", "on") %}
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
+
+  homeassistant:
+    customize:
+      binary_sensor.tt_fan_on:
+        friendly_name: Туалет - умова ввімкнення вентиляції
+        icon: mdi:timer
+
+      binary_sensor.tt_fan_off:
+        friendly_name: Туалет - умова вимкнення вентиляції
+        icon: mdi:timer-off
+
+      automation.tt_fan_control:
+        friendly_name: Туалет - керування вентилятором
+        icon: mdi:fan
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+    - binary_sensor:
+        ##################################################
+        ## СВІТЛО БІЛЬШЕ 5 ХВИЛИН, УМОВА ДЛЯ ВВІМКНЕННЯ ВЕНТИЛЯЦІЇ
+        ##################################################
+        - name: tt_fan_on
+          unique_id: tt_fan_on
+          state: >
+            {{ is_state('binary_sensor.tt_light_on', 'on')
+               and is_state('binary_sensor.0xa4c1384e55f274ef_contact', 'off')
+               and is_state('fan.0x00158d00062fbb54_right', 'off')
+            }}
+          delay_on: 00:05:00
+          icon: >
+            {% if is_state('binary_sensor.tt_fan_on', 'on') %}
               mdi:timer
-              {% else %}
+            {% else %}
               mdi:timer-off
-              {% endif %}            
-            
-    # Вентиляция более 10 минут с выключенным светом, условие для выключения вентиляции
-          - name: tt_fan_off
-            unique_id: tt_fan_off
-            state: >
-              {{ is_state('binary_sensor.tt_light_on', 'off') 
-                 and is_state('fan.0x00158d00062fbb54_right', 'on')
-              }}
-            delay_on: 00:10:00
-            icon: >
-              {% if is_state("binary_sensor.tt_fan_off", "on") %}
+            {% endif %}
+
+        ##################################################
+        ## ВЕНТИЛЯЦІЯ БІЛЬШЕ 10 ХВИЛИН З ВИМКНЕНИМ СВІТЛОМ, УМОВА ДЛЯ ВИМКНЕННЯ ВЕНТИЛЯЦІЇ
+        ##################################################
+        - name: tt_fan_off
+          unique_id: tt_fan_off
+          state: >
+            {{ is_state('binary_sensor.tt_light_on', 'off')
+               and is_state('fan.0x00158d00062fbb54_right', 'on')
+            }}
+          delay_on: 00:10:00
+          icon: >
+            {% if is_state('binary_sensor.tt_fan_off', 'on') %}
               mdi:timer
-              {% else %}
+            {% else %}
               mdi:timer-off
-              {% endif %}  
-              
-    automation:
-    
-    # Управление вентиляцией   
-      - alias: tt_fan_control
-        id: tt_fan_control
-        description: Туалет управление вентилятором
-        initial_state: true
-        trigger:
-    # Виртуальные сущности 
-    # Включение через 5 минут
+            {% endif %}
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+    ##################################################
+    ## КЕРУВАННЯ ВЕНТИЛЯЦІЄЮ
+    ##################################################
+    - alias: tt_fan_control
+      id: tt_fan_control
+      description: Туалет, керування вентилятором
+      initial_state: true
+      trigger:
+        ##################################################
+        ## ВІРТУАЛЬНІ СУТНОСТІ
+        ##################################################
+        ## УВІМКНЕННЯ ЧЕРЕЗ 5 ХВИЛИН
         - platform: state
           entity_id: binary_sensor.tt_fan_on
-          to: 'on'
-    # Выключение через 10 минут
+          to: "on"
+
+        ## ВИМКНЕННЯ ЧЕРЕЗ 10 ХВИЛИН
         - platform: state
           entity_id: binary_sensor.tt_fan_off
-          to: 'on'    
-    # Физические сущности 
-    # Выключатель в туалете
+          to: "on"
+
+        ##################################################
+        ## ФІЗИЧНІ СУТНОСТІ
+        ##################################################
+        ## ВИМИКАЧ У ТУАЛЕТІ
         - platform: state
           entity_id: sensor.0x54ef441000279090_action
-          to: 'single_right' 
-        condition:
-    # Переключатель режима работы сервера
+          to: "single_right"
+
+      condition:
+        ##################################################
+        ## ПЕРЕМИКАЧ РЕЖИМУ РОБОТИ СЕРВЕРА
+        ##################################################
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
-        action:
+          state: "on"
+
+      action:
         - action: fan.toggle
           data: {}
           target:
             entity_id: fan.0x00158d00062fbb54_right
-

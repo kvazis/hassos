@@ -401,6 +401,20 @@ sections:
           - volume_buttons
         collapsible_controls: true
 
+      - type: custom:mushroom-template-card
+        primary: TV
+        layout: horizontal
+        entity: input_button.kn_tv_control
+        icon: mdi:remote-tv
+        multiline_secondary: true
+        icon_color: blue
+        tap_action:
+          action: call-service
+          service: input_button.press
+          target:
+            entity_id: input_button.kn_tv_control
+
+
       - type: markdown
         content: >
           ### Датчики та сенсори

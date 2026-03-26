@@ -1,120 +1,126 @@
+##################################################
+## Актуалізовано: 2026-03-21
+##################################################
+
 en_door:
 
-  ###################################################################
-  # Оновлено 19.03.2026
-  ###################################################################
+  homeassistant:
+    customize:
+      binary_sensor.enter_camera_snapshot:
+        friendly_name: Вхідні двері - затримка повторного фото
+        icon: mdi:camera
+      binary_sensor.en_mi_2k_motion:
+        friendly_name: Передпокій - рух з камери MI 2K
+        icon: mdi:motion-sensor
+      input_button.mi_2k:
+        friendly_name: MI 2K - створити фото
+        icon: mdi:camera
+      automation.en_door_camera_mi_2k_photo:
+        friendly_name: MI 2K - фото в Telegram
+        icon: mdi:camera-send
+      automation.en_door_open_door_photo:
+        friendly_name: Вхідні двері - фото в Telegram
+        icon: mdi:door-open
 
-    template:
-     
+  template:
+
+    ##################################################
+    ## ЗАТРИМКА 3 ХВИЛИНИ НА ПОВТОРНЕ СПРАЦЮВАННЯ
+    ##################################################
+
     - binary_sensor:
-
-  ###################################################################
-  # Затримка 3 хвилини на повторне спрацювання
-  ###################################################################
-
-        - name: enter_camera_snapshot
-          unique_id: enter_camera_snapshot
+        - unique_id: enter_camera_snapshot
           state: >
             {{ is_state('binary_sensor.0x00158d000119378d_contact', 'on') }}
           delay_off: "00:03:00"
-          device_class: running
-          icon: >
-            {% if is_state('binary_sensor.enter_camera_snapshot', 'on') %}
-              mdi:camera-off
-            {% else %}
-              mdi:camera
-            {% endif %}
 
-  ###################################################################
-  # Сенсор руху з камери
-  ###################################################################
+    ##################################################
+    ## СЕНСОР РУХУ З КАМЕРИ
+    ##################################################
 
     - trigger:
         - platform: mqtt
           topic: "thingino/0268a8631f66"
 
       binary_sensor:
-        - name: en_mi_2k_motion
-          unique_id: en_mi_2k_motion
+        - unique_id: en_mi_2k_motion
           state: "true"
           auto_off: 10
 
-  ###################################################################
-  # Кнопка для ручного фото
-  ###################################################################
-              
-    input_button:
-      mi_2k:
-        name: Фото mi 2K
-        icon: mdi:camera
-        
-    automation:
+  input_button:
 
+    ##################################################
+    ## КНОПКА ДЛЯ РУЧНОГО ФОТО
+    ##################################################
 
-  ###################################################################
-  # Відправка фото в телеграм по натисканню кнопки
-  ###################################################################
-    
-    - alias: camera_mi_2k_photo
-      id: camera_mi_2k_photo
-      description: MI 2K — створення фото та надсилання в Telegram
+    mi_2k:
+
+  automation:
+
+    ##################################################
+    ## ВІДПРАВКА ФОТО В TELEGRAM ПО НАТИСКАННЮ КНОПКИ
+    ##################################################
+
+    - alias: en_door_camera_mi_2k_photo
+      id: en_door_camera_mi_2k_photo
+      description: Створення фото з камери MI 2K та надсилання в Telegram
       initial_state: true
       mode: restart
-    
-      triggers:
-        - trigger: state
+
+      trigger:
+        - platform: state
           entity_id: input_button.mi_2k
-    
-      conditions:
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: "on"
-    
-      actions:
+
+      action:
         - delay: "00:00:03"
-    
+
         - action: camera.snapshot
           target:
             entity_id: camera.mi_2k
           data:
             filename: "/config/www/cam_captures/mi_2k.jpg"
-    
+
         - delay: "00:00:10"
-    
+
         - action: telegram_bot.send_photo
           data:
             chat_id:
               - !secret chat_id_group
             file: "/config/www/cam_captures/mi_2k.jpg"
 
-  ###################################################################
-  # Відправка фото в телеграм по відкриттю дверей
-  ###################################################################
+    ##################################################
+    ## ВІДПРАВКА ФОТО В TELEGRAM ПРИ ВІДКРИТТІ ДВЕРЕЙ
+    ##################################################
 
-    - alias: en_open_door_photo
-      id: en_open_door_photo
-      description: Вхідні двері — фото та надсилання в Telegram
+    - alias: en_door_open_door_photo
+      id: en_door_open_door_photo
+      description: Надсилання повідомлення та фото при відкритті вхідних дверей
       initial_state: true
       mode: single
-    
-      triggers:
-        - trigger: state
+
+      trigger:
+        - platform: state
           entity_id: binary_sensor.enter_camera_snapshot
           to: "on"
-    
-      conditions:
+
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: "on"
-    
-      actions:
+
+      action:
         - action: telegram_bot.send_message
           data:
             chat_id:
               - !secret chat_id_group
             message: >
               🚪 Вхідні двері відчинено о {{ states('sensor.time_date') }}
-    
+
         - choose:
             - conditions:
                 - condition: state
@@ -127,7 +133,7 @@ en_door:
                       - input_button.reolink_411_ws_photo
                       - input_button.reolink_410_photo
                       - input_button.mi_2k
-    
+
             - conditions:
                 - condition: state
                   entity_id: binary_sensor.electricity
@@ -137,5 +143,4 @@ en_door:
                   target:
                     entity_id:
                       - input_button.reolink_411_ws_photo
-                      - input_button.mi_2k           
-              
+                      - input_button.mi_2k

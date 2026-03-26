@@ -1,360 +1,387 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 kn_reboot:
 
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-    homeassistant:
-      customize:
+  homeassistant:
+    customize:
 
-        automation.kn_reboot_ceiling:
-          friendly_name: Кухня - перезагрузка зависшей люстры
-          icon: mdi:reload
+      binary_sensor.kn_ceiling_unavailable:
+        friendly_name: Кухня - люстра недоступна
+        icon: mdi:alert
 
+      binary_sensor.kn_migateway_unavailable:
+        friendly_name: Кухня - шлюз недоступний
+        icon: mdi:alert-circle
 
-        automation.kn_reboot_switch_e1:
-          friendly_name: Кухня -  восстановление работы выключателя Aqara E1 на входе
-          icon: phu:aqara-h1-switch
+      input_button.kn_gateway_reset:
+        friendly_name: Кухня - перезавантаження шлюзу
+        icon: mdi:restart
 
-    template:
+      input_button.kn_ceiling_reset:
+        friendly_name: Кухня - перезавантаження люстри
+        icon: mdi:restart
 
-      - binary_sensor:
-      
-    # Сенсор определяющий недоступность люстры
-          - name: kn_ceiling_unavailable
-            unique_id: kn_ceiling_unavailable
-            state: >
-              {{ is_state('light.kn_ceiling_light', 'unavailable') }}
-            delay_on: 
-                minutes: 3
-            device_class: problem    
-    
-    # Сенсор определяющий недоступность ночника
-          - name: kn_migateway_unavailable
-            unique_id: kn_migateway_unavailable
-            state: >
-              {{ is_state('light.gateway_light_7811dc64f4c8', 'unavailable') }}
-            delay_on: 
-                minutes: 3
-            device_class: problem     
+      automation.kn_reboot_ceiling:
+        friendly_name: Кухня - перезавантаження люстри
+        icon: mdi:lightbulb-alert
 
-    input_button:
+      automation.kn_reboot_ceiling_manual:
+        friendly_name: Кухня - ручне перезавантаження люстри
+        icon: mdi:hand-back-right
 
-      kn_gateway_reset:
-        name: KN Mi Gateway reboot
+      automation.kn_reboot_switch_e1:
+        friendly_name: Кухня - відновлення вимикача
+        icon: mdi:light-switch
 
-      kn_ceiling_reset:
-        name: KN ceiling reboot
-        
-    automation:
-    
-#################### ПЕРЕЗАГРУЗКА ЛЮСТРЫ ####################
-               
-      - alias: kn_reboot_ceiling
-        id: kn_reboot_ceiling
-        description: Кухня - перезагрузка зависшей люстры
-        initial_state: true
-        trigger:
-    # Проверка раз в 5 минут
+      automation.kn_reboot_gateway:
+        friendly_name: Кухня - перезавантаження шлюзу
+        icon: mdi:router-wireless
+
+      automation.kn_reboot_gateway_manual:
+        friendly_name: Кухня - ручне перезавантаження шлюзу
+        icon: mdi:restart-alert
+
+      automation.kn_reboot_airgrill_turn_on_check:
+        friendly_name: Кухня - контроль розетки аерогриля
+        icon: mdi:power-plug
+
+      automation.kn_reboot_microwave_turn_on_check:
+        friendly_name: Кухня - контроль розетки мікрохвильовки
+        icon: mdi:microwave
+
+      automation.kn_reboot_kettle_turn_on_check:
+        friendly_name: Кухня - контроль розетки чайника
+        icon: mdi:kettle
+
+      automation.kn_reboot_grill_turn_on_check:
+        friendly_name: Кухня - контроль розетки гриля
+        icon: mdi:grill
+
+      automation.kn_reboot_coffemachine_turn_on_check:
+        friendly_name: Кухня - контроль розетки кавомашини
+        icon: mdi:coffee-maker
+
+  ##################################################
+  ## INPUT_BUTTON
+  ##################################################
+
+  input_button:
+
+    kn_gateway_reset:
+      name: kn_gateway_reset
+
+    kn_ceiling_reset:
+      name: kn_ceiling_reset
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    - binary_sensor:
+
+        - name: kn_ceiling_unavailable
+          unique_id: kn_ceiling_unavailable
+          state: >
+            {{ is_state('light.kn_ceiling_light', 'unavailable') }}
+          delay_on:
+            minutes: 3
+          device_class: problem
+
+        - name: kn_migateway_unavailable
+          unique_id: kn_migateway_unavailable
+          state: >
+            {{ is_state('light.gateway_light_7811dc64f4c8', 'unavailable') }}
+          delay_on:
+            minutes: 3
+          device_class: problem
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    ##################################################
+    ## ПЕРЕЗАВАНТАЖЕННЯ ЛЮСТРИ
+    ##################################################
+
+    - alias: kn_reboot_ceiling
+      id: kn_reboot_ceiling
+      description: Кухня - перезавантаження завислої люстри
+      initial_state: true
+      trigger:
         - platform: time_pattern
           minutes: '/5'
-        condition:
-    # Переключатель режима работы сервера
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Сенсор определяющий недоступность люстры
         - condition: state
           entity_id: binary_sensor.kn_ceiling_unavailable
           state: 'on'
-    # Сенсор электричества
         - condition: state
           entity_id: binary_sensor.blackout_after
-          state: 'off'  
-        action:
-    # Включение резервного света
-        - service: light.turn_on
-          entity_id:
-            - light.0x00158d000420dbab
-          data_template:
+          state: 'off'
+      action:
+        - action: light.turn_on
+          target:
+            entity_id: light.0x00158d000420dbab
+          data:
             brightness_pct: 100
             kelvin: 4000
         - delay: 00:00:02
-    # Перезагрузка по питанию если люстра недоступна
-        - service: switch.turn_off
-          entity_id: switch.0x54ef4410000f4741_right
+        - action: switch.turn_off
+          target:
+            entity_id: switch.0x54ef4410000f4741_right
         - delay: 00:00:05
-        - service: switch.turn_on
-          entity_id: switch.0x54ef4410000f4741_right
-        - service: telegram_bot.send_message
-          data_template:
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0x54ef4410000f4741_right
+        - action: telegram_bot.send_message
+          data:
             chat_id:
-                - !secret chat_id_log
-            message: | 
-                 {{"\U0001F916"}} Антонио. Кухня -  перезагрузка люстры {{ states('sensor.time_date') }} 
+              - !secret chat_id_log
+            message: |
+              {{"\U0001F916"}} Кухня - перезавантаження люстри {{ states('sensor.time_date') }}
 
-
-      - alias: kn_reboot_ceiling_manual
-        id: kn_reboot_ceiling_manual
-        description: Кухня - ручная перезагрузка зависшей люстры
-        initial_state: true
-        trigger:
-    ## Виртуальная кнопка
+    - alias: kn_reboot_ceiling_manual
+      id: kn_reboot_ceiling_manual
+      description: Кухня - ручне перезавантаження люстри
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: input_button.kn_ceiling_reset
-        action: 
-     # Перезагрузка по питанию если люстра недоступна
-        - service: switch.turn_off
-          entity_id: switch.0x54ef4410000f4741_right
+      action:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.0x54ef4410000f4741_right
         - delay: 00:00:05
-        - service: switch.turn_on
-          entity_id: switch.0x54ef4410000f4741_right
-        - service: telegram_bot.send_message
-          data_template:
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0x54ef4410000f4741_right
+        - action: telegram_bot.send_message
+          data:
             chat_id:
-                - !secret chat_id_log
-            message: | 
-                 {{"\U0001F916"}} Антонио. Кухня -  перезагрузка люстры {{ states('sensor.time_date') }}     
-        
-        
-        
-#################### ПЕРЕЗАГРУЗКА ВЫКЛЮЧАТЕЛЯ ЛЮСТРЫ ####################
-                 
-      - alias: kn_reboot_switch_e1
-        id: kn_reboot_switch_e1
-        description: Кухня -  восстановление работы выключателя Aqara E1 на входе
-        initial_state: true
-        trigger:
-    # Проверка раз в 5 минут
+              - !secret chat_id_log
+            message: |
+              {{"\U0001F916"}} Кухня - перезавантаження люстри {{ states('sensor.time_date') }}
+
+    ##################################################
+    ## ПЕРЕЗАВАНТАЖЕННЯ ВИМИКАЧА
+    ##################################################
+
+    - alias: kn_reboot_switch_e1
+      id: kn_reboot_switch_e1
+      description: Кухня - відновлення роботи вимикача Aqara E1
+      initial_state: true
+      trigger:
         - platform: time_pattern
           minutes: '/5'
-        condition:
-    # Переключатель режима работы сервера
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Только днем
         - condition: state
           entity_id: binary_sensor.night_time
           state: 'off'
-    # Выключатель недоступен
         - condition: state
           entity_id: switch.0x54ef4410000f4741_right
           state: 'unavailable'
-    # Сенсор электричества
         - condition: state
           entity_id: binary_sensor.blackout_after
-          state: 'off'  
-    # Лампа выключена
+          state: 'off'
         - condition: state
           entity_id: light.kn_ceiling_light
-          state: 'off'    
-        action:
-    # Включаем люстру чтобы повысить потребляемую мощность на выключателе
-        - service: light.turn_on
-          entity_id:
-            - light.kn_ceiling_light
-          data_template:
+          state: 'off'
+      action:
+        - action: light.turn_on
+          target:
+            entity_id: light.kn_ceiling_light
+          data:
             brightness_pct: 50
             kelvin: 4000
         - delay: 00:00:03
-        - service: light.turn_on
-          entity_id:
-            - light.kn_ceiling_light
-          data_template:
+        - action: light.turn_on
+          target:
+            entity_id: light.kn_ceiling_light
+          data:
             brightness_pct: 1
             kelvin: 3500
-        - service: light.turn_off
-          entity_id:
-            - light.kn_ceiling_light
-        - service: telegram_bot.send_message
-          data_template:
+        - action: light.turn_off
+          target:
+            entity_id: light.kn_ceiling_light
+        - action: telegram_bot.send_message
+          data:
             chat_id:
-                - !secret chat_id_log
-            message: | 
-                 {{"\U0001F916"}} Антонио. Кухня -  перезагрузка выключателя {{ states('sensor.time_date') }} 
-                 
-                 
-#################### ПЕРЕЗАГРУЗКА ШЛЮЗА ####################
+              - !secret chat_id_log
+            message: |
+              {{"\U0001F916"}} Кухня - перезавантаження вимикача {{ states('sensor.time_date') }}
 
-      - alias: kn_reboot_gateway
-        id: kn_reboot_gateway
-        description: Кухня - перезагрузка шлюза xiaomi
-        initial_state: true
-        trigger:
-    # Проверка раз в 5 минут
+    ##################################################
+    ## ПЕРЕЗАВАНТАЖЕННЯ ШЛЮЗУ
+    ##################################################
+
+    - alias: kn_reboot_gateway
+      id: kn_reboot_gateway
+      description: Кухня - перезавантаження шлюзу Xiaomi
+      initial_state: true
+      trigger:
         - platform: time_pattern
           minutes: '/5'
-        condition:
-    # Переключатель режима работы сервера
+      condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Сенсор определяющий недоступность люстры
         - condition: state
           entity_id: binary_sensor.kn_migateway_unavailable
           state: 'on'
-    # Сенсор электричества
         - condition: state
           entity_id: binary_sensor.blackout_after
-          state: 'off' 
-        action:
-        - service: input_button.press
+          state: 'off'
+      action:
+        - action: input_button.press
           target:
-             entity_id: input_button.kn_gateway_reset
-          data: {}
-        - service: telegram_bot.send_message
-          data_template:
+            entity_id: input_button.kn_gateway_reset
+        - action: telegram_bot.send_message
+          data:
             chat_id:
-                - !secret chat_id_log
-            message: | 
-                 {{"\U0001F916"}} Антонио. Кухня -  перезагрузка шлюза {{ states('sensor.time_date') }}    
+              - !secret chat_id_log
+            message: |
+              {{"\U0001F916"}} Кухня - перезавантаження шлюзу {{ states('sensor.time_date') }}
 
-
-      - alias: kn_reboot_gateway_manual
-        id: kn_reboot_gateway_manual
-        description: Кухня - ручная перезагрузка шлюза xiaomi
-        initial_state: true
-        trigger:
-    ## Виртуальная кнопка
+    - alias: kn_reboot_gateway_manual
+      id: kn_reboot_gateway_manual
+      description: Кухня - ручне перезавантаження шлюзу
+      initial_state: true
+      trigger:
         - platform: state
           entity_id: input_button.kn_gateway_reset
-        action:  
-        - service: switch.turn_off
-          entity_id:
-            - switch.0x00158d000114a1e1
-        - delay: 00:00:03
-        - service: switch.turn_on
-          entity_id:
-            - switch.0x00158d000114a1e1
-        - delay: 00:00:15 
- 
-        - service: homeassistant.reload_config_entry
-          data: {}
+      action:
+        - action: switch.turn_off
           target:
-             entity_id: light.gateway_light_7811dc64f4c8
-             
-             
-#################### ВКЛЮЧЕНИЕ РОЗЕТОК ####################             
-             
-      - alias: kn_reboot_airgrill_turn_on_check
-        id: kn_reboot_airgrill_turn_on_check
-        description: Кухня - включение розетки аэрогриля
-        initial_state: true
-        trigger:
-    # Проверка раз в 5 минут
+            entity_id: switch.0x00158d000114a1e1
+        - delay: 00:00:03
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0x00158d000114a1e1
+        - delay: 00:00:15
+        - action: homeassistant.reload_config_entry
+          target:
+            entity_id: light.gateway_light_7811dc64f4c8
+
+    ##################################################
+    ## КОНТРОЛЬ РОЗЕТОК
+    ##################################################
+
+    - alias: kn_reboot_airgrill_turn_on_check
+      id: kn_reboot_airgrill_turn_on_check
+      description: Кухня - увімкнення розетки аерогриля
+      initial_state: true
+      trigger:
         - platform: time_pattern
           minutes: '/5'
-        condition:
-    # Не включен
+      condition:
         - condition: template
           value_template: "{{ states('switch.0xa4c138d571b656c5') != 'on' }}"
-    # Режим работы
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Сенсор электричества
         - condition: state
           entity_id: binary_sensor.blackout_after
-          state: 'off' 
-        action:
-    # Включение
-        - service: switch.turn_on
-          entity_id: switch.0xa4c138d571b656c5
-          
-      - alias: kn_reboot_microwave_turn_on_check
-        id: kn_reboot_microwave_turn_on_check
-        description: Кухня - включение розетки микроволновки
-        initial_state: true
-        trigger:
-    # Проверка раз в 5 минут
+          state: 'off'
+      action:
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0xa4c138d571b656c5
+
+    - alias: kn_reboot_microwave_turn_on_check
+      id: kn_reboot_microwave_turn_on_check
+      description: Кухня - увімкнення розетки мікрохвильовки
+      initial_state: true
+      trigger:
         - platform: time_pattern
           minutes: '/5'
-        condition:
-    # Не включен
+      condition:
         - condition: template
           value_template: "{{ states('switch.0xa4c138273b49e4d0') != 'on' }}"
-    # Режим работы
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Сенсор электричества
         - condition: state
           entity_id: binary_sensor.blackout_after
-          state: 'off' 
-        action:
-    # Включение
-        - service: switch.turn_on
-          entity_id: switch.0xa4c138273b49e4d0
-          
-      - alias: kn_reboot_kettle_turn_on_check
-        id: kn_reboot_kettle_turn_on_check
-        description: Кухня - включение розетки чайника
-        initial_state: true
-        trigger:
-    # Проверка раз в 5 минут
+          state: 'off'
+      action:
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0xa4c138273b49e4d0
+
+    - alias: kn_reboot_kettle_turn_on_check
+      id: kn_reboot_kettle_turn_on_check
+      description: Кухня - увімкнення розетки чайника
+      initial_state: true
+      trigger:
         - platform: time_pattern
           minutes: '/5'
-        condition:
-    # Не включен
+      condition:
         - condition: template
           value_template: "{{ states('switch.0xa4c1385bcf7d00c9') != 'on' }}"
-    # Режим работы
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Сенсор электричества
         - condition: state
           entity_id: binary_sensor.blackout_after
-          state: 'off' 
-        action:
-    # Включение
-        - service: switch.turn_on
-          entity_id: switch.0xa4c1385bcf7d00c9
-          
-    #   - alias: kn_reboot_grill_turn_on_check
-    #     id: kn_reboot_grill_turn_on_check
-    #     description: Кухня - включение розетки гриля
-    #     initial_state: true
-    #     trigger:
-    # # Проверка раз в 5 минут
-    #     - platform: time_pattern
-    #       minutes: '/5'
-    #     condition:
-    # # Не включен
-    #     - condition: template
-    #       value_template: "{{ states('switch.0xa4c138201dcb67f6') != 'on' }}"
-    # # Режим работы
-    #     - condition: state
-    #       entity_id: switch.control_mode
-    #       state: 'on'
-    # # Сенсор электричества
-    #     - condition: state
-    #       entity_id: binary_sensor.blackout_after
-    #       state: 'off' 
-    #     action:
-    # # Включение
-    #     - service: switch.turn_on
-    #       entity_id: switch.0xa4c138201dcb67f6
-          
-      - alias: kn_reboot_coffemachine_turn_on_check
-        id: kn_reboot_cofeemachine_turn_on_check
-        description: Кухня - включение розетки кофемашины
-        initial_state: true
-        trigger:
-    # Проверка раз в 5 минут
+          state: 'off'
+      action:
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0xa4c1385bcf7d00c9
+
+    - alias: kn_reboot_grill_turn_on_check
+      id: kn_reboot_grill_turn_on_check
+      description: Кухня - увімкнення розетки гриля
+      initial_state: true
+      trigger:
         - platform: time_pattern
           minutes: '/5'
-        condition:
-    # Не включен
+      condition:
         - condition: template
-          value_template: "{{ states('switch.0xa4c13874f3d1d1c0') != 'on' }}"
-    # Режим работы
+          value_template: "{{ states('switch.0xa4c138201dcb67f6') != 'on' }}"
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
-    # Сенсор электричества
         - condition: state
           entity_id: binary_sensor.blackout_after
-          state: 'off' 
-        action:
-    # Включение
-        - service: switch.turn_on
-          entity_id: switch.0xa4c13874f3d1d1c0
+          state: 'off'
+      action:
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0xa4c138201dcb67f6
+
+    - alias: kn_reboot_coffemachine_turn_on_check
+      id: kn_reboot_coffemachine_turn_on_check
+      description: Кухня - увімкнення розетки кавомашини
+      initial_state: true
+      trigger:
+        - platform: time_pattern
+          minutes: '/5'
+      condition:
+        - condition: template
+          value_template: "{{ states('switch.0xa4c13874f3d1d1c0') != 'on' }}"
+        - condition: state
+          entity_id: switch.control_mode
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: 'off'
+      action:
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0xa4c13874f3d1d1c0

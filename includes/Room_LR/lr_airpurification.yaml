@@ -1,0 +1,219 @@
+##################################################
+## Актуалізовано: 2026-03-24
+##################################################
+
+lr_airpurification:
+
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
+
+  homeassistant:
+    customize:
+      input_boolean.lr_airpurification_mode:
+        friendly_name: Вітальня очищувач повітря - режим роботи
+        icon: mdi:air-purifier
+
+      binary_sensor.lr_airpurifier_allowed:
+        friendly_name: Вітальня очищувач повітря - дозвіл роботи
+        icon: mdi:check-decagram
+
+      binary_sensor.lr_airpurifier_need:
+        friendly_name: Вітальня очищувач повітря - потреба в очищенні
+        icon: mdi:blur
+
+      automation.lr_airpurification_control:
+        friendly_name: Вітальня очищувач повітря - керування
+        icon: mdi:air-purifier
+
+  ##################################################
+  ## INPUT_BOOLEAN
+  ##################################################
+
+  input_boolean:
+
+    ##################################################
+    ## РЕЖИМ РОБОТИ ОЧИЩУВАЧА ПОВІТРЯ
+    ##################################################
+
+    lr_airpurification_mode:
+      name: lr_airpurification_mode
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    - binary_sensor:
+
+        ##################################################
+        ## ДОЗВІЛ НА РОБОТУ ОЧИЩУВАЧА ПОВІТРЯ
+        ##################################################
+
+        - name: lr_airpurifier_allowed
+          unique_id: lr_airpurifier_allowed
+          state: >
+            {{ is_state('binary_sensor.lr_aeration', 'off') }}
+
+        ##################################################
+        ## ПОТРЕБА В ОЧИЩЕННІ ПОВІТРЯ
+        ##################################################
+
+        - name: lr_airpurifier_need
+          unique_id: lr_airpurifier_need
+          state: >
+            {{ states('sensor.zhimi_airpurifier_m1_pm2_5') | float(0) >= 12 }}
+          delay_on:
+            minutes: 2
+          delay_off:
+            minutes: 5
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    ##################################################
+    ## КЕРУВАННЯ ОЧИЩУВАЧЕМ ПОВІТРЯ
+    ##################################################
+
+    - alias: lr_airpurification_control
+      id: lr_airpurification_control
+      description: Керування очищувачем повітря у вітальні
+      mode: single
+
+      trigger:
+        - platform: state
+          entity_id:
+            - input_boolean.lr_airpurification_mode
+            - binary_sensor.lr_airpurifier_allowed
+            - binary_sensor.lr_airpurifier_need
+            - fan.zhimi_airpurifier_m1
+
+        - platform: homeassistant
+          event: start
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - choose:
+
+            ##################################################
+            ## ВИМКНЕННЯ ОЧИЩУВАЧА
+            ##################################################
+
+            - conditions:
+                - condition: template
+                  value_template: >
+                    {{
+                      is_state('fan.zhimi_airpurifier_m1', 'on')
+                      and (
+                        is_state('input_boolean.lr_airpurification_mode', 'off')
+                        or is_state('binary_sensor.lr_airpurifier_allowed', 'off')
+                        or (
+                          is_state('binary_sensor.night_time', 'off')
+                          and is_state('binary_sensor.lr_airpurifier_need', 'off')
+                        )
+                      )
+                    }}
+              sequence:
+                - action: fan.turn_off
+                  target:
+                    entity_id: fan.zhimi_airpurifier_m1
+
+            ##################################################
+            ## НІЧНИЙ ТИХИЙ РЕЖИМ
+            ##################################################
+
+            - conditions:
+                - condition: template
+                  value_template: >
+                    {{
+                      is_state('input_boolean.lr_airpurification_mode', 'on')
+                      and is_state('binary_sensor.lr_airpurifier_allowed', 'on')
+                      and is_state('binary_sensor.night_time', 'on')
+                    }}
+              sequence:
+                - if:
+                    - condition: state
+                      entity_id: fan.zhimi_airpurifier_m1
+                      state: "off"
+                  then:
+                    - action: fan.turn_on
+                      target:
+                        entity_id: fan.zhimi_airpurifier_m1
+
+                - if:
+                    - condition: template
+                      value_template: >
+                        {{ states('number.zhimi_airpurifier_m1_favorite_level') | int(0) != 4 }}
+                  then:
+                    - action: number.set_value
+                      target:
+                        entity_id: number.zhimi_airpurifier_m1_favorite_level
+                      data:
+                        value: 4
+
+            ##################################################
+            ## ДЕННИЙ РЕЖИМ ОЧИЩЕННЯ
+            ##################################################
+
+            - conditions:
+                - condition: template
+                  value_template: >
+                    {{
+                      is_state('input_boolean.lr_airpurification_mode', 'on')
+                      and is_state('binary_sensor.lr_airpurifier_allowed', 'on')
+                      and is_state('binary_sensor.night_time', 'off')
+                      and is_state('binary_sensor.lr_airpurifier_need', 'on')
+                    }}
+              sequence:
+                - if:
+                    - condition: state
+                      entity_id: fan.zhimi_airpurifier_m1
+                      state: "off"
+                  then:
+                    - action: fan.turn_on
+                      target:
+                        entity_id: fan.zhimi_airpurifier_m1
+
+                - choose:
+                    - conditions:
+                        - condition: numeric_state
+                          entity_id: sensor.zhimi_airpurifier_m1_pm2_5
+                          above: 35
+                      sequence:
+                        - action: number.set_value
+                          target:
+                            entity_id: number.zhimi_airpurifier_m1_favorite_level
+                          data:
+                            value: 16
+
+                    - conditions:
+                        - condition: numeric_state
+                          entity_id: sensor.zhimi_airpurifier_m1_pm2_5
+                          above: 20
+                          below: 36
+                      sequence:
+                        - action: number.set_value
+                          target:
+                            entity_id: number.zhimi_airpurifier_m1_favorite_level
+                          data:
+                            value: 12
+
+                    - conditions:
+                        - condition: numeric_state
+                          entity_id: sensor.zhimi_airpurifier_m1_pm2_5
+                          above: 12
+                          below: 21
+                      sequence:
+                        - action: number.set_value
+                          target:
+                            entity_id: number.zhimi_airpurifier_m1_favorite_level
+                          data:
+                            value: 8

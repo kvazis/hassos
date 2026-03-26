@@ -1,243 +1,332 @@
+##################################################
+## Актуалізовано: 2026-03-24
+##################################################
+
 alarm:
 
-    homeassistant:
-      customize:
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-        binary_sensor.0x842e14fffef6d9e5_smoke:
-          friendly_name: Кухня дым
-        sensor.0x842e14fffef6d9e5_battery:
-          friendly_name: Кухня дым
-          
-        binary_sensor.0x00158d000149d28b_smoke:
-          friendly_name: Прихожая дым
-        sensor.0x00158d000149d28b_battery:
-          friendly_name: Прихожая дым
+  homeassistant:
+    customize:
 
-        binary_sensor.0x00158d0001bbeba6_water_leak:
-          friendly_name:  Туалет протечка
-        sensor.0x00158d0001bbeba6_battery:
-          friendly_name:  Туалет протечка
-          
-        binary_sensor.0x00158d0002705b7b_water_leak:
-          friendly_name:  Прачечная протечка
-        sensor.0x00158d0002705b7b_battery:
-          friendly_name:  Прачечная протечка
+      binary_sensor.0x842e14fffef6d9e5_smoke:
+        friendly_name: Кухня - дим
 
-        binary_sensor.0xec1bbdfffe8f1e42_water_leak:
-          friendly_name: Кухня протечка
-        sensor.0xec1bbdfffe8f1e42_battery:
-          friendly_name: Кухня протечка
+      sensor.0x842e14fffef6d9e5_battery:
+        friendly_name: Кухня - батарея
 
-        binary_sensor.0x00158d0001d72fa2_water_leak:
-          friendly_name: Ванная протечка, раковина
-        sensor.0x00158d0001d72fa2_battery:
-          friendly_name: Ванная протечка, раковина
-          
-        binary_sensor.0x00158d0001bb60c2_water_leak:
-          friendly_name: Ванная протечка, душевая
-        sensor.0x00158d0001bb60c2_battery:
-          friendly_name: Ванная протечка, душевая
-          
-    template:
-    
-      - sensor:
+      binary_sensor.0x00158d000149d28b_smoke:
+        friendly_name: Передпокій - дим
 
-################# Датчики дыма #################    
-          - name: smoke_detect
-            unique_id: smoke_detect
-            state: >
-                {% set variable = namespace(value = {}) %}
-                {% for entity in states.binary_sensor if is_state(entity.entity_id, 'on')   
+      sensor.0x00158d000149d28b_battery:
+        friendly_name: Передпокій - батарея
+
+      binary_sensor.0x00158d0001bbeba6_water_leak:
+        friendly_name: Туалет - протікання
+
+      sensor.0x00158d0001bbeba6_battery:
+        friendly_name: Туалет - батарея
+
+      binary_sensor.0x00158d0002705b7b_water_leak:
+        friendly_name: Пральня - протікання
+
+      sensor.0x00158d0002705b7b_battery:
+        friendly_name: Пральня - батарея
+
+      binary_sensor.0xec1bbdfffe8f1e42_water_leak:
+        friendly_name: Кухня - протікання
+
+      sensor.0xec1bbdfffe8f1e42_battery:
+        friendly_name: Кухня - батарея
+
+      binary_sensor.0x00158d0001d72fa2_water_leak:
+        friendly_name: Ванна - протікання раковини
+
+      sensor.0x00158d0001d72fa2_battery:
+        friendly_name: Ванна - батарея раковини
+
+      binary_sensor.0x00158d0001bb60c2_water_leak:
+        friendly_name: Ванна - протікання душу
+
+      sensor.0x00158d0001bb60c2_battery:
+        friendly_name: Ванна - батарея душу
+
+      sensor.smoke_detect:
+        friendly_name: Сигналізація - дим
+        icon: mdi:smoke-detector-alert
+
+      sensor.water_leak_detect:
+        friendly_name: Сигналізація - протікання
+        icon: mdi:water-alert
+
+      automation.alarm_control_smoke_detect:
+        friendly_name: Сигналізація - контроль диму
+        icon: mdi:smoke-detector-alert
+
+      automation.alarm_control_water_detect:
+        friendly_name: Сигналізація - контроль протікання
+        icon: mdi:water-alert
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    ##################################################
+    ## ДАТЧИКИ ДИМУ
+    ##################################################
+
+    - sensor:
+        - name: smoke_detect
+          unique_id: smoke_detect
+          state: >
+            {% set variable = namespace(value = {}) %}
+            {% for entity in states.binary_sensor
+              if is_state(entity.entity_id, 'on')
+              and is_state_attr(entity.entity_id, 'device_class', 'smoke') %}
+              {% set variable.value = dict(variable.value, **{entity.name: entity.state}) %}
+            {% endfor %}
+            {{ (variable.value | length) | int(0) }}
+          attributes:
+            list_entities: >
+              {% set variable = namespace(value = {}) %}
+              {% for entity in states.binary_sensor
+                if is_state(entity.entity_id, 'on')
                 and is_state_attr(entity.entity_id, 'device_class', 'smoke') %}
-                 {% set variable.value = dict(variable.value, **{entity.name: entity.state }) %}
-                {% endfor %}
-                {% if (variable.value | length) | int > 0 %}
-                {{ variable.value | length }}
-                {% else %}
-                 0
-                {% endif %}
-            attributes:
-              list_entities: >
-                {% set variable = namespace(value = {}) %}
-                {% for entity in states.binary_sensor if is_state(entity.entity_id, 'on')   
-                  and is_state_attr(entity.entity_id, 'device_class', 'smoke') %}
-                 {% set variable.value = dict(variable.value, **{entity.name: entity.state }) %}
-                {% endfor %}
-                {{ variable.value |dictsort(false, 'value') }}
-                
-################# Датчики протечки #################    
-          - name: water_leak_detect
-            unique_id: water_leak_detect
-            state: >
-                {% set variable = namespace(value = {}) %}
-                {% for entity in states.binary_sensor if is_state(entity.entity_id, 'on')   
+                {% set variable.value = dict(variable.value, **{entity.name: entity.state}) %}
+              {% endfor %}
+              {{ variable.value | dictsort(false, 'value') }}
+
+    ##################################################
+    ## ДАТЧИКИ ПРОТІКАННЯ
+    ##################################################
+
+    - sensor:
+        - name: water_leak_detect
+          unique_id: water_leak_detect
+          state: >
+            {% set variable = namespace(value = {}) %}
+            {% for entity in states.binary_sensor
+              if is_state(entity.entity_id, 'on')
+              and is_state_attr(entity.entity_id, 'device_class', 'moisture') %}
+              {% set variable.value = dict(variable.value, **{entity.name: entity.state}) %}
+            {% endfor %}
+            {{ (variable.value | length) | int(0) }}
+          attributes:
+            list_entities: >
+              {% set variable = namespace(value = {}) %}
+              {% for entity in states.binary_sensor
+                if is_state(entity.entity_id, 'on')
                 and is_state_attr(entity.entity_id, 'device_class', 'moisture') %}
-                 {% set variable.value = dict(variable.value, **{entity.name: entity.state }) %}
-                {% endfor %}
-                {% if (variable.value | length) | int > 0 %}
-                {{ variable.value | length }}
-                {% else %}
-                 0
-                {% endif %}
-            attributes:
-              list_entities: >
-                {% set variable = namespace(value = {}) %}
-                {% for entity in states.binary_sensor if is_state(entity.entity_id, 'on')   
-                  and is_state_attr(entity.entity_id, 'device_class', 'moisture') %}
-                 {% set variable.value = dict(variable.value, **{entity.name: entity.state }) %}
-                {% endfor %}
-                {{ variable.value |dictsort(false, 'value') }}
+                {% set variable.value = dict(variable.value, **{entity.name: entity.state}) %}
+              {% endfor %}
+              {{ variable.value | dictsort(false, 'value') }}
 
-    automation: 
-    
-      - alias: control_smoke_detect
-        id: control_smoke_detect
-        description: Сработка датчиков дыма
-        initial_state: true
-        trigger:
-         - platform: template
-           value_template: "{{ (states('sensor.smoke_detect')|int) > 0 }}"
-         - platform: template
-           value_template: "{{ (states('sensor.smoke_detect')|int) == 0 }}"
-        condition:
-          - condition: state
-            entity_id: switch.control_mode
-            state: 'on'
-        action:
-            - choose:
+  ##################################################
+  ## AUTOMATION
+  ##################################################
 
-              - conditions:
-                  - condition: template
-                    value_template: "{{ (states('sensor.smoke_detect')|int) > 0 }}"
-                sequence:
-                  - action: telegram_bot.send_message
-                    data:
-                      chat_id:
-                        - !secret chat_id_group_tech
-                      message: |
-                         {{'\U000026A0'}} *Обнаружен дым, время события {{ states('sensor.time_date') }} * 
-                         *{% for entity_name, entity_state in state_attr('sensor.smoke_detect', 'list_entities')-%} {{ entity_name }} {{ '\n' -}} {% endfor %}*
-                  - service: light.turn_on
-                    entity_id: 
-                       - light.yeelight_ceiling4_0x456e813_ambilight
-                       - light.yeelight_ceiling4_0x49c726b_ambilight
-                       - light.yeelight_ceiling4_0x4a1dacd_ambilight
-                    data:
-                      brightness_pct: 70
-                      color_name: red
-                      transition: 2
-                  - service: tts.reversotts_say
-                    entity_id: 
+  automation:
+
+    ##################################################
+    ## КОНТРОЛЬ ДИМУ
+    ##################################################
+
+    - alias: alarm_control_smoke_detect
+      id: alarm_control_smoke_detect
+      description: Контроль датчиків диму
+      initial_state: true
+
+      trigger:
+        - platform: template
+          value_template: "{{ states('sensor.smoke_detect') | int(0) > 0 }}"
+
+        - platform: template
+          value_template: "{{ states('sensor.smoke_detect') | int(0) == 0 }}"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ states('sensor.smoke_detect') | int(0) > 0 }}"
+              sequence:
+                - action: telegram_bot.send_message
+                  data:
+                    chat_id:
+                      - !secret chat_id_group_tech
+                    message: |
+                      {{ '\U000026A0' }} Виявлено дим {{ states('sensor.time_date') }}
+                      {% for entity_name, entity_state in state_attr('sensor.smoke_detect', 'list_entities') -%}
+                      {{ entity_name }}
+                      {% endfor %}
+
+                - action: light.turn_on
+                  target:
+                    entity_id:
+                      - light.yeelight_ceiling4_0x456e813_ambilight
+                      - light.yeelight_ceiling4_0x49c726b_ambilight
+                      - light.yeelight_ceiling4_0x4a1dacd_ambilight
+                  data:
+                    brightness_pct: 70
+                    color_name: red
+                    transition: 2
+
+                - action: tts.reversotts_say
+                  target:
+                    entity_id:
                       - media_player.living_room
                       - media_player.mi_smart_clock
-                    data:
-                      message: "Обнаружен дым {% for entity_name, entity_state in state_attr('sensor.smoke_detect', 'list_entities')-%} {{ entity_name }} {{ '\n' -}} {% endfor %}"
-                
+                  data:
+                    message: >
+                      Виявлено дим
+                      {% for entity_name, entity_state in state_attr('sensor.smoke_detect', 'list_entities') -%}
+                      {{ entity_name }}
+                      {% endfor %}
 
-              - conditions:
-                  - condition: template
-                    value_template: "{{ (states('sensor.smoke_detect')|int) == 0 }}"
-                sequence:
-                  - action: telegram_bot.send_message
-                    data:
-                      target:
-                        - !secret chat_id_group_tech
-                      message: | 
-                           {{"\U0001F44C"}} Задымления нет
-                  - service: light.turn_on
-                    entity_id: 
-                       - light.yeelight_ceiling4_0x456e813_ambilight
-                       - light.yeelight_ceiling4_0x49c726b_ambilight
-                       - light.yeelight_ceiling4_0x4a1dacd_ambilight
-                    data:
-                      brightness_pct: 70
-                      color_name: green
-                      transition: 2
-                  - delay: 00:00:10
-                  - service: light.turn_off
-                    entity_id: 
+            - conditions:
+                - condition: template
+                  value_template: "{{ states('sensor.smoke_detect') | int(0) == 0 }}"
+              sequence:
+                - action: telegram_bot.send_message
+                  data:
+                    target:
+                      - !secret chat_id_group_tech
+                    message: >
+                      Задимлення відсутнє
+
+                - action: light.turn_on
+                  target:
+                    entity_id:
+                      - light.yeelight_ceiling4_0x456e813_ambilight
+                      - light.yeelight_ceiling4_0x49c726b_ambilight
+                      - light.yeelight_ceiling4_0x4a1dacd_ambilight
+                  data:
+                    brightness_pct: 70
+                    color_name: green
+                    transition: 2
+
+                - delay: "00:00:10"
+
+                - action: light.turn_off
+                  target:
+                    entity_id:
                       - light.yeelight_ceiling4_0x49c726b_ambilight
                       - light.yeelight_ceiling4_0x4a1dacd_ambilight
                       - light.yeelight_ceiling4_0x456e813_ambilight
-                  - service: tts.reversotts_say
-                    entity_id: 
+
+                - action: tts.reversotts_say
+                  target:
+                    entity_id:
                       - media_player.living_room
                       - media_player.mi_smart_clock
-                    data:
-                      message: "Все в порядке, дыма нет"
-   
+                  data:
+                    message: >
+                      Диму немає
 
-      - alias: control_water_detect
-        id: control_water_detect
-        description: Сработка датчиков протечки
-        initial_state: true
-        trigger:
-         - platform: template
-           value_template: "{{ (states('sensor.water_leak_detect')|int) > 0 }}"
-         - platform: template
-           value_template: "{{ (states('sensor.water_leak_detect')|int) == 0 }}"
-        condition:
-          - condition: state
-            entity_id: switch.control_mode
-            state: 'on'
-        action:
-            - choose:
+    ##################################################
+    ## КОНТРОЛЬ ПРОТІКАННЯ
+    ##################################################
 
-              - conditions:
-                  - condition: template
-                    value_template: "{{ (states('sensor.water_leak_detect')|int) > 0 }}"
-                sequence:
-                  - action: telegram_bot.send_message
-                    data:
-                      chat_id:
-                        - !secret chat_id_group_tech
-                      message: |
-                         {{'\U000026A0'}} *Обнаружена протечка, время события {{ states('sensor.time_date') }} * 
-                         *{% for entity_name, entity_state in state_attr('sensor.water_leak_detect', 'list_entities')-%} {{ entity_name }} {{ '\n' -}} {% endfor %}*
-                  - service: light.turn_on
-                    entity_id: 
-                       - light.yeelight_ceiling4_0x456e813_ambilight
-                       - light.yeelight_ceiling4_0x49c726b_ambilight
-                       - light.yeelight_ceiling4_0x4a1dacd_ambilight
-                    data:
-                      brightness_pct: 70
-                      color_name: red
-                      transition: 2
-                  - service: tts.reversotts_say
-                    entity_id: 
+    - alias: alarm_control_water_detect
+      id: alarm_control_water_detect
+      description: Контроль датчиків протікання
+      initial_state: true
+
+      trigger:
+        - platform: template
+          value_template: "{{ states('sensor.water_leak_detect') | int(0) > 0 }}"
+
+        - platform: template
+          value_template: "{{ states('sensor.water_leak_detect') | int(0) == 0 }}"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - choose:
+            - conditions:
+                - condition: template
+                  value_template: "{{ states('sensor.water_leak_detect') | int(0) > 0 }}"
+              sequence:
+                - action: telegram_bot.send_message
+                  data:
+                    chat_id:
+                      - !secret chat_id_group_tech
+                    message: |
+                      {{ '\U000026A0' }} Виявлено протікання {{ states('sensor.time_date') }}
+                      {% for entity_name, entity_state in state_attr('sensor.water_leak_detect', 'list_entities') -%}
+                      {{ entity_name }}
+                      {% endfor %}
+
+                - action: light.turn_on
+                  target:
+                    entity_id:
+                      - light.yeelight_ceiling4_0x456e813_ambilight
+                      - light.yeelight_ceiling4_0x49c726b_ambilight
+                      - light.yeelight_ceiling4_0x4a1dacd_ambilight
+                  data:
+                    brightness_pct: 70
+                    color_name: red
+                    transition: 2
+
+                - action: tts.reversotts_say
+                  target:
+                    entity_id:
                       - media_player.living_room
                       - media_player.mi_smart_clock
-                    data:
-                      message: "Обнаружена протечка {% for entity_name, entity_state in state_attr('sensor.water_leak_detect', 'list_entities')-%} {{ entity_name }} {{ '\n' -}} {% endfor %}"
+                  data:
+                    message: >
+                      Виявлено протікання
+                      {% for entity_name, entity_state in state_attr('sensor.water_leak_detect', 'list_entities') -%}
+                      {{ entity_name }}
+                      {% endfor %}
 
-              - conditions:
-                  - condition: template
-                    value_template: "{{ (states('sensor.water_leak_detect')|int) == 0 }}"
-                sequence:
-                  - action: telegram_bot.send_message
-                    data:
-                      target:
-                        - !secret chat_id_group_tech
-                      message: | 
-                           {{"\U0001F44C"}} Протечка устранена
-                  - service: light.turn_on
-                    entity_id: 
-                       - light.yeelight_ceiling4_0x456e813_ambilight
-                       - light.yeelight_ceiling4_0x49c726b_ambilight
-                       - light.yeelight_ceiling4_0x4a1dacd_ambilight
-                    data:
-                      brightness_pct: 70
-                      color_name: green
-                      transition: 2
-                  - delay: 00:00:10
-                  - service: light.turn_off
-                    entity_id: 
+            - conditions:
+                - condition: template
+                  value_template: "{{ states('sensor.water_leak_detect') | int(0) == 0 }}"
+              sequence:
+                - action: telegram_bot.send_message
+                  data:
+                    target:
+                      - !secret chat_id_group_tech
+                    message: >
+                      Протікання усунено
+
+                - action: light.turn_on
+                  target:
+                    entity_id:
+                      - light.yeelight_ceiling4_0x456e813_ambilight
+                      - light.yeelight_ceiling4_0x49c726b_ambilight
+                      - light.yeelight_ceiling4_0x4a1dacd_ambilight
+                  data:
+                    brightness_pct: 70
+                    color_name: green
+                    transition: 2
+
+                - delay: "00:00:10"
+
+                - action: light.turn_off
+                  target:
+                    entity_id:
                       - light.yeelight_ceiling4_0x49c726b_ambilight
                       - light.yeelight_ceiling4_0x4a1dacd_ambilight
                       - light.yeelight_ceiling4_0x456e813_ambilight
-                  - service: tts.reversotts_say
-                    entity_id: 
+
+                - action: tts.reversotts_say
+                  target:
+                    entity_id:
                       - media_player.living_room
                       - media_player.mi_smart_clock
-                    data:
-                      message: "Все в порядке, протечка устранена"
+                  data:
+                    message: >
+                      Протікання усунено

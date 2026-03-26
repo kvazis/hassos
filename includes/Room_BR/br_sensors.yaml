@@ -1,121 +1,126 @@
+##################################################
+## Актуалізовано: 2026-03-24
+##################################################
+
 br_sensors:
 
-    recorder:
-      include:
-        entities:
-           - sensor.0x00158d000156e92e_temperature
-           - sensor.0x00158d000156e92e_humidity
-           
-           - sensor.0xa4c138b7e1e0812c_temperature
-           - sensor.0xa4c138b7e1e0812c_humidity
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-           - sensor.br_co2_carbon_dioxide
-           - sensor.br_co2_temperature
-           - sensor.br_co2_humidity
+  homeassistant:
+    customize:
 
-           - sensor.0x00158d0001fa8321_temperature
-           - sensor.0x00158d0001fa8321_humidity
-           - sensor.0x00158d0001fa8321_pressure
-           
-           - binary_sensor.0x00158d0001a66222_occupancy
-           - binary_sensor.0xec1bbdfffe4521a3_occupancy
-           
-           - sensor.0xa4c13805b968f3d2_illuminance
+      binary_sensor.br_aeration:
+        friendly_name: Спальня - провітрювання
 
-    homeassistant:
-      customize:
+      binary_sensor.0x00158d0001a66222_occupancy:
+        friendly_name: Спальня - датчик руху Aqara
 
-############# Кімната
-        
-        binary_sensor.br_aeration:
-          friendly_name: Спальня провітрювання
+      sensor.0x00158d0001a66222_illuminance_lux:
+        friendly_name: Спальня - датчик руху Aqara освітленість
 
-        binary_sensor.0x00158d0001a66222_occupancy:
-          friendly_name: Спальня, датчик руху Aqara
-        sensor.0x00158d0001a66222_illuminance_lux:
-          friendly_name: Спальня, датчик руху Aqara - освітленність
-        sensor.0x00158d0001a66222_battery:
-          friendly_name: Спальня, датчик руху Aqara - заряд
+      sensor.0x00158d0001a66222_battery:
+        friendly_name: Спальня - датчик руху Aqara заряд
 
-        sensor.br_co2_carbon_dioxide:
-          friendly_name: Спальня, Sonoff рівень CO2
-        sensor.br_co2_temperature:
-          friendly_name: Спальня, Sonoff температура
-        sensor.br_co2_humidity:
-          friendly_name: Спальня, Sonoff вологість
+      sensor.br_co2_carbon_dioxide:
+        friendly_name: Спальня - Sonoff CO2
 
-        binary_sensor.0x00158d0001193697_contact:
-          friendly_name: Спальня, датчик вікна
-          device_class: window
-        sensor.0x00158d0001193697_battery:
-          friendly_name: Спальня, датчик вікна - заряд
+      sensor.br_co2_temperature:
+        friendly_name: Спальня - Sonoff температура
 
-        sensor.0x00158d000156e92e_humidity:
-          friendly_name: Спальня, датчик Mi - вологість
-          icon: mdi:water-percent
-        sensor.0x00158d000156e92e_temperature:
-          friendly_name: Спальня, датчик Mi - температура
-          icon: mdi:temperature-celsius
-        sensor.0x00158d000156e92e_battery:
-          friendly_name: Спальня, датчик Mi - заряд
+      sensor.br_co2_humidity:
+        friendly_name: Спальня - Sonoff вологість
 
-        sensor.0xa4c138b7e1e0812c_humidity:
-          friendly_name: Спальня, датчик з екраном - вологість
-          icon: mdi:water-percent
-        sensor.0xa4c138b7e1e0812c_temperature:
-          friendly_name: Спальня, датчик з екраном - температура
-          icon: mdi:temperature-celsius
-        sensor.0xa4c138b7e1e0812c_battery:
-          friendly_name: Спальня, датчик з екраном - заряд
+      binary_sensor.0x00158d0001193697_contact:
+        friendly_name: Спальня - датчик вікна
 
-        sensor.0xa4c13805b968f3d2_illuminance:
-          friendly_name: Спальня, датчик освітленності Moes 
-        sensor.0xa4c13805b968f3d2_battery:
-          friendly_name: Спальня, датчик освітленності Moes - заряд 
-          
-############# Балкон
+      sensor.0x00158d0001193697_battery:
+        friendly_name: Спальня - датчик вікна заряд
 
-        binary_sensor.0x00158d00015843d4_contact:
-          friendly_name: Спальня, датчик дверей балкону
-          device_class: door
-        sensor.0x00158d00015843d4_battery:
-          friendly_name: Спальня, датчик дверей балкону - заряд 
+      sensor.0x00158d000156e92e_humidity:
+        friendly_name: Спальня - датчик Mi вологість
+        icon: mdi:water-percent
 
-        binary_sensor.0x00158d0001a65b68_contact:
-          friendly_name: Спальня, датчик вікна балкону Aqara
-          device_class: window
-        sensor.0x00158d0001a65b68_battery:
-          friendly_name: Спальня, датчик вікна балкону Aqara - заряд 
-          
-        binary_sensor.0xec1bbdfffe3a653e_contact:
-          friendly_name: Спальня, датчик вікна балкону Tuya
-          device_class: window
-        sensor.0xec1bbdfffe3a653e_battery:
-          friendly_name: Спальня, датчик вікна балкону Tuya - заряд
-          
-        sensor.0x00158d0001fa8321_humidity:
-          friendly_name: Спальня балкон, датчик Aqara - вологість
-          icon: mdi:water-percent
-        sensor.0x00158d0001fa8321_temperature:
-          friendly_name: Спальня балкон, датчик Aqara - температура
-          icon: mdi:temperature-celsius
-        sensor.0x00158d0001fa8321_pressure:
-          friendly_name: Спальня балкон, датчик Aqara - тиск
-          device_class: pressure
-        sensor.0x00158d0001fa8321_battery:
-          friendly_name: Спальня балкон, датчик Aqara - заряд
-          
-        binary_sensor.0xec1bbdfffe4521a3_occupancy:
-          friendly_name: Спальня балкон, датчик руху Tuya
-        sensor.0xec1bbdfffe4521a3_battery:
-          friendly_name: Спальня балкон, датчик руху Tuya - заряд
-          
+      sensor.0x00158d000156e92e_temperature:
+        friendly_name: Спальня - датчик Mi температура
+        icon: mdi:temperature-celsius
 
-          
-          
-          
-          
-          
-          
-          
-          
+      sensor.0x00158d000156e92e_battery:
+        friendly_name: Спальня - датчик Mi заряд
+
+      sensor.0xa4c138b7e1e0812c_humidity:
+        friendly_name: Спальня - датчик з екраном вологість
+        icon: mdi:water-percent
+
+      sensor.0xa4c138b7e1e0812c_temperature:
+        friendly_name: Спальня - датчик з екраном температура
+        icon: mdi:temperature-celsius
+
+      sensor.0xa4c138b7e1e0812c_battery:
+        friendly_name: Спальня - датчик з екраном заряд
+
+      sensor.0xa4c13805b968f3d2_illuminance:
+        friendly_name: Спальня - датчик освітленості Moes
+
+      sensor.0xa4c13805b968f3d2_battery:
+        friendly_name: Спальня - датчик освітленості Moes заряд
+
+      binary_sensor.0x00158d00015843d4_contact:
+        friendly_name: Спальня балкон - датчик дверей
+
+      sensor.0x00158d00015843d4_battery:
+        friendly_name: Спальня балкон - датчик дверей заряд
+
+      binary_sensor.0x00158d0001a65b68_contact:
+        friendly_name: Спальня балкон - датчик вікна Aqara
+
+      sensor.0x00158d0001a65b68_battery:
+        friendly_name: Спальня балкон - датчик вікна Aqara заряд
+
+      binary_sensor.0xec1bbdfffe3a653e_contact:
+        friendly_name: Спальня балкон - датчик вікна Tuya
+
+      sensor.0xec1bbdfffe3a653e_battery:
+        friendly_name: Спальня балкон - датчик вікна Tuya заряд
+
+      sensor.0x00158d0001fa8321_humidity:
+        friendly_name: Спальня балкон - датчик Aqara вологість
+        icon: mdi:water-percent
+
+      sensor.0x00158d0001fa8321_temperature:
+        friendly_name: Спальня балкон - датчик Aqara температура
+        icon: mdi:temperature-celsius
+
+      sensor.0x00158d0001fa8321_pressure:
+        friendly_name: Спальня балкон - датчик Aqara тиск
+
+      sensor.0x00158d0001fa8321_battery:
+        friendly_name: Спальня балкон - датчик Aqara заряд
+
+      binary_sensor.0xec1bbdfffe4521a3_occupancy:
+        friendly_name: Спальня балкон - датчик руху Tuya
+
+      sensor.0xec1bbdfffe4521a3_battery:
+        friendly_name: Спальня балкон - датчик руху Tuya заряд
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - sensor.0x00158d000156e92e_temperature
+        - sensor.0x00158d000156e92e_humidity
+        - sensor.0xa4c138b7e1e0812c_temperature
+        - sensor.0xa4c138b7e1e0812c_humidity
+        - sensor.br_co2_carbon_dioxide
+        - sensor.br_co2_temperature
+        - sensor.br_co2_humidity
+        - sensor.0x00158d0001fa8321_temperature
+        - sensor.0x00158d0001fa8321_humidity
+        - sensor.0x00158d0001fa8321_pressure
+        - binary_sensor.0x00158d0001a66222_occupancy
+        - binary_sensor.0xec1bbdfffe4521a3_occupancy
+        - sensor.0xa4c13805b968f3d2_illuminance

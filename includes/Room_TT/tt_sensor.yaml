@@ -1,12 +1,42 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 tt_sensors:
 
-    recorder:
-      include:
-        entities:
-           - sensor.0xec1bbdfffe6f3394_temperature
-           - sensor.0xec1bbdfffe6f3394_humidity
-           - binary_sensor.0x00158d0001a24e71_occupancy
-           - binary_sensor.0x70ac08fffe63561c_presence
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
+
+  homeassistant:
+    customize:
+      sensor.0xec1bbdfffe6f3394_temperature:
+        friendly_name: Туалет - температура
+        icon: mdi:thermometer
+
+      sensor.0xec1bbdfffe6f3394_humidity:
+        friendly_name: Туалет - вологість
+        icon: mdi:water-percent
+
+      binary_sensor.0x00158d0001a24e71_occupancy:
+        friendly_name: Туалет - рух
+        icon: mdi:motion-sensor
+
+      binary_sensor.0x70ac08fffe63561c_presence:
+        friendly_name: Туалет - присутність
+        icon: mdi:account
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - sensor.0xec1bbdfffe6f3394_temperature
+        - sensor.0xec1bbdfffe6f3394_humidity
+        - binary_sensor.0x00158d0001a24e71_occupancy
+        - binary_sensor.0x70ac08fffe63561c_presence
 
 
           

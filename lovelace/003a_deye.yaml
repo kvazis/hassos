@@ -159,6 +159,111 @@ sections:
               icon: mdi:power-socket-eu
               display_zero: true
 
+      - type: custom:sunsynk-power-flow-card
+        cardstyle: compact
+        show_solar: false
+        show_grid: true
+        show_battery: true
+        show_loads: true
+
+        inverter:
+          modern: true
+          model: deye
+          autarky: none
+          three_phase: true
+
+        battery:
+          shutdown_soc: 15
+          auto_scale: true
+          invert_power: false
+          energy: sensor.deye_sun15_battery_capacity
+
+        entities:
+          grid_power_169: sensor.deye_sun15_grid_power
+          grid_ct_power_172: sensor.deye_sun15_grid_power
+          grid_connected_status_194: binary_sensor.deye_sun15_grid
+
+          battery_soc_184: sensor.deye_sun15_battery
+          battery_power_190: sensor.deye_sun15_battery_power
+          battery_voltage_183: sensor.deye_sun15_battery_voltage
+          battery_current_191: sensor.deye_sun15_battery_current
+
+          load_power_172: sensor.deye_sun15_load_power
+          essential_power: sensor.deye_sun15_load_power
+
+          load_power_L1: sensor.deye_sun15_load_l1_power
+          load_power_L2: sensor.deye_sun15_load_l2_power
+          load_power_L3: sensor.deye_sun15_load_l3_power
+
+          inverter_power_175: sensor.deye_sun15_internal_power
+
+      - type: grid
+        square: false
+        columns: 3
+        cards:
+          - type: custom:mushroom-template-card
+            primary: L1
+            secondary: |-
+              {{ states('sensor.deye_sun15_load_l1_power') | float | round(0) }} Вт
+            layout: vertical
+            entity: sensor.deye_sun15_load_l1_power
+            icon: mdi:lightning-bolt
+            icon_color: |-
+              {% set p = states('sensor.deye_sun15_load_l1_power')|float %}
+              {% if p < 100 %}
+              green
+              {% elif p < 300 %}
+              yellow
+              {% elif p < 600 %}
+              orange
+              {% else %}
+              red
+              {% endif %}
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            primary: L2
+            secondary: |-
+              {{ states('sensor.deye_sun15_load_l2_power') | float | round(0) }} Вт
+            layout: vertical
+            entity: sensor.deye_sun15_load_l2_power
+            icon: mdi:lightning-bolt
+            icon_color: |-
+              {% set p = states('sensor.deye_sun15_load_l2_power')|float %}
+              {% if p < 100 %}
+              green
+              {% elif p < 300 %}
+              yellow
+              {% elif p < 600 %}
+              orange
+              {% else %}
+              red
+              {% endif %}
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            primary: L3
+            secondary: |-
+              {{ states('sensor.deye_sun15_load_l3_power') | float | round(0) }} Вт
+            layout: vertical
+            entity: sensor.deye_sun15_load_l3_power
+            icon: mdi:lightning-bolt
+            icon_color: |-
+              {% set p = states('sensor.deye_sun15_load_l3_power')|float %}
+              {% if p < 100 %}
+              green
+              {% elif p < 300 %}
+              yellow
+              {% elif p < 600 %}
+              orange
+              {% else %}
+              red
+              {% endif %}
+            tap_action:
+              action: more-info
+
       - type: markdown
         content: >
           ### Статистика
@@ -202,27 +307,6 @@ sections:
             tap_action:
               action: more-info
 
-          - type: custom:mushroom-template-card
-            primary: Автовимкнення
-            secondary: |-
-              {% if is_state("input_boolean.deye_sun15_auto_power_off", "on") %}
-              Увімкнено
-              {% else %}
-              Вимкнено
-              {% endif %}
-            layout: vertical
-            entity: input_boolean.deye_sun15_auto_power_off
-            icon: mdi:power-sleep
-            multiline_secondary: true
-            icon_color: |-
-              {% if is_state("input_boolean.deye_sun15_auto_power_off", "on") %}
-              amber
-              {% else %}
-              grey
-              {% endif %}
-            tap_action:
-              action: toggle
-
 ############################ Колонка 3 ############################
   - type: grid
     cards:
@@ -247,6 +331,66 @@ sections:
               action: more-info
 
           - type: custom:mushroom-template-card
+            primary: Активний режим
+            secondary: |-
+              {{ states('sensor.deye_sun15_effective_mode') }}
+            layout: vertical
+            entity: sensor.deye_sun15_effective_mode
+            icon: mdi:state-machine
+            multiline_secondary: true
+            icon_color: |-
+              {% set mode = states('sensor.deye_sun15_effective_mode') %}
+              {% if mode == 'normal' %}
+              green
+              {% elif mode == 'eco_day' %}
+              amber
+              {% elif mode == 'eco_night' %}
+              blue
+              {% elif mode == 'supereco' %}
+              purple
+              {% else %}
+              grey
+              {% endif %}
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            primary: TOU
+            secondary: |-
+              {{ states('select.deye_sun15_time_of_use') }}
+            layout: vertical
+            entity: select.deye_sun15_time_of_use
+            icon: mdi:clock-outline
+            multiline_secondary: true
+            icon_color: blue
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            primary: Автовимкнення
+            secondary: |-
+              {% if is_state("input_boolean.deye_sun15_auto_power_off", "on") %}
+              Увімкнено
+              {% else %}
+              Вимкнено
+              {% endif %}
+            layout: vertical
+            entity: input_boolean.deye_sun15_auto_power_off
+            icon: mdi:power-sleep
+            multiline_secondary: true
+            icon_color: |-
+              {% if is_state("input_boolean.deye_sun15_auto_power_off", "on") %}
+              amber
+              {% else %}
+              grey
+              {% endif %}
+            tap_action:
+              action: toggle
+
+      - type: horizontal-stack
+        cards:
+
+          - type: custom:mushroom-template-card
             primary: Заряд від мережі
             secondary: |-
               {% if is_state("switch.deye_sun15_battery_grid_charging", "on") %}
@@ -268,22 +412,65 @@ sections:
               action: toggle
 
           - type: custom:mushroom-template-card
-            primary: TOU
+            primary: Очікуваний заряд
             secondary: |-
-              {{ states('select.deye_sun15_time_of_use') }}
+              {{ states('sensor.deye_sun15_expected_grid_charging') }}
             layout: vertical
-            entity: select.deye_sun15_time_of_use
-            icon: mdi:clock-outline
+            entity: sensor.deye_sun15_expected_grid_charging
+            icon: mdi:battery-charging-medium
+            multiline_secondary: true
+            icon_color: |-
+              {% if is_state("sensor.deye_sun15_expected_grid_charging", "on") %}
+              green
+              {% else %}
+              grey
+              {% endif %}
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            primary: Очікуваний TOU
+            secondary: |-
+              {{ states('sensor.deye_sun15_expected_tou') }}
+            layout: vertical
+            entity: sensor.deye_sun15_expected_tou
+            icon: mdi:timer-outline
             multiline_secondary: true
             icon_color: blue
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            primary: Стан логіки
+            secondary: |-
+              {% if is_state("binary_sensor.deye_sun15_mode_mismatch", "on") %}
+              Є невідповідність
+              {% else %}
+              Норма
+              {% endif %}
+            layout: vertical
+            entity: binary_sensor.deye_sun15_mode_mismatch
+            icon: |-
+              {% if is_state("binary_sensor.deye_sun15_mode_mismatch", "on") %}
+              mdi:alert-circle
+              {% else %}
+              mdi:check-circle
+              {% endif %}
+            multiline_secondary: true
+            icon_color: |-
+              {% if is_state("binary_sensor.deye_sun15_mode_mismatch", "on") %}
+              red
+              {% else %}
+              green
+              {% endif %}
             tap_action:
               action: more-info
 
       - type: entities
         entities:
           - entity: binary_sensor.deye_sun15_night_tariff
-          - entity: input_boolean.deye_sun15_charge_night
-          - entity: input_boolean.deye_sun15_auto_normal_night
+          - entity: binary_sensor.deye_sun15_grid_charging_mismatch
+          - entity: binary_sensor.deye_sun15_tou_mismatch
 
       - type: markdown
         content: >
@@ -315,11 +502,11 @@ sections:
               action: more-info
 
           - type: custom:mushroom-template-card
-            primary: Ємність
+            primary: Розряд сьогодні
             secondary: |-
-              {{ states('sensor.deye_sun15_battery_capacity') }}
+              {{ states('sensor.deye_sun15_today_battery_discharge') }}
             layout: vertical
-            entity: sensor.deye_sun15_battery_capacity
+            entity: sensor.deye_sun15_today_battery_discharge
             icon: mdi:battery-high
             multiline_secondary: true
             icon_color: green
@@ -438,7 +625,11 @@ sections:
 
       - type: markdown
         content: >
-          ### Часові інтервали TOU
+          ### TOU профіль та інтервали
+
+      - type: entities
+        entities:
+          - entity: input_select.deye_sun15_tou_profile
 
       - type: entities
         entities:

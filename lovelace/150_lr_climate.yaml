@@ -349,18 +349,6 @@ sections:
               {% endif %}
 
           - type: custom:mushroom-climate-card
-            entity: climate.0x2c1165fffeb3e567
-            hvac_modes:
-              - heat
-            show_temperature_control: true
-            layout: vertical
-            fill_container: true
-            collapsible_controls: true
-            primary_info: name
-            secondary_info: state
-            name: Вітальня праворуч
-
-          - type: custom:mushroom-climate-card
             entity: climate.0x2c1165fffec61c89
             hvac_modes:
               - heat
@@ -370,21 +358,30 @@ sections:
             collapsible_controls: true
             primary_info: name
             secondary_info: state
-            name: Вітальня ліворуч
+
+          - type: custom:mushroom-climate-card
+            entity: climate.0x2c1165fffeb3e567
+            hvac_modes:
+              - heat
+            show_temperature_control: true
+            layout: vertical
+            fill_container: true
+            collapsible_controls: true
+            primary_info: name
+            secondary_info: state
 
       - type: markdown
         content: >
-          ### Вітальня праворуч
+          ### Калібрування TRV
 
       - type: horizontal-stack
         cards:
 
           - type: custom:mushroom-template-card
-            primary: Калібрування
+            primary: Ліва TRV
             secondary: |-
-              {% if ((states('sensor.0x00158d00015aebb6_temperature') | float - state_attr('climate.0x2c1165fffeb3e567', 'current_temperature') | float))|round(1) > 1
-                 or ((states('sensor.0x00158d00015aebb6_temperature') | float - state_attr('climate.0x2c1165fffeb3e567', 'current_temperature') | float))|round(1) < -1 %}
-              Розбіжність > 1 С°
+              {% if is_state("binary_sensor.lr_thermostat_local_temperature_calibration_left", "on") %}
+              Потрібно калібрування
               {% else %}
               ОК
               {% endif %}
@@ -392,66 +389,23 @@ sections:
             tap_action:
               action: call-service
               service: script.turn_on
-              service_data:
-                entity_id: script.lr_temperature_calibration_2
-            entity: script.lr_temperature_calibration_2
+              target:
+                entity_id: script.lr_heat_temperature_calibration_left
+            entity: binary_sensor.lr_thermostat_local_temperature_calibration_left
             icon: mdi:sync
             multiline_secondary: true
             icon_color: |-
-              {% if ((states('sensor.0x00158d00015aebb6_temperature') | float - state_attr('climate.0x2c1165fffeb3e567', 'current_temperature') | float))|round(1) > 1
-                 or ((states('sensor.0x00158d00015aebb6_temperature') | float - state_attr('climate.0x2c1165fffeb3e567', 'current_temperature') | float))|round(1) < -1 %}
+              {% if is_state("binary_sensor.lr_thermostat_local_temperature_calibration_left", "on") %}
               amber
               {% else %}
               green
               {% endif %}
 
           - type: custom:mushroom-template-card
-            primary: |-
-              Датчик {{ states('sensor.0x00158d00015aebb6_temperature') }} С°
+            primary: Права TRV
             secondary: |-
-              Головка - {{ state_attr('climate.0x2c1165fffeb3e567', 'current_temperature') }} С°
-            layout: vertical
-            entity: sensor.0x00158d00015aebb6_temperature
-            icon_color: |-
-              {% if is_state("switch.lr_radiator_mode", "on") %}
-              amber
-              {% else %}
-              grey
-              {% endif %}
-            icon: mdi:temperature-celsius
-            tap_action:
-              action: more-info
-
-          - type: custom:mushroom-template-card
-            primary: |-
-              Поправка {{ states('number.0x2c1165fffeb3e567_local_temperature_calibration') }} С°
-            secondary: |-
-              Різниця {{ ((states('sensor.0x00158d00015aebb6_temperature') | float - state_attr('climate.0x2c1165fffeb3e567', 'current_temperature') | float))|round(1) }} С°
-            layout: vertical
-            entity: sensor.0x00158d00015aebb6_temperature
-            icon_color: |-
-              {% if is_state("switch.lr_radiator_mode", "on") %}
-              amber
-              {% else %}
-              grey
-              {% endif %}
-            icon: mdi:compare-horizontal
-            tap_action:
-              action: more-info
-
-      - type: markdown
-        content: >
-          ### Вітальня ліворуч
-
-      - type: horizontal-stack
-        cards:
-
-          - type: custom:mushroom-template-card
-            primary: Калібрування
-            secondary: |-
-              {% if ((states('sensor.0x00158d00015aebb6_temperature') | float - state_attr('climate.0x2c1165fffec61c89', 'current_temperature') | float))|round(1) > 1
-                 or ((states('sensor.0x00158d00015aebb6_temperature') | float - state_attr('climate.0x2c1165fffec61c89', 'current_temperature') | float))|round(1) < -1 %}
-              Розбіжність > 1 С°
+              {% if is_state("binary_sensor.lr_thermostat_local_temperature_calibration_right", "on") %}
+              Потрібно калібрування
               {% else %}
               ОК
               {% endif %}
@@ -459,50 +413,101 @@ sections:
             tap_action:
               action: call-service
               service: script.turn_on
-              service_data:
-                entity_id: script.lr_temperature_calibration_1
-            entity: script.lr_temperature_calibration_1
+              target:
+                entity_id: script.lr_heat_temperature_calibration_right
+            entity: binary_sensor.lr_thermostat_local_temperature_calibration_right
             icon: mdi:sync
             multiline_secondary: true
             icon_color: |-
-              {% if ((states('sensor.0x00158d00015aebb6_temperature') | float - state_attr('climate.0x2c1165fffec61c89', 'current_temperature') | float))|round(1) > 1
-                 or ((states('sensor.0x00158d00015aebb6_temperature') | float - state_attr('climate.0x2c1165fffec61c89', 'current_temperature') | float))|round(1) < -1 %}
+              {% if is_state("binary_sensor.lr_thermostat_local_temperature_calibration_right", "on") %}
               amber
               {% else %}
               green
               {% endif %}
 
+      - type: horizontal-stack
+        cards:
+
           - type: custom:mushroom-template-card
-            primary: |-
-              Датчик {{ states('sensor.0x00158d00015aebb6_temperature') }} С°
+            primary: Датчик кімнати
             secondary: |-
-              Головка - {{ state_attr('climate.0x2c1165fffec61c89', 'current_temperature') }} С°
+              {{ states('sensor.0x00158d00015aebb6_temperature') }} С°
             layout: vertical
             entity: sensor.0x00158d00015aebb6_temperature
+            icon: mdi:temperature-celsius
             icon_color: |-
               {% if is_state("switch.lr_radiator_mode", "on") %}
               amber
               {% else %}
               grey
               {% endif %}
-            icon: mdi:temperature-celsius
             tap_action:
               action: more-info
 
           - type: custom:mushroom-template-card
-            primary: |-
-              Поправка {{ states('number.0x2c1165fffec61c89_local_temperature_calibration') }} С°
+            primary: Ліва TRV
             secondary: |-
-              Різниця {{ ((states('sensor.0x00158d00015aebb6_temperature') | float - state_attr('climate.0x2c1165fffec61c89', 'current_temperature') | float))|round(1) }} С°
+              {{ state_attr('climate.0x2c1165fffec61c89', 'current_temperature') }} С°
             layout: vertical
-            entity: sensor.0x00158d00015aebb6_temperature
+            entity: climate.0x2c1165fffec61c89
+            icon: mdi:radiator
             icon_color: |-
               {% if is_state("switch.lr_radiator_mode", "on") %}
               amber
               {% else %}
               grey
               {% endif %}
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            primary: Права TRV
+            secondary: |-
+              {{ state_attr('climate.0x2c1165fffeb3e567', 'current_temperature') }} С°
+            layout: vertical
+            entity: climate.0x2c1165fffeb3e567
+            icon: mdi:radiator
+            icon_color: |-
+              {% if is_state("switch.lr_radiator_mode", "on") %}
+              amber
+              {% else %}
+              grey
+              {% endif %}
+            tap_action:
+              action: more-info
+
+      - type: horizontal-stack
+        cards:
+
+          - type: custom:mushroom-template-card
+            primary: Поправка ліва
+            secondary: |-
+              Різниця {{ ((states('sensor.0x00158d00015aebb6_temperature') | float(0) - state_attr('climate.0x2c1165fffec61c89', 'current_temperature') | float(0))) | round(1) }} С°
+            layout: vertical
+            entity: number.0x2c1165fffec61c89_local_temperature_calibration
             icon: mdi:compare-horizontal
+            icon_color: |-
+              {% if is_state("switch.lr_radiator_mode", "on") %}
+              amber
+              {% else %}
+              grey
+              {% endif %}
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            primary: Поправка права
+            secondary: |-
+              Різниця {{ ((states('sensor.0x00158d00015aebb6_temperature') | float(0) - state_attr('climate.0x2c1165fffeb3e567', 'current_temperature') | float(0))) | round(1) }} С°
+            layout: vertical
+            entity: number.0x2c1165fffeb3e567_local_temperature_calibration
+            icon: mdi:compare-horizontal
+            icon_color: |-
+              {% if is_state("switch.lr_radiator_mode", "on") %}
+              amber
+              {% else %}
+              grey
+              {% endif %}
             tap_action:
               action: more-info
 
@@ -510,32 +515,26 @@ sections:
         show_header_toggle: false
         entities:
           - type: divider
-          - entity: number.0x2c1165fffeb3e567_comfort_temperature
-            name: Цільова температура праворуч
           - entity: number.0x2c1165fffec61c89_comfort_temperature
-            name: Цільова температура ліворуч
+            name: Цільова температура
           - type: divider
-          - entity: number.0x2c1165fffeb3e567_open_window_temperature
-            name: Температура провітрювання праворуч
           - entity: number.0x2c1165fffec61c89_open_window_temperature
-            name: Температура провітрювання ліворуч
+            name: Температура провітрювання
           - type: divider
-          - entity: number.0x2c1165fffeb3e567_eco_temperature
-            name: Нічна температура праворуч
           - entity: number.0x2c1165fffec61c89_eco_temperature
-            name: Нічна температура ліворуч
+            name: Нічна температура
           - type: divider
-          - entity: binary_sensor.0x2c1165fffeb3e567_battery_low
+          - entity: binary_sensor.0x2c1165fffec61c89_battery_low
             type: custom:multiple-entity-row
-            name: Термоголовка праворуч
+            name: TRV ліва
             state_header: Батарея
             entities:
               - attribute: last_seen
                 format: relative
                 name: Останній зв’язок
-          - entity: binary_sensor.0x2c1165fffec61c89_battery_low
+          - entity: binary_sensor.0x2c1165fffeb3e567_battery_low
             type: custom:multiple-entity-row
-            name: Термоголовка ліворуч
+            name: TRV права
             state_header: Батарея
             entities:
               - attribute: last_seen
@@ -595,6 +594,107 @@ sections:
 
       - type: markdown
         content: >
+          ### Очищувач повітря
+
+      - type: horizontal-stack
+        cards:
+
+          - type: custom:mushroom-template-card
+            primary: Режим
+            secondary: |-
+              {% if is_state("input_boolean.lr_airpurification_mode", "on") %}
+              Очищення увімкнене
+              {% else %}
+              Очищення вимкнене
+              {% endif %}
+            layout: vertical
+            entity: input_boolean.lr_airpurification_mode
+            icon: |-
+              {% if is_state("input_boolean.lr_airpurification_mode", "on") %}
+              mdi:air-purifier
+              {% else %}
+              mdi:air-purifier-off
+              {% endif %}
+            multiline_secondary: true
+            icon_color: |-
+              {% if is_state("input_boolean.lr_airpurification_mode", "on") %}
+              teal
+              {% else %}
+              grey
+              {% endif %}
+            tap_action:
+              action: toggle
+
+          - type: custom:mushroom-template-card
+            primary: Вітальня
+            secondary: |-
+              PM2.5: {{ states('sensor.zhimi_airpurifier_m1_pm2_5') }} µg/m³
+            layout: vertical
+            entity: fan.zhimi_airpurifier_m1
+            icon: mdi:air-filter
+            icon_color: |-
+              {% set pm = states('sensor.zhimi_airpurifier_m1_pm2_5') | float %}
+              {% if pm <= 12 %}
+              green
+              {% elif pm <= 35 %}
+              yellow
+              {% else %}
+              red
+              {% endif %}
+            tap_action:
+              action: more-info
+
+      - type: horizontal-stack
+        cards:
+
+          - type: custom:mushroom-template-card
+            primary: Стан повітря
+            secondary: |-
+              {% if is_state("binary_sensor.lr_airpurifier_need", "off") %}
+              OK
+              {% else %}
+              Погане
+              {% endif %}
+            layout: vertical
+            entity: binary_sensor.lr_airpurifier_need
+            icon: |-
+              {% if is_state("binary_sensor.lr_airpurifier_need", "off") %}
+              mdi:check-circle
+              {% else %}
+              mdi:alert-circle
+              {% endif %}
+            icon_color: |-
+              {% if is_state("binary_sensor.lr_airpurifier_need", "off") %}
+              green
+              {% else %}
+              deep-orange
+              {% endif %}
+
+          - type: custom:mushroom-template-card
+            primary: Режим роботи
+            secondary: |-
+              {% if is_state("binary_sensor.night_time", "on") %}
+              Нічний (тихий)
+              {% else %}
+              Денний
+              {% endif %}
+            layout: vertical
+            icon: mdi:weather-night
+            icon_color: indigo
+
+          - type: custom:mushroom-template-card
+            primary: Швидкість
+            secondary: |-
+              {{ states('number.zhimi_airpurifier_m1_favorite_level') }}
+            layout: vertical
+            entity: number.zhimi_airpurifier_m1_favorite_level
+            icon: mdi:fan
+            icon_color: teal
+            tap_action:
+              action: more-info
+
+      - type: markdown
+        content: >
           ### Кондиціонер
 
       - type: horizontal-stack
@@ -603,7 +703,7 @@ sections:
           - type: custom:mushroom-template-card
             primary: Режим
             secondary: |-
-              {% if is_state("switch.lr_conditioner_mode", "on") %}
+              {% if is_state("switch.lr_conditioner_enabled", "on") %}
               Увімкнений
               {% else %}
               Вимкнений
@@ -611,11 +711,11 @@ sections:
             layout: vertical
             tap_action:
               action: toggle
-            entity: switch.lr_conditioner_mode
+            entity: switch.lr_conditioner_enabled
             icon: mdi:air-conditioner
             multiline_secondary: true
             icon_color: |-
-              {% if is_state("switch.lr_conditioner_mode", "on") %}
+              {% if is_state("switch.lr_conditioner_enabled", "on") %}
               light-blue
               {% else %}
               grey
@@ -648,6 +748,7 @@ sections:
       - type: entities
         show_header_toggle: false
         entities:
+          - entity: binary_sensor.lr_conditioner_on_conditions
           - entity: input_datetime.lr_conditioner_from
           - entity: input_datetime.lr_conditioner_to
           - entity: input_number.lr_conditioner_min

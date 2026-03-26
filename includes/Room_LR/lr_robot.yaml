@@ -1,15 +1,29 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 lr_robot:
 
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-    recorder:
-      include:
-        entities:
-          - sensor.zhimi_xa1_4790_battery_level
-          
-    homeassistant:
-      customize:
+  homeassistant:
+    customize:
 
-        vacuum.zhimi_xa1_4790_robot_cleaner:
-          friendly_name: Lydstro robot
-        sensor.zhimi_xa1_4790_battery_level:
-          friendly_name: Lydstro robot  
+      vacuum.zhimi_xa1_4790_robot_cleaner:
+        friendly_name: Вітальня - робот-пилосос
+        icon: mdi:robot-vacuum
+
+      sensor.zhimi_xa1_4790_battery_level:
+        friendly_name: Вітальня - робот-пилосос батарея
+        icon: mdi:battery
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - sensor.zhimi_xa1_4790_battery_level

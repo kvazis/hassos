@@ -1,110 +1,148 @@
+##################################################
+## Актуалізовано: 2026-03-24
+##################################################
+
 mosquitto:
 
-    homeassistant:
-      customize:
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
-        input_button.mosquitto_reload:
-          friendly_name: Перезагрузка Mosquitto 
-          icon: phu:mosquitto
+  homeassistant:
+    customize:
 
-    template:
+      binary_sensor.all_climate_unavailable:
+        friendly_name: Система - усі термостати недоступні
+        icon: phu:wiser-thermostat-off
 
-      - binary_sensor:
+      input_button.mosquitto_reload:
+        friendly_name: Система - перезавантаження Mosquitto
+        icon: phu:mosquitto
 
-    # Одновременный отвал термостатов
-          - name: all_climate_unavailable
-            unique_id: all_climate_unavailable
-            state: >
-              {{ is_state('climate.0x2c1165fffeb3e531', 'unavailable')  
-                 and is_state('climate.0x2c1165fffec61c89', 'unavailable')
-                 and is_state('climate.0x2c1165fffeb3e567', 'unavailable')
-                 and is_state('climate.0x84fd27fffe31ada3', 'unavailable')
-                 and is_state('climate.0x2c1165fffec612b1', 'unavailable')
-              }}
-            delay_on: 
-                minutes: 1
-            device_class: problem
-            icon: >
-              {% if is_state("binary_sensor.all_climate_unavailable", "on") %}
-              phu:wiser-thermostat-off
-              {% else %}
-              phu:wiser-thermostat-on
-              {% endif %}
+      automation.sys_mosquitto_reload_auto:
+        friendly_name: Система - автоматичне перезавантаження Mosquitto
+        icon: mdi:restart-alert
 
-    input_button:
+      automation.sys_mosquitto_reload_manual:
+        friendly_name: Система - ручне перезавантаження Mosquitto
+        icon: mdi:restart
 
-      mosquitto_reload:
-        name: Mosquitto reload
-              
-    automation:
-    
-      - alias: control_mosquitto_reload_auto
-        id: control_mosquitto_reload_auto
-        description: Автоматическая перезагрузка аддона mosquitto 
-        initial_state: true
-        trigger:
-    # Проверка раз в 5 минут
+  ##################################################
+  ## INPUT_BUTTON
+  ##################################################
+
+  input_button:
+
+    mosquitto_reload:
+      name: mosquitto_reload
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    ##################################################
+    ## НЕДОСТУПНІСТЬ ТЕРМОСТАТІВ
+    ##################################################
+
+    - binary_sensor:
+        - name: all_climate_unavailable
+          unique_id: all_climate_unavailable
+          state: >
+            {{ is_state('climate.0x2c1165fffeb3e531', 'unavailable')
+               and is_state('climate.0x2c1165fffec61c89', 'unavailable')
+               and is_state('climate.0x2c1165fffeb3e567', 'unavailable')
+               and is_state('climate.0x84fd27fffe31ada3', 'unavailable')
+               and is_state('climate.0x2c1165fffec612b1', 'unavailable') }}
+          delay_on:
+            minutes: 1
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    ##################################################
+    ## АВТОМАТИЧНЕ ПЕРЕЗАВАНТАЖЕННЯ MOSQUITTO
+    ##################################################
+
+    - alias: sys_mosquitto_reload_auto
+      id: sys_mosquitto_reload_auto
+      description: Автоматичне перезавантаження Mosquitto та Zigbee2MQTT
+      initial_state: true
+
+      trigger:
         - platform: time_pattern
-          minutes: '/5'
-        condition:
+          minutes: "/5"
+
+      condition:
         - condition: state
           entity_id: binary_sensor.all_climate_unavailable
-          state: 'on'
-        action:
+          state: "on"
 
-        - service: hassio.addon_restart
+      action:
+        - action: hassio.addon_restart
           data:
             addon: core_mosquitto
 
-        - delay: 00:01:00
-        - service: hassio.addon_restart
+        - delay: "00:01:00"
+
+        - action: hassio.addon_restart
           data:
             addon: 45df7312_zigbee2mqtt
 
-        - delay: 00:01:00
-        - service: hassio.addon_restart
+        - delay: "00:01:00"
+
+        - action: hassio.addon_restart
           data:
             addon: 8c77aaed_zigbee2mqtt
 
-        - delay: 00:01:00
+        - delay: "00:01:00"
+
         - action: telegram_bot.send_message
           data:
             chat_id:
-                - !secret chat_id_log
-            message: | 
-                 {{"\U0001F916"}} Антонио - перезагуржен москито и z2m {{ states('sensor.time_date') }} 
+              - !secret chat_id_log
+            message: |
+              🤖 Перезавантажено Mosquitto та Zigbee2MQTT {{ states('sensor.time_date') }}
 
+    ##################################################
+    ## РУЧНЕ ПЕРЕЗАВАНТАЖЕННЯ MOSQUITTO
+    ##################################################
 
+    - alias: sys_mosquitto_reload_manual
+      id: sys_mosquitto_reload_manual
+      description: Ручне перезавантаження Mosquitto та Zigbee2MQTT
+      initial_state: true
 
-
-      - alias: control_mosquitto_reload_manual
-        id: control_mosquitto_reload_manual
-        description: Ручная перезагрузка аддона mosquitto 
-        initial_state: true
-        trigger:
-    ## Virtual button
+      trigger:
         - platform: state
           entity_id: input_button.mosquitto_reload
-        action:
 
-        - service: hassio.addon_restart
+      action:
+        - action: hassio.addon_restart
           data:
             addon: core_mosquitto
 
-        - delay: 00:01:00
-        - service: hassio.addon_restart
+        - delay: "00:01:00"
+
+        - action: hassio.addon_restart
           data:
             addon: 45df7312_zigbee2mqtt
 
-        - delay: 00:01:00
-        - service: hassio.addon_restart
+        - delay: "00:01:00"
+
+        - action: hassio.addon_restart
           data:
             addon: 8c77aaed_zigbee2mqtt
 
-        - delay: 00:01:00
+        - delay: "00:01:00"
+
         - action: telegram_bot.send_message
           data:
             chat_id:
-                - !secret chat_id_log
-            message: | 
-                 {{"\U0001F916"}} Антонио - перезагуржен вручную москито и z2m {{ states('sensor.time_date') }} 
+              - !secret chat_id_log
+            message: |
+              🤖 Ручне перезавантаження Mosquitto та Zigbee2MQTT {{ states('sensor.time_date') }}

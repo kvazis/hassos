@@ -1,327 +1,329 @@
+##################################################
+## Актуалізовано: 2026-03-25
+##################################################
+
 power_outage:
 
-    recorder:
-      include:
-        entities:
-           - sensor.electricity_4_7_yesterday
-           - binary_sensor.electricity
-           - binary_sensor.188_190_229_184
-           - binary_sensor.electricity_second
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
 
+  homeassistant:
+    customize:
+      binary_sensor.electricity:
+        friendly_name: Живлення - основне
+        icon: mdi:transmission-tower
 
+      binary_sensor.electricity_second:
+        friendly_name: Живлення - резервне
+        icon: mdi:transmission-tower
 
-    homeassistant:
-      customize:
-      
-        binary_sensor.electricity:
-          friendly_name: Зовнішнє живлення основний
-          icon: mdi:transmission-tower      
+      sensor.electricity_4_7_yesterday:
+        friendly_name: Живлення 4-7 - час за добу
+        icon: mdi:timer-outline
 
-        binary_sensor.electricity_second:
-          friendly_name: Зовнішнє живлення резервний
-          icon: mdi:transmission-tower  
-          
-  ###################################################################
-  # Перемикач режиму сповіщень
-  ###################################################################   
-
-    input_boolean:
-    
-      k7_notification:
-        name: Сповіщення К7
+      input_boolean.k7_notification:
+        friendly_name: К7 - сповіщення
         icon: mdi:toggle-switch-outline
 
-  ###################################################################
-  # Сенсори відстеження зовнішнього живлення
-  ###################################################################
- 
-    template:
-    
-      - binary_sensor:
+      automation.control_electricity_shotdown_log:
+        friendly_name: Живлення - фіксація стану
+        icon: mdi:database
 
-          - name: electricity
-            unique_id: electricity
-            state: >
-              {{ is_state('binary_sensor.deye_sun15_grid', 'off') }}
-            device_class: problem
-            
-          - name: electricity_on_5
-            unique_id: electricity_on_5
-            state: >
-              {{ is_state('binary_sensor.deye_sun15_grid', 'on') }}
-            delay_on: 
-                minutes: 5
+      automation.tg_power_outage_notification:
+        friendly_name: Живлення - повідомлення
+        icon: mdi:alert
 
+      automation.k7_notification_summary:
+        friendly_name: Живлення - щоденний звіт
+        icon: mdi:chart-box
 
-          - name: electricity_second
-            unique_id: electricity_second
-            state: >
-              {{ is_state('binary_sensor.188_190_229_184', 'off') }}
-            device_class: problem     
- 
+  ##################################################
+  ## RECORDER
+  ##################################################
 
-  ###################################################################
-  # Збереження часу вимкнення і включення
-  ###################################################################
+  recorder:
+    include:
+      entities:
+        - sensor.electricity_4_7_yesterday
+        - binary_sensor.electricity
+        - binary_sensor.188_190_229_184
+        - binary_sensor.electricity_second
 
-    input_datetime:
-      electricity_off:
-        name: Живлення вимкнене
-        has_date: true
-        has_time: true
-        
-      electricity_on:
-        name: Живлення відновлене
-        has_date: true
-        has_time: true
+  ##################################################
+  ## INPUT_BOOLEAN
+  ##################################################
 
-  ###################################################################
-  # Накопичення
-  ###################################################################
+  input_boolean:
+    k7_notification:
+      name: k7_notification
 
-    sensor:
-      - platform: history_stats
-        name: electricity_4_7_yesterday
-        entity_id: binary_sensor.electricity
-        state: "off"
-        type: time
-        start: "{{ (today_at('00:00:00') - timedelta(days=1)) }}"
-        end: "{{ today_at('00:00:00') }}"
+  ##################################################
+  ## TEMPLATE
+  ##################################################
 
-    automation:     
-    
-  ###################################################################
-  # Фіксація пропадання і появи електрики
-  ###################################################################         
-          
+  template:
+    - binary_sensor:
+        - name: electricity
+          unique_id: electricity
+          state: >
+            {{ is_state('binary_sensor.deye_sun15_grid', 'off') }}
+          device_class: problem
+
+        - name: electricity_on_5
+          unique_id: electricity_on_5
+          state: >
+            {{ is_state('binary_sensor.deye_sun15_grid', 'on') }}
+          delay_on:
+            minutes: 5
+
+        - name: electricity_second
+          unique_id: electricity_second
+          state: >
+            {{ is_state('binary_sensor.188_190_229_184', 'off') }}
+          device_class: problem
+
+  ##################################################
+  ## INPUT_DATETIME
+  ##################################################
+
+  input_datetime:
+    electricity_off:
+      name: electricity_off
+      has_date: true
+      has_time: true
+
+    electricity_on:
+      name: electricity_on
+      has_date: true
+      has_time: true
+
+  ##################################################
+  ## SENSOR
+  ##################################################
+
+  sensor:
+    - platform: history_stats
+      name: electricity_4_7_yesterday
+      entity_id: binary_sensor.electricity
+      state: "off"
+      type: time
+      start: "{{ (today_at('00:00:00') - timedelta(days=1)) }}"
+      end: "{{ today_at('00:00:00') }}"
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    ##################################################
+    ## ФІКСАЦІЯ СТАНУ ЖИВЛЕННЯ
+    ##################################################
     - alias: control_electricity_shotdown_log
       id: control_electricity_shotdown_log
-      description: Фіксація пропадання і появи електрики
+      description: Фіксація пропадання та появи електрики
       initial_state: true
       trigger:
+        - platform: state
+          entity_id: binary_sensor.electricity
+          from: "off"
+          to: "on"
 
-  # Вимкнення електрики
-      - platform: state
-        entity_id: binary_sensor.electricity
-        from: 'off'
-        to: 'on'
+        - platform: state
+          entity_id: binary_sensor.electricity
+          from: "on"
+          to: "off"
 
-  # Увімкнення електрики
-      - platform: state
-        entity_id: binary_sensor.electricity
-        from: 'on'
-        to: 'off'
       action:
-
-  # Вимкнення електрики
-          - choose:
+        - choose:
             - conditions:
                 - condition: state
                   entity_id: binary_sensor.electricity
-                  state: 'on'
-              sequence:        
-                - service: input_datetime.set_datetime
+                  state: "on"
+              sequence:
+                - action: input_datetime.set_datetime
                   target:
                     entity_id: input_datetime.electricity_off
                   data:
-                    datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}" 
-  
-  # Увімкнення електрики
+                    datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
             - conditions:
                 - condition: state
                   entity_id: binary_sensor.electricity
-                  state: 'off'
-              sequence:        
-                - service: input_datetime.set_datetime
+                  state: "off"
+              sequence:
+                - action: input_datetime.set_datetime
                   target:
                     entity_id: input_datetime.electricity_on
                   data:
-                    datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}" 
-                      
-                      
-  ###################################################################
-  # Сповіщення про фактичне включення і відключення електрики
-  ###################################################################
-        
-        
+                    datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+    ##################################################
+    ## ПОВІДОМЛЕННЯ ПРО ЖИВЛЕННЯ
+    ##################################################
     - alias: tg_power_outage_notification
       id: tg_power_outage_notification
-      description: Сповіщення про фактичне включення і відключення електрики
+      description: Сповіщення про стан електрики
       initial_state: true
       trigger:
-
-  # Вимкнення електрики
         - platform: state
           entity_id: binary_sensor.electricity
-          from: 'off'
-          to: 'on'
+          from: "off"
+          to: "on"
 
-  # Увімкнення електрики
         - platform: state
           entity_id: binary_sensor.electricity
-          from: 'on'
-          to: 'off'
+          from: "on"
+          to: "off"
 
       condition:
-
-  # Перемикач режиму роботи серверу
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
- 
-  # Перемикач режиму роботи сповіщень
+          state: "on"
+
         - condition: state
           entity_id: input_boolean.k7_notification
-          state: 'on'
+          state: "on"
 
       action:
-
-          - choose:
-
-  # Сповіщення про відключення 
+        - choose:
             - conditions:
                 - condition: state
                   entity_id: binary_sensor.electricity
-                  state: 'on'
-              sequence:        
-                - delay: 00:00:05
-
-                - action: telegram_bot.send_message
-                  data:
-                    chat_id:
-                        - !secret chat_id_k7
-                    message: | 
-                        {%- set off = as_datetime(states('input_datetime.electricity_off')) -%}
-                        {%- set on  = as_datetime(states('input_datetime.electricity_on')) -%}
-                        
-                        {%- if off and on -%}
-                          {%- set d = off - on -%}
-                          {%- set days = d.days -%}
-                          {%- set sec = d.seconds -%}
-                          {%- set h = sec // 3600 -%}
-                          {%- set m = (sec % 3600) // 60 -%}
-                          {%- set s = sec % 60 -%}
-                        
-                        🔴 4️⃣5️⃣6️⃣7️⃣ 
-                        Електрика по вводу секцій 4-7 вимкнена в {{ states('sensor.time') }}
-                        ⏳ Електрика була - {{ (days ~ 'д ' ) if days > 0 else '' }}{{ '%02d:%02d:%02d'|format(h,m,s) }}
-                        {%- else -%}
-                        🔴 4️⃣5️⃣6️⃣7️⃣ 
-                        Електрика по вводу секцій 4-7 вимкнена в {{ states('sensor.time') }}
-                        ⏳ Електрика була - н/д
-                        {%- endif -%}
-
-  # Сповіщення про включення 
-            - conditions:
-                - condition: state
-                  entity_id: binary_sensor.electricity
-                  state: 'off'
+                  state: "on"
               sequence:
                 - delay: 00:00:05
 
                 - action: telegram_bot.send_message
                   data:
                     chat_id:
-                        - !secret chat_id_k7
-                    message: | 
-                        {%- set on  = as_datetime(states('input_datetime.electricity_on')) -%}
-                        {%- set off = as_datetime(states('input_datetime.electricity_off')) -%}
-                        
-                        {%- if on and off -%}
-                          {%- set d = on - off -%}
-                          {%- set days = d.days -%}
-                          {%- set sec = d.seconds -%}
-                          {%- set h = sec // 3600 -%}
-                          {%- set m = (sec % 3600) // 60 -%}
-                          {%- set s = sec % 60 -%}
-                        
-                        🟢 4️⃣5️⃣6️⃣7️⃣ 
-                        Електрика по вводу секцій 4-7 відновлена в {{ states('sensor.time') }}
-                        ⚡Напруга - Фаза 1 - {{ states('sensor.deye_sun15_grid_l1_voltage') }} В, Фаза 2 - {{ states('sensor.deye_sun15_grid_l2_voltage') }} В, Фаза 3 - {{ states('sensor.deye_sun15_grid_l3_voltage') }} В
-                        ⏳ Не було електрики - {{ (days ~ 'д ' ) if days > 0 else '' }}{{ '%02d:%02d:%02d'|format(h,m,s) }}
-                        {%- else -%}
-                        🟢 4️⃣5️⃣6️⃣7️⃣ 
-                        Електрика по вводу секцій 4-7 відновлена в {{ states('sensor.time') }}
-                        ⚡Напруга - Фаза 1 - {{ states('sensor.deye_sun15_grid_l1_voltage') }} В, Фаза 2 - {{ states('sensor.deye_sun15_grid_l2_voltage') }} В, Фаза 3 - {{ states('sensor.deye_sun15_grid_l3_voltage') }} В
-                        ⏳ Не було електрики - н/д
-                        {%- endif -%}  
-                        
-                        
+                      - !secret chat_id_k7
+                    message: |
+                      {%- set off = as_datetime(states('input_datetime.electricity_off')) -%}
+                      {%- set on  = as_datetime(states('input_datetime.electricity_on')) -%}
 
-    
+                      {%- if off and on -%}
+                        {%- set d = off - on -%}
+                        {%- set days = d.days -%}
+                        {%- set sec = d.seconds -%}
+                        {%- set h = sec // 3600 -%}
+                        {%- set m = (sec % 3600) // 60 -%}
+                        {%- set s = sec % 60 -%}
+
+                      🔴 4️⃣5️⃣6️⃣7️⃣
+                      Електрика по вводу секцій 4-7 вимкнена о {{ states('sensor.time') }}
+                      ⏳ Електрика була - {{ (days ~ 'д ' ) if days > 0 else '' }}{{ '%02d:%02d:%02d'|format(h,m,s) }}
+                      {%- else -%}
+                      🔴 4️⃣5️⃣6️⃣7️⃣
+                      Електрика по вводу секцій 4-7 вимкнена о {{ states('sensor.time') }}
+                      ⏳ Електрика була - н/д
+                      {%- endif -%}
+
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.electricity
+                  state: "off"
+              sequence:
+                - delay: 00:00:05
+
+                - action: telegram_bot.send_message
+                  data:
+                    chat_id:
+                      - !secret chat_id_k7
+                    message: |
+                      {%- set on  = as_datetime(states('input_datetime.electricity_on')) -%}
+                      {%- set off = as_datetime(states('input_datetime.electricity_off')) -%}
+
+                      {%- if on and off -%}
+                        {%- set d = on - off -%}
+                        {%- set days = d.days -%}
+                        {%- set sec = d.seconds -%}
+                        {%- set h = sec // 3600 -%}
+                        {%- set m = (sec % 3600) // 60 -%}
+                        {%- set s = sec % 60 -%}
+
+                      🟢 4️⃣5️⃣6️⃣7️⃣
+                      Електрика по вводу секцій 4-7 відновлена о {{ states('sensor.time') }}
+                      ⚡ Напруга - Фаза 1 - {{ states('sensor.deye_sun15_grid_l1_voltage') }} В, Фаза 2 - {{ states('sensor.deye_sun15_grid_l2_voltage') }} В, Фаза 3 - {{ states('sensor.deye_sun15_grid_l3_voltage') }} В
+                      ⏳ Не було електрики - {{ (days ~ 'д ' ) if days > 0 else '' }}{{ '%02d:%02d:%02d'|format(h,m,s) }}
+                      {%- else -%}
+                      🟢 4️⃣5️⃣6️⃣7️⃣
+                      Електрика по вводу секцій 4-7 відновлена о {{ states('sensor.time') }}
+                      ⚡ Напруга - Фаза 1 - {{ states('sensor.deye_sun15_grid_l1_voltage') }} В, Фаза 2 - {{ states('sensor.deye_sun15_grid_l2_voltage') }} В, Фаза 3 - {{ states('sensor.deye_sun15_grid_l3_voltage') }} В
+                      ⏳ Не було електрики - н/д
+                      {%- endif -%}
+
+    ##################################################
+    ## ЩОДЕННИЙ ЗВІТ
+    ##################################################
     - alias: k7_notification_summary
       id: k7_notification_summary
       mode: single
       initial_state: true
-      description: "Щоденний звіт по електриці"
-    
+      description: Щоденний звіт по електриці
       trigger:
-          - platform: time
-            at: "00:05:00"
-                 
-      condition:
+        - platform: time
+          at: "00:05:00"
 
-  # Перемикач режиму роботи серверу
+      condition:
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
- 
-  # Перемикач режиму роботи сповіщень
+          state: "on"
+
         - condition: state
           entity_id: input_boolean.k7_notification
-          state: 'on'
+          state: "on"
 
       action:
         - action: telegram_bot.send_message
           data:
             chat_id:
-                - !secret chat_id_k7
+              - !secret chat_id_k7
             message: |
+              {% set total = 24 * 60 %}
 
-                {% set total = 24 * 60 %}
-            
-                {% set m  = (states('sensor.electricity_1_3_yesterday')|float * 60) | round(0) | int %}
-                {% set m  = [0, [m, total] | min] | max %}
-                {% set on_h  = (m // 60) %}
-                {% set on_mm = (m % 60) %}
-                {% set off   = total - m %}
-                {% set off_h  = (off // 60) %}
-                {% set off_mm = (off % 60) %}
-            
-                {% set m1 = (states('sensor.electricity_4_7_yesterday')|float * 60) | round(0) | int %}
-                {% set m1 = [0, [m1, total] | min] | max %}
-                {% set on_h1  = (m1 // 60) %}
-                {% set on_mm1 = (m1 % 60) %}
-                {% set off1   = total - m1 %}
-                {% set off_h1  = (off1 // 60) %}
-                {% set off_mm1 = (off1 % 60) %}
-            
-                {% set m3 = (states('sensor.electricity_3_partial_yesterday')|float * 60) | round(0) | int %}
-                {% set m3 = [0, [m3, total] | min] | max %}
-                {% set on_h3  = (m3 // 60) %}
-                {% set on_mm3 = (m3 % 60) %}
-                {% set off3   = total - m3 %}
-                {% set off_h3  = (off3 // 60) %}
-                {% set off_mm3 = (off3 % 60) %}
-            
-                {% set diff = (m - m3) | abs %}
-            
-                ⚡ Звіт за {{ (now() - timedelta(days=1)).strftime('%d.%m.%Y') }}:
-            
-                1️⃣2️⃣3️⃣
-                ✅ Електрика була: {{ on_h }}г {{ '%02d'|format(on_mm) }}хв
-                ❌ Без електрики: {{ off_h }}г {{ '%02d'|format(off_mm) }}хв
-            
-                4️⃣5️⃣6️⃣7️⃣
-                ✅ Електрика була: {{ on_h1 }}г {{ '%02d'|format(on_mm1) }}хв
-                ❌ Без електрики: {{ off_h1 }}г {{ '%02d'|format(off_mm1) }}хв
-            
-                {% if diff > 30 %}
-            
-                🔺3️⃣ (часткове)
-                ✅ Електрика була: {{ on_h3 }}г {{ '%02d'|format(on_mm3) }}хв
-                ❌ Без електрики: {{ off_h3 }}г {{ '%02d'|format(off_mm3) }}хв
-                📊 Відхилення від 1-3: {{ (diff // 60) }}г {{ '%02d'|format(diff % 60) }}хв
-            
-                {% endif %}                        
-  
+              {% set m  = (states('sensor.k7_1_3_power_on_yesterday')|float * 60) | round(0) | int %}
+              {% set m  = [0, [m, total] | min] | max %}
+              {% set on_h  = (m // 60) %}
+              {% set on_mm = (m % 60) %}
+              {% set off   = total - m %}
+              {% set off_h  = (off // 60) %}
+              {% set off_mm = (off % 60) %}
+
+              {% set m1 = (states('sensor.electricity_4_7_yesterday')|float * 60) | round(0) | int %}
+              {% set m1 = [0, [m1, total] | min] | max %}
+              {% set on_h1  = (m1 // 60) %}
+              {% set on_mm1 = (m1 % 60) %}
+              {% set off1   = total - m1 %}
+              {% set off_h1  = (off1 // 60) %}
+              {% set off_mm1 = (off1 % 60) %}
+
+              {% set m3 = (states('sensor.k7_3_partial_power_on_yesterday')|float * 60) | round(0) | int %}
+              {% set m3 = [0, [m3, total] | min] | max %}
+              {% set on_h3  = (m3 // 60) %}
+              {% set on_mm3 = (m3 % 60) %}
+              {% set off3   = total - m3 %}
+              {% set off_h3  = (off3 // 60) %}
+              {% set off_mm3 = (off3 % 60) %}
+
+              {% set diff = (m - m3) | abs %}
+
+              ⚡ Звіт за {{ (now() - timedelta(days=1)).strftime('%d.%m.%Y') }}:
+
+              1️⃣2️⃣3️⃣
+              ✅ Електрика була: {{ on_h }}г {{ '%02d'|format(on_mm) }}хв
+              ❌ Без електрики: {{ off_h }}г {{ '%02d'|format(off_mm) }}хв
+
+              4️⃣5️⃣6️⃣7️⃣
+              ✅ Електрика була: {{ on_h1 }}г {{ '%02d'|format(on_mm1) }}хв
+              ❌ Без електрики: {{ off_h1 }}г {{ '%02d'|format(off_mm1) }}хв
+
+              {% if diff > 30 %}
+
+              🔺3️⃣ (часткове)
+              ✅ Електрика була: {{ on_h3 }}г {{ '%02d'|format(on_mm3) }}хв
+              ❌ Без електрики: {{ off_h3 }}г {{ '%02d'|format(off_mm3) }}хв
+              📊 Відхилення від 1-3: {{ (diff // 60) }}г {{ '%02d'|format(diff % 60) }}хв
+
+              {% endif %}

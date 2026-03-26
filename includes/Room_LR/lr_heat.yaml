@@ -1,0 +1,457 @@
+##################################################
+## Актуалізовано: 2026-03-24
+##################################################
+
+lr_heat:
+
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
+
+  homeassistant:
+    customize:
+
+      ##################################################
+      ## PHYSICAL
+      ##################################################
+
+      climate.0x2c1165fffec61c89:
+        friendly_name: Вітальня ліва TRV
+        icon: mdi:radiator
+
+      switch.0x2c1165fffec61c89_heating_stop:
+        friendly_name: Вітальня ліва TRV - стоп нагріву
+        icon: mdi:radiator-off
+
+      number.0x2c1165fffec61c89_local_temperature_calibration:
+        friendly_name: Вітальня ліва TRV - калібрування температури
+        unit_of_measurement: "°C"
+        icon: mdi:thermometer-chevron-up
+
+      number.0x2c1165fffec61c89_comfort_temperature:
+        friendly_name: Вітальня ліва TRV - комфортна температура
+        unit_of_measurement: "°C"
+        icon: mdi:thermometer
+
+      number.0x2c1165fffec61c89_open_window_temperature:
+        friendly_name: Вітальня ліва TRV - температура провітрювання
+        unit_of_measurement: "°C"
+        icon: mdi:window-open-variant
+
+      number.0x2c1165fffec61c89_holiday_temperature:
+        friendly_name: Вітальня ліва TRV - температура вихідного режиму
+        unit_of_measurement: "°C"
+        icon: mdi:calendar-weekend
+
+      number.0x2c1165fffec61c89_eco_temperature:
+        friendly_name: Вітальня ліва TRV - еко температура
+        icon: mdi:leaf
+
+      binary_sensor.0x2c1165fffec61c89_battery_low:
+        friendly_name: Вітальня ліва TRV - низький заряд
+        icon: mdi:battery-alert
+
+      climate.0x2c1165fffeb3e567:
+        friendly_name: Вітальня права TRV
+        icon: mdi:radiator
+
+      switch.0x2c1165fffeb3e567_heating_stop:
+        friendly_name: Вітальня права TRV - стоп нагріву
+        icon: mdi:radiator-off
+
+      number.0x2c1165fffeb3e567_local_temperature_calibration:
+        friendly_name: Вітальня права TRV - калібрування температури
+        unit_of_measurement: "°C"
+        icon: mdi:thermometer-chevron-up
+
+      number.0x2c1165fffeb3e567_comfort_temperature:
+        friendly_name: Вітальня права TRV - комфортна температура
+        unit_of_measurement: "°C"
+        icon: mdi:thermometer
+
+      number.0x2c1165fffeb3e567_open_window_temperature:
+        friendly_name: Вітальня права TRV - температура провітрювання
+        unit_of_measurement: "°C"
+        icon: mdi:window-open-variant
+
+      number.0x2c1165fffeb3e567_holiday_temperature:
+        friendly_name: Вітальня права TRV - температура вихідного режиму
+        unit_of_measurement: "°C"
+        icon: mdi:calendar-weekend
+
+      number.0x2c1165fffeb3e567_eco_temperature:
+        friendly_name: Вітальня права TRV - еко температура
+        icon: mdi:leaf
+
+      binary_sensor.0x2c1165fffeb3e567_battery_low:
+        friendly_name: Вітальня права TRV - низький заряд
+        icon: mdi:battery-alert
+
+      ##################################################
+      ## HELPERS
+      ##################################################
+
+      switch.lr_radiator_mode:
+        friendly_name: Вітальня - режим опалення
+        icon: mdi:radiator
+
+      ##################################################
+      ## TEMPLATE
+      ##################################################
+
+      binary_sensor.lr_thermostat_local_temperature_calibration_left:
+        friendly_name: Вітальня - потрібне калібрування лівої TRV
+        icon: mdi:thermometer-sync
+
+      binary_sensor.lr_thermostat_local_temperature_calibration_right:
+        friendly_name: Вітальня - потрібне калібрування правої TRV
+        icon: mdi:thermometer-sync
+
+      ##################################################
+      ## SCRIPT
+      ##################################################
+
+      script.lr_heat_temperature_calibration_left:
+        friendly_name: Вітальня - калібрування лівої TRV
+        icon: mdi:thermometer-auto
+
+      script.lr_heat_temperature_calibration_right:
+        friendly_name: Вітальня - калібрування правої TRV
+        icon: mdi:thermometer-auto
+
+      ##################################################
+      ## AUTOMATION
+      ##################################################
+
+      automation.lr_heat_temperature_calibration:
+        friendly_name: Вітальня - калібрування температури
+
+      automation.lr_heat_mode_toggle:
+        friendly_name: Вітальня - перемикання режиму опалення
+
+      automation.lr_heat_temperature_set:
+        friendly_name: Вітальня - керування температурою
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - climate.0x2c1165fffec61c89
+        - climate.0x2c1165fffeb3e567
+
+  ##################################################
+  ## MQTT
+  ##################################################
+
+  mqtt:
+    switch:
+      - name: lr_radiator_mode
+        unique_id: lr_radiator_mode
+        state_topic: "states/lr_radiator"
+        command_topic: "states/lr_radiator"
+        payload_on: "ON"
+        payload_off: "OFF"
+        state_on: "ON"
+        state_off: "OFF"
+        retain: true
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+    - binary_sensor:
+
+      ##################################################
+      ## ПОТРЕБА КАЛІБРУВАННЯ ЛІВОЇ TRV
+      ##################################################
+
+        - name: lr_thermostat_local_temperature_calibration_left
+          unique_id: lr_thermostat_local_temperature_calibration_left
+          state: >
+            {{
+              (
+                states('sensor.0x00158d00015aebb6_temperature') | float(0)
+                - state_attr('climate.0x2c1165fffec61c89', 'current_temperature') | float(0)
+              ) | abs > 1
+            }}
+
+      ##################################################
+      ## ПОТРЕБА КАЛІБРУВАННЯ ПРАВОЇ TRV
+      ##################################################
+
+        - name: lr_thermostat_local_temperature_calibration_right
+          unique_id: lr_thermostat_local_temperature_calibration_right
+          state: >
+            {{
+              (
+                states('sensor.0x00158d00015aebb6_temperature') | float(0)
+                - state_attr('climate.0x2c1165fffeb3e567', 'current_temperature') | float(0)
+              ) | abs > 1
+            }}
+
+  ##################################################
+  ## SCRIPT
+  ##################################################
+
+  script:
+
+    ##################################################
+    ## КАЛІБРУВАННЯ ЛІВОЇ TRV
+    ##################################################
+
+    lr_heat_temperature_calibration_left:
+      alias: lr_heat_temperature_calibration_left
+      sequence:
+        - action: number.set_value
+          target:
+            entity_id: number.0x2c1165fffec61c89_local_temperature_calibration
+          data:
+            value: 0
+        - delay: "00:00:10"
+        - action: number.set_value
+          target:
+            entity_id: number.0x2c1165fffec61c89_local_temperature_calibration
+          data:
+            value: >
+              {{
+                (
+                  states('sensor.0x00158d00015aebb6_temperature') | float(0)
+                  - state_attr('climate.0x2c1165fffec61c89', 'current_temperature') | float(0)
+                ) | round(1)
+              }}
+
+    ##################################################
+    ## КАЛІБРУВАННЯ ПРАВОЇ TRV
+    ##################################################
+
+    lr_heat_temperature_calibration_right:
+      alias: lr_heat_temperature_calibration_right
+      sequence:
+        - action: number.set_value
+          target:
+            entity_id: number.0x2c1165fffeb3e567_local_temperature_calibration
+          data:
+            value: 0
+        - delay: "00:00:10"
+        - action: number.set_value
+          target:
+            entity_id: number.0x2c1165fffeb3e567_local_temperature_calibration
+          data:
+            value: >
+              {{
+                (
+                  states('sensor.0x00158d00015aebb6_temperature') | float(0)
+                  - state_attr('climate.0x2c1165fffeb3e567', 'current_temperature') | float(0)
+                ) | round(1)
+              }}
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    ##################################################
+    ## КАЛІБРУВАННЯ ТЕМПЕРАТУРИ
+    ##################################################
+
+    - alias: lr_heat_temperature_calibration
+      id: lr_heat_temperature_calibration
+      description: Періодичне калібрування температури двох TRV у вітальні
+      trigger:
+        - platform: time_pattern
+          minutes: "/15"
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+        - condition: state
+          entity_id: switch.lr_radiator_mode
+          state: "on"
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.lr_thermostat_local_temperature_calibration_left
+                  state: "on"
+              sequence:
+                - action: script.turn_on
+                  target:
+                    entity_id: script.lr_heat_temperature_calibration_left
+
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.lr_thermostat_local_temperature_calibration_right
+                  state: "on"
+              sequence:
+                - action: script.turn_on
+                  target:
+                    entity_id: script.lr_heat_temperature_calibration_right
+
+    ##################################################
+    ## ПЕРЕМИКАННЯ РЕЖИМУ ОПАЛЕННЯ
+    ##################################################
+
+    - alias: lr_heat_mode_toggle
+      id: lr_heat_mode_toggle
+      description: Перемикання режиму роботи двох TRV у вітальні
+      trigger:
+        - platform: homeassistant
+          event: start
+        - platform: state
+          entity_id:
+            - switch.lr_radiator_mode
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: switch.lr_radiator_mode
+                  state: "on"
+              sequence:
+                - choose:
+                    - conditions:
+                        - condition: template
+                          value_template: >
+                            {{
+                              states('climate.0x2c1165fffec61c89') != 'heat'
+                              or state_attr('climate.0x2c1165fffec61c89', 'preset_mode') != 'manual'
+                            }}
+                      sequence:
+                        - action: climate.set_hvac_mode
+                          target:
+                            entity_id: climate.0x2c1165fffec61c89
+                          data:
+                            hvac_mode: heat
+
+                        - action: climate.set_preset_mode
+                          target:
+                            entity_id: climate.0x2c1165fffec61c89
+                          data:
+                            preset_mode: manual
+
+                - choose:
+                    - conditions:
+                        - condition: template
+                          value_template: >
+                            {{
+                              states('climate.0x2c1165fffeb3e567') != 'heat'
+                              or state_attr('climate.0x2c1165fffeb3e567', 'preset_mode') != 'manual'
+                            }}
+                      sequence:
+                        - action: climate.set_hvac_mode
+                          target:
+                            entity_id: climate.0x2c1165fffeb3e567
+                          data:
+                            hvac_mode: heat
+
+                        - action: climate.set_preset_mode
+                          target:
+                            entity_id: climate.0x2c1165fffeb3e567
+                          data:
+                            preset_mode: manual
+
+                - action: climate.set_temperature
+                  target:
+                    entity_id:
+                      - climate.0x2c1165fffec61c89
+                      - climate.0x2c1165fffeb3e567
+                  data:
+                    temperature: >
+                      {{ states('number.0x2c1165fffec61c89_comfort_temperature') | float(0) }}
+
+            - conditions:
+                - condition: state
+                  entity_id: switch.lr_radiator_mode
+                  state: "off"
+              sequence:
+                - choose:
+                    - conditions:
+                        - condition: template
+                          value_template: "{{ states('climate.0x2c1165fffec61c89') != 'off' }}"
+                      sequence:
+                        - action: climate.set_hvac_mode
+                          target:
+                            entity_id: climate.0x2c1165fffec61c89
+                          data:
+                            hvac_mode: "off"
+
+                - choose:
+                    - conditions:
+                        - condition: template
+                          value_template: "{{ states('climate.0x2c1165fffeb3e567') != 'off' }}"
+                      sequence:
+                        - action: climate.set_hvac_mode
+                          target:
+                            entity_id: climate.0x2c1165fffeb3e567
+                          data:
+                            hvac_mode: "off"
+
+    ##################################################
+    ## КЕРУВАННЯ ТЕМПЕРАТУРОЮ
+    ##################################################
+
+    - alias: lr_heat_temperature_set
+      id: lr_heat_temperature_set
+      description: Керування температурою двох TRV за провітрюванням і нічним режимом
+      trigger:
+        - platform: state
+          entity_id:
+            - binary_sensor.lr_aeration
+        - platform: state
+          entity_id:
+            - binary_sensor.night_time
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+        - condition: state
+          entity_id: switch.lr_radiator_mode
+          state: "on"
+      action:
+        - choose:
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.lr_aeration
+                  state: "on"
+              sequence:
+                - action: climate.set_temperature
+                  target:
+                    entity_id:
+                      - climate.0x2c1165fffec61c89
+                      - climate.0x2c1165fffeb3e567
+                  data:
+                    temperature: >
+                      {{ states('number.0x2c1165fffec61c89_open_window_temperature') | float(0) }}
+
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.night_time
+                  state: "on"
+              sequence:
+                - action: climate.set_temperature
+                  target:
+                    entity_id:
+                      - climate.0x2c1165fffec61c89
+                      - climate.0x2c1165fffeb3e567
+                  data:
+                    temperature: >
+                      {{ states('number.0x2c1165fffec61c89_eco_temperature') | float(0) }}
+
+          default:
+            - action: climate.set_temperature
+              target:
+                entity_id:
+                  - climate.0x2c1165fffec61c89
+                  - climate.0x2c1165fffeb3e567
+              data:
+                temperature: >
+                  {{ states('number.0x2c1165fffec61c89_comfort_temperature') | float(0) }}

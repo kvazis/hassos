@@ -84,19 +84,6 @@ panel_custom:
     embed_iframe: true      
       
 
-# telegram_bot:
-#   - platform: polling
-#     api_key: !secret api_key_bot
-#     allowed_chat_ids:
-#       - !secret chat_id_alex
-#       - !secret chat_id_olha
-#       - !secret chat_id_dima
-#       - !secret chat_id_user
-#       - !secret chat_id_group
-#       - !secret chat_id_group_tech
-#       - !secret chat_id_log
-#       - !secret chat_id_k7
-      
 lovelace:
   resource_mode: yaml
   resources:
@@ -120,7 +107,14 @@ lovelace:
       type: module
     - url: /hacsfiles/ha-sankey-chart/ha-sankey-chart.js
       type: module
-
+    - url: /hacsfiles/sunsynk-power-flow-card/sunsynk-power-flow-card.js
+      type: module
+    - url: /hacsfiles/bar-card/bar-card.js
+      type: module    
+    - url: /hacsfiles/lovelace-fold-entity-row/fold-entity-row.js    
+      type: module  
+      
+      
   dashboards:
     home-dashboard:
       mode: yaml
