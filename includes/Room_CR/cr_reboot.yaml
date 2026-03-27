@@ -88,7 +88,7 @@ cr_reboot:
             chat_id:
               - !secret chat_id_log
             message: |
-              {{"\U0001F916"}} Антонио. Коридор -  перезагрузка люстры {{ states('sensor.time_date') }}
+              {{"\U0001F916"}} Перезавантаження люстри в коридорі {{ states('sensor.time_date') }}
 
     - alias: cr_reboot_ceiling_manual
       id: cr_reboot_ceiling_manual

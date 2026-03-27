@@ -1,5 +1,5 @@
 ##################################################
-## Актуалізовано: 2026-03-26
+## Актуалізовано: 2026-03-27
 ##################################################
 
 deye_energy:
@@ -344,10 +344,12 @@ deye_energy:
 
       trigger:
         - platform: state
-          entity_id:
-            - input_select.deye_sun15_mode
-            - binary_sensor.deye_sun15_night_tariff
+          entity_id: input_select.deye_sun15_mode
           id: mode_change
+
+        - platform: state
+          entity_id: binary_sensor.deye_sun15_night_tariff
+          id: night_tariff_change
 
         - platform: homeassistant
           event: start
@@ -357,6 +359,15 @@ deye_energy:
         - condition: state
           entity_id: switch.control_mode
           state: "on"
+
+        - condition: or
+          conditions:
+            - condition: template
+              value_template: "{{ trigger.id != 'night_tariff_change' }}"
+
+            - condition: state
+              entity_id: input_select.deye_sun15_mode
+              state: "eco"
 
       action:
         - action: script.deye_sun15_mode_apply

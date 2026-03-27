@@ -2,12 +2,9 @@ title: Логіка
 icon: mdi:format-list-bulleted
 sections:
 
+############################ Колонка 1 ############################
   - type: grid
     cards:
-
-      - type: markdown
-        content: >
-          ## Система
 
       - type: entities
         title: Системні
@@ -54,6 +51,78 @@ sections:
                         state_color: true
                 sort:
                   method: friendly_name
+
+      - type: entities
+        title: Енергетика
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.deye_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.delta_2_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.river_2_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.river_2_max_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.river_2_pro_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                sort:
+                  method: friendly_name
+
+      - type: entities
+        title: Камери
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.floor_camera_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.out_camera_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.camera_reboot_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                sort:
+                  method: friendly_name
+
+############################ Колонка 2 ############################
+  - type: grid
+    cards:
 
       - type: entities
         title: Безпека
@@ -112,7 +181,7 @@ sections:
                   method: friendly_name
 
       - type: entities
-        title: Енергетика
+        title: Графіки та парсер
         show_header_toggle: false
         entities:
           - type: custom:fold-entity-row
@@ -126,29 +195,97 @@ sections:
                   show_header_toggle: false
                 filter:
                   include:
-                    - entity_id: automation.deye_*
+                    - entity_id: automation.k7_*
                       options:
                         secondary_info: last-changed
                         state_color: true
-                    - entity_id: automation.delta_2_*
+                    - entity_id: automation.tg_parser_*
                       options:
                         secondary_info: last-changed
                         state_color: true
-                    - entity_id: automation.river_2_*
-                      options:
-                        secondary_info: last-changed
-                        state_color: true
-                    - entity_id: automation.river_2_max_*
-                      options:
-                        secondary_info: last-changed
-                        state_color: true
-                    - entity_id: automation.river_2_pro_*
+                    - entity_id: automation.tg_power_*
                       options:
                         secondary_info: last-changed
                         state_color: true
                 sort:
                   method: friendly_name
 
+      - type: entities
+        title: Бойлери
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - entity_id: automation.0x*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                sort:
+                  method: friendly_name
+
+      - type: entities
+        title: Інше
+        show_header_toggle: false
+        entities:
+          - type: custom:fold-entity-row
+            head:
+              type: section
+              label: Розгорнути
+            entities:
+              - type: custom:auto-entities
+                card:
+                  type: entities
+                  show_header_toggle: false
+                filter:
+                  include:
+                    - domain: automation
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                  exclude:
+                    - entity_id: automation.sys_*
+                    - entity_id: automation.electricity_*
+                    - entity_id: automation.alarm_*
+                    - entity_id: automation.air_raid_alert_*
+                    - entity_id: automation.deye_*
+                    - entity_id: automation.delta_2_*
+                    - entity_id: automation.river_2_*
+                    - entity_id: automation.river_2_max_*
+                    - entity_id: automation.river_2_pro_*
+                    - entity_id: automation.k7_*
+                    - entity_id: automation.k7_notification_*
+                    - entity_id: automation.tg_parser_*
+                    - entity_id: automation.tg_power_*
+                    - entity_id: automation.telegram_*
+                    - entity_id: automation.0x*
+                    - entity_id: automation.en_*
+                    - entity_id: automation.cr_*
+                    - entity_id: automation.kn_*
+                    - entity_id: automation.tt_*
+                    - entity_id: automation.bt_*
+                    - entity_id: automation.ln_*
+                    - entity_id: automation.lr_*
+                    - entity_id: automation.lr2_*
+                    - entity_id: automation.awtrix_*
+                    - entity_id: automation.reset_lr_*
+                    - entity_id: automation.da_*
+                    - entity_id: automation.br_*
+                    - entity_id: automation.floor_camera_*
+                    - entity_id: automation.out_camera_*
+                    - entity_id: automation.camera_reboot_*
+                sort:
+                  method: friendly_name
+
+############################ Колонка 3 ############################
   - type: grid
     cards:
 
@@ -266,6 +403,7 @@ sections:
                 sort:
                   method: friendly_name
 
+############################ Колонка 4 ############################
   - type: grid
     cards:
 
@@ -314,11 +452,23 @@ sections:
                       options:
                         secondary_info: last-changed
                         state_color: true
+                    - entity_id: automation.awtrix_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
                     - entity_id: automation.lr_control_*
                       options:
                         secondary_info: last-changed
                         state_color: true
                     - entity_id: automation.lr_reboot_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.reset_lr_*
+                      options:
+                        secondary_info: last-changed
+                        state_color: true
+                    - entity_id: automation.lr2_*
                       options:
                         secondary_info: last-changed
                         state_color: true
@@ -366,82 +516,5 @@ sections:
                       options:
                         secondary_info: last-changed
                         state_color: true
-                sort:
-                  method: friendly_name
-
-  - type: grid
-    cards:
-
-      - type: entities
-        title: Камери
-        show_header_toggle: false
-        entities:
-          - type: custom:fold-entity-row
-            head:
-              type: section
-              label: Розгорнути
-            entities:
-              - type: custom:auto-entities
-                card:
-                  type: entities
-                  show_header_toggle: false
-                filter:
-                  include:
-                    - entity_id: automation.floor_camera_*
-                      options:
-                        secondary_info: last-changed
-                        state_color: true
-                    - entity_id: automation.out_camera_*
-                      options:
-                        secondary_info: last-changed
-                        state_color: true
-                    - entity_id: automation.camera_reboot_*
-                      options:
-                        secondary_info: last-changed
-                        state_color: true
-                sort:
-                  method: friendly_name
-
-      - type: entities
-        title: Інше
-        show_header_toggle: false
-        entities:
-          - type: custom:fold-entity-row
-            head:
-              type: section
-              label: Розгорнути
-            entities:
-              - type: custom:auto-entities
-                card:
-                  type: entities
-                  show_header_toggle: false
-                filter:
-                  include:
-                    - domain: automation
-                      options:
-                        secondary_info: last-changed
-                        state_color: true
-                  exclude:
-                    - entity_id: automation.sys_*
-                    - entity_id: automation.electricity_*
-                    - entity_id: automation.alarm_*
-                    - entity_id: automation.air_raid_alert_*
-                    - entity_id: automation.deye_*
-                    - entity_id: automation.delta_2_*
-                    - entity_id: automation.river_2_*
-                    - entity_id: automation.river_2_max_*
-                    - entity_id: automation.river_2_pro_*
-                    - entity_id: automation.en_*
-                    - entity_id: automation.cr_*
-                    - entity_id: automation.kn_*
-                    - entity_id: automation.tt_*
-                    - entity_id: automation.bt_*
-                    - entity_id: automation.ln_*
-                    - entity_id: automation.lr_*
-                    - entity_id: automation.da_*
-                    - entity_id: automation.br_*
-                    - entity_id: automation.floor_camera_*
-                    - entity_id: automation.out_camera_*
-                    - entity_id: automation.camera_reboot_*
                 sort:
                   method: friendly_name

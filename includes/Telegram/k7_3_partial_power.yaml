@@ -137,6 +137,7 @@ k7_3_partial_power:
   sensor:
     - platform: history_stats
       name: k7_3_partial_power_on_yesterday
+      unique_id: k7_3_partial_power_on_yesterday
       entity_id: input_boolean.k7_3_partial_power_log
       state: "on"
       type: time

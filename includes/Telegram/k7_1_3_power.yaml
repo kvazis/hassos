@@ -102,6 +102,7 @@ k7_1_3_power:
   sensor:
     - platform: history_stats
       name: k7_1_3_power_on_yesterday
+      unique_id: k7_1_3_power_on_yesterday
       entity_id: binary_sensor.k7_1_3_power_ping
       state: "on"
       type: time
