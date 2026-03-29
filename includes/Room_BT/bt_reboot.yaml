@@ -13,13 +13,23 @@ bt_reboot:
       binary_sensor.bt_ceiling_unavailable:
         friendly_name: Ванна кімната - недоступність люстри
         icon: mdi:ceiling-light
-      automation.bt_reboot_ceiling:
+
+      input_number.bt_ceiling_reboot_attempts:
+        friendly_name: Ванна кімната - спроби перезавантаження люстри
+
+      automation.bt_ceiling_reboot:
         friendly_name: Ванна кімната - перезавантаження люстри
         icon: mdi:restart
-      automation.bt_reboot_switch_turn_on_check:
+
+      automation.bt_ceiling_reboot_attempts_reset:
+        friendly_name: Ванна кімната - скидання спроб люстри
+        icon: mdi:counter
+
+      automation.bt_switch_power_turn_on_check:
         friendly_name: Ванна кімната - перевірка ввімкнення живлення люстри
         icon: mdi:light-switch
-      automation.bt_reboot_switch_check:
+
+      automation.bt_switch_state_refresh_check:
         friendly_name: Ванна кімната - примусове оновлення стану вимикача
         icon: mdi:update
 
@@ -38,12 +48,24 @@ bt_reboot:
           device_class: problem
 
   ##################################################
+  ## INPUT_NUMBER
+  ##################################################
+
+  input_number:
+
+    bt_ceiling_reboot_attempts:
+      name: bt_ceiling_reboot_attempts
+      min: 0
+      max: 3
+      step: 1
+
+  ##################################################
   ## AUTOMATION
   ##################################################
 
   automation:
-    - alias: bt_reboot_ceiling
-      id: bt_reboot_ceiling
+    - alias: bt_ceiling_reboot
+      id: bt_ceiling_reboot
       description: Ванна кімната - перезавантаження люстри
       initial_state: true
       trigger:
@@ -59,6 +81,8 @@ bt_reboot:
         - condition: state
           entity_id: binary_sensor.electricity_internal
           state: "off"
+        - condition: template
+          value_template: "{{ states('input_number.bt_ceiling_reboot_attempts') | int < 3 }}"
       action:
         - action: switch.turn_off
           data: {}
@@ -69,6 +93,9 @@ bt_reboot:
           data: {}
           target:
             entity_id: switch.0x00158d000a8244b4_right
+        - action: input_number.increment
+          target:
+            entity_id: input_number.bt_ceiling_reboot_attempts
         - action: telegram_bot.send_message
           data:
             message: >-
@@ -76,8 +103,36 @@ bt_reboot:
             chat_id:
               - !secret chat_id_log
 
-    - alias: bt_reboot_switch_turn_on_check
-      id: bt_reboot_switch_turn_on_check
+    - alias: bt_ceiling_reboot_attempts_reset
+      id: bt_ceiling_reboot_attempts_reset
+      description: Ванна кімната - скидання спроб перезавантаження люстри
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.bt_ceiling_unavailable
+          from: "on"
+          to: "off"
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+        - condition: template
+          value_template: "{{ states('input_number.bt_ceiling_reboot_attempts') | int > 0 }}"
+      action:
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.bt_ceiling_reboot_attempts
+          data:
+            value: 0
+        - action: telegram_bot.send_message
+          data:
+            message: >-
+              {{"\U0001F916"}} Ванна кімната - люстра успішно відновила роботу, лічильник скинуто
+            chat_id:
+              - !secret chat_id_log
+
+    - alias: bt_switch_power_turn_on_check
+      id: bt_switch_power_turn_on_check
       description: Ванна кімната - перевірка стану вимикача
       initial_state: true
       trigger:
@@ -111,8 +166,8 @@ bt_reboot:
             chat_id:
               - !secret chat_id_log
 
-    - alias: bt_reboot_switch_check
-      id: bt_reboot_switch_check
+    - alias: bt_switch_state_refresh_check
+      id: bt_switch_state_refresh_check
       description: Ванна кімната - примусове оновлення стану вимикача
       initial_state: false
       trigger:

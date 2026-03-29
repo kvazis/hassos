@@ -95,7 +95,7 @@ sections:
           - type: custom:mushroom-template-card
             primary: Ручне перезавантаження
             layout: horizontal
-            entity: input_button.br_ceiling_reset
+            entity: input_button.br_ceiling_reboot
             icon: mdi:reload
             multiline_secondary: true
             icon_color: amber
@@ -103,8 +103,8 @@ sections:
               action: call-service
               service: input_button.press
               target:
-                entity_id: input_button.br_ceiling_reset
-
+                entity_id: input_button.br_ceiling_reboot
+                
       - type: conditional
         conditions:
           - entity: light.br_philips_62

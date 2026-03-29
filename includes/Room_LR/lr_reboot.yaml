@@ -19,7 +19,7 @@ lr_reboot:
         friendly_name: Вітальня - люстра 2 недоступна
         icon: mdi:alert-circle
 
-      binary_sensor.lr_migateway_unavailable:
+      binary_sensor.lr_gateway_unavailable:
         friendly_name: Вітальня - шлюз недоступний
         icon: mdi:router-wireless-off
 
@@ -27,19 +27,19 @@ lr_reboot:
         friendly_name: Вітальня - IR контролер недоступний
         icon: mdi:remote-off
 
-      binary_sensor.lr_balkony_switch_unavailable:
+      binary_sensor.lr_balcony_switch_e1_unavailable:
         friendly_name: Вітальня - вимикач балкону недоступний
         icon: mdi:light-switch-off
 
-      input_button.lr_ceiling_1_reset:
+      input_button.lr_ceiling_1_reboot:
         friendly_name: Вітальня - перезавантаження люстри 1
         icon: mdi:restart
 
-      input_button.lr_ceiling_2_reset:
+      input_button.lr_ceiling_2_reboot:
         friendly_name: Вітальня - перезавантаження люстри 2
         icon: mdi:restart
 
-      input_button.lr_gateway_reset:
+      input_button.lr_gateway_reboot:
         friendly_name: Вітальня - перезавантаження шлюзу
         icon: mdi:restart
 
@@ -55,46 +55,46 @@ lr_reboot:
       input_number.lr_broadlink_ir_reboot_attempts:
         friendly_name: Вітальня - спроби перезавантаження IR
 
-      input_number.lr_balkony_switch_reboot_attempts:
+      input_number.lr_balcony_switch_e1_reboot_attempts:
         friendly_name: Вітальня - спроби перезавантаження вимикача балкону
 
-      automation.lr_reboot_ceiling_1:
+      automation.lr_ceiling_1_reboot:
         friendly_name: Вітальня - перезавантаження люстри 1
         icon: mdi:restart
 
-      automation.reset_lr_ceiling_1_reboot_attempts:
+      automation.lr_ceiling_1_reboot_attempts_reset:
         friendly_name: Вітальня - скидання спроб люстри 1
         icon: mdi:counter
 
-      automation.lr_reboot_ceiling_2:
+      automation.lr_ceiling_2_reboot:
         friendly_name: Вітальня - перезавантаження люстри 2
         icon: mdi:restart
 
-      automation.reset_lr_ceiling_2_reboot_attempts:
+      automation.lr_ceiling_2_reboot_attempts_reset:
         friendly_name: Вітальня - скидання спроб люстри 2
         icon: mdi:counter
 
-      automation.lr_reboot_gateway:
+      automation.lr_gateway_reboot:
         friendly_name: Вітальня - перезавантаження шлюзу
         icon: mdi:router-wireless
 
-      automation.reset_lr_reboot_gateway_attempts:
+      automation.lr_gateway_reboot_attempts_reset:
         friendly_name: Вітальня - скидання спроб шлюзу
         icon: mdi:counter
 
-      automation.lr_reboot_broadlink_ir:
+      automation.lr_broadlink_ir_reboot:
         friendly_name: Вітальня - перезавантаження IR контролера
         icon: mdi:remote
 
-      automation.reset_lr_reboot_broadlink_ir_attempts:
+      automation.lr_broadlink_ir_reboot_attempts_reset:
         friendly_name: Вітальня - скидання спроб IR
         icon: mdi:counter
 
-      automation.lr_reboot_balcony_switch_e1:
+      automation.lr_balcony_switch_e1_reboot:
         friendly_name: Вітальня - відновлення вимикача балкону
         icon: mdi:light-switch
 
-      automation.reset_lr_reboot_balcony_switch_e1_attempts:
+      automation.lr_balcony_switch_e1_reboot_attempts_reset:
         friendly_name: Вітальня - скидання спроб вимикача балкону
         icon: mdi:counter
 
@@ -122,8 +122,8 @@ lr_reboot:
             minutes: 5
           device_class: problem
 
-        - name: lr_migateway_unavailable
-          unique_id: lr_migateway_unavailable
+        - name: lr_gateway_unavailable
+          unique_id: lr_gateway_unavailable
           state: >
             {{ is_state('light.gateway_light_34ce0088b039', 'unavailable') }}
           delay_on:
@@ -138,8 +138,8 @@ lr_reboot:
             minutes: 2
           device_class: problem
 
-        - name: lr_balkony_switch_unavailable
-          unique_id: lr_balkony_switch_unavailable
+        - name: lr_balcony_switch_e1_unavailable
+          unique_id: lr_balcony_switch_e1_unavailable
           state: >
             {{ is_state('switch.0x54ef441000681a6f_right', 'unavailable') }}
           delay_on:
@@ -152,14 +152,14 @@ lr_reboot:
 
   input_button:
 
-    lr_ceiling_1_reset:
-      name: lr_ceiling_1_reset
+    lr_ceiling_1_reboot:
+      name: lr_ceiling_1_reboot
 
-    lr_ceiling_2_reset:
-      name: lr_ceiling_2_reset
+    lr_ceiling_2_reboot:
+      name: lr_ceiling_2_reboot
 
-    lr_gateway_reset:
-      name: lr_gateway_reset
+    lr_gateway_reboot:
+      name: lr_gateway_reboot
 
   ##################################################
   ## INPUT_NUMBER
@@ -191,8 +191,8 @@ lr_reboot:
       max: 3
       step: 1
 
-    lr_balkony_switch_reboot_attempts:
-      name: lr_balkony_switch_reboot_attempts
+    lr_balcony_switch_e1_reboot_attempts:
+      name: lr_balcony_switch_e1_reboot_attempts
       min: 0
       max: 3
       step: 1
@@ -203,15 +203,15 @@ lr_reboot:
 
   automation:
 
-    - alias: lr_reboot_ceiling_1
-      id: lr_reboot_ceiling_1
+    - alias: lr_ceiling_1_reboot
+      id: lr_ceiling_1_reboot
       description: Вітальня — перезавантаження люстри 1
       initial_state: true
       trigger:
         - platform: time_pattern
           minutes: '/5'
         - platform: state
-          entity_id: input_button.lr_ceiling_1_reset
+          entity_id: input_button.lr_ceiling_1_reboot
       condition:
         - condition: state
           entity_id: switch.control_mode
@@ -242,8 +242,8 @@ lr_reboot:
             message: |
               {{"\U0001F916"}} Вітальня — перезавантаження люстри 1 (спроба {{ states('input_number.lr_ceiling_1_reboot_attempts')|int }} з 3) {{ states('sensor.time_date') }}
 
-    - alias: reset_lr_ceiling_1_reboot_attempts
-      id: reset_lr_ceiling_1_reboot_attempts
+    - alias: lr_ceiling_1_reboot_attempts_reset
+      id: lr_ceiling_1_reboot_attempts_reset
       description: Вітальня — скидання спроб перезавантажень люстри 1
       initial_state: true
       trigger:
@@ -270,15 +270,15 @@ lr_reboot:
             message: |
               {{"\U0001F916"}} Вітальня - люстра 1 успішно відновила роботу, лічильник скинуто
 
-    - alias: lr_reboot_ceiling_2
-      id: lr_reboot_ceiling_2
-      description: Вітальня — перезавантаження люстри 1
+    - alias: lr_ceiling_2_reboot
+      id: lr_ceiling_2_reboot
+      description: Вітальня — перезавантаження люстри 2
       initial_state: true
       trigger:
         - platform: time_pattern
           minutes: '/5'
         - platform: state
-          entity_id: input_button.lr_ceiling_2_reset
+          entity_id: input_button.lr_ceiling_2_reboot
       condition:
         - condition: state
           entity_id: switch.control_mode
@@ -309,8 +309,8 @@ lr_reboot:
             message: |
               {{"\U0001F916"}} Вітальня — перезавантаження люстри 2 (спроба {{ states('input_number.lr_ceiling_2_reboot_attempts')|int }} з 3) {{ states('sensor.time_date') }}
 
-    - alias: reset_lr_ceiling_2_reboot_attempts
-      id: reset_lr_ceiling_2_reboot_attempts
+    - alias: lr_ceiling_2_reboot_attempts_reset
+      id: lr_ceiling_2_reboot_attempts_reset
       description: Вітальня — скидання спроб перезавантажень люстри 2
       initial_state: true
       trigger:
@@ -337,21 +337,21 @@ lr_reboot:
             message: |
               {{"\U0001F916"}} Вітальня - люстра 2 успішно відновила роботу, лічильник скинуто
 
-    - alias: lr_reboot_gateway
-      id: lr_reboot_gateway
+    - alias: lr_gateway_reboot
+      id: lr_gateway_reboot
       description: Вітальня — перезавантаження шлюза xiaomi
       initial_state: true
       trigger:
         - platform: time_pattern
           minutes: '/5'
         - platform: state
-          entity_id: input_button.lr_gateway_reset
+          entity_id: input_button.lr_gateway_reboot
       condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
         - condition: state
-          entity_id: binary_sensor.lr_migateway_unavailable
+          entity_id: binary_sensor.lr_gateway_unavailable
           state: 'on'
         - condition: state
           entity_id: binary_sensor.blackout_after
@@ -383,13 +383,13 @@ lr_reboot:
             entity_id: light.gateway_light_34ce0088b039
           data: {}
 
-    - alias: reset_lr_reboot_gateway_attempts
-      id: reset_lr_reboot_gateway_attempts
+    - alias: lr_gateway_reboot_attempts_reset
+      id: lr_gateway_reboot_attempts_reset
       description: Вітальня — скидання спроб перезавантажень шлюза xiaomi
       initial_state: true
       trigger:
         - platform: state
-          entity_id: binary_sensor.lr_migateway_unavailable
+          entity_id: binary_sensor.lr_gateway_unavailable
           from: "on"
           to: "off"
       condition:
@@ -411,8 +411,8 @@ lr_reboot:
             message: |
               {{"\U0001F916"}} Вітальня - шлюз xiaomi успішно відновив роботу, лічильник скинуто
 
-    - alias: lr_reboot_broadlink_ir
-      id: lr_reboot_broadlink_ir
+    - alias: lr_broadlink_ir_reboot
+      id: lr_broadlink_ir_reboot
       description: Вітальня — перезавантаження IR контролера Broadlink
       initial_state: true
       trigger:
@@ -448,8 +448,8 @@ lr_reboot:
             message: |
               {{"\U0001F916"}} Вітальня — перезавантаження IR контролера Broadlink (спроба {{ states('input_number.lr_broadlink_ir_reboot_attempts')|int }} з 3) {{ states('sensor.time_date') }}
 
-    - alias: reset_lr_reboot_broadlink_ir_attempts
-      id: reset_lr_reboot_broadlink_ir_attempts
+    - alias: lr_broadlink_ir_reboot_attempts_reset
+      id: lr_broadlink_ir_reboot_attempts_reset
       description: Вітальня — скидання спроб перезавантажень IR контролера Broadlink
       initial_state: true
       trigger:
@@ -476,8 +476,8 @@ lr_reboot:
             message: |
               {{"\U0001F916"}} Вітальня - IR контролер Broadlink успішно відновив роботу, лічильник скинуто
 
-    - alias: lr_reboot_balcony_switch_e1
-      id: lr_reboot_balcony_switch_e1
+    - alias: lr_balcony_switch_e1_reboot
+      id: lr_balcony_switch_e1_reboot
       description: Вітальня — відновлення роботи вимикача Aqara E1 на вході балкону
       initial_state: true
       trigger:
@@ -488,23 +488,23 @@ lr_reboot:
           entity_id: switch.control_mode
           state: 'on'
         - condition: state
-          entity_id: binary_sensor.lr_balkony_switch_unavailable
+          entity_id: binary_sensor.lr_balcony_switch_e1_unavailable
           state: 'on'
         - condition: state
           entity_id: binary_sensor.blackout_after
           state: 'off'
         - condition: template
-          value_template: "{{ states('input_number.lr_balkony_switch_reboot_attempts')|int < 3 }}"
+          value_template: "{{ states('input_number.lr_balcony_switch_e1_reboot_attempts')|int < 3 }}"
       action:
         - action: input_number.increment
           target:
-            entity_id: input_number.lr_balkony_switch_reboot_attempts
+            entity_id: input_number.lr_balcony_switch_e1_reboot_attempts
         - action: telegram_bot.send_message
           data_template:
             chat_id:
               - !secret chat_id_log
             message: |
-              {{"\U0001F916"}} Вітальня — відновлення роботи вимикача люстри балкону (спроба {{ states('input_number.lr_balkony_switch_reboot_attempts')|int }} з 3) {{ states('sensor.time_date') }}
+              {{"\U0001F916"}} Вітальня — відновлення роботи вимикача люстри балкону (спроба {{ states('input_number.lr_balcony_switch_e1_reboot_attempts')|int }} з 3) {{ states('sensor.time_date') }}
         - delay: 00:00:05
         - action: light.turn_on
           target:
@@ -517,13 +517,13 @@ lr_reboot:
           target:
             entity_id: light.0xa4c13812b94c8365
 
-    - alias: reset_lr_reboot_balcony_switch_e1_attempts
-      id: reset_lr_reboot_balcony_switch_e1_attempts
+    - alias: lr_balcony_switch_e1_reboot_attempts_reset
+      id: lr_balcony_switch_e1_reboot_attempts_reset
       description: Вітальня — скидання спроб відновлення роботи вимикача Aqara E1 на вході балкону
       initial_state: true
       trigger:
         - platform: state
-          entity_id: binary_sensor.lr_balkony_switch_unavailable
+          entity_id: binary_sensor.lr_balcony_switch_e1_unavailable
           from: "on"
           to: "off"
       condition:
@@ -531,11 +531,11 @@ lr_reboot:
           entity_id: switch.control_mode
           state: 'on'
         - condition: template
-          value_template: "{{ states('input_number.lr_balkony_switch_reboot_attempts')|int > 0 }}"
+          value_template: "{{ states('input_number.lr_balcony_switch_e1_reboot_attempts')|int > 0 }}"
       action:
         - action: input_number.set_value
           target:
-            entity_id: input_number.lr_balkony_switch_reboot_attempts
+            entity_id: input_number.lr_balcony_switch_e1_reboot_attempts
           data:
             value: 0
         - action: telegram_bot.send_message

@@ -1,7 +1,3 @@
-##################################################
-## Актуалізовано: 2026-03-24
-##################################################
-
 electricity:
 
   ##################################################
@@ -118,6 +114,12 @@ electricity:
         friendly_name: Електрика - встановити тариф
         icon: mdi:swap-horizontal
 
+      input_datetime.energy_tariff_night_start:
+        friendly_name: Електрика - початок нічного тарифу
+
+      input_datetime.energy_tariff_night_end:
+        friendly_name: Електрика - завершення нічного тарифу
+
       automation.electricity_set_energy_correction:
         friendly_name: Електрика - встановлення корекції
         icon: mdi:tune
@@ -229,26 +231,48 @@ electricity:
       name: select_tariff
 
   ##################################################
-  ## BINARY_SENSOR
+  ## INPUT_DATETIME
   ##################################################
 
-  binary_sensor:
+  input_datetime:
 
-    ##################################################
-    ## СЕНСОР ТАРИФУ
-    ##################################################
+    energy_tariff_night_start:
+      name: energy_tariff_night_start
+      has_date: false
+      has_time: true
 
-    - platform: tod
-      name: energy_tariff
-      unique_id: energy_tariff
-      after: "23:00"
-      before: "07:00"
+
+    energy_tariff_night_end:
+      name: energy_tariff_night_end
+      has_date: false
+      has_time: true
+
 
   ##################################################
   ## TEMPLATE
   ##################################################
 
   template:
+
+    ##################################################
+    ## СЕНСОР ТАРИФУ
+    ##################################################
+
+    - binary_sensor:
+        - name: energy_tariff
+          unique_id: energy_tariff
+          device_class: running
+          state: >
+            {% set start = states('input_datetime.energy_tariff_night_start') %}
+            {% set end = states('input_datetime.energy_tariff_night_end') %}
+            {% set now_time = now().strftime('%H:%M:%S') %}
+            {% if start in ['unknown', 'unavailable', 'none', ''] or end in ['unknown', 'unavailable', 'none', ''] %}
+              false
+            {% elif start < end %}
+              {{ start <= now_time < end }}
+            {% else %}
+              {{ now_time >= start or now_time < end }}
+            {% endif %}
 
     ##################################################
     ## СЕНСОРИ ЕЛЕКТРИКИ

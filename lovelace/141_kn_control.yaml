@@ -365,6 +365,7 @@ sections:
         content: >
           ## Моніторинг
 
+
       - type: picture-entity
         entity: camera.reolink_e1_zoom_rtsp
         camera_view: live

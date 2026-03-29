@@ -202,18 +202,6 @@ blackout:
 
         - delay: "00:00:03"
 
-        - action: switch.turn_on
-          target:
-            entity_id:
-              - switch.sonoff_1000d036a0_1
-
-        - action: mqtt.publish
-          data:
-            topic: "zigstar_poe/LR TV Strip/get"
-            payload: '{ "state": "" }'
-
-        - delay: "00:00:03"
-
         - action: mqtt.publish
           data:
             topic: "zigstar/LR balcony light/get"
@@ -244,12 +232,6 @@ blackout:
           target:
             entity_id: light.0xa4c13812b94c8365
 
-        - delay: "00:00:03"
-
-        - action: mqtt.publish
-          data:
-            topic: "zigstar/LR balcony light/get"
-            payload: '{ "state": "" }'
 
         - delay: "00:00:03"
 

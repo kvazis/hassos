@@ -15,15 +15,22 @@ br_reboot:
         friendly_name: Спальня - недоступність люстри
         icon: mdi:ceiling-light-outline
 
-      input_button.br_ceiling_reset:
+      input_button.br_ceiling_reboot:
         friendly_name: Спальня - перезавантаження люстри
         icon: mdi:restart
 
-      automation.br_reboot_ceiling:
+      input_number.br_ceiling_reboot_attempts:
+        friendly_name: Спальня - спроби перезавантаження люстри
+
+      automation.br_ceiling_reboot:
         friendly_name: Спальня - перезавантаження люстри
         icon: phu:ceiling-being
 
-      automation.br_reboot_ceiling_manual:
+      automation.br_ceiling_reboot_attempts_reset:
+        friendly_name: Спальня - скидання спроб люстри
+        icon: mdi:counter
+
+      automation.br_ceiling_reboot_manual:
         friendly_name: Спальня - ручне перезавантаження люстри
         icon: mdi:restart
 
@@ -57,8 +64,20 @@ br_reboot:
 
   input_button:
 
-    br_ceiling_reset:
-      name: br_ceiling_reset
+    br_ceiling_reboot:
+      name: br_ceiling_reboot
+
+  ##################################################
+  ## INPUT_NUMBER
+  ##################################################
+
+  input_number:
+
+    br_ceiling_reboot_attempts:
+      name: br_ceiling_reboot_attempts
+      min: 0
+      max: 3
+      step: 1
 
   ##################################################
   ## AUTOMATION
@@ -70,8 +89,8 @@ br_reboot:
     ## ПЕРЕЗАВАНТАЖЕННЯ ЛЮСТРИ
     ##################################################
 
-    - alias: br_reboot_ceiling
-      id: br_reboot_ceiling
+    - alias: br_ceiling_reboot
+      id: br_ceiling_reboot
       description: Перезавантаження недоступної люстри
       initial_state: true
 
@@ -92,6 +111,9 @@ br_reboot:
           entity_id: binary_sensor.blackout_after
           state: "off"
 
+        - condition: template
+          value_template: "{{ states('input_number.br_ceiling_reboot_attempts') | int < 3 }}"
+
       action:
         - action: switch.turn_off
           target:
@@ -103,25 +125,66 @@ br_reboot:
           target:
             entity_id: switch.0x54ef44100024689c_right
 
+        - action: input_number.increment
+          target:
+            entity_id: input_number.br_ceiling_reboot_attempts
+
         - action: telegram_bot.send_message
           data:
             chat_id:
               - !secret chat_id_log
             message: |
-              🤖 Спальня - перезавантаження люстри {{ states('sensor.time_date') }}
+              🤖 Спальня - перезавантаження люстри (спроба {{ states('input_number.br_ceiling_reboot_attempts') | int }} з 3) {{ states('sensor.time_date') }}
+
+    ##################################################
+    ## СКИДАННЯ СПРОБ ПЕРЕЗАВАНТАЖЕННЯ ЛЮСТРИ
+    ##################################################
+
+    - alias: br_ceiling_reboot_attempts_reset
+      id: br_ceiling_reboot_attempts_reset
+      description: Скидання спроб перезавантаження люстри
+      initial_state: true
+
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.br_ceiling_unavailable
+          from: "on"
+          to: "off"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+        - condition: template
+          value_template: "{{ states('input_number.br_ceiling_reboot_attempts') | int > 0 }}"
+
+      action:
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.br_ceiling_reboot_attempts
+          data:
+            value: 0
+
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_log
+            message: |
+              🤖 Спальня - люстра успішно відновила роботу, лічильник скинуто
 
     ##################################################
     ## РУЧНЕ ПЕРЕЗАВАНТАЖЕННЯ ЛЮСТРИ
     ##################################################
 
-    - alias: br_reboot_ceiling_manual
-      id: br_reboot_ceiling_manual
+    - alias: br_ceiling_reboot_manual
+      id: br_ceiling_reboot_manual
       description: Ручне перезавантаження люстри
       initial_state: true
 
       trigger:
         - platform: state
-          entity_id: input_button.br_ceiling_reset
+          entity_id: input_button.br_ceiling_reboot
 
       action:
         - action: switch.turn_off

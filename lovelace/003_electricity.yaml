@@ -179,6 +179,13 @@ sections:
           target:
             entity_id: input_button.energy_correction_night
 
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - entity: binary_sensor.energy_tariff
+          - entity: input_datetime.energy_tariff_night_start
+          - entity: input_datetime.energy_tariff_night_end
+
 
 ############################ Колонка 2 ############################
   - type: grid

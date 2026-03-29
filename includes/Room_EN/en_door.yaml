@@ -53,7 +53,7 @@ en_door:
     ## КНОПКА ДЛЯ РУЧНОГО ФОТО
     ##################################################
 
-    mi_2k:
+    e1_pro:
 
   automation:
 
@@ -61,15 +61,15 @@ en_door:
     ## ВІДПРАВКА ФОТО В TELEGRAM ПО НАТИСКАННЮ КНОПКИ
     ##################################################
 
-    - alias: en_door_camera_mi_2k_photo
-      id: en_door_camera_mi_2k_photo
-      description: Створення фото з камери MI 2K та надсилання в Telegram
+    - alias: en_door_camera_e1_pro_photo
+      id: en_door_camera_mi_e1_pro_photo
+      description: Створення фото з камери E1 Pro та надсилання в Telegram
       initial_state: true
       mode: restart
 
       trigger:
         - platform: state
-          entity_id: input_button.mi_2k
+          entity_id: input_button.e1_pro
 
       condition:
         - condition: state
@@ -77,13 +77,13 @@ en_door:
           state: "on"
 
       action:
-        - delay: "00:00:03"
+        - delay: "00:00:01"
 
         - action: camera.snapshot
           target:
-            entity_id: camera.mi_2k
+            entity_id: camera.reolink_e1_pro_rtsp
           data:
-            filename: "/config/www/cam_captures/mi_2k.jpg"
+            filename: "/config/www/cam_captures/e1_pro.jpg"
 
         - delay: "00:00:10"
 
@@ -91,7 +91,7 @@ en_door:
           data:
             chat_id:
               - !secret chat_id_group
-            file: "/config/www/cam_captures/mi_2k.jpg"
+            file: "/config/www/cam_captures/e1_pro.jpg"
 
     ##################################################
     ## ВІДПРАВКА ФОТО В TELEGRAM ПРИ ВІДКРИТТІ ДВЕРЕЙ
@@ -132,7 +132,7 @@ en_door:
                     entity_id:
                       - input_button.reolink_411_ws_photo
                       - input_button.reolink_410_photo
-                      - input_button.mi_2k
+                      - input_button.e1_pro
 
             - conditions:
                 - condition: state

@@ -47,10 +47,6 @@ deye_energy:
       ## ЛОГІЧНІ СЕНСОРИ
       ##################################################
 
-      binary_sensor.deye_sun15_night_tariff:
-        friendly_name: Deye SUN15 - нічний тариф
-        icon: mdi:weather-night
-
       binary_sensor.deye_sun15_grid_charging_mismatch:
         friendly_name: Deye SUN15 - невідповідність заряджання від мережі
         icon: mdi:alert-circle-outline
@@ -116,11 +112,6 @@ deye_energy:
 
   template:
     - binary_sensor:
-        - name: deye_sun15_night_tariff
-          unique_id: deye_sun15_night_tariff
-          state: >
-            {% set t = now().strftime('%H:%M:%S') %}
-            {{ t >= '23:05:00' or t < '06:55:00' }}
 
         - name: deye_sun15_grid_charging_mismatch
           unique_id: deye_sun15_grid_charging_mismatch
@@ -167,7 +158,7 @@ deye_energy:
             {% elif is_state('input_select.deye_sun15_mode', 'supereco') %}
               on
             {% elif is_state('input_select.deye_sun15_mode', 'eco')
-                    and is_state('binary_sensor.deye_sun15_night_tariff', 'on') %}
+                    and is_state('binary_sensor.energy_tariff', 'on') %}
               on
             {% else %}
               off
@@ -177,7 +168,7 @@ deye_energy:
           unique_id: deye_sun15_effective_mode
           state: >
             {% if is_state('input_select.deye_sun15_mode', 'eco')
-                  and is_state('binary_sensor.deye_sun15_night_tariff', 'on') %}
+                  and is_state('binary_sensor.energy_tariff', 'on') %}
               eco_night
             {% elif is_state('input_select.deye_sun15_mode', 'eco') %}
               eco_day
@@ -250,37 +241,37 @@ deye_energy:
           target:
             entity_id: number.deye_sun15_program_1_soc
           data:
-            value: 80
+            value: 100
 
         - action: number.set_value
           target:
             entity_id: number.deye_sun15_program_2_soc
           data:
-            value: 60
+            value: 80
 
         - action: number.set_value
           target:
             entity_id: number.deye_sun15_program_3_soc
           data:
-            value: 50
+            value: 60
 
         - action: number.set_value
           target:
             entity_id: number.deye_sun15_program_4_soc
           data:
-            value: 40
+            value: 50
 
         - action: number.set_value
           target:
             entity_id: number.deye_sun15_program_5_soc
           data:
-            value: 20
+            value: 40
 
         - action: number.set_value
           target:
             entity_id: number.deye_sun15_program_6_soc
           data:
-            value: 100
+            value: 20
 
     ##################################################
     ## ТРИВОЖНИЙ ПРОФІЛЬ TOU
@@ -294,37 +285,37 @@ deye_energy:
           target:
             entity_id: number.deye_sun15_program_1_soc
           data:
-            value: 90
+            value: 100
 
         - action: number.set_value
           target:
             entity_id: number.deye_sun15_program_2_soc
           data:
-            value: 80
+            value: 90
 
         - action: number.set_value
           target:
             entity_id: number.deye_sun15_program_3_soc
           data:
-            value: 70
+            value: 80
 
         - action: number.set_value
           target:
             entity_id: number.deye_sun15_program_4_soc
           data:
-            value: 60
+            value: 70
 
         - action: number.set_value
           target:
             entity_id: number.deye_sun15_program_5_soc
           data:
-            value: 50
+            value: 60
 
         - action: number.set_value
           target:
             entity_id: number.deye_sun15_program_6_soc
           data:
-            value: 100
+            value: 50
 
   ##################################################
   ## AUTOMATION
@@ -348,7 +339,7 @@ deye_energy:
           id: mode_change
 
         - platform: state
-          entity_id: binary_sensor.deye_sun15_night_tariff
+          entity_id: binary_sensor.energy_tariff
           id: night_tariff_change
 
         - platform: homeassistant
@@ -382,7 +373,7 @@ deye_energy:
                   - !secret chat_id_group_tech
                 message: |-
                   🔄 Deye: застосовано режим {{ states('sensor.deye_sun15_effective_mode') }}
-                  🌙 Нічний тариф: {{ states('binary_sensor.deye_sun15_night_tariff') }}
+                  🌙 Нічний тариф: {{ states('binary_sensor.energy_tariff') }}
                   🔌 Grid charging: {{ states('switch.deye_sun15_battery_grid_charging') }}
                   ⏱ ToU: {{ states('select.deye_sun15_time_of_use') }}
                   🔋 SOC: {{ states('sensor.deye_sun15_battery') }}%
@@ -426,7 +417,7 @@ deye_energy:
             message: |-
               🛠 Deye watchdog: виправлено невідповідність
               🧩 Режим: {{ states('sensor.deye_sun15_effective_mode') }}
-              🌙 Нічний тариф: {{ states('binary_sensor.deye_sun15_night_tariff') }}
+              🌙 Нічний тариф: {{ states('binary_sensor.energy_tariff') }}
               🔌 Grid charging: {{ states('switch.deye_sun15_battery_grid_charging') }}
               ⏱ ToU: {{ states('select.deye_sun15_time_of_use') }}
               🔋 SOC: {{ states('sensor.deye_sun15_battery') }}%
@@ -482,7 +473,7 @@ deye_energy:
 
       trigger:
         - platform: time
-          at: "23:05:00"
+          at: "00:05:00"
 
       condition:
         - condition: state

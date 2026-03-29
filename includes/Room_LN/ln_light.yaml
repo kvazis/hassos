@@ -84,8 +84,8 @@ ln_light:
       trigger:
         - platform: state
           entity_id: binary_sensor.0x00158d0001e16204_occupancy
-          from: 'on'
-          to: 'off'
+          from: 'off'
+          to: 'on'
         - platform: state
           entity_id: binary_sensor.ln_no_light_door_closed
           from: 'on'
@@ -94,6 +94,9 @@ ln_light:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
+        - condition: state
+          entity_id: light.0x00158d00014a1a55
+          state: 'off'
       action:
         - action: light.turn_on
           target:

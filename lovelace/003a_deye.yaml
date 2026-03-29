@@ -468,7 +468,7 @@ sections:
 
       - type: entities
         entities:
-          - entity: binary_sensor.deye_sun15_night_tariff
+          - entity: binary_sensor.energy_tariff
           - entity: binary_sensor.deye_sun15_grid_charging_mismatch
           - entity: binary_sensor.deye_sun15_tou_mismatch
 
