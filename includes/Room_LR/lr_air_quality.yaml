@@ -1,5 +1,5 @@
 ##################################################
-## Актуалізовано: 2026-03-25
+## Актуалізовано: 2026-03-31
 ##################################################
 
 lr_air_quality:
@@ -13,7 +13,7 @@ lr_air_quality:
 
       sensor.lr_air_co2:
         friendly_name: Вітальня - CO2
-        unit_of_measurement: 'ppm'
+        unit_of_measurement: "ppm"
         icon: mdi:molecule-co2
         device_class: carbon_dioxide
 
@@ -21,7 +21,7 @@ lr_air_quality:
         friendly_name: Вітальня - погана якість повітря
         icon: mdi:air-filter-alert
 
-      automation.lr_air_notification:
+      automation.lr_air_notify:
         friendly_name: Вітальня - сповіщення про якість повітря
         icon: mdi:message-alert
 
@@ -44,12 +44,12 @@ lr_air_quality:
         - name: lr_poor_air
           unique_id: lr_poor_air
           state: >
-            {{ states('sensor.lr_air_co2')|float(0) > 1500
+            {{ states('sensor.lr_air_co2') | float(0) > 1500
                and is_state('binary_sensor.notification_time', 'on')
                and is_state('binary_sensor.lr_aeration', 'off') }}
-          availability: "{{ (states('sensor.lr_air_co2')|float(0) > 250) }}"
+          availability: "{{ states('sensor.lr_air_co2') | float(0) > 250 }}"
           icon: >
-            {% if is_state("binary_sensor.lr_poor_air", "on") %}
+            {% if is_state('binary_sensor.lr_poor_air', 'on') %}
             mdi:biohazard
             {% else %}
             mdi:air-filter
@@ -58,7 +58,7 @@ lr_air_quality:
     - sensor:
         - name: lr_air_co2
           unique_id: lr_air_co2
-          state: "{{ states('sensor.cgllc_s1_cc00_co2_density')|float(500) }}"
+          state: "{{ states('sensor.cgllc_s1_cc00_co2_density') | float(500) }}"
 
   ##################################################
   ## AUTOMATION
@@ -66,32 +66,32 @@ lr_air_quality:
 
   automation:
 
-    - alias: lr_air_notification
-      id: lr_air_notification
+    - alias: lr_air_notify
+      id: lr_air_notify
       description: Вітальня - сповіщення про низьку якість повітря
       initial_state: true
       trigger:
         - platform: time_pattern
-          minutes: '/30'
+          minutes: "/30"
       condition:
         - condition: state
           entity_id: binary_sensor.lr_poor_air
-          state: 'on'
+          state: "on"
         - condition: state
           entity_id: switch.control_mode
-          state: 'on'
+          state: "on"
       action:
         - action: telegram_bot.send_message
-          data_template:
+          data:
             chat_id:
               - !secret chat_id_group
             message: |
-              {{"\U0001F637"}} Гостиная {{ states('sensor.time_date') }} - хорошо бы проветрить
+              {{"\U0001F637"}} Вітальня {{ states('sensor.time_date') }} - добре було б провітрити
         - action: light.turn_on
           target:
             entity_id:
               - light.gateway_light_34ce0088b039
-          data_template:
+          data:
             brightness_pct: 20
             rgb_color: [0, 0, 255]
         - action: xiaomi_aqara.play_ringtone

@@ -271,23 +271,23 @@ sections:
           - type: custom:mushroom-template-card
             primary: Температура
             secondary: |-
-              {{ states('sensor.0x54ef44100001b68d_temperature') }} С°
+              {{ states('sensor.0xa4c13809b0d4ffff_temperature') }} С°
             layout: horizontal
-            entity: sensor.0x54ef44100001b68d_temperature
+            entity: sensor.0xa4c13809b0d4ffff_temperature
             icon_color: |-
-              {% if states("sensor.0x54ef44100001b68d_temperature")|float <= -10 %}
+              {% if states("sensor.0xa4c13809b0d4ffff_temperature")|float <= -10 %}
               indigo
-              {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 0 %}
+              {% elif states("sensor.0xa4c13809b0d4ffff_temperature")|float <= 0 %}
               blue
-              {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 10 %}
+              {% elif states("sensor.0xa4c13809b0d4ffff_temperature")|float <= 10 %}
               light-blue
-              {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 20 %}
+              {% elif states("sensor.0xa4c13809b0d4ffff_temperature")|float <= 20 %}
               cyan
-              {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 25 %}
+              {% elif states("sensor.0xa4c13809b0d4ffff_temperature")|float <= 25 %}
               yellow
-              {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 30 %}
+              {% elif states("sensor.0xa4c13809b0d4ffff_temperature")|float <= 30 %}
               amber
-              {% elif states("sensor.0x54ef44100001b68d_temperature")|float <= 40 %}
+              {% elif states("sensor.0xa4c13809b0d4ffff_temperature")|float <= 40 %}
               orange
               {% endif %}
             icon: mdi:temperature-celsius
@@ -297,46 +297,22 @@ sections:
           - type: custom:mushroom-template-card
             primary: Вологість
             secondary: |-
-              {{ states('sensor.0x54ef44100001b68d_humidity') }} %
+              {{ states('sensor.0xa4c13809b0d4ffff_humidity') }} %
             layout: horizontal
-            entity: sensor.0x54ef44100001b68d_humidity
+            entity: sensor.0xa4c13809b0d4ffff_humidity
             icon_color: |-
-              {% if states("sensor.0x54ef44100001b68d_humidity")|float <= 30 %}
+              {% if states("sensor.0xa4c13809b0d4ffff_humidity")|float <= 30 %}
               deep-orange
-              {% elif states("sensor.0x54ef44100001b68d_humidity")|float <= 40 %}
+              {% elif states("sensor.0xa4c13809b0d4ffff_humidity")|float <= 40 %}
               yellow
-              {% elif states("sensor.0x54ef44100001b68d_humidity")|float <= 50 %}
+              {% elif states("sensor.0xa4c13809b0d4ffff_humidity")|float <= 50 %}
               light-blue
-              {% elif states("sensor.0x54ef44100001b68d_humidity")|float <= 60 %}
+              {% elif states("sensor.0xa4c13809b0d4ffff_humidity")|float <= 60 %}
               blue
-              {% elif states("sensor.0x54ef44100001b68d_humidity")|float > 60 %}
+              {% elif states("sensor.0xa4c13809b0d4ffff_humidity")|float > 60 %}
               indigo
               {% endif %}
             icon: mdi:water-percent
-            tap_action:
-              action: more-info
-
-          - type: custom:mushroom-template-card
-            primary: VOC
-            secondary: |-
-              {{ states('sensor.0x54ef44100001b68d_voc') }} ppb
-            layout: horizontal
-            entity: sensor.0x54ef44100001b68d_voc
-            icon_color: |-
-              {% if states("sensor.0x54ef44100001b68d_voc")|float <= 65 %}
-              green
-              {% elif states("sensor.0x54ef44100001b68d_voc")|float <= 220 %}
-              light-green
-              {% elif states("sensor.0x54ef44100001b68d_voc")|float <= 450 %}
-              lime
-              {% elif states("sensor.0x54ef44100001b68d_voc")|float <= 660 %}
-              yellow
-              {% elif states("sensor.0x54ef44100001b68d_voc")|float <= 1500 %}
-              orange
-              {% elif states("sensor.0x54ef44100001b68d_voc")|float > 1500 %}
-              red
-              {% endif %}
-            icon: mdi:virus
             tap_action:
               action: more-info
 
@@ -519,8 +495,8 @@ sections:
           - entity: sensor.0x00158d00013f7894_battery
             name: "Датчик руху"
             icon: phu:aqara-motion
-          - entity: sensor.0x54ef44100001b68d_battery
-            name: "Датчик температури, вологості і VOC"
+          - entity: sensor.0xa4c13809b0d4ffff_battery
+            name: "Датчик температури і вологості"
             icon: phu:aqara-air-quality
           - entity: sensor.0x00158d00010b1963_battery
             name: "Кнопка при виході"

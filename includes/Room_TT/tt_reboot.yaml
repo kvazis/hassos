@@ -1,5 +1,5 @@
 ##################################################
-## Актуалізовано: 2026-03-25
+## Актуалізовано: 2026-04-05
 ##################################################
 
 tt_reboot:
@@ -12,15 +12,29 @@ tt_reboot:
     customize:
       binary_sensor.tt_light_unavailable:
         friendly_name: Туалет - люстра недоступна
-        icon: mdi:alert
+        icon: mdi:ceiling-light
 
       input_button.tt_light_reboot:
         friendly_name: Туалет - перезавантаження люстри
         icon: mdi:restart
 
+      input_number.tt_ceiling_reboot_attempts:
+        friendly_name: Туалет - спроби перезавантаження люстри
+
+      input_number.tt_switch_power_on_attempts:
+        friendly_name: Туалет - спроби ввімкнення вимикача
+
       automation.tt_reboot_ceiling:
         friendly_name: Туалет - перезавантаження люстри (авто)
         icon: mdi:restart-alert
+
+      automation.tt_reboot_ceiling_attempts_reset:
+        friendly_name: Туалет - скидання спроб люстри
+        icon: mdi:counter
+
+      automation.tt_reboot_ceiling_failed_notify:
+        friendly_name: Туалет - сповіщення про невдале перезавантаження
+        icon: mdi:alert
 
       automation.tt_reboot_ceiling_manual:
         friendly_name: Туалет - перезавантаження люстри (ручне)
@@ -32,11 +46,19 @@ tt_reboot:
 
       automation.tt_reboot_switch_turn_on_check:
         friendly_name: Туалет - перевірка вимикача
-        icon: mdi:check
+        icon: mdi:light-switch
+
+      automation.tt_reboot_switch_turn_on_check_reset:
+        friendly_name: Туалет - скидання спроб ввімкнення вимикача
+        icon: mdi:counter
+
+      automation.tt_reboot_switch_turn_on_check_failed_notify:
+        friendly_name: Туалет - сповіщення про невдале ввімкнення вимикача
+        icon: mdi:alert
 
       automation.tt_reboot_switch_check:
         friendly_name: Туалет - оновлення статусу вимикача
-        icon: mdi:sync
+        icon: mdi:update
 
   ##################################################
   ## TEMPLATE
@@ -65,6 +87,24 @@ tt_reboot:
       name: tt_light_reboot
 
   ##################################################
+  ## INPUT_NUMBER
+  ##################################################
+
+  input_number:
+
+    tt_ceiling_reboot_attempts:
+      name: tt_ceiling_reboot_attempts
+      min: 0
+      max: 3
+      step: 1
+
+    tt_switch_power_on_attempts:
+      name: tt_switch_power_on_attempts
+      min: 0
+      max: 3
+      step: 1
+
+  ##################################################
   ## AUTOMATION
   ##################################################
 
@@ -73,134 +113,278 @@ tt_reboot:
     ##################################################
     ## ПЕРЕЗАВАНТАЖЕННЯ ЛЮСТРИ (АВТО)
     ##################################################
+    # [ЗМІНЕНО] Додано тригер по події + mode: single
+    # [ЗМІНЕНО] Затримка збільшена до 10 сек
+    # [ЗМІНЕНО] Додано лічильник спроб + перевірку доступності вимикача
+    # [ЗМІНЕНО] Затримка 1 сек перед повідомленням для оновлення темплейту
     - alias: tt_reboot_ceiling
       id: tt_reboot_ceiling
       description: Туалет, перезавантаження завислої люстри
       initial_state: true
+      mode: single
       trigger:
         - platform: time_pattern
           minutes: "/5"
-
+        # Реагуємо одразу при появі проблеми, не чекаємо до 5 хвилин
+        - platform: state
+          entity_id: binary_sensor.tt_light_unavailable
+          to: "on"
       condition:
         - condition: state
           entity_id: switch.control_mode
           state: "on"
-
         - condition: state
           entity_id: binary_sensor.tt_light_unavailable
           state: "on"
-
         - condition: state
           entity_id: binary_sensor.electricity_internal
           state: "off"
-
+        - condition: template
+          value_template: "{{ states('input_number.tt_ceiling_reboot_attempts') | int < 3 }}"
+        # Перевіряємо що вимикач доступний перед дією
+        - condition: template
+          value_template: "{{ not is_state('switch.0x00158d00062fbb54_left', 'unavailable') }}"
       action:
         - action: switch.turn_off
           target:
             entity_id: switch.0x00158d00062fbb54_left
-
-        - delay: 00:00:05
-
+        # Збільшено з 5 до 10 секунд для надійного скидання
+        - delay: 00:00:10
         - action: switch.turn_on
           target:
             entity_id: switch.0x00158d00062fbb54_left
-
+        - action: input_number.increment
+          target:
+            entity_id: input_number.tt_ceiling_reboot_attempts
+        # Затримка щоб input_number встиг оновитись перед формуванням повідомлення
+        - delay: 00:00:01
         - action: telegram_bot.send_message
           data:
             chat_id:
               - !secret chat_id_log
-            message: |
-              {{"\U0001F916"}} Туалет - перезавантаження люстри {{ states('sensor.time_date') }}
+            message: >-
+              {{"\U0001F916"}} Туалет - перезавантаження люстри (спроба {{ states('input_number.tt_ceiling_reboot_attempts') | int }}/3) {{ states('sensor.time_date') }}
+
+    ##################################################
+    ## СКИДАННЯ СПРОБ ПЕРЕЗАВАНТАЖЕННЯ ЛЮСТРИ
+    ##################################################
+    - alias: tt_reboot_ceiling_attempts_reset
+      id: tt_reboot_ceiling_attempts_reset
+      description: Туалет - скидання спроб перезавантаження люстри
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.tt_light_unavailable
+          from: "on"
+          to: "off"
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+        - condition: template
+          value_template: "{{ states('input_number.tt_ceiling_reboot_attempts') | int > 0 }}"
+      action:
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.tt_ceiling_reboot_attempts
+          data:
+            value: 0
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_log
+            message: >-
+              {{"\U0001F916"}} Туалет - люстра успішно відновила роботу, лічильник скинуто
+
+    ##################################################
+    ## СПОВІЩЕННЯ ПРО ВИЧЕРПАННЯ СПРОБ ЛЮСТРИ
+    ##################################################
+    - alias: tt_reboot_ceiling_failed_notify
+      id: tt_reboot_ceiling_failed_notify
+      description: Туалет - сповіщення про вичерпання спроб перезавантаження
+      initial_state: true
+      trigger:
+        - platform: numeric_state
+          entity_id: input_number.tt_ceiling_reboot_attempts
+          above: 2
+      condition:
+        - condition: state
+          entity_id: binary_sensor.tt_light_unavailable
+          state: "on"
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+      action:
+        # Затримка щоб покрити випадок коли третя спроба виявилась вдалою
+        - delay: 00:00:30
+        # Повторна перевірка після затримки
+        - condition: state
+          entity_id: binary_sensor.tt_light_unavailable
+          state: "on"
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_log
+            message: >-
+              {{"\u26A0\uFE0F"}} Туалет - люстра НЕ відновилась після 3 спроб! Потрібне ручне втручання {{ states('sensor.time_date') }}
 
     ##################################################
     ## ПЕРЕЗАВАНТАЖЕННЯ ЛЮСТРИ (РУЧНЕ)
     ##################################################
+
     - alias: tt_reboot_ceiling_manual
       id: tt_reboot_ceiling_manual
       description: Туалет, ручне перезавантаження завислої люстри
       initial_state: true
+      mode: single
       trigger:
         - platform: state
           entity_id: input_button.tt_light_reboot
-
       condition:
         - condition: state
           entity_id: binary_sensor.tt_light_unavailable
           state: "on"
-
       action:
         - action: switch.turn_off
           target:
             entity_id: switch.0x00158d00062fbb54_left
-
-        - delay: 00:00:05
-
+        - delay: 00:00:10
         - action: switch.turn_on
           target:
             entity_id: switch.0x00158d00062fbb54_left
-
         - action: telegram_bot.send_message
           data:
             chat_id:
               - !secret chat_id_log
-            message: |
-              {{"\U0001F916"}} Туалет - перезавантаження люстри {{ states('sensor.time_date') }}
+            message: >-
+              {{"\U0001F916"}} Туалет - ручне перезавантаження люстри {{ states('sensor.time_date') }}
 
     ##################################################
-    ## АВТО УВІМКНЕННЯ ВИМИКАЧА
+    ## АВТО УВІМКНЕННЯ ВИМИКАЧА (РЕАКТИВНЕ)
     ##################################################
+
     - alias: tt_reboot_switch_turn_on
       id: tt_reboot_switch_turn_on
-      description: Туалет, авто увімкнення вимикача
+      description: Туалет, авто увімкнення вимикача при переході в off
       initial_state: true
+      mode: single
       trigger:
         - platform: state
           entity_id: switch.0x00158d00062fbb54_left
           to: "off"
-
       condition:
         - condition: state
           entity_id: switch.control_mode
           state: "on"
-
         - condition: state
           entity_id: binary_sensor.electricity_internal
           state: "off"
-
       action:
-        - delay: 00:00:05
-
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_log
+            message: >-
+              {{"\U0001F916"}} Туалет - вимикач перейшов в off, вмикаю {{ states('sensor.time_date') }}
+        - delay: 00:00:10
         - action: switch.turn_on
           target:
             entity_id: switch.0x00158d00062fbb54_left
 
     ##################################################
-    ## ПЕРЕВІРКА ВИМИКАЧА
+    ## ПЕРЕВІРКА ВИМИКАЧА (POLLING)
     ##################################################
+
     - alias: tt_reboot_switch_turn_on_check
       id: tt_reboot_switch_turn_on_check
       description: Туалет, перевірка стану вимикача
       initial_state: true
+      mode: single
       trigger:
         - platform: time_pattern
           minutes: "/1"
-
       condition:
         - condition: template
-          value_template: "{{ states('switch.0x00158d00062fbb54_left') != 'on' }}"
-
+          value_template: "{{ states('switch.0x00158d00062fbb54_left') == 'off' }}"
         - condition: state
           entity_id: switch.control_mode
           state: "on"
-
         - condition: state
           entity_id: binary_sensor.electricity_internal
           state: "off"
-
+        - condition: template
+          value_template: "{{ states('input_number.tt_switch_power_on_attempts') | int < 3 }}"
       action:
         - action: switch.turn_on
           target:
             entity_id: switch.0x00158d00062fbb54_left
+        - action: input_number.increment
+          target:
+            entity_id: input_number.tt_switch_power_on_attempts
+        - delay: 00:00:01
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_log
+            message: >-
+              {{"\U0001F916"}} Туалет - вимикач off на polling, вмикаю (спроба {{ states('input_number.tt_switch_power_on_attempts') | int }}/3) {{ states('sensor.time_date') }}
+
+    ##################################################
+    ## СКИДАННЯ СПРОБ ВИМИКАЧА
+    ##################################################
+    - alias: tt_reboot_switch_turn_on_check_reset
+      id: tt_reboot_switch_turn_on_check_reset
+      description: Туалет - скидання спроб ввімкнення вимикача
+      initial_state: true
+      trigger:
+        - platform: state
+          entity_id: switch.0x00158d00062fbb54_left
+          to: "on"
+      condition:
+        - condition: template
+          value_template: "{{ states('input_number.tt_switch_power_on_attempts') | int > 0 }}"
+      action:
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.tt_switch_power_on_attempts
+          data:
+            value: 0
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_log
+            message: >-
+              {{"\U0001F916"}} Туалет - вимикач відновився, лічильник скинуто
+
+    ##################################################
+    ## СПОВІЩЕННЯ ПРО ВИЧЕРПАННЯ СПРОБ ВИМИКАЧА
+    ##################################################
+    - alias: tt_reboot_switch_turn_on_check_failed_notify
+      id: tt_reboot_switch_turn_on_check_failed_notify
+      description: Туалет - сповіщення про вичерпання спроб ввімкнення вимикача
+      initial_state: true
+      trigger:
+        - platform: numeric_state
+          entity_id: input_number.tt_switch_power_on_attempts
+          above: 2
+      condition:
+        - condition: template
+          value_template: "{{ states('switch.0x00158d00062fbb54_left') == 'off' }}"
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+      action:
+        # Затримка щоб покрити випадок коли третя спроба виявилась вдалою
+        - delay: 00:00:30
+        # Повторна перевірка після затримки
+        - condition: template
+          value_template: "{{ states('switch.0x00158d00062fbb54_left') == 'off' }}"
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_log
+            message: >-
+              {{"\u26A0\uFE0F"}} Туалет - вимикач НЕ ввімкнувся після 3 спроб! Потрібне ручне втручання {{ states('sensor.time_date') }}
 
     ##################################################
     ## ОНОВЛЕННЯ СТАТУСУ ВИМИКАЧА
@@ -212,16 +396,13 @@ tt_reboot:
       trigger:
         - platform: time_pattern
           minutes: "/10"
-
       condition:
         - condition: state
           entity_id: switch.control_mode
           state: "on"
-
         - condition: state
           entity_id: binary_sensor.electricity_internal
           state: "off"
-
       action:
         - action: mqtt.publish
           data:

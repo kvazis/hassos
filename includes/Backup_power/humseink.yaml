@@ -1,0 +1,218 @@
+humseink:
+
+###############################################################################
+#  rack_charge — зарядка акумулятора стійки з обладнанням
+#
+#  Розетка switch.0xa4c13810fef6ffff живить інвертор + АКБ
+#  (sensor.hs030502ba25470255_battery), від яких працює стійка.
+#
+#  Логіка:
+#   - зарядка (розетка ON) лише в нічний тариф:
+#     input_datetime.energy_tariff_night_start .. energy_tariff_night_end
+#   - тільки якщо є зовнішня електрика
+#     (binary_sensor.electricity: "off" = мережа є, "on" = блекаут)
+#   - зникла електрика -> розетка OFF одразу
+#   - АКБ <= 20% -> дозаряд у будь-який час (якщо є мережа) до 40%
+#   - "Режим зарядки стійки" вимкнено -> автоматика розетку не чіпає
+#     (ручне керування / обслуговування)
+#
+#  Актуалізовано: 2026-10-22
+###############################################################################
+
+
+    ###############################################################################
+    #  RECORDER
+    ###############################################################################
+    recorder:
+      include:
+        entities:
+          - sensor.hs030502ba25470255_battery
+          - sensor.hs030502ba25470255_current
+          - sensor.hs030502ba25470255_power
+          - sensor.hs030502ba25470255_temperature
+          - sensor.hs030502ba25470255_voltage
+          - sensor.hs030502ba25470255_delta_cell_voltage
+    
+    
+    ###############################################################################
+    #  INPUT BOOLEAN
+    ###############################################################################
+    input_boolean:
+      # Головний вимикач автоматики
+      rack_charge_mode:
+        name: "Стійка - режим зарядки"
+        icon: mdi:battery-sync
+    
+      # Защіпка дозаряду: вмикається на <=20%, вимикається на >=40%
+      rack_charge_low_battery:
+        name: "Стійка - дозаряд (20 -> 40%)"
+        icon: mdi:battery-alert-variant-outline
+    
+    
+    ###############################################################################
+    #  TEMPLATE — чи дозволена зараз зарядка
+    ###############################################################################
+    template:
+      - binary_sensor:
+          - name: "rack_charge_allowed"
+            unique_id: rack_charge_allowed
+            icon: mdi:battery-charging
+            # Невелика затримка на ввімкнення: щоб після повернення світла
+            # не стартувати разом з бойлерами. Вимкнення — миттєве.
+            delay_on: "00:02:00"
+            state: >
+              {% set mains = is_state('binary_sensor.electricity', 'off') %}
+              {% set s = states('input_datetime.energy_tariff_night_start') %}
+              {% set e = states('input_datetime.energy_tariff_night_end') %}
+              {% set t = now().strftime('%H:%M:%S') %}
+              {% set night = (s <= t < e) if s <= e else (t >= s or t < e) %}
+              {% set low = is_state('input_boolean.rack_charge_low_battery', 'on') %}
+              {{ mains and (night or low) }}
+            attributes:
+              mains: "{{ is_state('binary_sensor.electricity', 'off') }}"
+              night_tariff: >
+                {% set s = states('input_datetime.energy_tariff_night_start') %}
+                {% set e = states('input_datetime.energy_tariff_night_end') %}
+                {% set t = now().strftime('%H:%M:%S') %}
+                {{ (s <= t < e) if s <= e else (t >= s or t < e) }}
+              low_battery_charge: "{{ is_state('input_boolean.rack_charge_low_battery', 'on') }}"
+              battery: "{{ states('sensor.hs030502ba25470255_battery') }}"
+    
+      - sensor:
+          # Споживання стійки (розрахункове):
+          # потужність з розетки мінус потужність АКБ
+          # (АКБ: "+" = заряд, "-" = розряд)
+          - name: "rack_load_power"
+            unique_id: rack_load_power
+            unit_of_measurement: "W"
+            device_class: power
+            state_class: measurement
+            icon: mdi:server
+            availability: "{{ has_value('sensor.hs030502ba25470255_power') }}"
+            state: >
+              {% set g = states('sensor.0xa4c13810fef6ffff_power') | float(0)
+                         if is_state('switch.0xa4c13810fef6ffff', 'on') else 0 %}
+              {% set b = states('sensor.hs030502ba25470255_power') | float(0) %}
+              {{ [g - b, 0] | max | round(0) }}
+
+
+    
+    ###############################################################################
+    #  AUTOMATION
+    ###############################################################################
+    automation:
+    
+      #----------------------------------------------------------------------------
+      #  Защіпка дозаряду 20% -> 40%
+      #----------------------------------------------------------------------------
+      - id: rack_charge_low_battery_latch
+        alias: "Стійка - дозаряд АКБ 20-40%"
+        mode: queued
+        triggers:
+          - trigger: template
+            value_template: >
+              {% set b = states('sensor.hs030502ba25470255_battery') | float(-1) %}
+              {{ 0 <= b <= 20 }}
+            id: low
+          - trigger: template
+            value_template: >
+              {{ states('sensor.hs030502ba25470255_battery') | float(-1) >= 40 }}
+            id: full
+          - trigger: homeassistant
+            event: start
+            id: start
+        actions:
+          - variables:
+              b: "{{ states('sensor.hs030502ba25470255_battery') | float(-1) }}"
+          - choose:
+              - conditions: "{{ 0 <= b <= 20 and is_state('input_boolean.rack_charge_low_battery', 'off') }}"
+                sequence:
+                  - action: input_boolean.turn_on
+                    target:
+                      entity_id: input_boolean.rack_charge_low_battery
+                  - action: telegram_bot.send_message
+                    data:
+                      chat_id:
+                        - !secret chat_id_group_tech
+                      message: >
+                        🪫 Стійка: АКБ {{ b | int }}% — дозволено дозаряд до 40%
+                        {{ '' if is_state('binary_sensor.electricity', 'off') else '(чекаю на мережу)' }}
+              - conditions: "{{ b >= 40 }}"
+                sequence:
+                  - action: input_boolean.turn_off
+                    target:
+                      entity_id: input_boolean.rack_charge_low_battery
+    
+      #----------------------------------------------------------------------------
+      #  Синхронізація розетки з дозволом зарядки
+      #  (також гасить ручне ввімкнення поза дозволеним часом)
+      #----------------------------------------------------------------------------
+      - id: rack_charge_sync
+        alias: "Стійка - керування розеткою зарядки"
+        mode: queued
+        max: 5
+        triggers:
+          - trigger: state
+            entity_id: binary_sensor.rack_charge_allowed
+          - trigger: state
+            entity_id: switch.0xa4c13810fef6ffff
+            to: ["on", "off"]
+          - trigger: state
+            entity_id: input_boolean.rack_charge_mode
+            to: "on"
+          - trigger: homeassistant
+            event: start
+        conditions:
+          - condition: state
+            entity_id: input_boolean.rack_charge_mode
+            state: "on"
+        actions:
+          - choose:
+              # Дозволено -> вмикаємо
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.rack_charge_allowed
+                    state: "on"
+                  - condition: state
+                    entity_id: switch.0xa4c13810fef6ffff
+                    state: "off"
+                sequence:
+                  - action: switch.turn_on
+                    target:
+                      entity_id: switch.0xa4c13810fef6ffff
+                  - action: telegram_bot.send_message
+                    data:
+                      chat_id:
+                        - !secret chat_id_group_tech
+                      message: >
+                        🔌 Стійка: зарядку увімкнено
+                        ({{ 'дозаряд з низького рівня' if is_state('input_boolean.rack_charge_low_battery', 'on') else 'нічний тариф' }}),
+                        АКБ {{ states('sensor.hs030502ba25470255_battery') }}%
+              # Не дозволено (або unavailable) -> вимикаємо
+              - conditions:
+                  - condition: not
+                    conditions:
+                      - condition: state
+                        entity_id: binary_sensor.rack_charge_allowed
+                        state: "on"
+                  - condition: state
+                    entity_id: switch.0xa4c13810fef6ffff
+                    state: "on"
+                sequence:
+                  - action: switch.turn_off
+                    target:
+                      entity_id: switch.0xa4c13810fef6ffff
+                  - action: telegram_bot.send_message
+                    data:
+                      chat_id:
+                        - !secret chat_id_group_tech
+                      message: >
+                        {% if not is_state('binary_sensor.electricity', 'off') %}
+                        ⚡ Стійка: зникла електрика — зарядку вимкнено
+                        {% elif trigger.platform == 'state' and trigger.entity_id == 'switch.0xa4c13810fef6ffff' %}
+                        ⛔ Стійка: ручне ввімкнення поза нічним тарифом заблоковано
+                        {% else %}
+                        ✅ Стійка: зарядку вимкнено (кінець нічного тарифу / дозаряд завершено)
+                        {% endif %}
+                        АКБ {{ states('sensor.hs030502ba25470255_battery') }}%
+

@@ -349,7 +349,7 @@ br_humidification:
 
         - action: telegram_bot.send_message
           data:
-            target:
+            chat_id:
               - !secret chat_id_group_tech
             message: |
               💧 Спальня: схоже, закінчилась вода у зволожувачі — вимикаю розетку.

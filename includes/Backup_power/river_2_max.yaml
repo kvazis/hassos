@@ -83,6 +83,20 @@ river_2_max:
         friendly_name: EcoFlow River 2 Max - вимкнення DC 12V
         icon: mdi:power-plug-off
 
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - sensor.river_2_max_battery_level
+        - sensor.river_2_max_main_battery_level
+        - sensor.river_2_max_total_out_power
+        - sensor.river_2_max_solar_in_power
+
+
   ##################################################
   ## INPUT_BOOLEAN
   ##################################################

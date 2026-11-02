@@ -86,6 +86,75 @@ air_raid_alert:
                or is_state('binary_sensor.m_kiyiv_chemical', 'on')
                or is_state('binary_sensor.m_kiyiv_nuclear', 'on') }}
 
+    ##################################################
+    ## ПЕРЕТВОРЕННЯ ЧАСУ ТРИВОГИ
+    ##################################################
+
+
+    - sensor:
+
+        - name: "Alarm Today Duration HHMM"
+          unique_id: alarm_today_duration_hhmm
+          state: >
+            {% set m = (states('sensor.alarm_today_duration') | float(0) * 60) | round(0, 'floor') | int %}
+            {{ '%02d:%02d' % (m // 60, m % 60) }}
+    
+        - name: "Alarm Yesterday Duration HHMM"
+          unique_id: alarm_yesterday_duration_hhmm
+          state: >
+            {% set m = (states('sensor.alarm_yesterday_duration') | float(0) * 60) | round(0, 'floor') | int %}
+            {{ '%02d:%02d' % (m // 60, m % 60) }}
+
+
+    ##################################################
+    ## ЛІЧИЛЬНИК ТРИВОГ
+    ##################################################
+
+  sensor:
+
+      - platform: history_stats
+        name: "Alarm Today Count"
+        unique_id: alarm_today_count
+        entity_id: binary_sensor.m_kiyiv_air
+        state: "on"
+        type: count
+        start: "{{ today_at('00:00') }}"
+        end: "{{ now() }}"
+    
+      - platform: history_stats
+        name: "Alarm Yesterday Count"
+        unique_id: alarm_yesterday_count
+        entity_id: binary_sensor.m_kiyiv_air
+        state: "on"
+        type: count
+        start: "{{ today_at('00:00') - timedelta(days=1) }}"
+        end: "{{ today_at('00:00') }}"
+    
+
+    ##################################################
+    ## ЧАС ТРИВОГИ
+    ##################################################
+
+      - platform: history_stats
+        name: "Alarm Today Duration"
+        unique_id: alarm_today_duration
+        entity_id: binary_sensor.m_kiyiv_air
+        state: "on"
+        type: time
+        start: "{{ today_at('00:00') }}"
+        end: "{{ now() }}"
+    
+      - platform: history_stats
+        name: "Alarm Yesterday Duration"
+        unique_id: alarm_yesterday_duration
+        entity_id: binary_sensor.m_kiyiv_air
+        state: "on"
+        type: time
+        start: "{{ today_at('00:00') - timedelta(days=1) }}"
+        end: "{{ today_at('00:00') }}"
+    
+
+
   ##################################################
   ## SCRIPT
   ##################################################
@@ -293,6 +362,7 @@ air_raid_alert:
           state: "off"
 
       action:
+
         - action: scene.create
           data:
             scene_id: light_after_threat
@@ -351,6 +421,11 @@ air_raid_alert:
       action:
         - action: light.turn_on
           target:
+            entity_id:      
+              - light.awtrix_6c9da0_indicator_1
+
+        - action: light.turn_on
+          target:
             entity_id: light.gld_wled
           data:
             effect: Gravcentric
@@ -407,6 +482,11 @@ air_raid_alert:
           state: "on"
 
       action:
+        - action: light.turn_off
+          target:
+            entity_id:      
+              - light.awtrix_6c9da0_indicator_1
+
         - action: light.turn_on
           target:
             entity_id: light.gld_wled

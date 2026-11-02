@@ -76,6 +76,7 @@ en_exit_button:
               - light.0x54ef4410008e96fd_bottom
               - light.0xa4c138da30166b8f
               - light.lr_bedside_lamp
+              - light.xiaomi_lamp31_4e0f_light
 
               ##################################################
               ## СПАЛЬНЯ

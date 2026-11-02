@@ -1,0 +1,651 @@
+delta_ext_battery:
+
+    # =====================================================================
+    # Package: delta_ext_battery
+    # EcoFlow Delta 2 + зовнішній LiFePO4 MFUZOP 51,2 В 100 А·год (BMS JBD),
+    # підключений до порту дод. батареї силовим кабелем (без зв'язку).
+    # Облік енергії для тестів заряду та розряду.
+    #
+    # Порядок роботи:
+    #   1. Підготувати систему (заряд до 100% або старт розряду).
+    #   2. Запустити script.delta_ext_test_start — обнуляє лічильники,
+    #      запам'ятовує стартові SOC і час.
+    #   3. Дивитися sensor.delta_ext_test_* під час тесту.
+    #   4. Тест заряду зупиняється автоматично, коли Дельта закінчила заряд
+    #      (є мережа, вхід < 20 Вт 5 хв, SOC Дельти ≥ 98%). Підсумки
+    #      записуються в input_number.delta_ext_res_*. Вручну — script.delta_ext_test_stop.
+    #   Якщо під час тесту заряду зникла мережа — приходить сповіщення.
+    #
+    # Знаки BMS: Power/Current > 0 — заряд, < 0 — розряд.
+    # Енергія внутрішньої батареї Дельти — ОЦІНКА за зміною SOC
+    # (крок 1% ≈ 10 Вт·год), прямого сенсора потужності батареї у Дельти немає.
+    #
+    # Назви (name) сенсорів залишені латиницею, щоб entity_id були передбачуваними,
+    # українські назви задаються через customize.
+    # =====================================================================
+
+    homeassistant:
+      customize:
+        sensor.delta_ext_bms_charge_power:
+          friendly_name: "Delta ext: потужність заряду зовн. АКБ"
+        sensor.delta_ext_bms_discharge_power:
+          friendly_name: "Delta ext: потужність розряду зовн. АКБ"
+        sensor.delta_ext_bms_charge_energy:
+          friendly_name: "Delta ext: енергія заряду зовн. АКБ"
+        sensor.delta_ext_bms_discharge_energy:
+          friendly_name: "Delta ext: енергія розряду зовн. АКБ"
+        sensor.delta_ext_ac_in_energy:
+          friendly_name: "Delta ext: енергія з мережі (AC вхід)"
+        sensor.delta_ext_ac_out_energy:
+          friendly_name: "Delta ext: енергія на AC виході"
+        sensor.delta_ext_total_out_energy:
+          friendly_name: "Delta ext: енергія на всіх виходах"
+        sensor.delta_ext_test_bms_charge:
+          friendly_name: "Delta ext тест: заряд зовн. АКБ"
+        sensor.delta_ext_test_bms_discharge:
+          friendly_name: "Delta ext тест: розряд зовн. АКБ"
+        sensor.delta_ext_test_ac_in:
+          friendly_name: "Delta ext тест: з мережі (AC вхід)"
+        sensor.delta_ext_test_ac_out:
+          friendly_name: "Delta ext тест: AC вихід"
+        sensor.delta_ext_test_total_out:
+          friendly_name: "Delta ext тест: всі виходи"
+        sensor.delta_ext_test_duration:
+          friendly_name: "Delta ext тест: тривалість"
+        sensor.delta_ext_test_delta_internal_out:
+          friendly_name: "Delta ext тест: віддала внутр. АКБ Дельти (оцінка)"
+        sensor.delta_ext_test_delta_internal_in:
+          friendly_name: "Delta ext тест: отримала внутр. АКБ Дельти (оцінка)"
+        sensor.delta_ext_test_cells_out:
+          friendly_name: "Delta ext тест: віддали комірки разом"
+        sensor.delta_ext_test_cells_in:
+          friendly_name: "Delta ext тест: отримали комірки разом"
+        sensor.delta_ext_test_discharge_efficiency:
+          friendly_name: "Delta ext тест: ККД розряду"
+        sensor.delta_ext_test_charge_efficiency:
+          friendly_name: "Delta ext тест: ККД заряду"
+        sensor.delta_ext_test_external_share:
+          friendly_name: "Delta ext тест: частка зовн. АКБ у розряді"
+
+    # ---------------------------------------------------------------------
+    # Запис в історію (для графіків)
+    # ---------------------------------------------------------------------
+    recorder:
+      include:
+        entities:
+          # BMS зовнішньої батареї
+          - sensor.jbd_up16s019_100a_100a_battery
+          - sensor.jbd_up16s019_100a_100a_power
+          - sensor.jbd_up16s019_100a_100a_current
+          - sensor.jbd_up16s019_100a_100a_voltage
+          - sensor.jbd_up16s019_100a_100a_temperature
+          - sensor.jbd_up16s019_100a_100a_delta_cell_voltage
+          # перевірити entity_id після увімкнення сутностей
+          - sensor.jbd_up16s019_100a_100a_highest_cell_voltage
+          - sensor.jbd_up16s019_100a_100a_lowest_cell_voltage
+          # Delta 2
+          - sensor.delta_2_battery_level
+          - sensor.delta_2_main_battery_level
+          - sensor.delta_2_ac_in_power
+          - sensor.delta_2_ac_out_power
+          - sensor.delta_2_total_in_power
+          - sensor.delta_2_total_out_power
+          - sensor.delta_2_ac_in_volts
+          # Пакадж
+          - input_boolean.delta_ext_test_active
+          - input_datetime.delta_ext_test_start
+          - input_datetime.delta_ext_test_end
+          - input_number.delta_ext_res_duration
+          - input_number.delta_ext_res_ac_in
+          - input_number.delta_ext_res_bms_charge
+          - input_number.delta_ext_res_cells_in
+          - input_number.delta_ext_res_charge_eff
+          - input_number.delta_ext_res_ac_out
+          - input_number.delta_ext_res_bms_discharge
+          - input_number.delta_ext_res_cells_out
+          - input_number.delta_ext_res_discharge_eff
+          - input_number.delta_ext_res_delta_soc_end
+          - input_number.delta_ext_res_bms_soc_end
+          - input_number.delta_ext_test_delta_soc_start
+          - input_number.delta_ext_test_bms_soc_start
+          - sensor.delta_ext_bms_charge_power
+          - sensor.delta_ext_bms_discharge_power
+          - sensor.delta_ext_bms_charge_energy
+          - sensor.delta_ext_bms_discharge_energy
+          - sensor.delta_ext_ac_in_energy
+          - sensor.delta_ext_ac_out_energy
+          - sensor.delta_ext_total_out_energy
+          - sensor.delta_ext_test_bms_charge
+          - sensor.delta_ext_test_bms_discharge
+          - sensor.delta_ext_test_ac_in
+          - sensor.delta_ext_test_ac_out
+          - sensor.delta_ext_test_total_out
+          - sensor.delta_ext_test_duration
+          - sensor.delta_ext_test_delta_internal_out
+          - sensor.delta_ext_test_delta_internal_in
+          - sensor.delta_ext_test_cells_out
+          - sensor.delta_ext_test_cells_in
+          - sensor.delta_ext_test_discharge_efficiency
+          - sensor.delta_ext_test_charge_efficiency
+          - sensor.delta_ext_test_external_share
+
+    input_datetime:
+      delta_ext_test_start:
+        name: "Delta ext: старт тесту"
+        icon: mdi:timer-play-outline
+        has_date: true
+        has_time: true
+      delta_ext_test_end:
+        name: "Delta ext: кінець тесту"
+        icon: mdi:timer-stop-outline
+        has_date: true
+        has_time: true
+
+    input_boolean:
+      delta_ext_test_active:
+        name: "Delta ext: тест іде"
+        icon: mdi:progress-clock
+
+    input_number:
+      # ---- Підсумки тесту (записуються при зупинці) ----
+      delta_ext_res_duration:
+        name: "Підсумок: тривалість"
+        icon: mdi:timer-check-outline
+        min: 0
+        max: 48
+        step: 0.01
+        unit_of_measurement: h
+        mode: box
+      delta_ext_res_ac_in:
+        name: "Підсумок: з мережі (AC вхід)"
+        icon: mdi:transmission-tower-import
+        min: 0
+        max: 20
+        step: 0.001
+        unit_of_measurement: kWh
+        mode: box
+      delta_ext_res_bms_charge:
+        name: "Підсумок: заряд зовн. АКБ"
+        icon: mdi:battery-arrow-up
+        min: 0
+        max: 20
+        step: 0.001
+        unit_of_measurement: kWh
+        mode: box
+      delta_ext_res_cells_in:
+        name: "Підсумок: отримали комірки разом"
+        icon: mdi:battery-arrow-up-outline
+        min: 0
+        max: 20
+        step: 0.001
+        unit_of_measurement: kWh
+        mode: box
+      delta_ext_res_charge_eff:
+        name: "Підсумок: ККД заряду"
+        icon: mdi:percent-circle
+        min: 0
+        max: 150
+        step: 0.1
+        unit_of_measurement: "%"
+        mode: box
+      delta_ext_res_ac_out:
+        name: "Підсумок: AC вихід"
+        icon: mdi:transmission-tower-export
+        min: 0
+        max: 20
+        step: 0.001
+        unit_of_measurement: kWh
+        mode: box
+      delta_ext_res_bms_discharge:
+        name: "Підсумок: розряд зовн. АКБ"
+        icon: mdi:battery-arrow-down
+        min: 0
+        max: 20
+        step: 0.001
+        unit_of_measurement: kWh
+        mode: box
+      delta_ext_res_cells_out:
+        name: "Підсумок: віддали комірки разом"
+        icon: mdi:battery-arrow-down-outline
+        min: 0
+        max: 20
+        step: 0.001
+        unit_of_measurement: kWh
+        mode: box
+      delta_ext_res_discharge_eff:
+        name: "Підсумок: ККД розряду"
+        icon: mdi:percent-circle-outline
+        min: 0
+        max: 150
+        step: 0.1
+        unit_of_measurement: "%"
+        mode: box
+      delta_ext_res_delta_soc_end:
+        name: "Підсумок: SOC Дельти в кінці"
+        icon: mdi:battery-check
+        min: 0
+        max: 100
+        step: 1
+        unit_of_measurement: "%"
+        mode: box
+      delta_ext_res_bms_soc_end:
+        name: "Підсумок: SOC зовн. АКБ в кінці"
+        icon: mdi:battery-check-outline
+        min: 0
+        max: 100
+        step: 1
+        unit_of_measurement: "%"
+        mode: box
+
+      # ---- Стартові значення ----
+      delta_ext_test_delta_soc_start:
+        name: "Delta ext: SOC Дельти на старті"
+        icon: mdi:battery-clock
+        min: 0
+        max: 100
+        step: 1
+        unit_of_measurement: "%"
+        mode: box
+      delta_ext_test_bms_soc_start:
+        name: "Delta ext: SOC зовн. батареї на старті"
+        icon: mdi:battery-clock-outline
+        min: 0
+        max: 100
+        step: 1
+        unit_of_measurement: "%"
+        mode: box
+
+    # ---------------------------------------------------------------------
+    # Потужність BMS, розділена на заряд і розряд
+    # ---------------------------------------------------------------------
+    template:
+      - sensor:
+          - name: "Delta ext BMS charge power"
+            unique_id: delta_ext_bms_charge_power
+            icon: mdi:battery-arrow-up
+            unit_of_measurement: W
+            device_class: power
+            state_class: measurement
+            availability: "{{ has_value('sensor.jbd_up16s019_100a_100a_power') }}"
+            state: >
+              {{ [states('sensor.jbd_up16s019_100a_100a_power') | float(0), 0] | max }}
+
+          - name: "Delta ext BMS discharge power"
+            unique_id: delta_ext_bms_discharge_power
+            icon: mdi:battery-arrow-down
+            unit_of_measurement: W
+            device_class: power
+            state_class: measurement
+            availability: "{{ has_value('sensor.jbd_up16s019_100a_100a_power') }}"
+            state: >
+              {{ [-(states('sensor.jbd_up16s019_100a_100a_power') | float(0)), 0] | max }}
+
+      # -------------------------------------------------------------------
+      # Розрахунки по тесту
+      # -------------------------------------------------------------------
+      - sensor:
+          - name: "Delta ext test duration"
+            unique_id: delta_ext_test_duration
+            icon: mdi:timer-outline
+            unit_of_measurement: h
+            device_class: duration
+            # Поки тест іде — до поточного часу, після зупинки — до часу кінця
+            state: >
+              {% set s = state_attr('input_datetime.delta_ext_test_start', 'timestamp') %}
+              {% set e = state_attr('input_datetime.delta_ext_test_end', 'timestamp') %}
+              {% set t = now().timestamp() if is_state('input_boolean.delta_ext_test_active', 'on') else e %}
+              {{ ((t - s) / 3600) | round(2) if s and t and t > s else 0 }}
+
+          # Внутрішня батарея Дельти: номінал 1024 Вт·год
+          - name: "Delta ext test Delta internal out"
+            unique_id: delta_ext_test_delta_internal_out
+            icon: mdi:battery-minus
+            unit_of_measurement: kWh
+            device_class: energy
+            state_class: total
+            state: >
+              {% set d = states('input_number.delta_ext_test_delta_soc_start') | float(0)
+                       - states('sensor.delta_2_battery_level') | float(0) %}
+              {{ ([d, 0] | max * 1.024 / 100) | round(3) }}
+
+          - name: "Delta ext test Delta internal in"
+            unique_id: delta_ext_test_delta_internal_in
+            icon: mdi:battery-plus
+            unit_of_measurement: kWh
+            device_class: energy
+            state_class: total
+            state: >
+              {% set d = states('sensor.delta_2_battery_level') | float(0)
+                       - states('input_number.delta_ext_test_delta_soc_start') | float(0) %}
+              {{ ([d, 0] | max * 1.024 / 100) | round(3) }}
+
+          # ---- Розряд ----
+          - name: "Delta ext test cells out"
+            unique_id: delta_ext_test_cells_out
+            icon: mdi:battery-arrow-down-outline
+            unit_of_measurement: kWh
+            device_class: energy
+            state_class: total
+            state: >
+              {{ (states('sensor.delta_ext_test_bms_discharge') | float(0)
+                + states('sensor.delta_ext_test_delta_internal_out') | float(0)) | round(3) }}
+
+          - name: "Delta ext test discharge efficiency"
+            unique_id: delta_ext_test_discharge_efficiency
+            icon: mdi:percent-circle-outline
+            unit_of_measurement: "%"
+            availability: "{{ states('sensor.delta_ext_test_cells_out') | float(0) > 0.05 }}"
+            state: >
+              {{ (states('sensor.delta_ext_test_ac_out') | float(0)
+                / states('sensor.delta_ext_test_cells_out') | float(1) * 100) | round(1) }}
+
+          - name: "Delta ext test external share"
+            unique_id: delta_ext_test_external_share
+            icon: mdi:chart-pie
+            unit_of_measurement: "%"
+            availability: "{{ states('sensor.delta_ext_test_cells_out') | float(0) > 0.05 }}"
+            state: >
+              {{ (states('sensor.delta_ext_test_bms_discharge') | float(0)
+                / states('sensor.delta_ext_test_cells_out') | float(1) * 100) | round(1) }}
+
+          # ---- Заряд ----
+          - name: "Delta ext test cells in"
+            unique_id: delta_ext_test_cells_in
+            icon: mdi:battery-arrow-up-outline
+            unit_of_measurement: kWh
+            device_class: energy
+            state_class: total
+            state: >
+              {{ (states('sensor.delta_ext_test_bms_charge') | float(0)
+                + states('sensor.delta_ext_test_delta_internal_in') | float(0)) | round(3) }}
+
+          - name: "Delta ext test charge efficiency"
+            unique_id: delta_ext_test_charge_efficiency
+            icon: mdi:percent-circle
+            unit_of_measurement: "%"
+            availability: "{{ states('sensor.delta_ext_test_ac_in') | float(0) > 0.05 }}"
+            state: >
+              {{ (states('sensor.delta_ext_test_cells_in') | float(0)
+                / states('sensor.delta_ext_test_ac_in') | float(1) * 100) | round(1) }}
+
+    # ---------------------------------------------------------------------
+    # Інтегрування потужності в енергію (Ріман)
+    # max_sub_interval — щоб при постійному навантаженні інтеграл не завмирав
+    # між рідкими оновленнями з хмари EcoFlow
+    # ---------------------------------------------------------------------
+    sensor:
+      - platform: integration
+        name: "Delta ext BMS charge energy"
+        unique_id: delta_ext_bms_charge_energy
+        source: sensor.delta_ext_bms_charge_power
+        unit_prefix: k
+        unit_time: h
+        round: 3
+        method: left
+        max_sub_interval:
+          minutes: 1
+
+      - platform: integration
+        name: "Delta ext BMS discharge energy"
+        unique_id: delta_ext_bms_discharge_energy
+        source: sensor.delta_ext_bms_discharge_power
+        unit_prefix: k
+        unit_time: h
+        round: 3
+        method: left
+        max_sub_interval:
+          minutes: 1
+
+      - platform: integration
+        name: "Delta ext AC in energy"
+        unique_id: delta_ext_ac_in_energy
+        source: sensor.delta_2_ac_in_power
+        unit_prefix: k
+        unit_time: h
+        round: 3
+        method: left
+        max_sub_interval:
+          minutes: 1
+
+      - platform: integration
+        name: "Delta ext AC out energy"
+        unique_id: delta_ext_ac_out_energy
+        source: sensor.delta_2_ac_out_power
+        unit_prefix: k
+        unit_time: h
+        round: 3
+        method: left
+        max_sub_interval:
+          minutes: 1
+
+      - platform: integration
+        name: "Delta ext total out energy"
+        unique_id: delta_ext_total_out_energy
+        source: sensor.delta_2_total_out_power
+        unit_prefix: k
+        unit_time: h
+        round: 3
+        method: left
+        max_sub_interval:
+          minutes: 1
+
+    # ---------------------------------------------------------------------
+    # Лічильники тесту (без циклу, обнуляються скриптом)
+    # ---------------------------------------------------------------------
+    utility_meter:
+      delta_ext_test_bms_charge:
+        name: "Delta ext test BMS charge"
+        unique_id: delta_ext_test_bms_charge
+        source: sensor.delta_ext_bms_charge_energy
+      delta_ext_test_bms_discharge:
+        name: "Delta ext test BMS discharge"
+        unique_id: delta_ext_test_bms_discharge
+        source: sensor.delta_ext_bms_discharge_energy
+      delta_ext_test_ac_in:
+        name: "Delta ext test AC in"
+        unique_id: delta_ext_test_ac_in
+        source: sensor.delta_ext_ac_in_energy
+      delta_ext_test_ac_out:
+        name: "Delta ext test AC out"
+        unique_id: delta_ext_test_ac_out
+        source: sensor.delta_ext_ac_out_energy
+      delta_ext_test_total_out:
+        name: "Delta ext test total out"
+        unique_id: delta_ext_test_total_out
+        source: sensor.delta_ext_total_out_energy
+
+    # ---------------------------------------------------------------------
+    # Старт тесту
+    # ---------------------------------------------------------------------
+    script:
+      delta_ext_test_start:
+        alias: "Delta ext: старт тесту"
+        icon: mdi:play-circle-outline
+        mode: single
+        sequence:
+          - action: utility_meter.calibrate
+            target:
+              entity_id:
+                - sensor.delta_ext_test_bms_charge
+                - sensor.delta_ext_test_bms_discharge
+                - sensor.delta_ext_test_ac_in
+                - sensor.delta_ext_test_ac_out
+                - sensor.delta_ext_test_total_out
+            data:
+              value: "0"
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.delta_ext_test_delta_soc_start
+            data:
+              value: "{{ states('sensor.delta_2_battery_level') | float(0) }}"
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.delta_ext_test_bms_soc_start
+            data:
+              value: "{{ states('sensor.jbd_up16s019_100a_100a_battery') | float(0) }}"
+          - action: input_datetime.set_datetime
+            target:
+              entity_id: input_datetime.delta_ext_test_start
+            data:
+              timestamp: "{{ now().timestamp() }}"
+          - action: input_number.set_value
+            target:
+              entity_id:
+                - input_number.delta_ext_res_duration
+                - input_number.delta_ext_res_ac_in
+                - input_number.delta_ext_res_bms_charge
+                - input_number.delta_ext_res_cells_in
+                - input_number.delta_ext_res_charge_eff
+                - input_number.delta_ext_res_ac_out
+                - input_number.delta_ext_res_bms_discharge
+                - input_number.delta_ext_res_cells_out
+                - input_number.delta_ext_res_discharge_eff
+                - input_number.delta_ext_res_delta_soc_end
+                - input_number.delta_ext_res_bms_soc_end
+            data:
+              value: 0
+          - action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.delta_ext_test_active
+
+      # Зупинка тесту: фіксує підсумки і час кінця
+      delta_ext_test_stop:
+        alias: "Delta ext: стоп тесту"
+        icon: mdi:stop-circle-outline
+        mode: single
+        sequence:
+          - variables:
+              s: "{{ state_attr('input_datetime.delta_ext_test_start', 'timestamp') | float(0) }}"
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.delta_ext_res_duration
+            data:
+              value: "{{ ((now().timestamp() - s) / 3600) | round(2) if s > 0 else 0 }}"
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.delta_ext_res_ac_in
+            data:
+              value: "{{ states('sensor.delta_ext_test_ac_in') | float(0) }}"
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.delta_ext_res_bms_charge
+            data:
+              value: "{{ states('sensor.delta_ext_test_bms_charge') | float(0) }}"
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.delta_ext_res_cells_in
+            data:
+              value: "{{ states('sensor.delta_ext_test_cells_in') | float(0) }}"
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.delta_ext_res_charge_eff
+            data:
+              value: "{{ states('sensor.delta_ext_test_charge_efficiency') | float(0) }}"
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.delta_ext_res_ac_out
+            data:
+              value: "{{ states('sensor.delta_ext_test_ac_out') | float(0) }}"
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.delta_ext_res_bms_discharge
+            data:
+              value: "{{ states('sensor.delta_ext_test_bms_discharge') | float(0) }}"
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.delta_ext_res_cells_out
+            data:
+              value: "{{ states('sensor.delta_ext_test_cells_out') | float(0) }}"
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.delta_ext_res_discharge_eff
+            data:
+              value: "{{ states('sensor.delta_ext_test_discharge_efficiency') | float(0) }}"
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.delta_ext_res_delta_soc_end
+            data:
+              value: "{{ states('sensor.delta_2_battery_level') | float(0) }}"
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.delta_ext_res_bms_soc_end
+            data:
+              value: "{{ states('sensor.jbd_up16s019_100a_100a_battery') | float(0) }}"
+          - action: input_datetime.set_datetime
+            target:
+              entity_id: input_datetime.delta_ext_test_end
+            data:
+              timestamp: "{{ now().timestamp() }}"
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.delta_ext_test_active
+
+    # ---------------------------------------------------------------------
+    # Автоматизації
+    # ---------------------------------------------------------------------
+    automation:
+      # Дельта закінчила заряд: є мережа, вхід < 20 Вт 5 хв, SOC Дельти ≥ 98%
+      - id: delta_ext_charge_test_auto_stop
+        alias: "Delta ext: автостоп тесту заряду"
+        mode: single
+        triggers:
+          - trigger: numeric_state
+            entity_id: sensor.delta_2_ac_in_power
+            below: 20
+            for:
+              minutes: 5
+        conditions:
+          - condition: state
+            entity_id: input_boolean.delta_ext_test_active
+            state: "on"
+          - condition: numeric_state
+            entity_id: sensor.delta_2_ac_in_volts
+            above: 180
+          - condition: numeric_state
+            entity_id: sensor.delta_2_battery_level
+            above: 97
+          - condition: numeric_state
+            entity_id: sensor.delta_ext_test_ac_in
+            above: 0.1
+        actions:
+          - action: script.delta_ext_test_stop
+          - action: persistent_notification.create
+            data:
+              notification_id: delta_ext_test
+              title: "Delta ext: заряд завершено"
+              message: >
+                Тривалість {{ states('input_number.delta_ext_res_duration') }} год,
+                з мережі {{ states('input_number.delta_ext_res_ac_in') }} кВт·год,
+                зовн. АКБ {{ states('input_number.delta_ext_res_bms_charge') }} кВт·год,
+                ККД {{ states('input_number.delta_ext_res_charge_eff') }}%.
+                SOC: Дельта {{ states('input_number.delta_ext_res_delta_soc_end') | int }}%,
+                зовн. АКБ {{ states('input_number.delta_ext_res_bms_soc_end') | int }}%.
+          # Сюди можна додати своє сповіщення в Telegram / телефон
+
+      # Під час тесту заряду зникла мережа
+      - id: delta_ext_charge_test_grid_lost
+        alias: "Delta ext: зникла мережа під час тесту"
+        mode: single
+        triggers:
+          - trigger: numeric_state
+            entity_id: sensor.delta_2_ac_in_volts
+            below: 100
+            for:
+              minutes: 1
+        conditions:
+          - condition: state
+            entity_id: input_boolean.delta_ext_test_active
+            state: "on"
+          - condition: numeric_state
+            entity_id: sensor.delta_ext_test_ac_in
+            above: 0.1
+        actions:
+          - action: persistent_notification.create
+            data:
+              notification_id: delta_ext_test_grid
+              title: "Delta ext: зникла мережа"
+              message: >
+                Тест заряду перервано о {{ now().strftime('%H:%M') }}.
+                З мережі вже {{ states('sensor.delta_ext_test_ac_in') }} кВт·год,
+                SOC Дельти {{ states('sensor.delta_2_battery_level') | int }}%,
+                зовн. АКБ {{ states('sensor.jbd_up16s019_100a_100a_battery') | int }}%.

@@ -18,21 +18,21 @@ sections:
           - entity: input_boolean.k7_notification
           - entity: input_boolean.k7_notification_extr
           
-        - type: markdown
-          content: >
-             ### Раннє оповіщення
+        # - type: markdown
+        #   content: >
+        #      ### Раннє оповіщення
 
-        - type: entities
-          show_header_toggle: false
-          entities:
-          - entity: sensor.tg_parser_source_1
-          - entity: sensor.tg_parser_source_1_type
-          - type: divider
-          - entity: sensor.tg_parser_source_2
-          - entity: sensor.tg_parser_source_2_type
-          - type: divider
-          - entity: input_boolean.tg_parser_gone_lock
-          - entity: input_boolean.tg_parser_back_lock
+        # - type: entities
+        #   show_header_toggle: false
+        #   entities:
+        #   - entity: sensor.tg_parser_source_1
+        #   - entity: sensor.tg_parser_source_1_type
+        #   - type: divider
+        #   - entity: sensor.tg_parser_source_2
+        #   - entity: sensor.tg_parser_source_2_type
+        #   - type: divider
+        #   - entity: input_boolean.tg_parser_gone_lock
+        #   - entity: input_boolean.tg_parser_back_lock
 
 
     - type: grid

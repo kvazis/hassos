@@ -1,0 +1,115 @@
+##################################################
+## Актуалізовано: 2026-10-26
+##################################################
+
+k_7_inverter:
+
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
+
+  homeassistant:
+    customize:
+      sensor.deye_station_battery_soc_4:
+        friendly_name: 2 секція заряд
+
+      sensor.deye_station_battery_soc_3:
+        friendly_name: 4 секція заряд
+
+      sensor.deye_station_battery_soc_2:
+        friendly_name: 6 секція заряд
+
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - sensor.deye_station_battery_soc_4
+        - sensor.deye_station_discharge_power_4
+        - sensor.deye_station_battery_soc_3
+        - sensor.deye_station_discharge_power_3        
+        - sensor.deye_station_battery_soc_2
+        - sensor.deye_station_discharge_power_2
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+        - alias: tg_battery_soc_notification
+          id: tg_battery_soc_notification
+          description: Сповіщення про заряд батарей під час відсутності світла (крок 10%)
+          initial_state: true
+          trigger:
+            - platform: state
+              entity_id: sensor.deye_station_battery_soc_4
+              id: s2
+            - platform: state
+              entity_id: sensor.deye_station_battery_soc_3
+              id: s4
+            - platform: state
+              entity_id: sensor.deye_station_battery_soc_2
+              id: s6
+        
+          condition:
+            - condition: state
+              entity_id: switch.control_mode
+              state: "on"
+        
+            - condition: state
+              entity_id: input_boolean.k7_notification
+              state: "on"
+        
+            - condition: template
+              value_template: >
+                {% set n = trigger.to_state.state | float(none) %}
+                {% set o = (trigger.from_state.state if trigger.from_state else 'x') | float(none) %}
+                {{ n is not none and o is not none and
+                   ((o > 50 and n <= 50) or (o > 20 and n <= 20)) }}
+        
+            # працює тільки коли світла немає на відповідному вводі
+            - condition: or
+              conditions:
+                - condition: and
+                  conditions:
+                    - condition: trigger
+                      id: s2
+                    - condition: state
+                      entity_id: binary_sensor.k7_1_3_power_ping
+                      state: "off"
+                - condition: and
+                  conditions:
+                    - condition: trigger
+                      id: [s4, s6]
+                    - condition: state
+                      entity_id: binary_sensor.electricity
+                      state: "on"
+        
+          action:
+            - action: telegram_bot.send_message
+              data:
+                chat_id:
+                  - !secret chat_id_k7
+                message: |
+                  {%- set soc = trigger.to_state.state | float(0) | round(0) | int -%}
+                  {%- set old = trigger.from_state.state | float(0) | round(0) | int -%}
+                  {%- set cfg = {
+                    's2': {'e': '1️⃣2️⃣',    'dt': 'input_datetime.k7_1_3_power_off_time'},
+                    's4': {'e': '3️⃣4️⃣5️⃣', 'dt': 'input_datetime.electricity_off'},
+                    's6': {'e': '6️⃣7️⃣',    'dt': 'input_datetime.electricity_off'}
+                  }[trigger.id] -%}
+                  {%- set off = as_datetime(states(cfg.dt), none) -%}
+                  {%- if off -%}
+                    {%- set d = now() - as_local(off) -%}
+                    {%- set days = d.days -%}
+                    {%- set sec = d.seconds -%}
+                    {%- set dur = ((days ~ 'д ') if days > 0 else '') ~ '%02d:%02d:%02d'|format(sec // 3600, (sec % 3600) // 60, sec % 60) -%}
+                  {%- else -%}
+                    {%- set dur = 'н/д' -%}
+                  {%- endif -%}
+                  {{ '🪫' if soc <= 20 else '🔋' }} {{ cfg.e }} Заряд - {{ soc }}% {{ '📉' if soc < old else '📈' }}
+                  ⏳ Електрика відсутня - {{ dur }}

@@ -36,6 +36,23 @@ zigbee2mqtt:
         icon: mdi:zigbee
 
   ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - sensor.slzb_06_main_core_chip_temp
+        - sensor.slzb_06_main_zigbee_chip_temp
+        - sensor.slzb_06_core_chip_temp
+        - sensor.slzb_06_zigbee_chip_temp
+        - sensor.slzb_mr3_core_chip_temp
+        - sensor.slzb_mr3_zigbee_chip_temp
+        - sensor.slzb_mr3_zigbee_chip_temp_2
+        - sensor.slzb_06p7_core_chip_temp
+        - sensor.slzb_06p7_zigbee_chip_temp
+        
+  ##################################################
   ## TEMPLATE
   ##################################################
 

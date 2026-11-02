@@ -137,7 +137,7 @@ lr_light:
         - name: lr_mode_auto_light_day_on
           unique_id: lr_mode_auto_light_day_on
           state: >
-            {{ is_state('light.smart_desk_lamp', 'off') and
+            {{ is_state('light.xiaomi_lamp31_4e0f_light', 'off') and
                is_state('light.yeelight_ceiling4_0x49c726b', 'off') and
                is_state('light.yeelight_ceiling4_0x49c726b_ambilight', 'off') and
                is_state('light.yeelight_ceiling4_0x4a1dacd', 'off') and
@@ -145,14 +145,13 @@ lr_light:
                is_state('light.0x54ef4410008e96fd_bottom', 'off') and
                is_state('light.0xa4c13826d6a56255', 'off') and
                is_state('light.lr_bedside_lamp', 'off') and
-               is_state('light.0xa4c138da30166b8f', 'off') and
                is_state('binary_sensor.lr_tv_work', 'off') and
                states('sensor.0x04cf8cdf3c7cf19e_illuminance') | int(0) < 30 }}
 
         - name: lr_lights_no_ambi
           unique_id: lr_lights_no_ambi
           state: >
-            {{ is_state('light.smart_desk_lamp', 'off') and
+            {{ is_state('light.xiaomi_lamp31_4e0f_light', 'off') and
                is_state('light.yeelight_ceiling4_0x49c726b', 'off') and
                is_state('light.yeelight_ceiling4_0x4a1dacd', 'off') and
                is_state('light.0x54ef4410008e96fd_bottom', 'off') and
@@ -194,8 +193,8 @@ lr_light:
           entity_id: sensor.0x84ba20fffed2331e_action
           to: "long"
         - platform: state
-          entity_id: sensor.0x00158d00013fc3bc_action
-          to: "single_left"
+          entity_id: sensor.0xa4c138100fc8ffff_action
+          to: "single_button_1"
         - platform: state
           entity_id: sensor.0x04cf8cdf3c79360a_action
           to: "button_3_single"
@@ -280,6 +279,9 @@ lr_light:
         - platform: state
           entity_id: sensor.0x04cf8cdf3c79360a_action
           to: "button_4_single"
+        - platform: state
+          entity_id: sensor.0xa4c138100fc8ffff_action
+          to: "double_button_1"
       condition:
         - condition: state
           entity_id: switch.control_mode
@@ -358,6 +360,9 @@ lr_light:
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
           to: "button_1_triple"
+        - platform: state
+          entity_id: sensor.0xa4c138100fc8ffff_action
+          to: "triple_button_1"
       condition:
         - condition: state
           entity_id: switch.control_mode
@@ -409,8 +414,8 @@ lr_light:
           entity_id: sensor.0x54ef4410004c1707_action
           to: "button_2_single"
         - platform: state
-          entity_id: sensor.0x00158d00013fc3bc_action
-          to: "single_right"
+          entity_id: sensor.0xa4c138100fc8ffff_action
+          to: "single_button_2"
         - platform: state
           entity_id: sensor.0x84ba20fffed2331e_action
           to: "single"
@@ -445,23 +450,23 @@ lr_light:
         - choose:
             - conditions:
                 - condition: state
-                  entity_id: light.smart_desk_lamp
+                  entity_id: light.xiaomi_lamp31_4e0f_light
                   state: "off"
               sequence:
                 - action: light.turn_on
                   target:
-                    entity_id: light.smart_desk_lamp
+                    entity_id: light.xiaomi_lamp31_4e0f_light
                   data:
-                    brightness_pct: 100
+                    brightness_pct: 40
                     color_temp_kelvin: 4000
             - conditions:
                 - condition: state
-                  entity_id: light.smart_desk_lamp
+                  entity_id: light.xiaomi_lamp31_4e0f_light
                   state: "on"
               sequence:
                 - action: light.turn_off
                   target:
-                    entity_id: light.smart_desk_lamp
+                    entity_id: light.xiaomi_lamp31_4e0f_light
 
     - alias: lr_ceiling_auto_light_on
       id: lr_ceiling_auto_light_on
@@ -550,7 +555,7 @@ lr_light:
                 - action: light.turn_off
                   target:
                     entity_id:
-                      - light.smart_desk_lamp
+                      - light.xiaomi_lamp31_4e0f_light
                       - light.yeelight_ceiling4_0x49c726b
                       - light.yeelight_ceiling4_0x4a1dacd
                       - light.0x54ef4410008e96fd_bottom
@@ -584,6 +589,9 @@ lr_light:
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
           to: "button_6_triple"
+        - platform: state
+          entity_id: sensor.0xa4c138100fc8ffff_action
+          to: "long_button_1"
       condition:
         - condition: state
           entity_id: switch.control_mode
@@ -592,7 +600,7 @@ lr_light:
         - action: light.turn_off
           target:
             entity_id:
-              - light.smart_desk_lamp
+              - light.xiaomi_lamp31_4e0f_light
               - light.yeelight_ceiling4_0x49c726b
               - light.yeelight_ceiling4_0x4a1dacd
               - light.0x54ef4410008e96fd_bottom

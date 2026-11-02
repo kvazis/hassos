@@ -209,3 +209,28 @@ br_light:
         - action: script.turn_on
           target:
             entity_id: script.br_gradient_wled_on
+            
+    ##################################################
+    ## ПІДСВІТКА ДЗЕРКАЛА
+    ##################################################
+
+    - alias: br_mirror_manual_control
+      id: br_mirror_manual_control
+      description: Ручне керування підсвіткою дзеркала
+      initial_state: true
+
+      trigger:
+
+        - platform: state
+          entity_id: sensor.0x60a423fffe942cf2_action
+          to: "3_single"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+      action:
+        - action: switch.toggle
+          target:
+            entity_id: switch.0xa4c1388c89a46970

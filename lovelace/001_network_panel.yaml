@@ -1,0 +1,98 @@
+############################ Панель керування ############################
+title: Мережа
+icon: mdi:access-point-network
+sections:
+
+############################ Колонка 1 ############################
+  - type: grid
+    cards:
+
+
+
+      - type: markdown
+        content: >
+          ### Zigbee2mqtt 1 192.168.0.7
+
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - entity: binary_sensor.zigbee2mqtt_bridge_connection_state_1
+            name: Zigbee2MQTT 1 Status
+          - entity: binary_sensor.slzb_06_main_ethernet
+            name: Zigbee2MQTT 1 LAN
+          - entity: switch.ps308g0011242300032c4copc_1_poe
+            name: POE Switch
+          - entity: sensor.ps308g0011242300032c4copc_1_power
+            name: POE power
+          - entity: sensor.slzb_06_main_core_chip_temp
+          - entity: sensor.slzb_06_main_zigbee_chip_temp
+
+  - type: grid
+    cards:
+
+      - type: markdown
+        content: >
+          ### Zigbee2mqtt 2 192.168.0.77
+
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - entity: binary_sensor.zigbee2mqtt_bridge_connection_state_2
+            name: Zigbee2MQTT 2 Status
+          - entity: binary_sensor.slzb_06_ethernet
+            name: Zigbee2MQTT 2 LAN
+          - entity: switch.ps308g0011242300032c4copc_2_poe
+            name: POE Switch
+          - entity: sensor.ps308g0011242300032c4copc_2_power
+            name: POE Power
+          - entity: sensor.slzb_06_core_chip_temp
+          - entity: sensor.slzb_06_zigbee_chip_temp
+
+
+  - type: grid
+    cards:
+
+      - type: markdown
+        content: >
+          ### Zigbee2mqtt 3 192.168.0.78
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - entity: binary_sensor.zigbee2mqtt_bridge_connection_state_3
+            name: Zigbee2MQTT 3 Status
+          - entity: binary_sensor.slzb_mr3_ethernet
+            name: Zigbee2MQTT 3 LAN
+          - entity: switch.ps308g0011242300032c4copc_4_poe
+            name: POE Switch
+          - entity: sensor.ps308g0011242300032c4copc_4_power
+            name: POE Power
+          - entity: sensor.slzb_mr3_core_chip_temp
+          - entity: sensor.slzb_mr3_zigbee_chip_temp
+            name: Zigbee chip 1
+          - entity: sensor.slzb_mr3_zigbee_chip_temp_2
+            name: Zigbee chip 2
+
+  - type: grid
+    cards:
+
+      - type: markdown
+        content: >
+          ### Backup 192.168.0.76
+
+      - type: entities
+        show_header_toggle: false
+        entities:
+
+          - entity: binary_sensor.slzb_06p7_ethernet
+            name: Backup 3 LAN
+          - entity: switch.ps308g0011242300032c4copc_3_poe
+            name: POE Switch
+          - entity: sensor.ps308g0011242300032c4copc_3_power
+            name: POE Power
+          - entity: sensor.slzb_06p7_core_chip_temp
+          - entity: sensor.slzb_06p7_zigbee_chip_temp
+
+
+
+            
+

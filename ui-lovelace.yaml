@@ -1,8 +1,10 @@
 title: Home Assistant
 views:
   - !include lovelace/001_control_panel.yaml
+  - !include lovelace/001_network_panel.yaml
   - !include lovelace/002_logic.yaml
   - !include lovelace/003_electricity.yaml
+  - !include lovelace/003b_sankey.yaml
   - !include lovelace/003a_deye.yaml
   - !include lovelace/004_ecoflow.yaml
   - !include lovelace/100_outdoor.yaml

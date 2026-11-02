@@ -115,6 +115,10 @@ deye:
         - sensor.deye_sun15_battery_power
         - sensor.deye_sun15_battery_state
         - sensor.deye_sun15_battery_temperature
+        - sensor.deye_sun15_load_consumption_power
+        - sensor.deye_sun15_load_consumption_l1_power
+        - sensor.deye_sun15_load_consumption_l2_power
+        - sensor.deye_sun15_load_consumption_l3_power
 
   ##################################################
   ## INPUT_BOOLEAN

@@ -279,7 +279,7 @@ k7_3_partial_power:
     - alias: k7_3_partial_power_on_notify
       id: k7_3_partial_power_on_notify
       description: Повідомлення про часткове відновлення
-      initial_state: true
+      initial_state: false
       trigger:
         - platform: state
           entity_id: binary_sensor.k7_3_partial_power_on
@@ -390,7 +390,7 @@ k7_3_partial_power:
     - alias: k7_3_partial_power_off_notify
       id: k7_3_partial_power_off_notify
       description: Повідомлення про часткове вимкнення
-      initial_state: true
+      initial_state: false
       trigger:
         - platform: state
           entity_id: binary_sensor.k7_3_partial_power_off

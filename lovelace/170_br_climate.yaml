@@ -17,7 +17,7 @@ sections:
 
       - type: grid
         square: false
-        columns: 2
+        columns: 3
         cards:
           - type: custom:mushroom-template-card
             primary: Провітрювання
@@ -44,6 +44,33 @@ sections:
               {% endif %}
             tap_action:
               action: more-info
+
+          - type: custom:mushroom-template-card
+            primary: Повітря
+            secondary: |-
+              {% if is_state("binary_sensor.br_poor_air", "off") %}
+              ОК
+              {% else %}
+              Потрібно провітрити
+              {% endif %}
+            layout: vertical
+            entity: binary_sensor.br_poor_air
+            icon: |-
+              {% if is_state("binary_sensor.br_poor_air", "off") %}
+              mdi:check-bold
+              {% else %}
+              mdi:biohazard
+              {% endif %}
+            multiline_secondary: true
+            icon_color: |-
+              {% if is_state("binary_sensor.br_poor_air", "off") %}
+              green
+              {% else %}
+              deep-orange
+              {% endif %}
+            tap_action:
+              action: more-info
+
 
           - type: custom:mushroom-template-card
             primary: Вікно
@@ -164,7 +191,7 @@ sections:
           - type: custom:mushroom-template-card
             primary: Температура Mi
             secondary: |-
-              {{ states('sensor.0x00158d000156e92e_temperature') }} С°
+              {{ states('sensor.0x00158d000156e92e_temperature') }} °C
             layout: vertical
             entity: sensor.0x00158d000156e92e_temperature
             icon_color: |-
@@ -212,7 +239,7 @@ sections:
           - type: custom:mushroom-template-card
             primary: Температура екрана
             secondary: |-
-              {{ states('sensor.0xa4c138b7e1e0812c_temperature') }} С°
+              {{ states('sensor.0xa4c138b7e1e0812c_temperature') }} °C
             layout: vertical
             entity: sensor.0xa4c138b7e1e0812c_temperature
             icon_color: |-
@@ -259,32 +286,32 @@ sections:
 
       - type: markdown
         content: >
-          ### Sonoff SAWF-08P
+          ### Qingping Air Monitor 2
 
       - type: grid
         square: false
-        columns: 3
+        columns: 4
         cards:
           - type: custom:mushroom-template-card
-            primary: Температура
+            primary: Температура Q2
             secondary: |-
-              {{ states('sensor.br_co2_temperature') }} С°
+              {{ states('sensor.cgllc_cgs2_5032_temperature') }} °C
             layout: vertical
-            entity: sensor.br_co2_temperature
+            entity: sensor.cgllc_cgs2_5032_temperature
             icon_color: |-
-              {% if states("sensor.br_co2_temperature")|float <= -10 %}
+              {% if states("sensor.cgllc_cgs2_5032_temperature")|float <= -10 %}
               indigo
-              {% elif states("sensor.br_co2_temperature")|float <= 0 %}
+              {% elif states("sensor.cgllc_cgs2_5032_temperature")|float <= 0 %}
               blue
-              {% elif states("sensor.br_co2_temperature")|float <= 10 %}
+              {% elif states("sensor.cgllc_cgs2_5032_temperature")|float <= 10 %}
               light-blue
-              {% elif states("sensor.br_co2_temperature")|float <= 20 %}
+              {% elif states("sensor.cgllc_cgs2_5032_temperature")|float <= 20 %}
               cyan
-              {% elif states("sensor.br_co2_temperature")|float <= 25 %}
+              {% elif states("sensor.cgllc_cgs2_5032_temperature")|float <= 25 %}
               yellow
-              {% elif states("sensor.br_co2_temperature")|float <= 30 %}
+              {% elif states("sensor.cgllc_cgs2_5032_temperature")|float <= 30 %}
               amber
-              {% elif states("sensor.br_co2_temperature")|float <= 40 %}
+              {% elif states("sensor.cgllc_cgs2_5032_temperature")|float <= 40 %}
               orange
               {% endif %}
             icon: mdi:temperature-celsius
@@ -292,21 +319,21 @@ sections:
               action: more-info
 
           - type: custom:mushroom-template-card
-            primary: Вологість
+            primary: Вологість Q2
             secondary: |-
-              {{ states('sensor.br_co2_humidity') }} %
+              {{ states('sensor.cgllc_cgs2_5032_relative_humidity') }} %
             layout: vertical
-            entity: sensor.br_co2_humidity
+            entity: sensor.cgllc_cgs2_5032_relative_humidity
             icon_color: |-
-              {% if states("sensor.br_co2_humidity")|float <= 30 %}
+              {% if states("sensor.cgllc_cgs2_5032_relative_humidity")|float <= 30 %}
               deep-orange
-              {% elif states("sensor.br_co2_humidity")|float <= 40 %}
+              {% elif states("sensor.cgllc_cgs2_5032_relative_humidity")|float <= 40 %}
               yellow
-              {% elif states("sensor.br_co2_humidity")|float <= 50 %}
+              {% elif states("sensor.cgllc_cgs2_5032_relative_humidity")|float <= 50 %}
               light-blue
-              {% elif states("sensor.br_co2_humidity")|float <= 60 %}
+              {% elif states("sensor.cgllc_cgs2_5032_relative_humidity")|float <= 60 %}
               blue
-              {% elif states("sensor.br_co2_humidity")|float > 60 %}
+              {% elif states("sensor.cgllc_cgs2_5032_relative_humidity")|float > 60 %}
               indigo
               {% endif %}
             icon: mdi:water-percent
@@ -314,26 +341,114 @@ sections:
               action: more-info
 
           - type: custom:mushroom-template-card
-            primary: CO2
+            primary: CO2 Q2
             secondary: |-
-              {{ states('sensor.br_co2_carbon_dioxide') }} ppm
+              {{ states('sensor.cgllc_cgs2_5032_co2_density') }} ppm
             layout: vertical
-            entity: sensor.br_co2_carbon_dioxide
+            entity: sensor.cgllc_cgs2_5032_co2_density
             icon_color: |-
-              {% if states("sensor.br_co2_carbon_dioxide")|float <= 500 %}
+              {% if states("sensor.cgllc_cgs2_5032_co2_density")|float <= 500 %}
               green
-              {% elif states("sensor.br_co2_carbon_dioxide")|float <= 700 %}
+              {% elif states("sensor.cgllc_cgs2_5032_co2_density")|float <= 700 %}
               light-green
-              {% elif states("sensor.br_co2_carbon_dioxide")|float <= 800 %}
+              {% elif states("sensor.cgllc_cgs2_5032_co2_density")|float <= 800 %}
               lime
-              {% elif states("sensor.br_co2_carbon_dioxide")|float <= 1000 %}
+              {% elif states("sensor.cgllc_cgs2_5032_co2_density")|float <= 1000 %}
               yellow
-              {% elif states("sensor.br_co2_carbon_dioxide")|float <= 1200 %}
+              {% elif states("sensor.cgllc_cgs2_5032_co2_density")|float <= 1200 %}
               orange
-              {% elif states("sensor.br_co2_carbon_dioxide")|float > 1200 %}
+              {% elif states("sensor.cgllc_cgs2_5032_co2_density")|float > 1200 %}
               red
               {% endif %}
             icon: mdi:molecule-co2
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            primary: eTVOC Q2
+            secondary: |-
+              {{ states('sensor.cgllc_cgs2_5032_tvoc_density') }}
+            layout: vertical
+            entity: sensor.cgllc_cgs2_5032_tvoc_density
+            icon_color: |-
+              {% if states("sensor.cgllc_cgs2_5032_tvoc_density")|float <= 65 %}
+              green
+              {% elif states("sensor.cgllc_cgs2_5032_tvoc_density")|float <= 220 %}
+              light-green
+              {% elif states("sensor.cgllc_cgs2_5032_tvoc_density")|float <= 660 %}
+              yellow
+              {% elif states("sensor.cgllc_cgs2_5032_tvoc_density")|float <= 2200 %}
+              orange
+              {% elif states("sensor.cgllc_cgs2_5032_tvoc_density")|float > 2200 %}
+              red
+              {% endif %}
+            icon: mdi:blur
+            tap_action:
+              action: more-info
+
+      - type: grid
+        square: false
+        columns: 3
+        cards:
+          - type: custom:mushroom-template-card
+            primary: PM2.5 Q2
+            secondary: |-
+              {{ states('sensor.cgllc_cgs2_5032_pm25_density') }} µg/m³
+            layout: vertical
+            entity: sensor.cgllc_cgs2_5032_pm25_density
+            icon_color: |-
+              {% if states("sensor.cgllc_cgs2_5032_pm25_density")|float <= 12 %}
+              green
+              {% elif states("sensor.cgllc_cgs2_5032_pm25_density")|float <= 35 %}
+              yellow
+              {% elif states("sensor.cgllc_cgs2_5032_pm25_density")|float <= 55 %}
+              orange
+              {% elif states("sensor.cgllc_cgs2_5032_pm25_density")|float > 55 %}
+              red
+              {% endif %}
+            icon: mdi:weather-hazy
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            primary: PM10 Q2
+            secondary: |-
+              {{ states('sensor.cgllc_cgs2_5032_pm10_density') }} µg/m³
+            layout: vertical
+            entity: sensor.cgllc_cgs2_5032_pm10_density
+            icon_color: |-
+              {% if states("sensor.cgllc_cgs2_5032_pm10_density")|float <= 20 %}
+              green
+              {% elif states("sensor.cgllc_cgs2_5032_pm10_density")|float <= 50 %}
+              yellow
+              {% elif states("sensor.cgllc_cgs2_5032_pm10_density")|float <= 100 %}
+              orange
+              {% elif states("sensor.cgllc_cgs2_5032_pm10_density")|float > 100 %}
+              red
+              {% endif %}
+            icon: mdi:weather-fog
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            primary: Шум Q2
+            secondary: |-
+              {{ states('sensor.cgllc_cgs2_5032_noise_decibel') }} dB
+            layout: vertical
+            entity: sensor.cgllc_cgs2_5032_noise_decibel
+            icon_color: |-
+              {% if states("sensor.cgllc_cgs2_5032_noise_decibel")|float <= 30 %}
+              green
+              {% elif states("sensor.cgllc_cgs2_5032_noise_decibel")|float <= 45 %}
+              light-green
+              {% elif states("sensor.cgllc_cgs2_5032_noise_decibel")|float <= 60 %}
+              yellow
+              {% elif states("sensor.cgllc_cgs2_5032_noise_decibel")|float <= 75 %}
+              orange
+              {% elif states("sensor.cgllc_cgs2_5032_noise_decibel")|float > 75 %}
+              red
+              {% endif %}
+            icon: mdi:volume-high
             tap_action:
               action: more-info
 
@@ -348,7 +463,7 @@ sections:
           - type: custom:mushroom-template-card
             primary: Температура балкона
             secondary: |-
-              {{ states('sensor.0x00158d0001fa8321_temperature') }} С°
+              {{ states('sensor.0x00158d0001fa8321_temperature') }} °C
             layout: vertical
             entity: sensor.0x00158d0001fa8321_temperature
             icon_color: |-
@@ -476,7 +591,7 @@ sections:
             secondary: |-
               {% if ((states('sensor.0x00158d000156e92e_temperature') | float - state_attr('climate.0x84fd27fffe31ada3', 'current_temperature') | float))|round(1) > 1
                  or ((states('sensor.0x00158d000156e92e_temperature') | float - state_attr('climate.0x84fd27fffe31ada3', 'current_temperature') | float))|round(1) < -1 %}
-              Розбіжність > 1 С°
+              Розбіжність > 1 °C
               {% else %}
               ОК
               {% endif %}
@@ -499,9 +614,9 @@ sections:
 
           - type: custom:mushroom-template-card
             primary: |-
-              Датчик {{ states('sensor.0x00158d000156e92e_temperature') }} С°
+              Датчик {{ states('sensor.0x00158d000156e92e_temperature') }} °C
             secondary: |-
-              Головка - {{ state_attr('climate.0x84fd27fffe31ada3', 'current_temperature') }} С°
+              Головка - {{ state_attr('climate.0x84fd27fffe31ada3', 'current_temperature') }} °C
             layout: vertical
             entity: sensor.0x00158d000156e92e_temperature
             icon_color: |-
@@ -516,9 +631,9 @@ sections:
 
           - type: custom:mushroom-template-card
             primary: |-
-              Поправка {{ states('number.0x84fd27fffe31ada3_local_temperature_calibration') }} С°
+              Поправка {{ states('number.0x84fd27fffe31ada3_local_temperature_calibration') }} °C
             secondary: |-
-              Різниця {{ ((states('sensor.0x00158d000156e92e_temperature') | float - state_attr('climate.0x84fd27fffe31ada3', 'current_temperature') | float))|round(1) }} С°
+              Різниця {{ ((states('sensor.0x00158d000156e92e_temperature') | float - state_attr('climate.0x84fd27fffe31ada3', 'current_temperature') | float))|round(1) }} °C
             layout: vertical
             entity: sensor.0x00158d000156e92e_temperature
             icon_color: |-

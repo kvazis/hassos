@@ -134,6 +134,15 @@ en_light:
           entity_id: sensor.0x54ef4410004c1707_action
           to: "button_3_single"
 
+        ##################################################
+        ## SONOFF ORB НА СТІНІ БІЛЯ ВХОДУ
+        ##################################################
+
+        - platform: state
+          entity_id: sensor.0xa4c138100fc8ffff_action
+          to: "single_button_3"
+
+
       condition:
         - condition: state
           entity_id: switch.control_mode

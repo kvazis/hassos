@@ -1,0 +1,96 @@
+##################################################
+## Актуалізовано: 2026-04-21
+##################################################
+
+lr_tv_rack:
+
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
+
+  homeassistant:
+    customize:
+
+      ##################################################
+      ## СТІЙКА З ТЕЛЕВІЗОРОМ
+      ##################################################
+
+      switch.0xa4c1382600c57620:
+        friendly_name: Вітальня - стійка з телевізором
+        icon: mdi:power-strip
+
+      sensor.0xa4c1382600c57620_power:
+        friendly_name: Вітальня - стійка з телевізором потужність
+        unit_of_measurement: Вт
+        device_class: power
+        icon: mdi:flash
+
+      sensor.0xa4c1382600c57620_energy:
+        friendly_name: Вітальня - стійка з телевізором енергія
+        device_class: energy
+        unit_of_measurement: kWh
+        icon: mdi:chart-line
+        state_class: total_increasing
+
+      sensor.phase_l3_lr_tv_rack_energy_meter:
+        friendly_name: Вітальня - стійка з телевізором споживання (день)
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total
+        
+        
+      ##################################################
+      ## ІНВЕРТОР - ВИХІД
+      ##################################################
+
+      switch.0xa4c13810fef6ffff:
+        friendly_name: Вихідна розетка інвертор
+        icon: mdi:power-strip
+
+      sensor.0xa4c13810fef6ffff_power:
+        friendly_name: Вихідна розетка інвертор потужність
+        unit_of_measurement: Вт
+        device_class: power
+        icon: mdi:flash
+
+      sensor.0xa4c13810fef6ffff_energy:
+        friendly_name: Вихідна розетка інвертор енергія
+        device_class: energy
+        unit_of_measurement: kWh
+        icon: mdi:chart-line
+        state_class: total_increasing
+
+      sensor.phase_l3_sonoff_invertor:
+        friendly_name: Вихідна розетка інвертор споживання (день)
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - sensor.0xa4c1382600c57620_energy
+        - sensor.phase_l3_lr_tv_rack_energy_meter
+        - sensor.0xa4c13810fef6ffff_energy
+        - sensor.phase_l3_sonoff_invertor
+
+  ##################################################
+  ## UTILITY_METER
+  ##################################################
+
+  utility_meter:
+
+    phase_l3_lr_tv_rack_energy_meter:
+      source: sensor.0xa4c1382600c57620_energy
+      unique_id: phase_l3_lr_tv_rack_energy_meter
+      
+    phase_l3_sonoff_invertor:
+      source: sensor.0xa4c13810fef6ffff_energy
+      unique_id: phase_l3_sonoff_invertor
+
+ 
+  

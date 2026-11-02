@@ -1,0 +1,473 @@
+##################################################
+## Updated: 2026-04-11
+##################################################
+phase_sensor:
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
+  homeassistant:
+    customize:
+      ## CALCULATED SENSORS
+      ## PHASE L1
+      sensor.phase_l1_bt_light_calc:
+        friendly_name: Ванна люстра (calculated)
+        unit_of_measurement: Вт
+        icon: mdi:flash-outline
+      sensor.phase_l1_da_light_calc:
+        friendly_name: Дитяча люстра (calculated)
+        unit_of_measurement: Вт
+        icon: mdi:flash-outline
+      sensor.phase_l1_br_light_calc:
+        friendly_name: Спальня люстра (calculated)
+        unit_of_measurement: Вт
+        icon: mdi:flash-outline
+      sensor.phase_l1_tt_light_calc:
+        friendly_name: Туалет світло (calculated)
+        unit_of_measurement: Вт
+        icon: mdi:flash-outline
+      sensor.phase_l1_tt_fan_calc:
+        friendly_name: Туалет витяжка (calculated)
+        unit_of_measurement: Вт
+        icon: mdi:flash-outline
+      ## PHASE L3
+      sensor.phase_l3_cr_light_calc:
+        friendly_name: Коридор люстра (calculated)
+        unit_of_measurement: Вт
+        icon: mdi:flash-outline
+      sensor.phase_l3_lr_light_1_calc:
+        friendly_name: Вітальня люстра 1 (calculated)
+        unit_of_measurement: Вт
+        icon: mdi:flash-outline
+      sensor.phase_l3_en_light_calc:
+        friendly_name: Передпокій світло (calculated)
+        unit_of_measurement: Вт
+        icon: mdi:flash-outline
+      ## MEASURED SENSORS
+      ## PHASE L1
+      sensor.phase_l1_da_prana:
+        friendly_name: Дитяча рекуператор
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      sensor.phase_l1_da_wled:
+        friendly_name: Дитяча WLED
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      sensor.phase_l1_br_wled:
+        friendly_name: Спальня WLED шнур
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      sensor.phase_l1_br_tv_rack:
+        friendly_name: Спальня подовжувач на ТВ
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      ## PHASE L2
+      sensor.phase_l2_kn_boiler:
+        friendly_name: Кухня бойлер
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      ## PHASE L3
+      sensor.phase_l3_lr_desktop:
+        friendly_name: Вітальня робочий стіл
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      sensor.phase_l3_kn_fridge:
+        friendly_name: Кухня холодильник
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      sensor.phase_l3_kn_microwave:
+        friendly_name: Кухня мікрохвильовка
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      sensor.phase_l3_kn_airgrill:
+        friendly_name: Кухня аерогриль
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      sensor.phase_l3_kn_kettle:
+        friendly_name: Кухня чайник
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      sensor.phase_l3_lr_light_2:
+        friendly_name: Вітальня люстра 2
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      sensor.phase_l3_bt_boiler:
+        friendly_name: Ванна бойлер
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      sensor.phase_l3_kn_tv:
+        friendly_name: Кухня телевізор
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      sensor.phase_l3_bt_socket:
+        friendly_name: Ванна розетка
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      sensor.phase_l3_lr_tv_xiaomi:
+        friendly_name: Вітальня телевізор
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      sensor.phase_l3_ln_washmachine:
+        friendly_name: Пральна машина
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      sensor.phase_l3_ln_charge_240:
+        friendly_name: Вітальня зарядна станція комод
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      ## BRANCH RESIDUAL SENSORS
+      ## PHASE L3
+      sensor.phase_l3_lr_tv_rack:
+        friendly_name: Вітальня стійка з ТВ (branch residual)
+        unit_of_measurement: Вт
+        icon: mdi:source-branch
+      ## SUMMARY SENSORS
+      sensor.phase_l1_identified_power:
+        friendly_name: Phase L1 - identified power
+        unit_of_measurement: Вт
+        icon: mdi:flash-check
+      sensor.phase_l1_unidentified_power:
+        friendly_name: Phase L1 - unidentified power
+        unit_of_measurement: Вт
+        icon: mdi:flash-alert
+      sensor.phase_l2_identified_power:
+        friendly_name: Phase L2 - identified power
+        unit_of_measurement: Вт
+        icon: mdi:flash-check
+      sensor.phase_l2_unidentified_power:
+        friendly_name: Phase L2 - unidentified power
+        unit_of_measurement: Вт
+        icon: mdi:flash-alert
+      sensor.phase_l3_identified_power:
+        friendly_name: Phase L3 - identified power
+        unit_of_measurement: Вт
+        icon: mdi:flash-check
+      sensor.phase_l3_unidentified_power:
+        friendly_name: Phase L3 - unidentified power
+        unit_of_measurement: Вт
+        icon: mdi:flash-alert
+      sensor.phase_total_input_power:
+        friendly_name: All phases - total input power
+        unit_of_measurement: Вт
+        icon: mdi:flash
+      sensor.phase_total_identified_power:
+        friendly_name: All phases - identified power
+        unit_of_measurement: Вт
+        icon: mdi:flash-check
+      sensor.phase_total_unidentified_power:
+        friendly_name: All phases - unidentified power
+        unit_of_measurement: Вт
+        icon: mdi:flash-alert
+  ##################################################
+  ## RECORDER
+  ##################################################
+  recorder:
+    include:
+      entities:
+        - sensor.phase_l3_lr_tv_rack
+        - sensor.phase_l3_lr_desktop
+        - sensor.phase_l3_kn_fridge
+        - sensor.phase_l1_bt_light_calc
+        - sensor.phase_l1_da_prana
+        - sensor.phase_l1_da_wled
+        - sensor.phase_l1_da_light_calc
+        - sensor.phase_l1_br_light_calc
+        - sensor.phase_l3_kn_microwave
+        - sensor.phase_l3_kn_airgrill
+        - sensor.phase_l3_kn_kettle
+        - sensor.phase_l3_cr_light_calc
+        - sensor.phase_l3_lr_light_1_calc
+        - sensor.phase_l3_lr_light_2
+        - sensor.phase_l3_en_light_calc
+        - sensor.phase_l1_br_wled
+        - sensor.phase_l1_br_tv_rack
+        - sensor.phase_l3_bt_boiler
+        - sensor.phase_l2_kn_boiler
+        - sensor.phase_l1_tt_light_calc
+        - sensor.phase_l1_tt_fan_calc
+        - sensor.phase_l3_kn_tv
+        - sensor.phase_l3_bt_socket
+        - sensor.phase_l3_lr_tv_xiaomi
+        - sensor.phase_l3_ln_washmachine
+        - sensor.phase_l3_ln_charge_240
+        - sensor.phase_l1_identified_power
+        - sensor.phase_l1_unidentified_power
+        - sensor.phase_l2_identified_power
+        - sensor.phase_l2_unidentified_power
+        - sensor.phase_l3_identified_power
+        - sensor.phase_l3_unidentified_power
+        - sensor.phase_total_input_power
+        - sensor.phase_total_identified_power
+        - sensor.phase_total_unidentified_power
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+  template:
+    - sensor:
+        ## CALCULATED SENSORS
+        ## PHASE L1
+        - name: phase_l1_bt_light_calc
+          unique_id: phase_l1_bt_light_calc
+          unit_of_measurement: Вт
+          state: >
+            {% set brightness = state_attr('light.yeelight_ceiling3_0x45727f2', 'brightness') %}
+            {% set level = [[brightness | float(255), 0] | max, 255] | min %}
+            {% set min_power = 12 %}
+            {% set max_power = 35 %}
+            {{ (min_power + ((max_power - min_power) * level / 255)) | round(1) if is_state('light.yeelight_ceiling3_0x45727f2', 'on') else 0 }}
+        - name: phase_l1_da_light_calc
+          unique_id: phase_l1_da_light_calc
+          unit_of_measurement: Вт
+          state: >
+            {{ 40 if is_state('light.0x00158d000635ded8_right', 'on') else 0 }}
+        - name: phase_l1_br_light_calc
+          unique_id: phase_l1_br_light_calc
+          unit_of_measurement: Вт
+          state: >
+            {{ 40 if is_state('light.br_philips_62', 'on') else 0 }}
+        - name: phase_l1_tt_light_calc
+          unique_id: phase_l1_tt_light_calc
+          unit_of_measurement: Вт
+          state: >
+            {% set brightness = state_attr('light.0x54ef44100096af68', 'brightness') %}
+            {% set level = [[brightness | float(255), 0] | max, 255] | min %}
+            {% set min_power = 2 %}
+            {% set max_power = 20 %}
+            {{ (min_power + ((max_power - min_power) * level / 255)) | round(1) if is_state('light.0x54ef44100096af68', 'on') else 0 }}
+        - name: phase_l1_tt_fan_calc
+          unique_id: phase_l1_tt_fan_calc
+          unit_of_measurement: Вт
+          state: >
+            {{ 10 if is_state('fan.0x00158d00062fbb54_right', 'on') else 0 }}
+        ## PHASE L3
+        - name: phase_l3_cr_light_calc
+          unique_id: phase_l3_cr_light_calc
+          unit_of_measurement: Вт
+          state: >
+            {% set brightness = state_attr('light.yeelight_ceiling4_0x456e813', 'brightness') %}
+            {% set level = [[brightness | float(255), 0] | max, 255] | min %}
+            {% set min_power = 10 %}
+            {% set max_power = 50 %}
+            {{ (min_power + ((max_power - min_power) * level / 255)) | round(1) if is_state('light.yeelight_ceiling4_0x456e813', 'on') else 0 }}
+        - name: phase_l3_lr_light_1_calc
+          unique_id: phase_l3_lr_light_1_calc
+          unit_of_measurement: Вт
+          state: >
+            {% set brightness = state_attr('light.yeelight_ceiling4_0x49c726b', 'brightness') %}
+            {% set level = [[brightness | float(255), 0] | max, 255] | min %}
+            {% set min_power = 10 %}
+            {% set max_power = 50 %}
+            {{ (min_power + ((max_power - min_power) * level / 255)) | round(1) if is_state('light.yeelight_ceiling4_0x49c726b', 'on') else 0 }}
+        - name: phase_l3_en_light_calc
+          unique_id: phase_l3_en_light_calc
+          unit_of_measurement: Вт
+          state: >
+            {{ 9 if is_state('light.0x00158d0003e74c31', 'on') else 0 }}
+        ## MEASURED SENSORS
+        ## PHASE L1
+        - name: phase_l1_da_prana
+          unique_id: phase_l1_da_prana
+          unit_of_measurement: Вт
+          state: >
+            {{ states('sensor.0x04cf8cdf3c764e0a_power') | float(0) }}
+        - name: phase_l1_da_wled
+          unique_id: phase_l1_da_wled
+          unit_of_measurement: Вт
+          state: >
+            {{ states('sensor.0xa4c138131a85d3ff_power') | float(0) }}
+        - name: phase_l1_br_wled
+          unique_id: phase_l1_br_wled
+          unit_of_measurement: Вт
+          state: >
+            {{ states('sensor.0xa4c138e22148db3a_power') | float(0) }}
+        - name: phase_l1_br_tv_rack
+          unique_id: phase_l1_br_tv_rack
+          unit_of_measurement: Вт
+          state: >
+            {{ states('sensor.0x60a423fffe7ff8c8_power') | float(0) }}
+        ## PHASE L2
+        - name: phase_l2_kn_boiler
+          unique_id: phase_l2_kn_boiler
+          unit_of_measurement: Вт
+          state: >
+            {{ states('sensor.0xa4c1388ce0ff53a8_power') | float(0) }}
+        ## PHASE L3
+        - name: phase_l3_lr_desktop
+          unique_id: phase_l3_lr_desktop
+          unit_of_measurement: Вт
+          state: >
+            {{ states('sensor.0xa4c138f41459f92a_power') | float(0) }}
+        - name: phase_l3_kn_fridge
+          unique_id: phase_l3_kn_fridge
+          unit_of_measurement: Вт
+          state: >
+            {{ states('sensor.0x00158d0001fa2934_power') | float(0) }}
+        - name: phase_l3_kn_microwave
+          unique_id: phase_l3_kn_microwave
+          unit_of_measurement: Вт
+          state: >
+            {{ states('sensor.0xa4c138273b49e4d0_power') | float(0) }}
+        - name: phase_l3_kn_airgrill
+          unique_id: phase_l3_kn_airgrill
+          unit_of_measurement: Вт
+          state: >
+            {{ states('sensor.0xa4c138d571b656c5_power') | float(0) }}
+        - name: phase_l3_kn_kettle
+          unique_id: phase_l3_kn_kettle
+          unit_of_measurement: Вт
+          state: >
+            {{ states('sensor.0xa4c1385bcf7d00c9_power') | float(0) }}
+        - name: phase_l3_lr_light_2
+          unique_id: phase_l3_lr_light_2
+          unit_of_measurement: Вт
+          state: >
+            {{ states('light.yeelight_ceiling4_0x4a1dacd') | float(0) }}
+        - name: phase_l3_bt_boiler
+          unique_id: phase_l3_bt_boiler
+          unit_of_measurement: Вт
+          state: >
+            {{ states('sensor.0x00158d0003584401_power') | float(0) }}
+        - name: phase_l3_kn_tv
+          unique_id: phase_l3_kn_tv
+          unit_of_measurement: Вт
+          state: >
+            {{ states('sensor.0x00158d0001291d12_power') | float(0) }}
+        - name: phase_l3_bt_socket
+          unique_id: phase_l3_bt_socket
+          unit_of_measurement: Вт
+          state: >
+            {{ states('sensor.0x540f57fffe78ba20_power') | float(0) }}
+        - name: phase_l3_lr_tv_xiaomi
+          unique_id: phase_l3_lr_tv_xiaomi
+          unit_of_measurement: Вт
+          state: >
+            {{ states('sensor.0xa4c1384452a34172_power') | float(0) }}
+        - name: phase_l3_ln_washmachine
+          unique_id: phase_l3_ln_washmachine
+          unit_of_measurement: Вт
+          state: >
+            {{ states('sensor.0x842e14fffe51c5ae_power') | float(0) }}
+        - name: phase_l3_ln_charge_240
+          unique_id: phase_l3_ln_charge_240
+          unit_of_measurement: Вт
+          state: >
+            {{ states('sensor.0xa4c1388c89a46970_power') | float(0) }}
+        ## BRANCH RESIDUAL SENSORS
+        ## PHASE L3
+        - name: phase_l3_lr_tv_rack
+          unique_id: phase_l3_lr_tv_rack
+          unit_of_measurement: Вт
+          state: >
+            {{
+              [
+                states('sensor.0xa4c1382600c57620_power') | float(0) -
+                (
+                  states('sensor.phase_l3_lr_tv_xiaomi') | float(0)
+                ),
+                0
+              ] | max
+            }}
+        ## SUMMARY SENSORS
+        - name: phase_l1_identified_power
+          unique_id: phase_l1_identified_power
+          unit_of_measurement: Вт
+          state: >
+            {{
+              states('sensor.phase_l1_bt_light_calc') | float(0) +
+              states('sensor.phase_l1_da_prana') | float(0) +
+              states('sensor.phase_l1_da_wled') | float(0) +
+              states('sensor.phase_l1_da_light_calc') | float(0) +
+              states('sensor.phase_l1_br_light_calc') | float(0) +
+              states('sensor.phase_l1_br_wled') | float(0) +
+              states('sensor.phase_l1_br_tv_rack') | float(0) +
+              states('sensor.phase_l1_tt_light_calc') | float(0) +
+              states('sensor.phase_l1_tt_fan_calc') | float(0)
+            }}
+        - name: phase_l1_unidentified_power
+          unique_id: phase_l1_unidentified_power
+          unit_of_measurement: Вт
+          state: >
+            {{
+              [
+                states('sensor.deye_sun15_load_l1_power') | float(0) -
+                states('sensor.phase_l1_identified_power') | float(0),
+                0
+              ] | max
+            }}
+        - name: phase_l2_identified_power
+          unique_id: phase_l2_identified_power
+          unit_of_measurement: Вт
+          state: >
+            {{
+              states('sensor.phase_l2_kn_boiler') | float(0)
+            }}
+        - name: phase_l2_unidentified_power
+          unique_id: phase_l2_unidentified_power
+          unit_of_measurement: Вт
+          state: >
+            {{
+              [
+                states('sensor.deye_sun15_load_l2_power') | float(0) -
+                states('sensor.phase_l2_identified_power') | float(0),
+                0
+              ] | max
+            }}
+        - name: phase_l3_identified_power
+          unique_id: phase_l3_identified_power
+          unit_of_measurement: Вт
+          state: >
+            {{
+              states('sensor.phase_l3_lr_tv_rack') | float(0) +
+              states('sensor.phase_l3_lr_desktop') | float(0) +
+              states('sensor.phase_l3_kn_fridge') | float(0) +
+              states('sensor.phase_l3_kn_microwave') | float(0) +
+              states('sensor.phase_l3_kn_airgrill') | float(0) +
+              states('sensor.phase_l3_kn_kettle') | float(0) +
+              states('sensor.phase_l3_cr_light_calc') | float(0) +
+              states('sensor.phase_l3_lr_light_1_calc') | float(0) +
+              states('sensor.phase_l3_lr_light_2') | float(0) +
+              states('sensor.phase_l3_en_light_calc') | float(0) +
+              states('sensor.phase_l3_bt_boiler') | float(0) +
+              states('sensor.phase_l3_kn_tv') | float(0) +
+              states('sensor.phase_l3_bt_socket') | float(0) +
+              states('sensor.phase_l3_lr_tv_xiaomi') | float(0) +
+              states('sensor.phase_l3_ln_washmachine') | float(0) +
+              states('sensor.phase_l3_ln_charge_240') | float(0)
+            }}
+        - name: phase_l3_unidentified_power
+          unique_id: phase_l3_unidentified_power
+          unit_of_measurement: Вт
+          state: >
+            {{
+              [
+                states('sensor.deye_sun15_load_l3_power') | float(0) -
+                states('sensor.phase_l3_identified_power') | float(0),
+                0
+              ] | max
+            }}
+        - name: phase_total_input_power
+          unique_id: phase_total_input_power
+          unit_of_measurement: Вт
+          state: >
+            {{
+              states('sensor.deye_sun15_load_l1_power') | float(0) +
+              states('sensor.deye_sun15_load_l2_power') | float(0) +
+              states('sensor.deye_sun15_load_l3_power') | float(0)
+            }}
+        - name: phase_total_identified_power
+          unique_id: phase_total_identified_power
+          unit_of_measurement: Вт
+          state: >
+            {{
+              states('sensor.phase_l1_identified_power') | float(0) +
+              states('sensor.phase_l2_identified_power') | float(0) +
+              states('sensor.phase_l3_identified_power') | float(0)
+            }}
+        - name: phase_total_unidentified_power
+          unique_id: phase_total_unidentified_power
+          unit_of_measurement: Вт
+          state: >
+            {{
+              states('sensor.phase_l1_unidentified_power') | float(0) +
+              states('sensor.phase_l2_unidentified_power') | float(0) +
+              states('sensor.phase_l3_unidentified_power') | float(0)
+            }}

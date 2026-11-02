@@ -49,9 +49,9 @@ sections:
           - type: custom:mushroom-template-card
             primary: Навантаження
             secondary: |-
-              {{ states('sensor.deye_sun15_load_power') }} W
+              {{ states('sensor.deye_sun15_load_consumption_power') }} W
             layout: vertical
-            entity: sensor.deye_sun15_load_power
+            entity: sensor.deye_sun15_load_consumption_power
             icon: mdi:home-lightning-bolt
             icon_color: amber
 
@@ -94,7 +94,7 @@ sections:
         entities:
 
           - type: custom:multiple-entity-row
-            entity: sensor.deye_sun15_load_l1_power
+            entity: sensor.deye_sun15_load_consumption_l1_power
             name: Фаза 1
             state_header: Потужність
             entities:
@@ -102,7 +102,7 @@ sections:
                 name: Напруга
 
           - type: custom:multiple-entity-row
-            entity: sensor.deye_sun15_load_l2_power
+            entity: sensor.deye_sun15_load_consumption_l2_power
             name: Фаза 2
             state_header: Потужність
             entities:
@@ -110,12 +110,117 @@ sections:
                 name: Напруга
 
           - type: custom:multiple-entity-row
-            entity: sensor.deye_sun15_load_l3_power
+            entity: sensor.deye_sun15_load_consumption_l3_power
             name: Фаза 3
             state_header: Потужність
             entities:
               - entity: sensor.deye_sun15_load_l3_voltage
                 name: Напруга
+                
+                
+      - type: markdown
+        content: >
+          ### Humsienk
+
+      - type: entities
+        entities:
+
+          - type: custom:multiple-entity-row
+            entity: sensor.hs030502ba25470255_battery
+            name: Аккумулятор
+            state_header: Рівень заряду
+            entities:
+              - entity: sensor.hs030502ba25470255_stored_energy
+                name: Залишок енергії
+              - entity: sensor.hs030502ba25470255_runtime
+                name: Вистачить
+                
+          - type: custom:multiple-entity-row
+            entity: sensor.hs030502ba25470255_power
+            name: Стан
+            state_header: Потужність
+            entities:
+              - entity: sensor.hs030502ba25470255_voltage
+                name: Напруга
+              - entity: sensor.hs030502ba25470255_current
+                name: Струм
+
+          - type: custom:multiple-entity-row
+            entity: sensor.hs030502ba25470255_temperature
+            name: Комірки
+            state_header: Температура
+            entities:
+              - entity: sensor.hs030502ba25470255_delta_cell_voltage
+                name: Дельта напруги
+
+          - type: custom:multiple-entity-row
+            entity: sensor.hs030502ba25470255_battery_health
+            name: Ресурс
+            icon: mdi:battery-heart-variant
+            state_header: Здоров'я
+            entities:
+              - entity: sensor.hs030502ba25470255_cycles
+                name: Цикли
+              - entity: sensor.hs030502ba25470255_design_capacity
+                name: Ємність
+
+          - type: divider
+
+          - type: custom:multiple-entity-row
+            entity: switch.0xa4c13810fef6ffff
+            name: Зарядка
+            icon: mdi:battery-charging
+            toggle: true
+            state_header: Розетка
+            entities:
+              - entity: binary_sensor.rack_charge_allowed
+                name: Дозвіл
+              - entity: input_boolean.rack_charge_low_battery
+                name: Дозаряд
+
+          - entity: input_boolean.rack_charge_mode
+            name: Режим зарядки
+
+      - type: custom:sunsynk-power-flow-card
+        cardstyle: compact
+        show_solar: false
+        show_grid: true
+        show_battery: true
+        show_loads: true
+
+        inverter:
+          modern: true
+          model: deye
+          autarky: none
+          three_phase: false
+
+        battery:
+          shutdown_soc: 10
+          # паспорт: 320 Ah x 12.8 V = 4096 Wh
+          energy: 4096
+          auto_scale: true
+          # Humsienk: "-" = розряд, картка чекає "+" = розряд
+          invert_power: true
+
+        load:
+          show_daily: false
+
+        entities:
+          grid_power_169: sensor.0xa4c13810fef6ffff_power
+          grid_ct_power_172: sensor.0xa4c13810fef6ffff_power
+          grid_connected_status_194: switch.0xa4c13810fef6ffff
+
+          battery_soc_184: sensor.hs030502ba25470255_battery
+          battery_power_190: sensor.hs030502ba25470255_power
+          battery_voltage_183: sensor.hs030502ba25470255_voltage
+          battery_current_191: sensor.hs030502ba25470255_current
+          battery_temp_182: sensor.hs030502ba25470255_temperature
+
+          load_power_172: sensor.rack_load_power
+          essential_power: sensor.rack_load_power
+          inverter_power_175: sensor.rack_load_power
+
+
 
 ############################ Колонка 2 ############################
   - type: grid
@@ -143,18 +248,18 @@ sections:
             display_state: one_way
             color_circle: true
           home:
-            entity: sensor.deye_sun15_load_power
+            entity: sensor.deye_sun15_load_consumption_power
             override_state: true
           individual:
-            - entity: sensor.deye_sun15_load_l1_power
+            - entity: sensor.deye_sun15_load_consumption_l1_power
               name: L1 out
               icon: mdi:power-socket-eu
               display_zero: true
-            - entity: sensor.deye_sun15_load_l2_power
+            - entity: sensor.deye_sun15_load_consumption_l2_power
               name: L2 out
               icon: mdi:power-socket-eu
               display_zero: true
-            - entity: sensor.deye_sun15_load_l3_power
+            - entity: sensor.deye_sun15_load_consumption_l3_power
               name: L3 out
               icon: mdi:power-socket-eu
               display_zero: true
@@ -188,12 +293,12 @@ sections:
           battery_voltage_183: sensor.deye_sun15_battery_voltage
           battery_current_191: sensor.deye_sun15_battery_current
 
-          load_power_172: sensor.deye_sun15_load_power
-          essential_power: sensor.deye_sun15_load_power
+          load_power_172: sensor.deye_sun15_load_consumption_power
+          essential_power: sensor.deye_sun15_load_consumption_power
 
-          load_power_L1: sensor.deye_sun15_load_l1_power
-          load_power_L2: sensor.deye_sun15_load_l2_power
-          load_power_L3: sensor.deye_sun15_load_l3_power
+          load_power_L1: sensor.deye_sun15_load_consumption_l1_power
+          load_power_L2: sensor.deye_sun15_load_consumption_l2_power
+          load_power_L3: sensor.deye_sun15_load_consumption_l3_power
 
           inverter_power_175: sensor.deye_sun15_internal_power
 
@@ -204,12 +309,12 @@ sections:
           - type: custom:mushroom-template-card
             primary: L1
             secondary: |-
-              {{ states('sensor.deye_sun15_load_l1_power') | float | round(0) }} Вт
+              {{ states('sensor.deye_sun15_load_consumption_l1_power') | float | round(0) }} Вт
             layout: vertical
-            entity: sensor.deye_sun15_load_l1_power
+            entity: sensor.deye_sun15_load_consumption_l1_power
             icon: mdi:lightning-bolt
             icon_color: |-
-              {% set p = states('sensor.deye_sun15_load_l1_power')|float %}
+              {% set p = states('sensor.deye_sun15_load_consumption_l1_power')|float %}
               {% if p < 100 %}
               green
               {% elif p < 300 %}
@@ -225,12 +330,12 @@ sections:
           - type: custom:mushroom-template-card
             primary: L2
             secondary: |-
-              {{ states('sensor.deye_sun15_load_l2_power') | float | round(0) }} Вт
+              {{ states('sensor.deye_sun15_load_consumption_l2_power') | float | round(0) }} Вт
             layout: vertical
-            entity: sensor.deye_sun15_load_l2_power
+            entity: sensor.deye_sun15_load_consumption_l2_power
             icon: mdi:lightning-bolt
             icon_color: |-
-              {% set p = states('sensor.deye_sun15_load_l2_power')|float %}
+              {% set p = states('sensor.deye_sun15_load_consumption_l2_power')|float %}
               {% if p < 100 %}
               green
               {% elif p < 300 %}
@@ -246,12 +351,12 @@ sections:
           - type: custom:mushroom-template-card
             primary: L3
             secondary: |-
-              {{ states('sensor.deye_sun15_load_l3_power') | float | round(0) }} Вт
+              {{ states('sensor.deye_sun15_load_consumption_l3_power') | float | round(0) }} Вт
             layout: vertical
-            entity: sensor.deye_sun15_load_l3_power
+            entity: sensor.deye_sun15_load_consumption_l3_power
             icon: mdi:lightning-bolt
             icon_color: |-
-              {% set p = states('sensor.deye_sun15_load_l3_power')|float %}
+              {% set p = states('sensor.deye_sun15_load_consumption_l3_power')|float %}
               {% if p < 100 %}
               green
               {% elif p < 300 %}
@@ -306,6 +411,37 @@ sections:
             icon_color: blue
             tap_action:
               action: more-info
+              
+      - type: markdown
+        content: >
+          ### K7 Deye
+
+      - type: entities
+        entities:
+
+          - type: custom:multiple-entity-row
+            entity: sensor.deye_station_battery_soc_4
+            name: 2 секція
+            state_header: Рівень заряду
+            entities:
+              - entity: sensor.deye_station_discharge_power_4
+                name: Потужність розряду
+                
+          - type: custom:multiple-entity-row
+            entity: sensor.deye_station_battery_soc_3
+            name: 4 секція
+            state_header: Рівень заряду
+            entities:
+              - entity: sensor.deye_station_discharge_power_3
+                name: Потужність розряду
+                
+          - type: custom:multiple-entity-row
+            entity: sensor.deye_station_battery_soc_2
+            name: 6 секція
+            state_header: Рівень заряду
+            entities:
+              - entity: sensor.deye_station_discharge_power_2
+                name: Потужність розряду
 
 ############################ Колонка 3 ############################
   - type: grid

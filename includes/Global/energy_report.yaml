@@ -1,0 +1,84 @@
+##################################################
+## Актуалізовано: 2026-05-29
+##################################################
+
+energy_report:
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    - id: energy_report_day_energy_reset
+      alias: energy_report_day_energy_reset
+      description: "Енергоспоживання - перехід на денний тариф"
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.energy_tariff
+          from: "on"
+          to: "off"
+      action:
+        - action: utility_meter.calibrate
+          target:
+            entity_id:
+              - sensor.phase_l3_kn_fridge_energy_meter
+              - sensor.phase_l3_lr_tv_rack_energy_meter
+            #   - sensor.kn_boiler_energy_meter
+            #   - sensor.bt_boiler_energy_meter
+          data:
+            value: 0
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_group_tech
+            message: |-
+              🌅 Енергія, витрачена у нічний час
+              🔌 Нічний зарядник Sonoff: {{ states('sensor.phase_l3_sonoff_invertor') }} КВт год
+              🔄 Скидання лічіильників енергії
+              🧊 Холодильник: {{ states('sensor.phase_l3_kn_fridge_energy_meter') }} КВт год
+              📺 Стійка з ТВ і ІТ: {{ states('sensor.phase_l3_lr_tv_rack_energy_meter') }} КВт год
+              Рівень заряду:
+              🔋 Humsienk 4 кВт: {{ states('sensor.hs030502ba25470255_battery') }}%
+              🕒 {{ now().strftime('%H:%M') }}
+      mode: single
+
+
+            #   🚿 Кухня, бойлер: {{ states('sensor.kn_boiler_energy_meter') }} КВт год
+            #   🛁 Ванна, бойлер: {{ states('sensor.bt_boiler_energy_meter') }} КВт год
+
+    - id: energy_report_day_energy_notify
+      alias: energy_report_day_energy_notify
+      description: "Енергоспоживання - перехід на нічний тариф"
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.energy_tariff
+          from: "off"
+          to: "on"
+      action:
+        - action: utility_meter.calibrate
+          target:
+            entity_id:
+              - sensor.phase_l3_sonoff_invertor
+          data:
+            value: 0
+
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_group_tech
+            message: |-
+              🌅 Енергія, витрачена у денний час
+              🧊 Холодильник: {{ states('sensor.phase_l3_kn_fridge_energy_meter') }} КВт год
+              📺 Стійка з ТВ і ІТ: {{ states('sensor.phase_l3_lr_tv_rack_energy_meter') }} КВт год
+              🔄 Скидання лічіильників енергії
+              🔌 Нічний зарядник Sonoff: {{ states('sensor.phase_l3_sonoff_invertor') }} КВт год   
+              Рівень заряду:
+              🔋 Humsienk 4 кВт: {{ states('sensor.hs030502ba25470255_battery') }}%
+              🕒 {{ now().strftime('%H:%M') }}
+
+      mode: single
+      
+      
+            #   🚿 Кухня, бойлер: {{ states('sensor.kn_boiler_energy_meter') }} КВт год
+            #   🛁 Ванна, бойлер: {{ states('sensor.bt_boiler_energy_meter') }} КВт год      

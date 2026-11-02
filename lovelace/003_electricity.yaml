@@ -187,22 +187,6 @@ sections:
           - entity: input_datetime.energy_tariff_night_end
 
 
-############################ Колонка 2 ############################
-  - type: grid
-    cards:
-
-      - type: markdown
-        content: >
-          ## Інвертор
-
-      - type: markdown
-        content: >
-          ### Внутрішнє живлення
-
-      - type: markdown
-        content: >
-          ### Потужність з інвертора - {{ states('sensor.deye_sun15_load_power') }} Вт
-
       - type: custom:mushroom-template-card
         primary: Сенсор внутрішнього живлення
         secondary: |-
@@ -446,114 +430,35 @@ sections:
           {% endif %}
 
 
-############################ Колонка 3 ############################
+############################ Колонка 2 ############################
+ 
   - type: grid
     cards:
 
       - type: markdown
         content: >
-          ## Зовнішня мережа
-
-      - type: markdown
-        content: >
           ### Фаза 1
 
-      - type: markdown
-        content: >
-          #### Потужність - {{ states('sensor.phase_1_power') }} Вт, напруга - {{ states('sensor.phase_1_voltage') }} В
+      - type: custom:mushroom-template-card
+        primary: |-
+          Потужність - {{ states('sensor.deye_sun15_load_l1_power') }} Вт
+        layout: horizontal
+        entity: sensor.deye_sun15_load_l1_power
+        icon_color: grey
+        icon: mdi:lightning-bolt
+        tap_action:
+          action: more-info
+          
+      - type: custom:mushroom-template-card
+        primary: |-
+          Напруга - {{ states('sensor.deye_sun15_load_l1_voltage') }} В
+        layout: horizontal
+        entity: sensor.deye_sun15_load_l1_voltage
+        icon_color: grey
+        icon: mdi:sine-wave
+        tap_action:
+          action: more-info
 
-      - type: custom:plotly-graph
-        hours_to_show: 24
-        refresh_interval: 10
-        entities:
-          - entity: sensor.phase_1_voltage
-            show_value: true
-            line:
-              width: 1
-              color: lightgreen
-
-      - type: custom:plotly-graph
-        hours_to_show: 24
-        refresh_interval: 10
-        entities:
-          - entity: sensor.phase_1_power
-            show_value: true
-            line:
-              width: 1
-              color: lightblue
-
-      - type: markdown
-        content: >
-          ### Фаза 2
-
-      - type: markdown
-        content: >
-          #### Потужність - {{ states('sensor.phase_2_power') }} Вт, напруга - {{ states('sensor.phase_2_voltage') }} В
-
-      - type: custom:plotly-graph
-        hours_to_show: 24
-        refresh_interval: 10
-        entities:
-          - entity: sensor.phase_2_voltage
-            show_value: true
-            line:
-              width: 1
-              color: lightgreen
-
-      - type: custom:plotly-graph
-        hours_to_show: 24
-        refresh_interval: 10
-        entities:
-          - entity: sensor.phase_2_power
-            show_value: true
-            line:
-              width: 1
-              color: lightblue
-
-      - type: markdown
-        content: >
-          ### Фаза 3
-
-      - type: markdown
-        content: >
-          #### Потужність - {{ states('sensor.phase_3_power') }} Вт, напруга - {{ states('sensor.phase_3_voltage') }} В
-
-      - type: custom:plotly-graph
-        hours_to_show: 24
-        refresh_interval: 10
-        entities:
-          - entity: sensor.phase_3_voltage
-            show_value: true
-            line:
-              width: 1
-              color: lightgreen
-
-      - type: custom:plotly-graph
-        hours_to_show: 24
-        refresh_interval: 10
-        entities:
-          - entity: sensor.phase_3_power
-            show_value: true
-            line:
-              width: 1
-              color: lightblue
-
-
-############################ Колонка 4 ############################
-  - type: grid
-    cards:
-
-      - type: markdown
-        content: >
-          ## Внутрішня мережа
-
-      - type: markdown
-        content: >
-          ### Фаза 1
-
-      - type: markdown
-        content: >
-          #### Потужність - {{ states('sensor.deye_sun15_load_l1_power') }} Вт, напруга - {{ states('sensor.deye_sun15_load_l1_voltage') }} В
 
       - type: custom:plotly-graph
         hours_to_show: 24
@@ -575,13 +480,67 @@ sections:
               width: 1
               color: lightblue
 
+      - type: custom:mushroom-template-card
+        primary: |-
+          Відомо - {{ states('sensor.phase_l1_identified_power') }} Вт
+        layout: horizontal
+        entity: sensor.phase_l1_identified_power
+        icon_color: grey
+        icon: mdi:flash-outline
+        tap_action:
+          action: more-info
+          
+      - type: custom:mushroom-template-card
+        primary: |-
+          Невідомо- {{ states('sensor.phase_l1_unidentified_power') }} Вт
+        layout: horizontal
+        entity: sensor.phase_l1_unidentified_power
+        icon_color: grey
+        icon: mdi:flash-alert
+        tap_action:
+          action: more-info
+
+      - type: custom:auto-entities
+        card:
+          type: entities
+          show_header_toggle: false
+        filter:
+          include:
+            - entity_id: sensor.phase_l1*
+              state: '> 1.0'
+          exclude:
+            - entity_id: sensor.phase_l1_identified_power
+            - entity_id: sensor.phase_l1_unidentified_power
+            - entity_id: sensor.phase_l1*energy_meter
+
+############################ Колонка 3 ############################
+ 
+  - type: grid
+    cards:
+
       - type: markdown
         content: >
           ### Фаза 2
 
-      - type: markdown
-        content: >
-          #### Потужність - {{ states('sensor.deye_sun15_load_l2_power') }} Вт, напруга - {{ states('sensor.deye_sun15_load_l2_voltage') }} В
+      - type: custom:mushroom-template-card
+        primary: |-
+          Потужність - {{ states('sensor.deye_sun15_load_l2_power') }} Вт
+        layout: horizontal
+        entity: sensor.deye_sun15_load_l2_power
+        icon_color: grey
+        icon: mdi:lightning-bolt
+        tap_action:
+          action: more-info
+          
+      - type: custom:mushroom-template-card
+        primary: |-
+          Напруга - {{ states('sensor.deye_sun15_load_l2_voltage') }} В
+        layout: horizontal
+        entity: sensor.deye_sun15_load_l2_voltage
+        icon_color: grey
+        icon: mdi:sine-wave
+        tap_action:
+          action: more-info
 
       - type: custom:plotly-graph
         hours_to_show: 24
@@ -603,13 +562,106 @@ sections:
               width: 1
               color: lightblue
 
+      - type: custom:mushroom-template-card
+        primary: |-
+          Відомо - {{ states('sensor.phase_l2_identified_power') }} Вт
+        layout: horizontal
+        entity: sensor.phase_l1_identified_power
+        icon_color: grey
+        icon: mdi:flash-outline
+        tap_action:
+          action: more-info
+          
+      - type: custom:mushroom-template-card
+        primary: |-
+          Невідомо- {{ states('sensor.phase_l2_unidentified_power') }} Вт
+        layout: horizontal
+        entity: sensor.phase_l1_unidentified_power
+        icon_color: grey
+        icon: mdi:flash-alert
+        tap_action:
+          action: more-info
+              
+      - type: custom:auto-entities
+        card:
+          type: entities
+          show_header_toggle: false
+        filter:
+          include:
+            - entity_id: sensor.phase_l2*
+              state: '> 1.0'
+          exclude:
+            - entity_id: sensor.phase_l2_identified_power
+            - entity_id: sensor.phase_l2_unidentified_power
+            - entity_id: sensor.phase_l2*energy_meter
+
+
+      - type: markdown
+        content: >
+          ### Нерозподілено
+          
+      - type: custom:auto-entities
+        card:
+          type: entities
+          show_header_toggle: false
+        filter:
+          include:
+            - entity_id: sensor.*power
+              state: '> 1.0'
+          exclude:
+            - entity_id: sensor.phase*
+            - entity_id: sensor.deye_sun15_*
+            - entity_id: sensor.river*
+            - entity_id: sensor.ps308g0011242300032c4copc*
+            - entity_id: sensor.total_enter_power
+            - entity_id: sensor.0xa4c138f41459f92a_power
+            - entity_id: sensor.0x70ac08fffe99c363_power
+            - entity_id: sensor.0x00158d0003f46bb6_power
+            - entity_id: sensor.0x00158d0001fa2934_power
+            - entity_id: sensor.0xa4c1382dc9fecb3e_power
+            - entity_id: sensor.0xa4c138716822e6a7_power
+            - entity_id: sensor.0xa4c1382600c57620_power
+            - entity_id: sensor.0x187a3efffe355cf1_power
+            - entity_id: sensor.0x187a3efffe303832_power
+            - entity_id: sensor.0x04cf8cdf3c764e0a_power
+            - entity_id: sensor.0xa4c138131a85d3ff_power
+            - entity_id: sensor.0xa4c138e22148db3a_power
+            - entity_id: sensor.0x60a423fffe7ff8c8_power
+            - entity_id: sensor.0x00158d0001291d12_power
+            - entity_id: sensor.0x540f57fffe78ba20_power
+            - entity_id: sensor.0xa4c1388c89a46970_power
+            - entity_id: sensor.0xa4c1385bcf7d00c9_power
+            - entity_id: sensor.0xa4c1388ce0ff53a8_power
+            - entity_id: sensor.0x00158d0003584401_power
+
+############################ Колонка 4 ############################
+ 
+  - type: grid
+    cards:
+
       - type: markdown
         content: >
           ### Фаза 3
 
-      - type: markdown
-        content: >
-          #### Потужність - {{ states('sensor.deye_sun15_load_l3_power') }} Вт, напруга - {{ states('sensor.deye_sun15_load_l3_voltage') }} В
+      - type: custom:mushroom-template-card
+        primary: |-
+          Потужність - {{ states('sensor.deye_sun15_load_l3_power') }} Вт
+        layout: horizontal
+        entity: sensor.deye_sun15_load_l1_power
+        icon_color: grey
+        icon: mdi:lightning-bolt
+        tap_action:
+          action: more-info
+          
+      - type: custom:mushroom-template-card
+        primary: |-
+          Напруга - {{ states('sensor.deye_sun15_load_l3_voltage') }} В
+        layout: horizontal
+        entity: sensor.deye_sun15_load_l1_voltage
+        icon_color: grey
+        icon: mdi:sine-wave
+        tap_action:
+          action: more-info
 
       - type: custom:plotly-graph
         hours_to_show: 24
@@ -630,3 +682,37 @@ sections:
             line:
               width: 1
               color: lightblue
+
+      - type: custom:mushroom-template-card
+        primary: |-
+          Відомо - {{ states('sensor.phase_l3_identified_power') }} Вт
+        layout: horizontal
+        entity: sensor.phase_l1_identified_power
+        icon_color: grey
+        icon: mdi:flash-outline
+        tap_action:
+          action: more-info
+          
+      - type: custom:mushroom-template-card
+        primary: |-
+          Невідомо- {{ states('sensor.phase_l3_unidentified_power') }} Вт
+        layout: horizontal
+        entity: sensor.phase_l1_unidentified_power
+        icon_color: grey
+        icon: mdi:flash-alert
+        tap_action:
+          action: more-info
+              
+      - type: custom:auto-entities
+        card:
+          type: entities
+          show_header_toggle: false
+        filter:
+          include:
+            - entity_id: sensor.phase_l3*
+              state: '> 1.0'
+          exclude:
+            - entity_id: sensor.phase_l3_identified_power
+            - entity_id: sensor.phase_l3_unidentified_power
+            - entity_id: sensor.phase_l3*energy_meter
+            

@@ -67,4 +67,33 @@ da_reboot:
             chat_id:
               - !secret chat_id_log
             message: |
-              {{"\U0001F916"}}  Детская А - перезагрузка зависшей WLED ленты {{ states('sensor.time_date') }}
+              {{"\U0001F916"}}  Дитяча - перезавантаження WLED {{ states('sensor.time_date') }}
+              
+              
+    - alias: da_reboot_prana
+      id: da_reboot_prana
+      description: Дитяча - включення розетки Prana
+      initial_state: true
+      trigger:
+        - platform: time_pattern
+          minutes: "/5"
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+        - condition: state
+          entity_id: switch.0x04cf8cdf3c764e0a
+          state: "off"
+        - condition: state
+          entity_id: binary_sensor.electricity_internal
+          state: "off"
+      action:
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0x04cf8cdf3c764e0a
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_log
+            message: |
+              {{"\U0001F916"}}  Дитяча - включення розетки Prana {{ states('sensor.time_date') }}

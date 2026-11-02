@@ -1,0 +1,62 @@
+##################################################
+## Актуалізовано: 2026-04-21
+##################################################
+
+kn_fridge:
+
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
+
+  homeassistant:
+    customize:
+
+      ##################################################
+      ## ХОЛОДИЛЬНИК
+      ##################################################
+
+      switch.0x00158d0001fa2934:
+        friendly_name: Кухня - холодильник живлення
+        icon: mdi:fridge
+
+      sensor.0x00158d0001fa2934_power:
+        friendly_name: Кухня - холодильник потужність
+        unit_of_measurement: W
+        device_class: power
+
+      sensor.0x00158d0001fa2934_energy:
+        friendly_name: Кухня - холодильник енергія
+        device_class: energy
+        unit_of_measurement: kWh
+        icon: mdi:chart-line
+        state_class: total_increasing
+
+      sensor.0x00158d0001fa2934_device_temperature:
+        friendly_name: Кухня - холодильник температура
+        icon: mdi:thermometer
+
+      sensor.phase_l3_kn_fridge_energy_meter:
+        friendly_name: Кухня - холодильник споживання (день)
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - sensor.0x00158d0001fa2934_power
+        - sensor.phase_l3_kn_fridge_energy_meter
+
+  ##################################################
+  ## UTILITY_METER
+  ##################################################
+
+  utility_meter:
+
+    phase_l3_kn_fridge_energy_meter:
+      source: sensor.0x00158d0001fa2934_energy
+      unique_id: phase_l3_kn_fridge_energy_meter

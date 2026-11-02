@@ -1,0 +1,69 @@
+##################################################
+## Актуалізовано: 2026-08-17
+##################################################
+
+en_ext_temp:
+
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
+
+  homeassistant:
+    customize:
+      automation.en_exit_external_temp:
+        friendly_name: Передпокій - передача зовнішньої температури і вологості
+        icon: mdi:home-thermometer
+
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - number.0xa4c13809b0d4ffff_external_temperature
+        - number.0xa4c13809b0d4ffff_external_humidity
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+
+  automation:
+
+    - alias: en_exit_external_temp
+      id: en_exit_external_temp
+      description: Передача зовнішньої температури і вологості
+      initial_state: true
+      triggers:
+        - trigger: state
+          entity_id:
+            - sensor.0x00158d0001a4b9da_temperature
+            - sensor.0x00158d0001a4b9da_humidity
+    
+      conditions:
+        - condition: template
+          value_template: >
+            {{ states('sensor.0x00158d0001a4b9da_temperature')
+               not in ['unknown', 'unavailable', 'none']
+               and
+               states('sensor.0x00158d0001a4b9da_humidity')
+               not in ['unknown', 'unavailable', 'none'] }}
+    
+      actions:
+        - action: number.set_value
+          target:
+            entity_id: number.0xa4c13809b0d4ffff_external_temperature
+          data:
+            value: >
+              {{ states('sensor.0x00158d0001a4b9da_temperature') | float | round(1) }}
+    
+        - action: number.set_value
+          target:
+            entity_id: number.0xa4c13809b0d4ffff_external_humidity
+          data:
+            value: >
+              {{ states('sensor.0x00158d0001a4b9da_humidity') | float | round(0) }}
+    
+      mode: restart

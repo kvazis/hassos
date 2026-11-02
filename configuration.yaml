@@ -30,11 +30,6 @@ scene: !include scenes.yaml
 tts:
   - platform: google_translate
   
-  - platform: reversotts
-    language: 'Alyona-Russian'
-    pitch: "100"
-    bitrate: "128k"
-
 panel_custom:
   - name: server_state
     sidebar_title: 'System'
@@ -46,35 +41,35 @@ panel_custom:
     config:
       ingress: core_configurator
       
-  - name: zigbee2mqtt_1
-    sidebar_title: 'Z2M 1 07'
-    sidebar_icon: mdi:zigbee
-    js_url: /api/hassio/app/entrypoint.js
-    url_path: 'hassio/ingress/8c77aaed_zigbee2mqtt'
-    embed_iframe: true
-    require_admin: true
-    config:
-      ingress: core_configurator
+#   - name: zigbee2mqtt_1
+#     sidebar_title: 'Z2M 1 07'
+#     sidebar_icon: mdi:zigbee
+#     js_url: /api/hassio/app/entrypoint.js
+#     url_path: 'hassio/ingress/8c77aaed_zigbee2mqtt'
+#     embed_iframe: true
+#     require_admin: true
+#     config:
+#       ingress: core_configurator
       
-  - name: zigbee2mqtt_2
-    sidebar_title: 'Z2M 2 77'
-    sidebar_icon: mdi:zigbee
-    js_url: /api/hassio/app/entrypoint.js
-    url_path: 'hassio/ingress/45df7312_zigbee2mqtt'
-    embed_iframe: true
-    require_admin: true
-    config:
-      ingress: core_configurator 
+#   - name: zigbee2mqtt_2
+#     sidebar_title: 'Z2M 2 77'
+#     sidebar_icon: mdi:zigbee
+#     js_url: /api/hassio/app/entrypoint.js
+#     url_path: 'hassio/ingress/45df7312_zigbee2mqtt'
+#     embed_iframe: true
+#     require_admin: true
+#     config:
+#       ingress: core_configurator 
       
-  - name: zigbee2mqtt_3
-    sidebar_title: 'Z2M 3 76'
-    sidebar_icon: mdi:zigbee
-    js_url: /api/hassio/app/entrypoint.js
-    url_path: 'hassio/ingress/997a5552_zigbee2mqtt'
-    embed_iframe: true
-    require_admin: true
-    config:
-      ingress: core_configurator 
+#   - name: zigbee2mqtt_3
+#     sidebar_title: 'Z2M 3 76'
+#     sidebar_icon: mdi:zigbee
+#     js_url: /api/hassio/app/entrypoint.js
+#     url_path: 'hassio/ingress/997a5552_zigbee2mqtt'
+#     embed_iframe: true
+#     require_admin: true
+#     config:
+#       ingress: core_configurator 
 
   - name: developer-tools
     sidebar_title: Dev Tools
@@ -113,7 +108,7 @@ lovelace:
       type: module    
     - url: /hacsfiles/lovelace-fold-entity-row/fold-entity-row.js    
       type: module  
-      
+   
       
   dashboards:
     home-dashboard:

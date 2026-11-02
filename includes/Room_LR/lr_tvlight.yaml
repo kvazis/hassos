@@ -83,6 +83,14 @@ lr_tvlight:
           entity_id: sensor.0x54ef4410004c1707_action
           to: "button_6_single"
 
+        ##################################################
+        ## SONOFF ORB НА СТІНІ БІЛЯ ВХОДУ
+        ##################################################
+
+        - platform: state
+          entity_id: sensor.0xa4c138100fc8ffff_action
+          to: "double_button_2"
+
       binary_sensor:
         - name: lr_light_tv_cinema
           unique_id: lr_light_tv_cinema
@@ -128,7 +136,7 @@ lr_tvlight:
                 - action: light.turn_off
                   target:
                     entity_id:
-                      - light.smart_desk_lamp
+                      - light.xiaomi_lamp31_4e0f_light
                       - light.yeelight_ceiling4_0x49c726b
                       - light.yeelight_ceiling4_0x4a1dacd
                       - light.0x54ef4410008e96fd_bottom

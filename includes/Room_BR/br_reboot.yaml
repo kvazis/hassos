@@ -57,6 +57,19 @@ br_reboot:
           delay_on:
             minutes: 3
           device_class: problem
+          
+
+        ##################################################
+        ## НЕДОСТУПНІСТЬ КАМЕРИ
+        ##################################################
+
+        - name: br_camera_unavailable
+          unique_id: br_camera_unavailable
+          state: >
+            {{ is_state('camera.e1_zoom_lan_fluent', 'unavailable') }}
+          delay_on:
+            minutes: 10
+          device_class: problem
 
   ##################################################
   ## INPUT_BUTTON
@@ -75,6 +88,12 @@ br_reboot:
 
     br_ceiling_reboot_attempts:
       name: br_ceiling_reboot_attempts
+      min: 0
+      max: 3
+      step: 1
+      
+    br_camera_reboot_attempts:
+      name: br_camera_reboot_attempts
       min: 0
       max: 3
       step: 1
@@ -244,3 +263,92 @@ br_reboot:
         - action: light.turn_off
           target:
             entity_id: light.br_philips_62
+            
+            
+    ##################################################
+    ## ПЕРЕЗАВАНТАЖЕННЯ КАМЕРИ
+    ##################################################
+
+    - alias: br_camera_reboot
+      id: br_camera_reboot
+      description: Перезавантаження недоступної камери
+      initial_state: true
+
+      trigger:
+        - platform: time_pattern
+          minutes: "/5"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+        - condition: state
+          entity_id: binary_sensor.br_camera_unavailable
+          state: "on"
+
+        - condition: state
+          entity_id: binary_sensor.blackout_after
+          state: "off"
+
+        - condition: template
+          value_template: "{{ states('input_number.br_camera_reboot_attempts') | int < 3 }}"
+
+      action:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.0x842e14fffefd9721_l4
+
+        - delay: "00:00:10"
+
+        - action: switch.turn_on
+          target:
+            entity_id: switch.0x842e14fffefd9721_l4
+
+        - action: input_number.increment
+          target:
+            entity_id: input_number.br_camera_reboot_attempts
+
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_log
+            message: |
+              🤖 Спальня - перезавантаження камери (спроба {{ states('input_number.br_camera_reboot_attempts') | int }} з 3) {{ states('sensor.time_date') }}
+              
+    ##################################################
+    ## СКИДАННЯ СПРОБ ПЕРЕЗАВАНТАЖЕННЯ ЛЮСТРИ
+    ##################################################
+
+    - alias: br_camera_reboot_attempts_reset
+      id: br_camera_reboot_attempts_reset
+      description: Скидання спроб перезавантаження камери
+      initial_state: true
+
+      trigger:
+        - platform: state
+          entity_id: binary_sensor.br_camera_unavailable
+          from: "on"
+          to: "off"
+
+      condition:
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+
+        - condition: template
+          value_template: "{{ states('input_number.br_camera_reboot_attempts') | int > 0 }}"
+
+      action:
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.br_camera_reboot_attempts
+          data:
+            value: 0
+
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_log
+            message: |
+              🤖 Спальня - Камера успішно відновила роботу, лічильник скинуто

@@ -215,10 +215,14 @@ power_outage:
                       🔴 4️⃣5️⃣6️⃣7️⃣
                       Електрика по вводу секцій 4-7 вимкнена о {{ states('sensor.time') }}
                       ⏳ Електрика була - {{ (days ~ 'д ' ) if days > 0 else '' }}{{ '%02d:%02d:%02d'|format(h,m,s) }}
+                      🔋 Заряд інвертора секцій 3-5 - {{ states('sensor.deye_station_battery_soc_3') }} %                      
+                      🔋 Заряд інвертора секцій 6-7 - {{ states('sensor.deye_station_battery_soc_2') }} %       
                       {%- else -%}
                       🔴 4️⃣5️⃣6️⃣7️⃣
                       Електрика по вводу секцій 4-7 вимкнена о {{ states('sensor.time') }}
                       ⏳ Електрика була - н/д
+                      🔋 Заряд інвертора секцій 3-5 - {{ states('sensor.deye_station_battery_soc_3') }} %                      
+                      🔋 Заряд інвертора секцій 6-7 - {{ states('sensor.deye_station_battery_soc_2') }} %       
                       {%- endif -%}
 
             - conditions:
@@ -248,11 +252,15 @@ power_outage:
                       Електрика по вводу секцій 4-7 відновлена о {{ states('sensor.time') }}
                       ⚡ Напруга - Фаза 1 - {{ states('sensor.deye_sun15_grid_l1_voltage') }} В, Фаза 2 - {{ states('sensor.deye_sun15_grid_l2_voltage') }} В, Фаза 3 - {{ states('sensor.deye_sun15_grid_l3_voltage') }} В
                       ⏳ Не було електрики - {{ (days ~ 'д ' ) if days > 0 else '' }}{{ '%02d:%02d:%02d'|format(h,m,s) }}
+                      🔋 Заряд інвертора секцій 3-5 - {{ states('sensor.deye_station_battery_soc_3') }} %                      
+                      🔋 Заряд інвертора секцій 6-7 - {{ states('sensor.deye_station_battery_soc_2') }} %                         
                       {%- else -%}
                       🟢 4️⃣5️⃣6️⃣7️⃣
                       Електрика по вводу секцій 4-7 відновлена о {{ states('sensor.time') }}
                       ⚡ Напруга - Фаза 1 - {{ states('sensor.deye_sun15_grid_l1_voltage') }} В, Фаза 2 - {{ states('sensor.deye_sun15_grid_l2_voltage') }} В, Фаза 3 - {{ states('sensor.deye_sun15_grid_l3_voltage') }} В
                       ⏳ Не було електрики - н/д
+                      🔋 Заряд інвертора секцій 3-5 - {{ states('sensor.deye_station_battery_soc_3') }} %                      
+                      🔋 Заряд інвертора секцій 6-7 - {{ states('sensor.deye_station_battery_soc_2') }} %    
                       {%- endif -%}
 
     ##################################################
@@ -320,11 +328,11 @@ power_outage:
               ✅ Електрика була: {{ on_h1 }}г {{ '%02d'|format(on_mm1) }}хв
               ❌ Без електрики: {{ off_h1 }}г {{ '%02d'|format(off_mm1) }}хв
 
-              {% if diff > 30 %}
+            #   {% if diff > 30 %}
 
-              🔺3️⃣ (часткове)
-              ✅ Електрика була: {{ on_h3 }}г {{ '%02d'|format(on_mm3) }}хв
-              ❌ Без електрики: {{ off_h3 }}г {{ '%02d'|format(off_mm3) }}хв
-              📊 Відхилення від 1-3: {{ (diff // 60) }}г {{ '%02d'|format(diff % 60) }}хв
+            #   🔺3️⃣ (часткове)
+            #   ✅ Електрика була: {{ on_h3 }}г {{ '%02d'|format(on_mm3) }}хв
+            #   ❌ Без електрики: {{ off_h3 }}г {{ '%02d'|format(off_mm3) }}хв
+            #   📊 Відхилення від 1-3: {{ (diff // 60) }}г {{ '%02d'|format(diff % 60) }}хв
 
-              {% endif %}
+            #   {% endif %}

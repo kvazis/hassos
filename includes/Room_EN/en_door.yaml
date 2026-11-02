@@ -143,4 +143,4 @@ en_door:
                   target:
                     entity_id:
                       - input_button.reolink_411_ws_photo
-                      - input_button.mi_2k
+                      - input_button.e1_pro

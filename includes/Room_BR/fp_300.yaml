@@ -1,0 +1,12 @@
+fp_300:
+
+
+  recorder:
+    include:
+      entities:
+        - binary_sensor.0x54ef4410016561de_presence
+        - binary_sensor.0x54ef4410016561de_pir_detection
+        - sensor.0x54ef4410016561de_target_distance
+        - sensor.0x54ef4410016561de_illuminance
+        - sensor.0x54ef4410016561de_humidity
+        - sensor.0x54ef4410016561de_temperature

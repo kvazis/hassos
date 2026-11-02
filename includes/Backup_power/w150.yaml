@@ -1,0 +1,103 @@
+##################################################
+## Актуалізовано: 2026-09-10
+##################################################
+
+w150:
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - sensor.w150_battery_charge
+        - sensor.w150_input_current
+        - sensor.w150_input_voltage
+        - sensor.w150_output_current
+        - sensor.w150_output_voltage
+        - sensor.w150_battery_temperature
+        - sensor.w150_battery_current
+        - sensor.w150_battery_voltage
+        - sensor.w150_input_power
+        - sensor.w150_output_power
+        - sensor.w150_battery_power
+        - binary_sensor.w150_external_power
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+  
+    - binary_sensor:
+        - name: w150_external_power
+          unique_id: w150_external_power
+          device_class: power
+          icon: >
+            {% if is_state('binary_sensor.w150_external_power', 'on') %}
+              mdi:power-plug
+            {% else %}
+              mdi:battery
+            {% endif %}
+          availability: >
+            {{ has_value('sensor.w150_input_voltage') }}
+          state: >
+            {{ states('sensor.w150_input_voltage') | float(0) > 5 }}
+          delay_on:
+            seconds: 3
+          delay_off:
+            seconds: 3  
+  
+    - sensor:
+
+        - name: w150_input_power
+          unique_id: w150_input_power
+          icon: mdi:transmission-tower-import
+          unit_of_measurement: "W"
+          device_class: power
+          state_class: measurement
+          availability: >
+            {{ has_value('sensor.w150_input_voltage')
+               and has_value('sensor.w150_input_current') }}
+          state: >
+            {% set voltage = states('sensor.w150_input_voltage') | float(0) %}
+            {% set current = states('sensor.w150_input_current') | float(0) %}
+            {% set factor = 0.001
+               if state_attr('sensor.w150_input_current', 'unit_of_measurement') == 'mA'
+               else 1 %}
+            {{ (voltage * current * factor) | round(2) }}
+
+        - name: w150_output_power
+          unique_id: w150_output_power
+          icon: mdi:transmission-tower-export
+          unit_of_measurement: "W"
+          device_class: power
+          state_class: measurement
+          availability: >
+            {{ has_value('sensor.w150_output_voltage')
+               and has_value('sensor.w150_output_current') }}
+          state: >
+            {% set voltage = states('sensor.w150_output_voltage') | float(0) %}
+            {% set current = states('sensor.w150_output_current') | float(0) %}
+            {% set factor = 0.001
+               if state_attr('sensor.w150_output_current', 'unit_of_measurement') == 'mA'
+               else 1 %}
+            {{ (voltage * current * factor) | round(2) }}
+
+        - name: w150_battery_power
+          unique_id: w150_battery_power
+          icon: mdi:battery-charging
+          unit_of_measurement: "W"
+          device_class: power
+          state_class: measurement
+          availability: >
+            {{ has_value('sensor.w150_battery_voltage')
+               and has_value('sensor.w150_battery_current') }}
+          state: >
+            {% set voltage = states('sensor.w150_battery_voltage') | float(0) %}
+            {% set current = states('sensor.w150_battery_current') | float(0) %}
+            {% set factor = 0.001
+               if state_attr('sensor.w150_battery_current', 'unit_of_measurement') == 'mA'
+               else 1 %}
+            {{ (voltage * current * factor) | round(2) }}

@@ -59,6 +59,18 @@ kn_sensors:
 
       sensor.0x00158d0001a99562_battery:
         friendly_name: Кухня - вікно батарея
+        
+      sensor.kn_co2_carbon_dioxide:
+        friendly_name: Кухня - Sonoff CO2
+
+      sensor.kn_co2_temperature:
+        friendly_name: Кухня - Sonoff температура
+
+      sensor.kn_co2_humidity:
+        friendly_name: Кухня - Sonoff вологість
+        
+      sensor.kn_co2_air_quality:
+        friendly_name: Кухня - Sonoff якісь повітря
 
       ##################################################
       ## РОСЛИНИ
@@ -146,7 +158,10 @@ kn_sensors:
         - sensor.0x00158d0001581109_humidity
         - sensor.0xa4c1381ff5d0e03f_humidity
         - sensor.0xa4c1381ff5d0e03f_temperature
-
+        - sensor.kn_co2_carbon_dioxide
+        - sensor.kn_co2_temperature
+        - sensor.kn_co2_humidity
+        - sensor.kn_co2_air_quality
   ##################################################
   ## TEMPLATE
   ##################################################

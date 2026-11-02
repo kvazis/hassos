@@ -1,5 +1,5 @@
 ##################################################
-## Актуалізовано: 2026-03-25
+## Актуалізовано: 2026-10-24
 ##################################################
 
 bt_light:
@@ -19,25 +19,13 @@ bt_light:
         friendly_name: Ванна світло - увімкнення 100%
         icon: mdi:brightness-7
 
-      automation.bt_light_switching_switch:
-        friendly_name: Ванна світло - контроль вимикача
-        icon: mdi:light-switch
-
-      automation.bt_light_switching:
-        friendly_name: Ванна світло - аварійне увімкнення
-        icon: mdi:alert
-
-      automation.bt_light_switching_back:
-        friendly_name: Ванна світло - повернення основного
-        icon: mdi:restore
-
       automation.bt_light_off:
         friendly_name: Ванна світло - вимкнення
         icon: mdi:lightbulb-off
 
-      automation.bt_blackout_light_off:
-        friendly_name: Ванна світло - вимкнення аварійного
-        icon: mdi:power
+      binary_sensor.bt_light_active:
+        friendly_name: Ванна - світло активне
+        icon: mdi:lightbulb-on
 
       binary_sensor.bt_light_day_open_door:
         friendly_name: Ванна - світло без руху день двері відкриті
@@ -51,10 +39,6 @@ bt_light:
         friendly_name: Ванна - світло без руху двері закриті
         icon: mdi:door-closed
 
-      binary_sensor.bt_blackout_light:
-        friendly_name: Ванна - аварійне світло без руху
-        icon: mdi:alert
-
   ##################################################
   ## TEMPLATE
   ##################################################
@@ -64,13 +48,25 @@ bt_light:
     - binary_sensor:
 
 ##################################################
+## СВІТЛО АКТИВНЕ
+##################################################
+
+        - name: bt_light_active
+          unique_id: bt_light_active
+          state: >
+            {{ is_state('light.yeelight_ceiling3_0x45727f2', 'on')
+               or is_state('light.0xa4c13861cd14a054', 'on')
+            }}
+          device_class: light
+
+##################################################
 ## ДЕНЬ ДВЕРІ ВІДКРИТІ
 ##################################################
 
         - name: bt_light_day_open_door
           unique_id: bt_light_day_open_door
           state: >
-            {{ is_state('light.yeelight_ceiling3_0x45727f2', 'on')  
+            {{ is_state('binary_sensor.bt_light_active', 'on')
                and is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'off')
                and is_state('binary_sensor.0xa4c138a9cf8e75ef_presence', 'off')
                and is_state('binary_sensor.0x00158d00054495dc_contact', 'on')
@@ -84,14 +80,16 @@ bt_light:
 ##################################################
 
         - name: bt_light_night_open_door
-          unique_id: bt_night_day_open_door
+          unique_id: bt_light_night_open_door
           state: >
-            {{ is_state('light.yeelight_ceiling3_0x45727f2', 'on')  
+            {{ is_state('binary_sensor.bt_light_active', 'on')
                and is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'off')
                and is_state('binary_sensor.0xa4c138a9cf8e75ef_presence', 'off')
                and is_state('binary_sensor.0x00158d00054495dc_contact', 'on')
                and is_state('binary_sensor.night_time', 'on')
             }}
+          # Затримка, щоб світло, увімкнене кнопкою до входу, не гасло миттєво
+          delay_on: 00:00:20
           device_class: light
 
 ##################################################
@@ -101,27 +99,13 @@ bt_light:
         - name: bt_light_closed_door
           unique_id: bt_light_closed_door
           state: >
-            {{ is_state('light.yeelight_ceiling3_0x45727f2', 'on')  
+            {{ is_state('binary_sensor.bt_light_active', 'on')
                and is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'off')
                and is_state('binary_sensor.0xa4c138a9cf8e75ef_presence', 'off')
                and is_state('binary_sensor.0x00158d00054495dc_contact', 'off')
             }}
           delay_on: 00:15:00
           device_class: light
-
-##################################################
-## АВАРІЙНЕ СВІТЛО
-##################################################
-
-        - name: bt_blackout_light
-          unique_id: bt_blackout_light
-          state: >
-            {{ is_state('light.0xa4c13861cd14a054', 'on')  
-               and is_state('binary_sensor.0x00158d0001e547a3_occupancy', 'off')
-               and is_state('binary_sensor.0xa4c138a9cf8e75ef_presence', 'off')
-            }}
-          device_class: light
-          delay_on: 00:01:00
 
   ##################################################
   ## AUTOMATION
@@ -131,87 +115,102 @@ bt_light:
 
 ##################################################
 ## УВІМКНЕННЯ СВІТЛА
+## Датчики — тільки з 07:00 до 22:00, кнопки — завжди
 ##################################################
 
     - alias: bt_light_on
       id: bt_light_on
-      description: Увімкнення світла у ванній
+      description: Увімкнення світла у ванній (22:00–07:00 — тільки вручну)
       initial_state: true
       trigger:
 
         - platform: state
           entity_id: binary_sensor.0xa4c138a9cf8e75ef_presence
           to: 'on'
+          id: sensor
 
         - platform: state
           entity_id: binary_sensor.0x00158d0001e547a3_occupancy
           to: 'on'
+          id: sensor
 
         - platform: state
           entity_id: sensor.0x00158d000a8244b4_action
           to: 'single_right'
+          id: button
 
         - platform: state
           entity_id: sensor.0x00158d0003d50723_action
           to: 'single_left'
+          id: button
 
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
           to: 'button_5_triple'
+          id: button
 
         - platform: state
           entity_id: sensor.0x54ef4410004c1706_action
           to: 'button_3_single'
+          id: button
 
       condition:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
 
+        - condition: state
+          entity_id: binary_sensor.bt_light_active
+          state: 'off'
+
+        - condition: or
+          conditions:
+            - condition: trigger
+              id: button
+            - condition: time
+              after: '07:00:00'
+              before: '22:00:00'
+
       action:
         - choose:
 
             - conditions:
-                - condition: state
-                  entity_id: light.yeelight_ceiling3_0x45727f2
-                  state: 'off'
                 - condition: state
                   entity_id: binary_sensor.night_time
                   state: 'off'
               sequence:
                 - action: light.turn_on
                   target:
-                    entity_id: light.yeelight_ceiling3_0x45727f2
+                    entity_id:
+                      - light.yeelight_ceiling3_0x45727f2
                   data:
                     brightness_pct: 100
                     color_temp_kelvin: 4000
 
+                - action: light.turn_on
+                  target:
+                    entity_id:
+                      - light.0xa4c13861cd14a054
+                  data:
+                    brightness_pct: 70
+
             - conditions:
-                - condition: state
-                  entity_id: light.yeelight_ceiling3_0x45727f2
-                  state: 'off'
                 - condition: state
                   entity_id: binary_sensor.night_time
                   state: 'on'
               sequence:
                 - action: light.turn_on
                   target:
-                    entity_id: light.yeelight_ceiling3_0x45727f2
+                    entity_id:
+                      - light.yeelight_ceiling3_0x45727f2
                   data:
                     brightness_pct: 70
                     color_temp_kelvin: 4000
 
-            - conditions:
-                - condition: state
-                  entity_id: light.yeelight_ceiling3_0x45727f2
-                  state: 'unavailable'
-                - condition: state
-                  entity_id: light.0xa4c13861cd14a054
-                  state: 'off'
-              sequence:
                 - action: light.turn_on
                   target:
-                    entity_id: light.0xa4c13861cd14a054
+                    entity_id:
+                      - light.0xa4c13861cd14a054
                   data:
                     brightness_pct: 50
 
@@ -224,6 +223,7 @@ bt_light:
       description: Увімкнення світла 100%
       initial_state: true
       trigger:
+
         - platform: state
           entity_id: sensor.0x00158d0003d50723_action
           to: 'double_left'
@@ -236,74 +236,18 @@ bt_light:
       action:
         - action: light.turn_on
           target:
-            entity_id: light.yeelight_ceiling3_0x45727f2
+            entity_id:
+              - light.yeelight_ceiling3_0x45727f2
           data:
             brightness_pct: 100
             color_temp_kelvin: 4000
 
-##################################################
-## АВАРІЙНЕ СВІТЛО
-##################################################
-
-    - alias: bt_light_switching
-      id: bt_light_switching
-      description: Перехід на аварійне освітлення
-      initial_state: true
-      trigger:
-        - platform: state
-          entity_id: binary_sensor.electricity_internal
-          from: 'off'
-          to: 'on'
-
-      condition:
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-        - condition: state
-          entity_id: light.yeelight_ceiling3_0x45727f2
-          state: 'on'
-
-      action:
         - action: light.turn_on
-          target:
-            entity_id: light.0xa4c13861cd14a054
-          data:
-            brightness_pct: 50
-
-##################################################
-## ПОВЕРНЕННЯ ОСНОВНОГО СВІТЛА
-##################################################
-
-    - alias: bt_light_switching_back
-      id: bt_light_switching_back
-      description: Повернення основного освітлення
-      initial_state: true
-      trigger:
-        - platform: state
-          entity_id: light.yeelight_ceiling3_0x45727f2
-          from: 'unavailable'
-          to: 'off'
-
-      condition:
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-        - condition: state
-          entity_id: light.0xa4c13861cd14a054
-          state: 'on'
-
-      action:
-        - action: light.turn_on
-          target:
-            entity_id: light.yeelight_ceiling3_0x45727f2
-          data:
-            brightness_pct: 100
-            color_temp_kelvin: 4000
-        - delay: 00:00:05
-        - action: light.turn_off
           target:
             entity_id:
               - light.0xa4c13861cd14a054
+          data:
+            brightness_pct: 100
 
 ##################################################
 ## ВИМКНЕННЯ СВІТЛА
@@ -347,8 +291,9 @@ bt_light:
         - condition: state
           entity_id: switch.control_mode
           state: 'on'
+
         - condition: state
-          entity_id: light.yeelight_ceiling3_0x45727f2
+          entity_id: binary_sensor.bt_light_active
           state: 'on'
 
       action:
@@ -356,47 +301,4 @@ bt_light:
           target:
             entity_id:
               - light.yeelight_ceiling3_0x45727f2
-
-##################################################
-## ВИМКНЕННЯ АВАРІЙНОГО
-##################################################
-
-    - alias: bt_blackout_light_off
-      id: bt_blackout_light_off
-      description: Вимкнення аварійного світла
-      initial_state: true
-      trigger:
-
-        - platform: state
-          entity_id: binary_sensor.bt_blackout_light
-          to: 'on'
-
-        - platform: state
-          entity_id: sensor.0x00158d000a8244b4_action
-          to: 'single_right'
-
-        - platform: state
-          entity_id: sensor.0x00158d0003d50723_action
-          to: 'single_left'
-
-        - platform: state
-          entity_id: sensor.0x54ef4410004c1707_action
-          to: 'button_5_triple'
-
-        - platform: state
-          entity_id: sensor.0x54ef4410004c1706_action
-          to: 'button_3_single'
-
-      condition:
-        - condition: state
-          entity_id: switch.control_mode
-          state: 'on'
-        - condition: state
-          entity_id: light.0xa4c13861cd14a054
-          state: 'on'
-
-      action:
-        - action: light.turn_off
-          target:
-            entity_id:
               - light.0xa4c13861cd14a054

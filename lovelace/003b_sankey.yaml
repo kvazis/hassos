@@ -1,0 +1,153 @@
+title: Phase power attribution
+path: phase_power_attribution
+icon: mdi:chart-sankey
+type: panel
+cards:
+  - type: custom:sankey-chart
+    title: Phase power attribution
+    layout: horizontal
+    wide: true
+    height: 420
+    show_names: true
+    show_icons: true
+    show_states: true
+    show_units: true
+    round: 1
+    min_box_size: 3
+    sections:
+      - entities:
+          - entity_id: sensor.deye_sun15_load_l1_power
+            color: '#f59e0b'
+            children:
+              - sensor.phase_l1_bt_light_calc
+              - sensor.phase_l1_da_prana
+              - sensor.phase_l1_da_wled
+              - sensor.phase_l1_da_light_calc
+              - sensor.phase_l1_br_light_calc
+              - sensor.phase_l1_br_wled
+              - sensor.phase_l1_br_tv_rack
+              - sensor.phase_l1_tt_light_calc
+              - sensor.phase_l1_tt_fan_calc
+              - phase_l1_other
+          - entity_id: sensor.deye_sun15_load_l2_power
+            color: '#0ea5e9'
+            children:
+              - sensor.phase_l2_kn_boiler
+              - phase_l2_other
+          - entity_id: sensor.deye_sun15_load_l3_power
+            color: '#22c55e'
+            children:
+              - sensor.phase_l3_lr_tv_rack
+              - sensor.phase_l3_lr_desktop
+              - sensor.phase_l3_kn_fridge
+              - sensor.phase_l3_kn_microwave
+              - sensor.phase_l3_kn_airgrill
+              - sensor.phase_l3_kn_kettle
+              - sensor.phase_l3_cr_light_calc
+              - sensor.phase_l3_lr_light_1_calc
+              - sensor.phase_l3_lr_light_2
+              - sensor.phase_l3_en_light_calc
+              - sensor.phase_l3_bt_boiler
+              - sensor.phase_l3_kn_tv
+              - sensor.phase_l3_bt_socket
+              - sensor.phase_l3_ln_washmachine
+              - sensor.phase_l3_ln_charge_240
+              - phase_l3_other
+      - entities:
+          - entity_id: phase_l1_other
+            type: remaining_parent_state
+            name: 'L1 unknown load'
+            icon: mdi:flash-alert
+            color: '#ef4444'
+          - entity_id: sensor.phase_l1_bt_light_calc
+            name: 'Ванна люстра'
+            color: '#f59e0b'
+          - entity_id: sensor.phase_l1_da_prana
+            name: 'Дитяча рекуператор'
+            color: '#f59e0b'
+          - entity_id: sensor.phase_l1_da_wled
+            name: 'Дитяча WLED'
+            color: '#f59e0b'
+          - entity_id: sensor.phase_l1_da_light_calc
+            name: 'Дитяча люстра'
+            color: '#f59e0b'
+          - entity_id: sensor.phase_l1_br_light_calc
+            name: 'Спальня люстра'
+            color: '#f59e0b'
+          - entity_id: sensor.phase_l1_br_wled
+            name: 'Спальня WLED шнур'
+            color: '#f59e0b'
+          - entity_id: sensor.phase_l1_br_tv_rack
+            name: 'Спальня подовжувач на ТВ'
+            color: '#f59e0b'
+          - entity_id: sensor.phase_l1_tt_light_calc
+            name: 'Туалет світло'
+            color: '#f59e0b'
+          - entity_id: sensor.phase_l1_tt_fan_calc
+            name: 'Туалет витяжка'
+            color: '#f59e0b'
+          - entity_id: phase_l2_other
+            type: remaining_parent_state
+            name: 'L2 unknown load'
+            icon: mdi:flash-alert
+            color: '#f97316'
+          - entity_id: sensor.phase_l2_kn_boiler
+            name: 'Кухня бойлер'
+            color: '#0ea5e9'
+          - entity_id: phase_l3_other
+            type: remaining_parent_state
+            name: 'L3 unknown load'
+            icon: mdi:flash-alert
+            color: '#e11d48'
+          - entity_id: sensor.phase_l3_lr_tv_rack
+            name: 'Вітальня стійка з ТВ'
+            icon: mdi:source-branch
+            color: '#16a34a'
+            children:
+              - sensor.phase_l3_lr_tv_xiaomi
+          - entity_id: sensor.phase_l3_lr_desktop
+            name: 'Вітальня робочий стіл'
+            color: '#22c55e'
+          - entity_id: sensor.phase_l3_kn_fridge
+            name: 'Кухня холодильник'
+            color: '#22c55e'
+          - entity_id: sensor.phase_l3_kn_microwave
+            name: 'Кухня мікрохвильовка'
+            color: '#22c55e'
+          - entity_id: sensor.phase_l3_kn_airgrill
+            name: 'Кухня аерогриль'
+            color: '#22c55e'
+          - entity_id: sensor.phase_l3_kn_kettle
+            name: 'Кухня чайник'
+            color: '#22c55e'
+          - entity_id: sensor.phase_l3_cr_light_calc
+            name: 'Коридор люстра'
+            color: '#22c55e'
+          - entity_id: sensor.phase_l3_lr_light_1_calc
+            name: 'Вітальня люстра 1'
+            color: '#22c55e'
+          - entity_id: sensor.phase_l3_lr_light_2
+            name: 'Вітальня люстра 2'
+            color: '#22c55e'
+          - entity_id: sensor.phase_l3_en_light_calc
+            name: 'Передпокій світло'
+            color: '#22c55e'
+          - entity_id: sensor.phase_l3_bt_boiler
+            name: 'Ванна бойлер'
+            color: '#22c55e'
+          - entity_id: sensor.phase_l3_kn_tv
+            name: 'Кухня телевізор'
+            color: '#22c55e'
+          - entity_id: sensor.phase_l3_bt_socket
+            name: 'Ванна розетка'
+            color: '#22c55e'
+          - entity_id: sensor.phase_l3_ln_washmachine
+            name: 'Пральна машина'
+            color: '#22c55e'
+          - entity_id: sensor.phase_l3_ln_charge_240
+            name: 'Вітальня зарядна станція комод'
+            color: '#22c55e'
+      - entities:
+          - entity_id: sensor.phase_l3_lr_tv_xiaomi
+            name: 'Вітальня телевізор'
+            color: '#86efac'

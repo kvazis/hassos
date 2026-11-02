@@ -179,6 +179,86 @@ sections:
             icon: mdi:water-percent
             tap_action:
               action: more-info
+      - type: markdown
+        content: >
+          ### Sonoff SAWF-08P
+      - type: grid
+        square: false
+        columns: 3
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Температура
+            secondary: |-
+              {{ states('sensor.kn_co2_temperature') }} С°
+            layout: vertical
+            entity: sensor.kn_co2_temperature
+            icon_color: |-
+              {% if states("sensor.kn_co2_temperature")|float <= -10 %}
+              indigo
+              {% elif states("sensor.kn_co2_temperature")|float <= 0 %}
+              blue
+              {% elif states("sensor.kn_co2_temperature")|float <= 10 %}
+              light-blue
+              {% elif states("sensor.kn_co2_temperature")|float <= 20 %}
+              cyan
+              {% elif states("sensor.kn_co2_temperature")|float <= 25 %}
+              yellow
+              {% elif states("sensor.kn_co2_temperature")|float <= 30 %}
+              amber
+              {% elif states("sensor.kn_co2_temperature")|float <= 40 %}
+              orange
+              {% endif %}
+            icon: mdi:temperature-celsius
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            primary: Вологість
+            secondary: |-
+              {{ states('sensor.kn_co2_humidity') }} %
+            layout: vertical
+            entity: sensor.kn_co2_humidity
+            icon_color: |-
+              {% if states("sensor.kn_co2_humidity")|float <= 30 %}
+              deep-orange
+              {% elif states("sensor.kn_co2_humidity")|float <= 40 %}
+              yellow
+              {% elif states("sensor.kn_co2_humidity")|float <= 50 %}
+              light-blue
+              {% elif states("sensor.kn_co2_humidity")|float <= 60 %}
+              blue
+              {% elif states("sensor.kn_co2_humidity")|float > 60 %}
+              indigo
+              {% endif %}
+            icon: mdi:water-percent
+            tap_action:
+              action: more-info
+
+          - type: custom:mushroom-template-card
+            primary: CO2
+            secondary: |-
+              {{ states('sensor.kn_co2_carbon_dioxide') }} ppm
+            layout: vertical
+            entity: sensor.kn_co2_carbon_dioxide
+            icon_color: |-
+              {% if states("sensor.kn_co2_carbon_dioxide")|float <= 500 %}
+              green
+              {% elif states("sensor.kn_co2_carbon_dioxide")|float <= 700 %}
+              light-green
+              {% elif states("sensor.kn_co2_carbon_dioxide")|float <= 800 %}
+              lime
+              {% elif states("sensor.kn_co2_carbon_dioxide")|float <= 1000 %}
+              yellow
+              {% elif states("sensor.kn_co2_carbon_dioxide")|float <= 1200 %}
+              orange
+              {% elif states("sensor.kn_co2_carbon_dioxide")|float > 1200 %}
+              red
+              {% endif %}
+            icon: mdi:molecule-co2
+            tap_action:
+              action: more-info
+
+
 
       - type: markdown
         content: >
@@ -273,7 +353,7 @@ sections:
               {% endif %}
 
           - type: custom:mushroom-climate-card
-            entity: climate.0x2c1165fffeb3e531
+            entity: climate.0xa4c13833d5060f8b
             hvac_modes:
               - heat
             show_temperature_control: true
@@ -288,26 +368,25 @@ sections:
         cards:
 
           - type: custom:mushroom-template-card
-            primary: Калібрування
+            primary: Синхронізація
             secondary: |-
-              {% if ((states('sensor.0x00158d0001581109_temperature') | float - state_attr('climate.0x2c1165fffeb3e531', 'current_temperature') | float))|round(1) > 1
-                 or ((states('sensor.0x00158d0001581109_temperature') | float - state_attr('climate.0x2c1165fffeb3e531', 'current_temperature') | float))|round(1) < -1 %}
-              Розбіжність > 1 С°
+              {% set m = states('sensor.0x00158d0001581109_temperature') | float(0) %}
+              {% set s = states('number.0xa4c13833d5060f8b_external_temperature_input') | float(0) %}
+              {% if (m - s) | abs > 0.5 %}
+              Розбіжність > 0.5 С°
               {% else %}
               ОК
               {% endif %}
             layout: vertical
             tap_action:
-              action: call-service
-              service: script.turn_on
-              service_data:
-                entity_id: script.kn_thermostat_calibration
-            entity: script.kn_thermostat_calibration
+              action: more-info
+            entity: automation.kn_heat_temperature_sync
             icon: mdi:sync
             multiline_secondary: true
             icon_color: |-
-              {% if ((states('sensor.0x00158d0001581109_temperature') | float - state_attr('climate.0x2c1165fffeb3e531', 'current_temperature') | float))|round(1) > 1
-                 or ((states('sensor.0x00158d0001581109_temperature') | float - state_attr('climate.0x2c1165fffeb3e531', 'current_temperature') | float))|round(1) < -1 %}
+              {% set m = states('sensor.0x00158d0001581109_temperature') | float(0) %}
+              {% set s = states('number.0xa4c13833d5060f8b_external_temperature_input') | float(0) %}
+              {% if (m - s) | abs > 0.5 %}
               amber
               {% else %}
               green
@@ -317,11 +396,11 @@ sections:
             primary: |-
               Датчик {{ states('sensor.0x00158d0001581109_temperature') }} С°
             secondary: |-
-              Головка - {{ state_attr('climate.0x2c1165fffeb3e531', 'current_temperature') }} С°
+              Надіслано {{ states('number.0xa4c13833d5060f8b_external_temperature_input') }} С°
             layout: vertical
             entity: sensor.0x00158d0001581109_temperature
             icon_color: |-
-              {% if is_state("switch.kn_thermostat_mode", "on") %}
+              {% if is_state("switch.kn_radiator_mode", "on") %}
               amber
               {% else %}
               grey
@@ -332,13 +411,13 @@ sections:
 
           - type: custom:mushroom-template-card
             primary: |-
-              Поправка {{ states('number.0x2c1165fffeb3e531_local_temperature_calibration') }} С°
+              Головка {{ states('sensor.0xa4c13833d5060f8b_local_temperature') }} С°
             secondary: |-
-              Різниця {{ ((states('sensor.0x00158d0001581109_temperature') | float - state_attr('climate.0x2c1165fffeb3e531', 'current_temperature') | float))|round(1) }} С°
+              Різниця {{ (states('sensor.0x00158d0001581109_temperature') | float(0) - states('sensor.0xa4c13833d5060f8b_local_temperature') | float(0)) | round(1) }} С°
             layout: vertical
-            entity: sensor.0x00158d0001581109_temperature
+            entity: sensor.0xa4c13833d5060f8b_local_temperature
             icon_color: |-
-              {% if is_state("switch.kn_thermostat_mode", "on") %}
+              {% if is_state("switch.kn_radiator_mode", "on") %}
               amber
               {% else %}
               grey
@@ -359,20 +438,23 @@ sections:
         show_header_toggle: false
         entities:
           - type: divider
-          - entity: number.0x2c1165fffeb3e531_comfort_temperature
+          - entity: input_number.kn_heat_comfort_temperature
             name: Цільова температура
           - type: divider
-          - entity: number.0x2c1165fffeb3e531_open_window_temperature
+          - entity: input_number.kn_heat_open_window_temperature
             name: Температура провітрювання
           - type: divider
-          - entity: number.0x2c1165fffeb3e531_eco_temperature
+          - entity: input_number.kn_heat_eco_temperature
             name: Нічна температура
           - type: divider
-          - entity: binary_sensor.0x2c1165fffeb3e531_battery_low
+          # перевірте entity_id батареї нової головки (Zigbee2MQTT зазвичай дає sensor.<id>_battery)
+          - entity: sensor.0xa4c13833d5060f8b_battery
             type: custom:multiple-entity-row
-            state_header: Батарея
+            name: Батарея
+            show_state: true
             entities:
-              - attribute: last_seen
+              - entity: climate.0xa4c13833d5060f8b
+                attribute: last_seen
                 format: relative
                 name: Відгук
 
@@ -398,234 +480,11 @@ sections:
             secondary_info: last-changed
             state_header: Живлення
             entities:
-              - entity: sensor.0xa4c1388ce0ff53a8_timer_manual
-                name: Таймер M
               - entity: sensor.0xa4c1388ce0ff53a8_power
                 name: Потужність
                 unit: 'Вт'
 
-      - type: conditional
-        conditions:
-          - entity: switch.0xa4c1388ce0ff53a8
-            state: "on"
-        card:
-          type: custom:timer-bar-card
-          entities:
-            - entity: timer.0xa4c1388ce0ff53a8
-              name: Залишилось -
-          modifications:
-            - elapsed: 30%
-              bar_foreground: yellow
-            - elapsed: 60%
-              bar_foreground: orange
-            - elapsed: 90%
-              bar_foreground: red
-          bar_height: 20px
-          sync_issues: ignore
-          invert: true
-
       - type: entities
         show_header_toggle: false
         entities:
-          - entity: input_datetime.0xa4c1388ce0ff53a8_period
-
-      - type: horizontal-stack
-        cards:
-
-          - type: custom:mushroom-template-card
-            layout: horizontal
-            entity: input_button.0xa4c1388ce0ff53a8_period_1
-            icon: mdi:numeric-1-circle
-            icon_color: grey
-            tap_action:
-              action: call-service
-              service: input_button.press
-              target:
-                entity_id: input_button.0xa4c1388ce0ff53a8_period_1
-
-          - type: custom:mushroom-template-card
-            layout: horizontal
-            entity: input_button.0xa4c1388ce0ff53a8_period_2
-            icon: mdi:numeric-2-circle
-            icon_color: grey
-            tap_action:
-              action: call-service
-              service: input_button.press
-              target:
-                entity_id: input_button.0xa4c1388ce0ff53a8_period_2
-
-          - type: custom:mushroom-template-card
-            layout: horizontal
-            entity: input_button.0xa4c1388ce0ff53a8_period_3
-            icon: mdi:numeric-3-circle
-            icon_color: grey
-            tap_action:
-              action: call-service
-              service: input_button.press
-              target:
-                entity_id: input_button.0xa4c1388ce0ff53a8_period_3
-
-          - type: custom:mushroom-template-card
-            layout: horizontal
-            entity: input_button.0xa4c1388ce0ff53a8_period_4
-            icon: mdi:numeric-4-circle
-            icon_color: grey
-            tap_action:
-              action: call-service
-              service: input_button.press
-              target:
-                entity_id: input_button.0xa4c1388ce0ff53a8_period_4
-
-          - type: custom:mushroom-template-card
-            layout: horizontal
-            entity: input_button.0xa4c1388ce0ff53a8_period_5
-            icon: mdi:numeric-5-circle
-            icon_color: grey
-            tap_action:
-              action: call-service
-              service: input_button.press
-              target:
-                entity_id: input_button.0xa4c1388ce0ff53a8_period_5
-
-      - type: entities
-        show_header_toggle: false
-        entities:
-          - entity: input_datetime.0xa4c1388ce0ff53a8_timer
-
-      - type: horizontal-stack
-        cards:
-
-          - type: custom:mushroom-template-card
-            layout: horizontal
-            entity: input_button.0xa4c1388ce0ff53a8_timer_1
-            icon: mdi:numeric-1-circle
-            icon_color: grey
-            tap_action:
-              action: call-service
-              service: input_button.press
-              target:
-                entity_id: input_button.0xa4c1388ce0ff53a8_timer_1
-
-          - type: custom:mushroom-template-card
-            layout: horizontal
-            entity: input_button.0xa4c1388ce0ff53a8_timer_2
-            icon: mdi:numeric-2-circle
-            icon_color: grey
-            tap_action:
-              action: call-service
-              service: input_button.press
-              target:
-                entity_id: input_button.0xa4c1388ce0ff53a8_timer_2
-
-          - type: custom:mushroom-template-card
-            layout: horizontal
-            entity: input_button.0xa4c1388ce0ff53a8_timer_3
-            icon: mdi:numeric-3-circle
-            icon_color: grey
-            tap_action:
-              action: call-service
-              service: input_button.press
-              target:
-                entity_id: input_button.0xa4c1388ce0ff53a8_timer_3
-
-          - type: custom:mushroom-template-card
-            layout: horizontal
-            entity: input_button.0xa4c1388ce0ff53a8_timer_4
-            icon: mdi:numeric-4-circle
-            icon_color: grey
-            tap_action:
-              action: call-service
-              service: input_button.press
-              target:
-                entity_id: input_button.0xa4c1388ce0ff53a8_timer_4
-
-          - type: custom:mushroom-template-card
-            layout: horizontal
-            entity: input_button.0xa4c1388ce0ff53a8_timer_5
-            icon: mdi:numeric-5-circle
-            icon_color: grey
-            tap_action:
-              action: call-service
-              service: input_button.press
-              target:
-                entity_id: input_button.0xa4c1388ce0ff53a8_timer_5
-
-          - type: custom:mushroom-template-card
-            layout: horizontal
-            entity: input_button.0xa4c1388ce0ff53a8_timer_manual
-            icon: mdi:alpha-m-circle-outline
-            icon_color: grey
-            tap_action:
-              action: call-service
-              service: input_button.press
-              target:
-                entity_id: input_button.0xa4c1388ce0ff53a8_timer_manual
-
-      - type: entities
-        show_header_toggle: false
-        entities:
-
-          - entity: switch.0xa4c1388ce0ff53a8_period_1_mode
-            type: custom:multiple-entity-row
-            toggle: true
-            state_color: true
-            name: Період 1
-            secondary_info: last-changed
-            state_header: Активність
-            entities:
-              - entity: sensor.0xa4c1388ce0ff53a8_timer_1
-                name: Таймер
-              - entity: sensor.0xa4c1388ce0ff53a8_period_1
-                name: Старт
-
-          - entity: switch.0xa4c1388ce0ff53a8_period_2_mode
-            type: custom:multiple-entity-row
-            toggle: true
-            state_color: true
-            name: Період 2
-            secondary_info: last-changed
-            state_header: Активність
-            entities:
-              - entity: sensor.0xa4c1388ce0ff53a8_timer_2
-                name: Таймер
-              - entity: sensor.0xa4c1388ce0ff53a8_period_2
-                name: Старт
-
-          - entity: switch.0xa4c1388ce0ff53a8_period_3_mode
-            type: custom:multiple-entity-row
-            toggle: true
-            state_color: true
-            name: Період 3
-            secondary_info: last-changed
-            state_header: Активність
-            entities:
-              - entity: sensor.0xa4c1388ce0ff53a8_timer_3
-                name: Таймер
-              - entity: sensor.0xa4c1388ce0ff53a8_period_3
-                name: Старт
-
-          - entity: switch.0xa4c1388ce0ff53a8_period_4_mode
-            type: custom:multiple-entity-row
-            toggle: true
-            state_color: true
-            name: Період 4
-            secondary_info: last-changed
-            state_header: Активність
-            entities:
-              - entity: sensor.0xa4c1388ce0ff53a8_timer_4
-                name: Таймер
-              - entity: sensor.0xa4c1388ce0ff53a8_period_4
-                name: Старт
-
-          - entity: switch.0xa4c1388ce0ff53a8_period_5_mode
-            type: custom:multiple-entity-row
-            toggle: true
-            state_color: true
-            name: Період 5
-            secondary_info: last-changed
-            state_header: Активність
-            entities:
-              - entity: sensor.0xa4c1388ce0ff53a8_timer_5
-                name: Таймер
-              - entity: sensor.0xa4c1388ce0ff53a8_period_5
-                name: Старт
+          - entity: sensor.kn_boiler_energy_meter

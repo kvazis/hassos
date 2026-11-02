@@ -101,42 +101,6 @@ kn_switch:
         friendly_name: Кухня - кавомашина напруга
 
       ##################################################
-      ## ХОЛОДИЛЬНИК
-      ##################################################
-
-      switch.0x00158d0001fa2934:
-        friendly_name: Кухня - холодильник живлення
-        icon: mdi:fridge
-
-      sensor.0x00158d0001fa2934_power:
-        friendly_name: Кухня - холодильник потужність
-        unit_of_measurement: W
-        device_class: power
-
-      sensor.0x00158d0001fa2934_energy:
-        friendly_name: Кухня - холодильник енергія
-        device_class: energy
-        unit_of_measurement: kWh
-        icon: mdi:chart-line
-        state_class: total_increasing
-
-      sensor.0x00158d0001fa2934_device_temperature:
-        friendly_name: Кухня - холодильник температура
-        icon: mdi:thermometer
-
-      sensor.kn_fridge_meter:
-        friendly_name: Кухня - холодильник споживання (година)
-        unit_of_measurement: kWh
-        state_class: total
-        device_class: energy
-
-      sensor.kn_fridge_max_energy_day:
-        friendly_name: Кухня - холодильник макс енергія (доба)
-
-      sensor.kn_fridge_max_power_day:
-        friendly_name: Кухня - холодильник макс потужність (доба)
-
-      ##################################################
       ## ШЛЮЗ
       ##################################################
 
@@ -168,12 +132,8 @@ kn_switch:
         - sensor.0xa4c138273b49e4d0_power
         - sensor.0xa4c1385bcf7d00c9_power
         - sensor.0xa4c13874f3d1d1c0_power
-        - sensor.0x00158d0001fa2934_power
         - sensor.0x00158d000114a1e1_power
         - sensor.0xa4c138201dcb67f6_power
-        - sensor.kn_fridge_meter
-        - sensor.kn_fridge_max_energy_day
-        - sensor.kn_fridge_max_power_day
 
   ##################################################
   ## MQTT
@@ -192,36 +152,3 @@ kn_switch:
         value_template: "{{ value_json.state }}"
         json_attributes_topic: "zigbee2mqtt_3/KN coffee machine"
         qos: 1
-
-  ##################################################
-  ## UTILITY_METER
-  ##################################################
-
-  utility_meter:
-
-    kn_fridge_meter:
-      source: sensor.0x00158d0001fa2934_energy
-      unique_id: kn_fridge_meter
-      cycle: hourly
-
-  ##################################################
-  ## SENSOR
-  ##################################################
-
-  sensor:
-
-    - platform: statistics
-      name: kn_fridge_max_energy_day
-      unique_id: kn_fridge_max_energy_day
-      entity_id: sensor.kn_fridge_meter
-      state_characteristic: value_max
-      max_age:
-        hours: 24
-
-    - platform: statistics
-      name: kn_fridge_max_power_day
-      unique_id: kn_fridge_max_power_day
-      entity_id: sensor.0x00158d0001fa2934_power
-      state_characteristic: value_max
-      max_age:
-        hours: 24

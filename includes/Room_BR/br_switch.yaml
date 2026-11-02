@@ -14,6 +14,37 @@ br_switch:
       switch.0xa4c1382dc9fecb3e:
         friendly_name: Спальня - датчик електрики живлення
 
+
+      switch.0xa4c138e22148db3a:
+        friendly_name: Спальня розетка під столом
+        icon: mdi:hvac
+      sensor.0xa4c138e22148db3a_power:
+        friendly_name: Спальня розетка під столом
+        icon: mdi:flash
+        unit_of_measurement: "Вт"
+        device_class: power
+      sensor.0xa4c138e22148db3a_energy:
+        friendly_name: Спальня розетка під столом
+        icon: mdi:chart-line
+      sensor.0xa4c138e22148db3a_voltage:
+        friendly_name: Спальня розетка під столом
+        icon: mdi:sine-wave
+        
+      switch.0x60a423fffe7ff8c8:
+        friendly_name: Спальня розетка на ТВ
+        icon: mdi:hvac
+      sensor.0x60a423fffe7ff8c8_power:
+        friendly_name: Спальня розетка на ТВ
+        icon: mdi:flash
+        unit_of_measurement: "Вт"
+        device_class: power
+      sensor.0x60a423fffe7ff8c8_energy:
+        friendly_name: Спальня розетка на ТВ
+        icon: mdi:chart-line
+      sensor.0x60a423fffe7ff8c8_voltage:
+        friendly_name: Спальня розетка на ТВ
+        icon: mdi:sine-wave
+
   ##################################################
   ## RECORDER
   ##################################################
@@ -22,3 +53,5 @@ br_switch:
     include:
       entities:
         - switch.0xa4c1382dc9fecb3e
+        
+        

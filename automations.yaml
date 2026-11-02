@@ -1,1 +1,63 @@
-[]
+- id: '1783014568650'
+  alias: 001_Conditionon
+  description: ''
+  triggers:
+  - trigger: window.closed
+    target:
+      area_id: gostinaia
+    options:
+      behavior: all
+  - trigger: door.closed
+    target:
+      entity_id: binary_sensor.0x00158d000445206b_contact
+    options:
+      behavior: each
+      for: 00:00:00
+  - trigger: temperature.crossed_threshold
+    target:
+      entity_id: sensor.0x00158d00015aebb6_temperature
+    options:
+      threshold:
+        type: above
+        value:
+          active_choice: number
+          number: 27
+          unit_of_measurement: °C
+  conditions:
+  - condition: window.is_closed
+    target:
+      area_id: gostinaia
+    options:
+      behavior: all
+  - condition: door.is_closed
+    target:
+      entity_id: binary_sensor.0x00158d000445206b_contact
+    options:
+      behavior: any
+      for: 00:00:00
+  - condition: temperature.is_value
+    target:
+      entity_id: sensor.0x00158d00015aebb6_temperature
+    options:
+      threshold:
+        type: above
+        value:
+          active_choice: number
+          number: 27
+          unit_of_measurement: °C
+  - condition: state
+    entity_id: binary_sensor.0x00158d00054496b0_contact
+    state:
+    - 'off'
+  actions:
+  - action: remote.send_command
+    metadata: {}
+    target:
+      device_id: 53470cb85b6905c44c96bd1f10b0740e
+    data:
+      num_repeats: 1
+      delay_secs: 0.4
+      hold_secs: 0
+      command:
+      - b64:JgCSAAABJpMVNhUSFRMUNxU2FTYVNxQTFRIVExUSFTYVExQTFRIVExQTFRMUExQTFRMUExUSFRMUExUSFRMUExU2FRMUNxQTFRMVNhQTFQACjhUTFBMVEhUTFDcVEhUTFBMVEhUTFBMVEhUTFDcVEhUTFBMVEhUTFRIVExQTFRIVExQTFRIVExQTFRIVNxQ3FDcVAA0FAAAAAAAA
+  mode: single

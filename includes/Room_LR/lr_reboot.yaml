@@ -511,7 +511,7 @@ lr_reboot:
             entity_id: light.0xa4c13812b94c8365
           data_template:
             brightness_pct: 100
-            kelvin: 4000
+            color_temp_kelvin: 4000
         - delay: 00:00:10
         - action: light.turn_off
           target:

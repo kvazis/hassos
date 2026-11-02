@@ -577,12 +577,9 @@ sections:
       - type: entities
         show_header_toggle: false
         entities:
-          - entity: sensor.kn_fridge_meter
-            name: Споживання за годину
-          - entity: sensor.kn_fridge_max_energy_day
-            name: Максимальне споживання за добу
-          - entity: sensor.kn_fridge_max_power_day
-            name: Максимальна потужність за добу
+          - entity: sensor.phase_l3_kn_fridge_energy_meter
+
+
 
       - type: markdown
         content: >
@@ -611,25 +608,6 @@ sections:
             tap_action:
               action: more-info
 
-          - type: custom:mushroom-template-card
-            primary: Юка
-            secondary: |-
-              {{ states('sensor.0x00124b0022145bc7_soil_moisture') }} %
-            layout: vertical
-            entity: sensor.0x00124b0022145bc7_soil_moisture
-            icon_color: |-
-              {% if states("sensor.0x00124b0022145bc7_soil_moisture")|float <= 70 %}
-              deep-orange
-              {% elif states("sensor.0x00124b0022145bc7_soil_moisture")|float <= 80 %}
-              yellow
-              {% elif states("sensor.0x00124b0022145bc7_soil_moisture")|float <= 90 %}
-              light-blue
-              {% elif states("sensor.0x00124b0022145bc7_soil_moisture")|float <= 100 %}
-              blue
-              {% endif %}
-            icon: mdi:spa
-            tap_action:
-              action: more-info
 
           - type: custom:mushroom-template-card
             primary: Дифенбахія
@@ -691,9 +669,6 @@ sections:
             icon: phu:aqara-opple
           - entity: sensor.0x00124b0022027bd2_battery
             name: "Дифенбахія"
-            icon: mdi:sprout
-          - entity: sensor.0x00124b0022145bc7_battery
-            name: "Юка"
             icon: mdi:sprout
           - entity: sensor.0x00124b0022145c90_battery
             name: "Заміокулькас"

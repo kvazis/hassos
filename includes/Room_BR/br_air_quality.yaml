@@ -1,0 +1,117 @@
+##################################################
+## Актуалізовано: 2026-03-30
+##################################################
+
+br_air_quality:
+
+  ##################################################
+  ## CUSTOMIZE
+  ##################################################
+
+  homeassistant:
+    customize:
+
+      sensor.cgllc_cgs2_5032_co2_density:
+        friendly_name: Спальня - Q2 - CO2
+
+      sensor.cgllc_cgs2_5032_tvoc_density:
+        friendly_name: Спальня - Q2 - TVOC
+
+      sensor.cgllc_cgs2_5032_pm25_density:
+        friendly_name: Спальня - Q2 - PM 2.5
+
+      sensor.cgllc_cgs2_5032_pm10_density:
+        friendly_name: Спальня - Q2 - PM 10
+
+      sensor.cgllc_cgs2_5032_noise_decibel:
+        friendly_name: Спальня - Q2 - шум
+
+      sensor.cgllc_cgs2_5032_temperature:
+        friendly_name: Спальня - Q2 - температура
+
+      sensor.cgllc_cgs2_5032_relative_humidity:
+        friendly_name: Спальня - Q2 - вологість
+
+      sensor.br_air_co2:
+        friendly_name: Спальня - CO2
+        unit_of_measurement: "ppm"
+        icon: mdi:molecule-co2
+        device_class: carbon_dioxide
+
+      binary_sensor.br_poor_air:
+        friendly_name: Спальня - погана якість повітря
+        icon: mdi:air-filter-alert
+
+      automation.br_air_notify:
+        friendly_name: Спальня - сповіщення про якість повітря
+        icon: mdi:message-alert
+
+  ##################################################
+  ## RECORDER
+  ##################################################
+
+  recorder:
+    include:
+      entities:
+        - sensor.cgllc_cgs2_5032_co2_density
+        - sensor.cgllc_cgs2_5032_tvoc_density
+        - sensor.cgllc_cgs2_5032_pm25_density
+        - sensor.cgllc_cgs2_5032_pm10_density
+        - sensor.cgllc_cgs2_5032_noise_decibel
+        - sensor.cgllc_cgs2_5032_temperature
+        - sensor.cgllc_cgs2_5032_relative_humidity
+        - sensor.br_air_co2
+
+  ##################################################
+  ## TEMPLATE
+  ##################################################
+
+  template:
+
+    - binary_sensor:
+        - name: br_poor_air
+          unique_id: br_poor_air
+          state: >
+            {{ states('sensor.br_air_co2') | float(0) > 1500
+               and is_state('binary_sensor.notification_time', 'on')
+               and is_state('binary_sensor.br_aeration', 'off') }}
+          availability: "{{ states('sensor.br_air_co2') | float(0) > 250 }}"
+          icon: >
+            {% if is_state('binary_sensor.br_poor_air', 'on') %}
+            mdi:biohazard
+            {% else %}
+            mdi:air-filter
+            {% endif %}
+
+    - sensor:
+        - name: br_air_co2
+          unique_id: br_air_co2
+          state: "{{ states('sensor.cgllc_cgs2_5032_co2_density') | float(500) }}"
+
+  ##################################################
+  ## AUTOMATION
+  ##################################################
+
+  automation:
+
+    - alias: br_air_notify
+      id: br_air_notify
+      description: Спальня - сповіщення про низьку якість повітря
+      initial_state: true
+      trigger:
+        - platform: time_pattern
+          minutes: "/30"
+      condition:
+        - condition: state
+          entity_id: binary_sensor.br_poor_air
+          state: "on"
+        - condition: state
+          entity_id: switch.control_mode
+          state: "on"
+      action:
+        - action: telegram_bot.send_message
+          data:
+            chat_id:
+              - !secret chat_id_group
+            message: |
+              {{"\U0001F637"}} Спальня {{ states('sensor.time_date') }} - добре було б провітрити

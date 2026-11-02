@@ -131,13 +131,6 @@ kn_reboot:
           entity_id: binary_sensor.blackout_after
           state: 'off'
       action:
-        - action: light.turn_on
-          target:
-            entity_id: light.0x00158d000420dbab
-          data:
-            brightness_pct: 100
-            kelvin: 4000
-        - delay: 00:00:02
         - action: switch.turn_off
           target:
             entity_id: switch.0x54ef4410000f4741_right

@@ -419,36 +419,6 @@ sections:
 
       - type: markdown
         content: >
-          ### Акумулятор DC UPS
-
-      - type: grid
-        square: false
-        columns: 2
-        cards:
-          - type: custom:mushroom-template-card
-            primary: Струм
-            secondary: |-
-              {{ states('sensor.lr_ups_dc_current') }} А
-            layout: horizontal
-            entity: sensor.lr_ups_dc_current
-            icon_color: light-green
-            icon: mdi:current-dc
-            tap_action:
-              action: more-info
-
-          - type: custom:mushroom-template-card
-            primary: Напруга
-            secondary: |-
-              {{ states('sensor.lr_ups_dc_voltage') }} В
-            layout: horizontal
-            entity: sensor.lr_ups_dc_voltage
-            icon_color: light-green
-            icon: mdi:car-battery
-            tap_action:
-              action: more-info
-
-      - type: markdown
-        content: >
           ### Розетки
 
       - type: grid
@@ -456,7 +426,7 @@ sections:
         columns: 2
         cards:
           - type: custom:mushroom-template-card
-            primary: UPS
+            primary: Ecoflow train
             secondary: |-
               {{ states('sensor.0xa4c138ee9e1e5451_power') }} Вт
             layout: horizontal
@@ -473,7 +443,7 @@ sections:
               {% endif %}
 
           - type: custom:mushroom-template-card
-            primary: Подовжувач ТВ
+            primary: Стійка з телевізором
             secondary: |-
               {{ states('sensor.0xa4c1382600c57620_power') }} Вт
             layout: horizontal
@@ -524,7 +494,7 @@ sections:
               {% endif %}
 
           - type: custom:mushroom-template-card
-            primary: Ноутбук Asus
+            primary: Подовжувач столу
             secondary: |-
               {{ states('sensor.0xa4c138f41459f92a_power') }} Вт
             layout: horizontal
@@ -541,7 +511,7 @@ sections:
               {% endif %}
 
           - type: custom:mushroom-template-card
-            primary: Ноутбук Acer
+            primary: Зарядна станція
             secondary: |-
               {{ states('sensor.0xa4c1388c89a46970_power') }} Вт
             layout: horizontal
@@ -763,6 +733,11 @@ sections:
           - entity: sensor.zhimi_xa1_4790_battery_level
             name: Рівень заряду
 
+
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - entity: sensor.phase_l3_lr_tv_rack_energy_meter
 ############################ Колонка 3 ############################
   - type: grid
     cards:
@@ -795,9 +770,9 @@ sections:
           - entity: sensor.0x00158d00054496b0_battery
             name: "Датчик відкриття кондиціонера"
             icon: phu:air-conditioner
-          - entity: sensor.0x00158d00013fc3bc_battery
+          - entity: sensor.0xa4c138100fc8ffff_battery
             name: "Бездротовий вимикач біля входу"
-            icon: phu:aqara-h1-switch
+            icon: phu:sonoff-0p1
           - entity: sensor.0x54ef4410004c1707_battery
             name: "Бездротовий вимикач на столі"
             icon: phu:aqara-opple

@@ -16,9 +16,6 @@ cr_light:
       binary_sensor.cr_light_night:
         friendly_name: Коридор - світло без руху (ніч)
         icon: mdi:timer
-      binary_sensor.0x00158d0003e74c31_on:
-        friendly_name: Коридор - лампа активна
-        icon: mdi:radiobox-marked
       binary_sensor.cr_mode_auto_light_on:
         friendly_name: Коридор - авто підсвічування
         icon: mdi:lightbulb-auto
@@ -74,18 +71,6 @@ cr_light:
             mdi:timer-off
             {% endif %}
 
-        - name: 0x00158d0003e74c31_on
-          unique_id: 0x00158d0003e74c31_on
-          state: >
-            {{ is_state('light.0x00158d0003e74c31', 'on') }}
-          delay_on: 00:00:05
-          icon: >
-            {% if is_state("binary_sensor.0x00158d0003e74c31_on", "on") %}
-            mdi:radiobox-marked
-            {% else %}
-            mdi:radiobox-blank
-            {% endif %}
-
         - name: cr_mode_auto_light_on
           unique_id: cr_mode_auto_light_on
           state: >
@@ -119,6 +104,10 @@ cr_light:
         - platform: state
           entity_id: sensor.0x54ef4410004c1707_action
           to: "button_3_double"
+        - platform: state
+          entity_id: sensor.0xa4c138100fc8ffff_action
+          to: "single_button_4"
+
       condition:
         - condition: state
           entity_id: switch.control_mode
@@ -240,87 +229,3 @@ cr_light:
                   target:
                     entity_id: light.yeelight_ceiling4_0x456e813_ambilight
 
-    - alias: cr_en_light_control
-      id: cr_en_light_control
-      description: Коридор і передпокій - керування освітленням
-      initial_state: true
-      trigger:
-        - platform: state
-          entity_id: sensor.0x00158d00013fc3bc_action
-          to: "single_both"
-      condition:
-        - condition: state
-          entity_id: switch.control_mode
-          state: "on"
-      action:
-        - choose:
-            - conditions:
-                - condition: state
-                  entity_id: light.0x00158d0003e74c31
-                  state: "off"
-                - condition: state
-                  entity_id: light.yeelight_ceiling4_0x456e813
-                  state: "off"
-              sequence:
-                - action: light.turn_on
-                  target:
-                    entity_id:
-                      - light.0x00158d0003e74c31
-                  data:
-                    brightness_pct: 100
-                    color_temp_kelvin: 4000
-            - conditions:
-                - condition: state
-                  entity_id: light.0x00158d0003e74c31
-                  state: "on"
-                - condition: state
-                  entity_id: binary_sensor.0x00158d0003e74c31_on
-                  state: "off"
-                - condition: state
-                  entity_id: light.yeelight_ceiling4_0x456e813
-                  state: "off"
-              sequence:
-                - action: light.turn_on
-                  target:
-                    entity_id:
-                      - light.yeelight_ceiling4_0x456e813
-                  data:
-                    brightness_pct: 75
-                    color_temp_kelvin: 4000
-            - conditions:
-                - condition: state
-                  entity_id: light.0x00158d0003e74c31
-                  state: "on"
-                - condition: state
-                  entity_id: light.yeelight_ceiling4_0x456e813
-                  state: "on"
-              sequence:
-                - action: light.turn_off
-                  target:
-                    entity_id:
-                      - light.0x00158d0003e74c31
-                      - light.yeelight_ceiling4_0x456e813
-            - conditions:
-                - condition: state
-                  entity_id: binary_sensor.0x00158d0003e74c31_on
-                  state: "on"
-                - condition: state
-                  entity_id: light.yeelight_ceiling4_0x456e813
-                  state: "off"
-              sequence:
-                - action: light.turn_off
-                  target:
-                    entity_id:
-                      - light.0x00158d0003e74c31
-            - conditions:
-                - condition: state
-                  entity_id: light.0x00158d0003e74c31
-                  state: "off"
-                - condition: state
-                  entity_id: light.yeelight_ceiling4_0x456e813
-                  state: "on"
-              sequence:
-                - action: light.turn_off
-                  target:
-                    entity_id:
-                      - light.yeelight_ceiling4_0x456e813

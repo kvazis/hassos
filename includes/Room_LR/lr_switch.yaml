@@ -24,12 +24,8 @@ lr_switch:
         icon: mdi:power-plug
 
       switch.0xa4c138ee9e1e5451:
-        friendly_name: Вітальня - UPS
+        friendly_name: Вітальня - Ecoflow train
         icon: mdi:power-plug
-
-      switch.0xa4c1382600c57620:
-        friendly_name: Вітальня - подовжувач стійки ТВ
-        icon: mdi:power-strip
 
       switch.0xa4c1384452a34172:
         friendly_name: Вітальня - телевізор
@@ -42,6 +38,10 @@ lr_switch:
       switch.0xa4c138f41459f92a:
         friendly_name: Вітальня - подовжувач столу
         icon: mdi:power-strip
+        
+      switch.0xa4c1388c89a46970:
+        friendly_name: Вітальня - зарядна станція комод
+        icon: mdi:power-plug
 
       ##################################################
       ## PHYSICAL SENSOR
@@ -54,13 +54,7 @@ lr_switch:
         icon: mdi:flash
 
       sensor.0xa4c138ee9e1e5451_power:
-        friendly_name: Вітальня - потужність UPS
-        unit_of_measurement: Вт
-        device_class: power
-        icon: mdi:flash
-
-      sensor.0xa4c1382600c57620_power:
-        friendly_name: Вітальня - потужність подовжувача стійки ТВ
+        friendly_name: Вітальня - Ecoflow train
         unit_of_measurement: Вт
         device_class: power
         icon: mdi:flash
@@ -82,40 +76,13 @@ lr_switch:
         unit_of_measurement: Вт
         device_class: power
         icon: mdi:flash
-
-      ##################################################
-      ## TEMPLATE SENSOR
-      ##################################################
-
-      sensor.lr_phase_l3_power_tv_rack:
-        friendly_name: L3 - стійка ТВ
+        
+      sensor.0xa4c1388c89a46970_power:
+        friendly_name: Вітальня - потужність зарядна станція
         unit_of_measurement: Вт
+        device_class: power
         icon: mdi:flash
 
-      sensor.lr_phase_l3_power_desk:
-        friendly_name: L3 - робочий стіл
-        unit_of_measurement: Вт
-        icon: mdi:flash
 
-  ##################################################
-  ## TEMPLATE
-  ##################################################
 
-  template:
-    - sensor:
 
-        ##################################################
-        ## ФАЗА L3
-        ##################################################
-
-        - name: lr_phase_l3_power_tv_rack
-          unique_id: lr_phase_l3_power_tv_rack
-          unit_of_measurement: Вт
-          state: >
-            {{ states('sensor.0xa4c1382600c57620_power') | float(0) }}
-
-        - name: lr_phase_l3_power_desk
-          unique_id: lr_phase_l3_power_desk
-          unit_of_measurement: Вт
-          state: >
-            {{ states('sensor.0xa4c138f41459f92a_power') | float(0) }}

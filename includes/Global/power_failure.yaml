@@ -209,7 +209,6 @@ sys_power_failure:
           state: >
             {{ [
               states('binary_sensor.lr_electricity'),
-              states('binary_sensor.lr2_electricity'),
               states('binary_sensor.kn_electricity'),
               states('binary_sensor.br_electricity')
             ] | select('eq', 'on') | list | count >= 2 }}
@@ -301,7 +300,7 @@ sys_power_failure:
     - alias: lr2_power_sensor_reboot
       id: lr2_power_sensor_reboot
       description: Перезапуск сенсора
-      initial_state: true
+      initial_state: false
 
       trigger:
         - platform: time_pattern

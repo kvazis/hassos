@@ -1,0 +1,209 @@
+##################  Delta ext
+title: Delta ext
+icon: mdi:battery-charging-high
+sections:
+
+############################ Колонка 1 ############################
+    - type: grid
+      cards:
+
+        - type: markdown
+          content: >
+             ### Керування тестом
+
+        - type: button
+          name: Старт тесту
+          icon: mdi:play-circle-outline
+          show_state: false
+          tap_action:
+            action: perform-action
+            perform_action: script.delta_ext_test_start
+            confirmation:
+              text: Обнулити лічильники і почати новий тест?
+
+        - type: button
+          name: Стоп тесту
+          icon: mdi:stop-circle-outline
+          show_state: false
+          tap_action:
+            action: perform-action
+            perform_action: script.delta_ext_test_stop
+            confirmation:
+              text: Зупинити тест і зафіксувати підсумки?
+
+        - type: entities
+          show_header_toggle: false
+          entities:
+          - entity: input_boolean.delta_ext_test_active
+          - entity: input_datetime.delta_ext_test_start
+          - entity: input_datetime.delta_ext_test_end
+          - entity: sensor.delta_ext_test_duration
+          - type: divider
+          - entity: input_number.delta_ext_test_delta_soc_start
+          - entity: input_number.delta_ext_test_bms_soc_start
+
+        - type: markdown
+          content: >
+             ### Delta 2
+
+        - type: entities
+          show_header_toggle: false
+          entities:
+          - entity: sensor.delta_2_battery_level
+          - entity: sensor.delta_2_main_battery_level
+          - type: divider
+          - entity: sensor.delta_2_ac_in_power
+          - entity: sensor.delta_2_total_in_power
+          - type: divider
+          - entity: sensor.delta_2_ac_out_power
+          - entity: sensor.delta_2_total_out_power
+
+        - type: markdown
+          content: >
+             ### Зовнішня АКБ (BMS)
+
+        - type: entities
+          show_header_toggle: false
+          entities:
+          - entity: sensor.jbd_up16s019_100a_100a_battery
+          - entity: sensor.jbd_up16s019_100a_100a_voltage
+          - entity: sensor.jbd_up16s019_100a_100a_current
+          - entity: sensor.jbd_up16s019_100a_100a_power
+          - type: divider
+          - entity: sensor.jbd_up16s019_100a_100a_temperature
+          - type: divider
+          - entity: sensor.jbd_up16s019_100a_100a_highest_cell_voltage
+          - entity: sensor.jbd_up16s019_100a_100a_lowest_cell_voltage
+          - entity: sensor.jbd_up16s019_100a_100a_delta_cell_voltage
+
+
+############################ Колонка 2 ############################
+    - type: grid
+      cards:
+
+        - type: markdown
+          content: >
+             ### Тест розряду
+
+        - type: entities
+          show_header_toggle: false
+          entities:
+          - entity: sensor.delta_ext_test_ac_out
+          - entity: sensor.delta_ext_test_total_out
+          - type: divider
+          - entity: sensor.delta_ext_test_bms_discharge
+          - entity: sensor.delta_ext_test_delta_internal_out
+          - entity: sensor.delta_ext_test_cells_out
+          - type: divider
+          - entity: sensor.delta_ext_test_discharge_efficiency
+          - entity: sensor.delta_ext_test_external_share
+
+        - type: markdown
+          content: >
+             ### Тест заряду
+
+        - type: entities
+          show_header_toggle: false
+          entities:
+          - entity: sensor.delta_ext_test_ac_in
+          - type: divider
+          - entity: sensor.delta_ext_test_bms_charge
+          - entity: sensor.delta_ext_test_delta_internal_in
+          - entity: sensor.delta_ext_test_cells_in
+          - type: divider
+          - entity: sensor.delta_ext_test_charge_efficiency
+
+        - type: markdown
+          content: >
+             ### Підсумки тесту
+
+        - type: entities
+          show_header_toggle: false
+          entities:
+          - entity: input_number.delta_ext_res_duration
+          - type: divider
+          - entity: input_number.delta_ext_res_ac_in
+          - entity: input_number.delta_ext_res_bms_charge
+          - entity: input_number.delta_ext_res_cells_in
+          - entity: input_number.delta_ext_res_charge_eff
+          - type: divider
+          - entity: input_number.delta_ext_res_ac_out
+          - entity: input_number.delta_ext_res_bms_discharge
+          - entity: input_number.delta_ext_res_cells_out
+          - entity: input_number.delta_ext_res_discharge_eff
+          - type: divider
+          - entity: input_number.delta_ext_res_delta_soc_end
+          - entity: input_number.delta_ext_res_bms_soc_end
+
+        - type: markdown
+          content: >
+             ### Потужність зовн. АКБ
+
+        - type: entities
+          show_header_toggle: false
+          entities:
+          - entity: sensor.delta_ext_bms_charge_power
+          - entity: sensor.delta_ext_bms_discharge_power
+
+
+############################ Колонка 3 ############################
+    - type: grid
+      cards:
+
+        - type: markdown
+          content: >
+             ### Графіки
+
+        - type: history-graph
+          title: Рівень заряду
+          hours_to_show: 8
+          entities:
+          - entity: sensor.delta_2_battery_level
+            name: SOC Delta 2
+          - entity: sensor.jbd_up16s019_100a_100a_battery
+            name: SOC зовн. АКБ
+
+        - type: history-graph
+          title: Потужність
+          hours_to_show: 8
+          entities:
+          - entity: sensor.delta_2_ac_in_power
+            name: Delta 2 вхід
+          - entity: sensor.delta_2_ac_out_power
+            name: Delta 2 AC вихід
+          - entity: sensor.jbd_up16s019_100a_100a_power
+            name: Зовн. АКБ
+
+        - type: history-graph
+          title: Напруга комірок
+          hours_to_show: 8
+          entities:
+          - entity: sensor.jbd_up16s019_100a_100a_highest_cell_voltage
+            name: Максимальна
+          - entity: sensor.jbd_up16s019_100a_100a_lowest_cell_voltage
+            name: Мінімальна
+
+############################ Колонка 4 ############################
+    - type: grid
+      cards:
+
+        - type: markdown
+          content: >
+             ### Графіки
+
+
+        - type: history-graph
+          title: Розбаланс комірок
+          hours_to_show: 8
+          entities:
+          - entity: sensor.jbd_up16s019_100a_100a_delta_cell_voltage
+            name: Різниця напруг
+
+        - type: history-graph
+          title: Напруга і температура зовн. АКБ
+          hours_to_show: 8
+          entities:
+          - entity: sensor.jbd_up16s019_100a_100a_voltage
+            name: Напруга
+          - entity: sensor.jbd_up16s019_100a_100a_temperature
+            name: Температура

@@ -42,14 +42,14 @@ tg_dtek_notify:
     - alias: k7_notification_dtek_1_3
       id: k7_notification_dtek_1_3
       mode: single
-      initial_state: true
+      initial_state: false
       description: Щоденне повідомлення графік 1-3
       trigger:
         - platform: time
           at: "00:10:00"
 
       variables:
-        cal_entity: calendar.svitlo_kyiv_5_1_outages_schedule
+        cal_entity: calendar.svitlo_kyiv_3_1_outages_schedule
 
       condition:
         - condition: state
@@ -83,10 +83,10 @@ tg_dtek_notify:
 
               {% if evs | count == 0 %}
               1️⃣2️⃣3️⃣
-              Планових відключень по групі 5.1 {{ today }} не передбачається
+              Графік по групі 4.1 {{ today }} вивантажити не вдалось - не сформовані, або діють екстрені відключення.
               {% else %}
               1️⃣2️⃣3️⃣
-              ⚡ Відключення електроенергії група 5.1
+              ⚡ Відключення електроенергії група 3.1
               📅 Розклад на сьогодні ({{ today }}):
 
               {% for e in evs %}
@@ -119,7 +119,7 @@ tg_dtek_notify:
           at: "00:10:10"
 
       variables:
-        cal_entity: calendar.svitlo_kyiv_9_1_outages_schedule
+        cal_entity: calendar.svitlo_kyiv_3_1_outages_schedule
 
       condition:
         - condition: state
@@ -152,11 +152,11 @@ tg_dtek_notify:
               {% set today = now().strftime('%d.%m.%Y') %}
 
               {% if evs | count == 0 %}
-              4️⃣5️⃣6️⃣7️⃣
-              Планових відключень по групі 9.1 {{ today }} не передбачається
+              1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣ група 3.1
+              Графік по групі 3.1 {{ today }} вивантажити не вдалось - не сформовані, або діють екстрені відключення.
               {% else %}
-              4️⃣5️⃣6️⃣7️⃣
-              ⚡ Відключення електроенергії група 9.1
+              1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣ група 3.1
+              ⚡ Розклад відключення
               📅 Розклад на сьогодні ({{ today }}):
 
               {% for e in evs %}
